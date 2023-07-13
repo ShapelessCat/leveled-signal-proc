@@ -73,6 +73,7 @@ fn main() {
         let timestamp = event.timestamp();
 
         if timestamp != event_data.timestamp.timestamp_nanos() as u64 {
+            let timestamp = event_data.timestamp.timestamp_nanos() as u64;
 
             let queue = ctx.update_queue_mut();
             queue.set_epoch(timestamp);
