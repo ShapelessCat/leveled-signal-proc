@@ -1,5 +1,5 @@
 [package]
-name = "time-series-proc"
+name = "lsp"
 version = "0.1.0"
 edition = "2021"
 
@@ -10,7 +10,7 @@ path = "src/lib.rs"
 
 [[bin]]
 name = "time-series-proc"
-path = "src/main.rs"
+path = "src/bin/main.rs"
 
 [dependencies]
 chrono = {version = "0.4.24", features = ["serde"]}
