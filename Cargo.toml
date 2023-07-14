@@ -8,10 +8,6 @@ edition = "2021"
 [lib]
 path = "src/lib.rs"
 
-[[bin]]
-name = "time-series-proc"
-path = "src/bin/main.rs"
-
 [dependencies]
 chrono = {version = "0.4.24", features = ["serde"]}
 serde = {version = "1.0.158", features = ["derive"]}

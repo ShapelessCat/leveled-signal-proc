@@ -1,3 +1,62 @@
+/// This impelements the DAG that is used in TLB2 profiling (See https://conviva.atlassian.net/wiki/spaces/~589178245/pages/1867646607/DAG-level+instrumentation for details)
+/// Please note that this file will be automatically generate from the LSP DSL in the formal LSP system. 
+/// Currently this file is hand written for demostration purposes.
+/// 
+///     dag:
+///       rawEvents:
+///         op: eventSourceTimeline
+///         source: $videoHeartbeats
+///       userAction:
+///         op: latestEventToState
+///         in:
+///           op: get
+///           in: $rawEvents
+///           path: "userAction"
+///       playerState:
+///         op: latestEventToState
+///         in:
+///           op: get
+///           in: $rawEvents
+///           path: "newPlayerState"
+///       network:
+///         op: latestEventToState
+///         in:
+///           op: get
+///           in: $rawEvents
+///           path: "newNetwork"
+///       cdn:
+///         op: latestEventToState
+///         in:
+///           op: get
+///           in: $rawEvents
+///           path: "newCdn"
+///       isPlay:
+///         op: equals
+///         left: $playerState
+///         right: "play"
+///       isWifi:
+///         op: equals
+///         left: $network
+///         right: "WIFI"
+///       isCDN1:
+///         op: equals
+///         left: $cdn
+///         right: "cdn1"
+///       target:
+///         op: and
+///         args:
+///           - $isPlay
+///           - $isWifi
+///           - $isCDN1
+///       totalTime:
+///         op: durationTrue
+///         in: $target
+///         slidingWindow: +inf
+///       evaluatedInRealtime:
+///         op: evaluateAt
+///         in: $totalTime
+///         evaluationPoints: $rawEvents
+
 use std::{fs::File, io::BufReader};
 use chrono::{DateTime, Utc};
 
@@ -50,6 +109,7 @@ impl InputState for InputType {
     }
 }
 
+#[allow(unused_assignments)]
 fn main() {
 
     // To simplify the problem, we just assume the data comes from a input file

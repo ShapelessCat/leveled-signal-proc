@@ -93,3 +93,8 @@
 	"userAction": "P",
 	"page": "Page1"
 }
+{
+	"timestamp": "2023-01-01 00:09:51.0000 UTC",
+	"seqNum": 15,
+	"userAction": "E"
+}

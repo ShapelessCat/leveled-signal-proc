@@ -1,8 +1,8 @@
 use std::marker::PhantomData;
-use crate::UpdateContext;
+use crate::{UpdateContext, Timestamp, WithTimestamp};
 
 /// A computed leveled signal is a signal that is computed from other leveled signals.
-pub trait ComputedLeveledSignal {
+pub trait ComputedLeveledSignal<EventIt: Iterator> {
     type Input;
     type Output;
 
@@ -10,7 +10,7 @@ pub trait ComputedLeveledSignal {
     /// The semantics of this method is follow: All the input signals are defined by parameter `input` from now. 
     /// And the output is also valid from the now.
     /// Data readiness isn't a problem in most of the computed signals. 
-    fn update<I:Iterator>(&mut self, ctx: UpdateContext<I>, input: &Self::Input) -> Self::Output;
+    fn update(&mut self, ctx: UpdateContext<EventIt>, input: &Self::Input) -> Self::Output;
 }
 
 /// Mapping input signals statelessly to a output signal
@@ -28,7 +28,7 @@ where
     }
 }
 
-impl <T, U, F> ComputedLeveledSignal for MappedSignal<T, U, F> 
+impl <T, U, F, I:Iterator> ComputedLeveledSignal<I> for MappedSignal<T, U, F> 
 where
     F: FnMut(&T) -> U
 {
@@ -37,7 +37,63 @@ where
     type Output = U;
 
     #[inline(always)]
-    fn update<I:Iterator>(&mut self, _: UpdateContext<I>, input: &T) -> U {
+    fn update(&mut self, _: UpdateContext<I>, input: &T) -> U {
         (self.how)(input)
+    }
+}
+
+#[derive(Default)]
+pub struct Latch<T: Clone>(T);
+
+impl <T: Clone, I:Iterator> ComputedLeveledSignal<I> for Latch<T> {
+    type Input = (bool, T);
+    type Output = T;
+    #[inline(always)]
+    fn update(&mut self, _: UpdateContext<I>, &(ref set, ref value): &Self::Input) -> T {
+        if *set {
+            self.0 = value.clone();
+        }
+        self.0.clone()
+    }
+}
+
+pub struct LivenessSignal<F, E> {
+    expiration_period: Timestamp,
+    is_liveness_event: F,
+    phantom: PhantomData<E>,
+}
+
+impl <F, E> LivenessSignal<F, E> {
+    pub fn new(is_liveness_event: F, time_window: Timestamp) -> Self 
+    where
+        F: FnMut(&E) -> bool
+    {
+        Self {
+            expiration_period: time_window,
+            is_liveness_event,
+            phantom: PhantomData,
+        }
+    }
+}
+
+impl <F, E, I> ComputedLeveledSignal<I> for LivenessSignal<F, E>
+where
+    I: Iterator<Item = E>,
+    F: FnMut(&E) -> bool,
+    E: WithTimestamp,
+{
+    type Input = Timestamp;
+
+    type Output = bool;
+
+    fn update(&mut self, mut ctx: UpdateContext<I>, input: &Self::Input) -> Self::Output {
+        let look_ahead_cutoff = input + self.expiration_period;
+        let output = ctx.peek_fold(false, |v, e| {
+            if *v || e.timestamp() >= look_ahead_cutoff {
+                return None;
+            }
+            Some((self.is_liveness_event)(e))
+        });
+        output
     }
 }
