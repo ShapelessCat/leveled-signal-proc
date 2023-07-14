@@ -1,5 +1,5 @@
-use crate::UpdateQueue;
 use crate::Timestamp;
+use crate::UpdateContext;
 
 /// A measurement is a inspection of the state of the signal processing system.
 /// Although all the signal processor doesn't take timestamp as input, the measurement can be
@@ -12,10 +12,8 @@ pub trait Measurement {
     #[inline(always)]
     fn reset(&mut self) {}
 
-    /// This method reports the last output, the output will be valid til time stamp ctx.now()
-    /// And after this update is called the measure_when method can be called to take measurement
-    /// before now
-    fn update(&mut self, ctx: &mut UpdateQueue, end_ts: Timestamp, input: &Self::Input);
+    // Notify the value change take effect from now
+    fn update<I:Iterator>(&mut self, ctx: UpdateContext<I>, input: &Self::Input);
 
     fn measure_at(&self, timestamp: Timestamp) -> Self::Output;
 }
@@ -28,7 +26,7 @@ impl <T : Clone> Measurement for Peek<T> {
 
     type Output = T;
 
-    fn update(&mut self, _: &mut UpdateQueue, _: Timestamp, v: &Self::Input) {
+    fn update<I:Iterator>(&mut self, _: UpdateContext<I>, v: &Self::Input) {
         self.0 = v.clone();
     }
 
@@ -38,57 +36,32 @@ impl <T : Clone> Measurement for Peek<T> {
 }
 
 #[derive(Default)]
-pub struct Duration {
-    last_value: bool,
-    begin_timestamp: Timestamp,
-    end_timestamp: Timestamp,
-}
-
-impl Measurement for Duration {
-    type Input = bool;
-
-    type Output = u64;
-
-    fn update(&mut self, _: &mut UpdateQueue, end_ts: Timestamp, input: &Self::Input) {
-        self.last_value = *input;
-        self.begin_timestamp = self.end_timestamp;
-        self.end_timestamp = end_ts;
-    }
-
-    fn measure_at(&self, timestamp: Timestamp) -> Self::Output {
-        if self.last_value {
-            timestamp.saturating_sub(self.begin_timestamp)
-        } else {
-            0
-        }
-    }
-}
-
-#[derive(Default)]
 pub struct DurationTrue {
-    last_value: bool,
-    begin_timestamp: Timestamp,
-    end_timestamp: Timestamp,
-    accumulator: Timestamp,
+    last_input: bool,
+    last_input_timestamp: Timestamp,
+    cur_input: bool,
+    cur_input_timestamp: Timestamp,
+    accumulated_duration: Timestamp,
 }
 
 impl Measurement for DurationTrue {
     type Input = bool;
+    type Output = Timestamp;
 
-    type Output = u64;
-
-    fn update(&mut self, _: &mut UpdateQueue, end_ts: Timestamp, input: &Self::Input) {
-        if self.last_value {
-            self.accumulator += self.end_timestamp - self.begin_timestamp;
+    fn update<I:Iterator>(&mut self, ctx: UpdateContext<I>, input: &bool) {
+        if self.last_input {
+            self.accumulated_duration += self.cur_input_timestamp - self.last_input_timestamp;
         }
-        self.last_value = *input;
-        self.begin_timestamp = self.end_timestamp;
-        self.end_timestamp = end_ts;
+        self.last_input = self.cur_input;
+        self.last_input_timestamp = self.cur_input_timestamp;
+        self.cur_input = *input;
+        self.cur_input_timestamp = ctx.frontier();
     }
 
     fn measure_at(&self, timestamp: Timestamp) -> Self::Output {
-        self.accumulator + if self.last_value {
-            timestamp - self.begin_timestamp
+        assert!(self.last_input_timestamp <= timestamp && timestamp <= self.cur_input_timestamp);
+        self.accumulated_duration + if self.last_input {
+            timestamp - self.last_input_timestamp    
         } else {
             0
         }

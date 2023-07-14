@@ -1,0 +1,95 @@
+{
+	"timestamp": "2023-01-01 00:00:55.0000 UTC",
+	"page": "Page1",
+	"userAction": "P",
+	"seqNum": 0
+}
+{
+	"timestamp": "2023-01-01 00:01:02.0000 UTC",
+	"userAction": "A",
+	"seqNum": 1
+}
+{
+	"timestamp": "2023-01-01 00:01:32.0000 UTC",
+	"seqNum": 2,
+	"userAction": "C"
+}
+{
+	"timestamp": "2023-01-01 00:02:02.0000 UTC",
+	"seqNum": 3,
+	"userAction": "E"
+}
+{
+	"timestamp": "2023-01-01 00:02:10.0000 UTC",
+	"seqNum": 4,
+	"userAction": "P",
+	"page": "Page2"
+}
+{
+	"timestamp": "2023-01-01 00:02:30.0000 UTC",
+	"seqNum": 5,
+	"userAction": "B"
+}
+{
+	"timestamp": "2023-01-01 00:03:01.0000 UTC",
+	"seqNum": 6,
+	"userAction": "C"
+}
+{
+	"timestamp": "2023-01-01 00:03:11.0000 UTC",
+	"seqNum": 7,
+	"userAction": "E"
+}
+{
+	"timestamp": "2023-01-01 00:03:31.0000 UTC",
+	"seqNum": 8,
+	"page": "Page1",
+	"userAction": "P"
+}
+{
+	"timestamp": "2023-01-01 00:03:41.0000 UTC",
+	"seqNum": 9,
+	"userAction": "D"
+}
+{
+	"timestamp": "2023-01-01 00:04:21.0000 UTC",
+	"seqNum": 10,
+	"userAction": "D"
+}
+{
+	"timestamp": "2023-01-01 00:04:41.0000 UTC",
+	"seqNum": 11,
+	"userAction": "E"
+}
+{
+	"timestamp": "2023-01-01 00:05:01.0000 UTC",
+	"seqNum": 12,
+	"page": "Page3",
+	"userAction": "P"
+}
+{
+	"timestamp": "2023-01-01 00:05:21.0000 UTC",
+	"seqNum": 13,
+	"userAction": "F"
+}
+{
+	"timestamp": "2023-01-01 00:06:21.0000 UTC",
+	"seqNum": 14,
+	"userAction": "F"
+}
+{
+	"timestamp": "2023-01-01 00:06:51.0000 UTC",
+	"seqNum": 15,
+	"userAction": "E"
+}
+{
+	"timestamp": "2023-01-01 00:07:51.0000 UTC",
+	"seqNum": 15,
+	"userAction": "X"
+}
+{
+	"timestamp": "2023-01-01 00:09:01.0000 UTC",
+	"seqNum": 50,
+	"userAction": "P",
+	"page": "Page1"
+}
