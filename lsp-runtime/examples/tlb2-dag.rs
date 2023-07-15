@@ -60,7 +60,7 @@
 use std::{fs::File, io::BufReader};
 use chrono::{DateTime, Utc};
 
-use lsp::{WithTimestamp, InputState, LspContext, signal::{MappedSignal, ComputedLeveledSignal}, measurement::{DurationTrue, Measurement}};
+use lsp_runtime::{WithTimestamp, InputState, LspContext, signal::{MappedSignal, ComputedLeveledSignal}, measurement::{DurationTrue, Measurement}};
 use serde::Deserialize;
 use serde_json::Deserializer;
 
@@ -130,7 +130,7 @@ fn main() {
         }
 
         if moment.should_take_measurements() {
-            total_duration_output = total_duration.measure_at(moment.timestamp());
+            total_duration_output = total_duration.measure_at(ctx.borrow_update_context(), moment.timestamp());
         }
     }
     println!("{}", total_duration_output);

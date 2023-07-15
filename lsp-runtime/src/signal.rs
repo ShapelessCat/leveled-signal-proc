@@ -97,3 +97,32 @@ where
         output
     }
 }
+
+#[derive(Default)]
+pub struct ValueChangeCounter<T:Clone + Eq> {
+    prev: Option<T>,
+    counter: usize,
+}
+
+impl <T: Clone + Eq> ValueChangeCounter<T> {
+    pub fn with_init_value(value: T) -> Self {
+        Self {
+            prev: Some(value),
+            counter: 0,
+        }
+    }
+}
+
+impl <T: Clone + Eq, I: Iterator> ComputedLeveledSignal<I> for ValueChangeCounter<T> {
+    type Input = T;
+
+    type Output = usize;
+
+    fn update(&mut self, _: UpdateContext<I>, input: &Self::Input) -> Self::Output {
+        if self.prev.as_ref().map_or(true, |value| value != input) {
+            self.counter += 1;
+            self.prev = Some(input.clone());
+        }
+        self.counter
+    }
+}

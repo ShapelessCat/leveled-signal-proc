@@ -5,7 +5,7 @@ use crate::UpdateContext;
 /// Although all the signal processor doesn't take timestamp as input, the measurement can be
 /// a function of time. 
 /// For example you can measure the duration since an output is true, etc.
-pub trait Measurement {
+pub trait Measurement<EventIter: Iterator> {
     type Input;
     type Output;
 
@@ -13,24 +13,24 @@ pub trait Measurement {
     fn reset(&mut self) {}
 
     // Notify the value change take effect from now
-    fn update<I:Iterator>(&mut self, ctx: UpdateContext<I>, input: &Self::Input);
+    fn update(&mut self, ctx: UpdateContext<EventIter>, input: &Self::Input);
 
-    fn measure_at(&self, timestamp: Timestamp) -> Self::Output;
+    fn measure_at(&self, ctx: UpdateContext<EventIter>, timestamp: Timestamp) -> Self::Output;
 }
 
 #[derive(Default)]
 pub struct Peek<T>(T);
 
-impl <T : Clone> Measurement for Peek<T> {
+impl <T : Clone, I: Iterator> Measurement<I> for Peek<T> {
     type Input = T;
 
     type Output = T;
 
-    fn update<I:Iterator>(&mut self, _: UpdateContext<I>, v: &Self::Input) {
+    fn update(&mut self, _: UpdateContext<I>, v: &Self::Input) {
         self.0 = v.clone();
     }
 
-    fn measure_at(&self, _: Timestamp) -> Self::Output {
+    fn measure_at(&self, _: UpdateContext<I>, _: Timestamp) -> Self::Output {
         self.0.clone()
     }
 }
@@ -44,11 +44,11 @@ pub struct DurationTrue {
     accumulated_duration: Timestamp,
 }
 
-impl Measurement for DurationTrue {
+impl <I:Iterator> Measurement<I> for DurationTrue {
     type Input = bool;
     type Output = Timestamp;
 
-    fn update<I:Iterator>(&mut self, ctx: UpdateContext<I>, input: &bool) {
+    fn update(&mut self, ctx: UpdateContext<I>, input: &bool) {
         if self.last_input {
             self.accumulated_duration += self.cur_input_timestamp - self.last_input_timestamp;
         }
@@ -58,7 +58,7 @@ impl Measurement for DurationTrue {
         self.cur_input_timestamp = ctx.frontier();
     }
 
-    fn measure_at(&self, timestamp: Timestamp) -> Self::Output {
+    fn measure_at(&self, _: UpdateContext<I>, timestamp: Timestamp) -> Self::Output {
         assert!(self.last_input_timestamp <= timestamp && timestamp <= self.cur_input_timestamp);
         self.accumulated_duration + if self.last_input {
             timestamp - self.last_input_timestamp    
