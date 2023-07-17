@@ -6,11 +6,11 @@ use lsp_runtime::{signal::SingnalProcessor, UpdateContext};
 /// The state transition is defined as a lambda function passed in when construction. 
 /// The state transition is triggered when the control input gets changed.
 /// The output is simply the current internal state
-pub struct StateMachine<I, S: Clone, F, T> {
-    state: S,
-    transition: F,
-    last_trigger_value: T,
-    _phantom:PhantomData<I>,
+pub struct StateMachine<Input, State: Clone, TransitionFunc, Trigger> {
+    state: State,
+    transition: TransitionFunc,
+    last_trigger_value: Trigger,
+    _phantom:PhantomData<Input>,
 }
 
 impl <I, S: Clone, F, T: Default> StateMachine<I, S, F, T> {

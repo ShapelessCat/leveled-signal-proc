@@ -105,7 +105,7 @@ fn main() {
     let mut p_e_state_filter = SignalMapper::new(|&s| s == 2);
     let mut p_e_event_latch = Latch::<Timestamp>::default();
 
-    let mut p_e_duration_accmulator = Accumulator::new(0);
+    let mut p_e_duration_accmulator = Accumulator::new(0, |_| true);
 
     let mut p_e_level_duration = DurationOfPreviousLevel::default();
 

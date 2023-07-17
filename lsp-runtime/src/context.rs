@@ -101,7 +101,7 @@ where
         }
     }
 
-    pub fn next_event(&mut self, state_buf: &mut S) -> Option<Moment> {
+    pub fn next_event<'a, 'b>(&'a mut self, state_buf: &'b mut S) -> Option<Moment> {
         //let external_frontier = self.iter.peek().map_or(Timestamp::MAX, |e| e.timestamp());
         let external_frontier = if let Some(ts) = self.iter.peek().map(WithTimestamp::timestamp) {
              ts

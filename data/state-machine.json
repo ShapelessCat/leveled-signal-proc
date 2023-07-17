@@ -1,0 +1,76 @@
+{
+	"timestamp": "2023-01-01 00:00:01.0000 UTC",
+    "userAction": "A"
+}
+{
+	"timestamp": "2023-01-01 00:00:02.0000 UTC",
+    "userAction": "A"
+}
+{
+	"timestamp": "2023-01-01 00:00:03.0000 UTC",
+    "userAction": "B"
+}
+{
+	"timestamp": "2023-01-01 00:00:03.5000 UTC",
+    "userAction": "D"
+}
+{
+	"timestamp": "2023-01-01 00:00:04.0000 UTC",
+    "userAction": "C"
+}
+{
+	"timestamp": "2023-01-01 00:00:05.0000 UTC",
+    "userAction": "A"
+}
+{
+	"timestamp": "2023-01-01 00:00:06.0000 UTC",
+    "userAction": "X"
+}
+{
+	"timestamp": "2023-01-01 00:00:07.0000 UTC",
+    "userAction": "B"
+}
+{
+	"timestamp": "2023-01-01 00:00:08.0000 UTC",
+    "userAction": "Y"
+}
+{
+	"timestamp": "2023-01-01 00:00:09.0000 UTC",
+    "userAction": "X"
+}
+{
+	"timestamp": "2023-01-01 00:00:10.0000 UTC",
+    "userAction": "C"
+}
+{
+	"timestamp": "2023-01-01 00:00:11.0000 UTC",
+    "userAction": "B"
+}
+{
+	"timestamp": "2023-01-01 00:00:12.0000 UTC",
+    "userAction": "C"
+}
+{
+	"timestamp": "2023-01-01 00:00:13.0000 UTC",
+    "userAction": "B"
+}
+{
+	"timestamp": "2023-01-01 00:00:14.0000 UTC",
+    "userAction": "C"
+}
+{
+	"timestamp": "2023-01-01 00:00:15.0000 UTC",
+    "userAction": "X"
+}
+{
+	"timestamp": "2023-01-01 00:00:16.0000 UTC",
+    "userAction": "D"
+}
+{
+	"timestamp": "2023-01-01 00:00:17.0000 UTC",
+    "userAction": "X"
+}
+{
+	"timestamp": "2023-01-01 00:00:18.0000 UTC",
+    "userAction": "C"
+}
