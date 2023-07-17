@@ -17,7 +17,7 @@ pub trait InputState: Clone + Default {
     fn patch(&mut self, patch: Self::Event);
 
     /// Determine if the input states need to trigger a measurement
-    fn should_measure(&self) -> bool {
+    fn should_measure(&mut self) -> bool {
         false
     }
 }
@@ -102,7 +102,13 @@ where
     }
 
     pub fn next_event(&mut self, state_buf: &mut S) -> Option<Moment> {
-        let external_frontier = self.iter.peek().map_or(Timestamp::MAX, |e| e.timestamp());
+        //let external_frontier = self.iter.peek().map_or(Timestamp::MAX, |e| e.timestamp());
+        let external_frontier = if let Some(ts) = self.iter.peek().map(WithTimestamp::timestamp) {
+             ts
+        } else {
+            // If there's no more output, we just exit the scanning loop anyway
+            return None;
+        };
         let internal_frontier = self.queue.earliest_scheduled_time();
 
         if external_frontier != Timestamp::MAX && external_frontier <= internal_frontier {

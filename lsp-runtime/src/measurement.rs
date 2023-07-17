@@ -13,9 +13,9 @@ pub trait Measurement<EventIter: Iterator> {
     fn reset(&mut self) {}
 
     // Notify the value change take effect from now
-    fn update(&mut self, ctx: UpdateContext<EventIter>, input: &Self::Input);
+    fn update(&mut self, ctx: &mut UpdateContext<EventIter>, input: &Self::Input);
 
-    fn measure_at(&self, ctx: UpdateContext<EventIter>, timestamp: Timestamp) -> Self::Output;
+    fn measure_at(&self, ctx: &mut UpdateContext<EventIter>, timestamp: Timestamp) -> Self::Output;
 }
 
 #[derive(Default)]
@@ -26,11 +26,11 @@ impl <T : Clone, I: Iterator> Measurement<I> for Peek<T> {
 
     type Output = T;
 
-    fn update(&mut self, _: UpdateContext<I>, v: &Self::Input) {
+    fn update(&mut self, _: &mut UpdateContext<I>, v: &Self::Input) {
         self.0 = v.clone();
     }
 
-    fn measure_at(&self, _: UpdateContext<I>, _: Timestamp) -> Self::Output {
+    fn measure_at(&self, _: &mut UpdateContext<I>, _: Timestamp) -> Self::Output {
         self.0.clone()
     }
 }
@@ -48,7 +48,7 @@ impl <I:Iterator> Measurement<I> for DurationTrue {
     type Input = bool;
     type Output = Timestamp;
 
-    fn update(&mut self, ctx: UpdateContext<I>, input: &bool) {
+    fn update(&mut self, ctx: &mut UpdateContext<I>, input: &bool) {
         if self.last_input {
             self.accumulated_duration += self.cur_input_timestamp - self.last_input_timestamp;
         }
@@ -58,7 +58,7 @@ impl <I:Iterator> Measurement<I> for DurationTrue {
         self.cur_input_timestamp = ctx.frontier();
     }
 
-    fn measure_at(&self, _: UpdateContext<I>, timestamp: Timestamp) -> Self::Output {
+    fn measure_at(&self, _: &mut UpdateContext<I>, timestamp: Timestamp) -> Self::Output {
         assert!(self.last_input_timestamp <= timestamp && timestamp <= self.cur_input_timestamp);
         self.accumulated_duration + if self.last_input {
             timestamp - self.last_input_timestamp    
