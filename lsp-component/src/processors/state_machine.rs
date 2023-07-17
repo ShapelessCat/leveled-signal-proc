@@ -2,7 +2,10 @@ use std::marker::PhantomData;
 
 use lsp_runtime::{signal::SingnalProcessor, UpdateContext};
 
-
+/// A state machine is a signal processor that maintains a state machine internally.
+/// The state transition is defined as a lambda function passed in when construction. 
+/// The state transition is triggered when the control input gets changed.
+/// The output is simply the current internal state
 pub struct StateMachine<I, S: Clone, F, T> {
     state: S,
     transition: F,

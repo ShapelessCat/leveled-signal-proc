@@ -1,7 +1,7 @@
 use lsp_runtime::{signal::SingnalProcessor, UpdateContext};
 
 
-
+/// A ValueChangeCounter counts the number of changes in the input 
 #[derive(Default)]
 pub struct ValueChangeCounter<T:Clone + Eq> {
     prev: Option<T>,

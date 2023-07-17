@@ -1,6 +1,7 @@
 use lsp_runtime::{Timestamp, signal::SingnalProcessor, UpdateContext};
 
-
+/// A signal generator is a leveled signal processor that produce leveled signal
+/// based on the timestamp. 
 pub struct SignalGenerator<F, O> {
     signal_func: F,
     last_value: O,

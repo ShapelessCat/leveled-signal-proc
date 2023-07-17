@@ -1,6 +1,11 @@
 use lsp_runtime::signal::SingnalProcessor;
 use lsp_runtime::UpdateContext;
 
+/// A latch is a signal processor that takes a control input and a data input.
+/// For each time, a latch produce the same output as the internal state.
+/// When the control input becomes true, the latch change it internal state to the data input.
+/// This concept borrowed from the hardware component which shares the same name. And it's widely use
+/// as one bit memory in digital circuits. 
 #[derive(Default)]
 pub struct Latch<T: Clone>(T);
 
