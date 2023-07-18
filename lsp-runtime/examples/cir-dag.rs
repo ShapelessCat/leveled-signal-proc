@@ -1,66 +1,7 @@
-/// This impelements the DAG that is used in TLB2 profiling (See https://conviva.atlassian.net/wiki/spaces/~589178245/pages/1867646607/DAG-level+instrumentation for details)
-/// Please note that this file will be automatically generate from the LSP DSL in the formal LSP system. 
-/// Currently this file is hand written for demostration purposes.
-/// 
-///     dag:
-///       rawEvents:
-///         op: eventSourceTimeline
-///         source: $videoHeartbeats
-///       userAction:
-///         op: latestEventToState
-///         in:
-///           op: get
-///           in: $rawEvents
-///           path: "userAction"
-///       playerState:
-///         op: latestEventToState
-///         in:
-///           op: get
-///           in: $rawEvents
-///           path: "newPlayerState"
-///       network:
-///         op: latestEventToState
-///         in:
-///           op: get
-///           in: $rawEvents
-///           path: "newNetwork"
-///       cdn:
-///         op: latestEventToState
-///         in:
-///           op: get
-///           in: $rawEvents
-///           path: "newCdn"
-///       isPlay:
-///         op: equals
-///         left: $playerState
-///         right: "play"
-///       isWifi:
-///         op: equals
-///         left: $network
-///         right: "WIFI"
-///       isCDN1:
-///         op: equals
-///         left: $cdn
-///         right: "cdn1"
-///       target:
-///         op: and
-///         args:
-///           - $isPlay
-///           - $isWifi
-///           - $isCDN1
-///       totalTime:
-///         op: durationTrue
-///         in: $target
-///         slidingWindow: +inf
-///       evaluatedInRealtime:
-///         op: evaluateAt
-///         in: $totalTime
-///         evaluationPoints: $rawEvents
-
 use std::{fs::File, io::{BufReader, BufWriter, Write}};
 use chrono::{DateTime, Utc};
 
-use lsp_component::{processors::SignalMapper, measurements::DurationTrue};
+use lsp_component::{processors::{SignalMapper, Latch}, measurements::DurationTrue};
 use lsp_runtime::{WithTimestamp, InputState, LspContext, measurement::Measurement, signal::SingnalProcessor};
 use serde::Deserialize;
 use serde_json::Deserializer;
@@ -124,7 +65,26 @@ fn main() {
     let mut ctx = LspContext::<_, InputType>::new(Deserializer::from_reader(reader).into_iter::<EventDataPatch>().filter_map(Result::ok));
     let mut input_state = InputType::default();
 
-    let mut target_signal = SignalMapper::new(|e: &InputType| e.player_state.as_str() == "play" && e.cdn.as_str() == "cdn1" && e.network == "WIFI");
+    let mut has_started_mapper = SignalMapper::new(|input: &InputType| input.user_action == "play");
+    let mut has_started_mapper_output;
+
+    let mut has_started_latch = Latch::<bool>::default();
+    let mut has_started;
+
+    let mut has_seeked_mapper = SignalMapper::new(|input: &InputType| input.user_action == "seek");
+    let mut has_seeked_mapper_output;
+
+    let mut has_seeked_latch = Latch::with_forget_behavior(false, false, 5_000_000_000);
+    let mut has_seeked;
+
+    let mut is_buffered_mapper = SignalMapper::new(|input: &InputType| input.player_state == "buffer");
+    let mut is_buffer;
+
+    let mut is_cdn1_mapper = SignalMapper::new(|input: &InputType| input.cdn == "cdn1");
+    let mut is_cdn1;
+
+    let mut target_mapper = SignalMapper::new(|&(has_started, has_seeked, is_buffer, is_cdn1): &(bool, bool, bool, bool)| is_buffer && has_started && is_cdn1 && !has_seeked);
+
     let mut total_duration = DurationTrue::default();
     let mut target_signal_output = false;
     let mut total_duration_output = 0;
@@ -137,7 +97,13 @@ fn main() {
 
         let mut uc = ctx.borrow_update_context();
         if moment.should_update_signals() {
-            target_signal_output = target_signal.update(&mut uc, &input_state);
+            has_started_mapper_output = has_started_mapper.update(&mut uc, &input_state);
+            has_started = has_started_latch.update(&mut uc, &(has_started_mapper_output, true));
+            has_seeked_mapper_output = has_seeked_mapper.update(&mut uc, &input_state);
+            has_seeked = has_seeked_latch.update(&mut uc, &(has_seeked_mapper_output, true));
+            is_buffer = is_buffered_mapper.update(&mut uc, &input_state);
+            is_cdn1 = is_cdn1_mapper.update(&mut uc, &input_state);
+            target_signal_output = target_mapper.update(&mut uc, &(has_started, has_seeked, is_buffer, is_cdn1));
             total_duration.update(&mut uc, &target_signal_output);
         }
 
@@ -152,5 +118,4 @@ fn main() {
 
     println!("{}", time_ops);
 
-    //println!("{}", total_duration_output);
 }

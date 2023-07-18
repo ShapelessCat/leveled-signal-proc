@@ -1,0 +1,143 @@
+1
+
+Collected Stats:
+# HELP behind_watermark_secs The amount of time heartbeats arrive behind watermark, in seconds
+# TYPE behind_watermark_secs histogram
+behind_watermark_secs_bucket{le="65"} 1
+behind_watermark_secs_bucket{le="150"} 1
+behind_watermark_secs_bucket{le="300"} 1
+behind_watermark_secs_bucket{le="+Inf"} 1
+behind_watermark_secs_sum 20.639801000000002
+behind_watermark_secs_count 1
+# HELP event_count Number of events
+# TYPE event_count counter
+event_count{stage="actor"} 1000000
+# HELP processing_count Processing count
+# TYPE processing_count counter
+processing_count{op="async_ask"} 1000000
+processing_count{op="async_flush"} 1
+processing_count{op="async_write"} 999996
+processing_count{op="decode"} 1016321
+processing_count{op="flush"} 4
+processing_count{op="process_event"} 1000000
+processing_count{op="routing"} 1000000
+processing_count{op="serialize"} 1000000
+# HELP processing_time_secs Sum of processing time
+# TYPE processing_time_secs gauge
+processing_time_secs{op="async_ask"} 184.49188514199145
+processing_time_secs{op="async_flush"} 0.000016838
+processing_time_secs{op="async_write"} 13.81874136400011
+processing_time_secs{op="decode"} 1.2411671539999731
+processing_time_secs{op="flush"} 0.0000010129999999999999
+processing_time_secs{op="process_event"} 5.580939523999942
+processing_time_secs{op="routing"} 3.859216529997017
+processing_time_secs{op="serialize"} 0.6631392960000025
+
+1
+
+Collected Stats:
+# HELP event_count Number of events
+# TYPE event_count counter
+event_count{stage="actor"} 1000000
+# HELP processing_count Processing count
+# TYPE processing_count counter
+processing_count{op="async_ask"} 1000000
+processing_count{op="async_flush"} 1
+processing_count{op="async_write"} 999997
+processing_count{op="decode"} 1016321
+processing_count{op="flush"} 4
+processing_count{op="process_event"} 1000000
+processing_count{op="routing"} 1000000
+processing_count{op="serialize"} 1000000
+# HELP processing_time_secs Sum of processing time
+# TYPE processing_time_secs gauge
+processing_time_secs{op="async_ask"} 186.16605673799316
+processing_time_secs{op="async_flush"} 0.000019152
+processing_time_secs{op="async_write"} 14.282296677000348
+processing_time_secs{op="decode"} 1.2611000339999838
+processing_time_secs{op="flush"} 0.0000012120000000000002
+processing_time_secs{op="process_event"} 5.641746773000408
+processing_time_secs{op="routing"} 3.573054208998337
+processing_time_secs{op="serialize"} 0.6319227749999953
+
+1
+
+Collected Stats:
+# HELP event_count Number of events
+# TYPE event_count counter
+event_count{stage="actor"} 1000000
+# HELP processing_count Processing count
+# TYPE processing_count counter
+processing_count{op="async_ask"} 1000000
+processing_count{op="async_flush"} 1
+processing_count{op="async_write"} 999997
+processing_count{op="decode"} 1016321
+processing_count{op="flush"} 4
+processing_count{op="process_event"} 1000000
+processing_count{op="routing"} 1000000
+processing_count{op="serialize"} 1000000
+# HELP processing_time_secs Sum of processing time
+# TYPE processing_time_secs gauge
+processing_time_secs{op="async_ask"} 186.59586073500031
+processing_time_secs{op="async_flush"} 0.000033549
+processing_time_secs{op="async_write"} 13.82012759800071
+processing_time_secs{op="decode"} 1.2376972999999318
+processing_time_secs{op="flush"} 0.000001011
+processing_time_secs{op="process_event"} 5.605774676999743
+processing_time_secs{op="routing"} 4.002071309997061
+processing_time_secs{op="serialize"} 0.6531696379999808
+
+1
+
+Collected Stats:
+# HELP event_count Number of events
+# TYPE event_count counter
+event_count{stage="actor"} 1000000
+# HELP processing_count Processing count
+# TYPE processing_count counter
+processing_count{op="async_ask"} 1000000
+processing_count{op="async_flush"} 1
+processing_count{op="async_write"} 999997
+processing_count{op="decode"} 1016321
+processing_count{op="flush"} 4
+processing_count{op="process_event"} 1000000
+processing_count{op="routing"} 1000000
+processing_count{op="serialize"} 1000000
+# HELP processing_time_secs Sum of processing time
+# TYPE processing_time_secs gauge
+processing_time_secs{op="async_ask"} 227.6405984570036
+processing_time_secs{op="async_flush"} 0.000023292
+processing_time_secs{op="async_write"} 17.407838842999844
+processing_time_secs{op="decode"} 1.6631760630000219
+processing_time_secs{op="flush"} 0.00000115
+processing_time_secs{op="process_event"} 7.1752594519999935
+processing_time_secs{op="routing"} 4.392936792998998
+processing_time_secs{op="serialize"} 0.850582737000065
+
+1
+
+Collected Stats:
+# HELP event_count Number of events
+# TYPE event_count counter
+event_count{stage="actor"} 1000000
+# HELP processing_count Processing count
+# TYPE processing_count counter
+processing_count{op="async_ask"} 1000000
+processing_count{op="async_flush"} 1
+processing_count{op="async_write"} 999997
+processing_count{op="decode"} 1016321
+processing_count{op="flush"} 4
+processing_count{op="process_event"} 1000000
+processing_count{op="routing"} 1000000
+processing_count{op="serialize"} 1000000
+# HELP processing_time_secs Sum of processing time
+# TYPE processing_time_secs gauge
+processing_time_secs{op="async_ask"} 216.822564300005
+processing_time_secs{op="async_flush"} 0.000028162
+processing_time_secs{op="async_write"} 16.64585808399969
+processing_time_secs{op="decode"} 1.5041484919999437
+processing_time_secs{op="flush"} 0.000001247
+processing_time_secs{op="process_event"} 6.8845026340001025
+processing_time_secs{op="routing"} 4.094154558999539
+processing_time_secs{op="serialize"} 0.8397813930000689
+
