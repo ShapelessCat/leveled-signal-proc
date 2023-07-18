@@ -20,7 +20,7 @@
 use std::{fs::File, io::BufReader};
 
 use chrono::{DateTime, Utc};
-use lsp_component::processors::{SignalMapper, Latch, StateMachine, DurationOfPreviousLevel, Accumulator};
+use lsp_component::{processors::{SignalMapper, Latch, StateMachine, DurationOfPreviousLevel, Accumulator}, measurements::Peek};
 use lsp_runtime::{Timestamp, InputState, LspContext, WithTimestamp, signal::SingnalProcessor, measurement::Measurement};
 use serde::Deserialize;
 use serde_json::Deserializer;
@@ -107,7 +107,7 @@ fn main() {
     let mut b_to_d_acc = Accumulator::new(0, |&s| s == 4);
     let mut b_to_d_duration_acc;
 
-    let mut peek_b_to_d = lsp_runtime::measurement::Peek::default();
+    let mut peek_b_to_d = Peek::default();
 
 
     while let Some(moment) = ctx.next_event(&mut state) {

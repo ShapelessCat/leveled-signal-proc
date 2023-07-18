@@ -21,6 +21,7 @@ impl <I:Iterator> MultiPeek<I> {
     pub fn from_iter(iter: I) -> Self {
         Self { inner: iter, peek_buffer: VecDeque::new() }
     }
+    #[inline(always)]
     pub fn peek_n(&mut self, n: usize) -> Option<&I::Item> {
         while self.peek_buffer.len() < n {
             if let Some(item) = self.inner.next() {
@@ -31,7 +32,7 @@ impl <I:Iterator> MultiPeek<I> {
         }
         self.peek_buffer.get(n - 1)
     }
-
+    #[inline(always)]
     pub fn peek(&mut self) -> Option<&I::Item> {
         self.peek_n(1)
     }

@@ -124,8 +124,8 @@ fn main() {
     let mut p_e_event_latch_output = 0;
 
     while let Some(moment) = ctx.next_event(&mut state) {
+        let mut update_ctx = ctx.borrow_update_context();
         if moment.should_update_signals() {
-            let mut update_ctx = ctx.borrow_update_context();
             is_heart_beat_output = is_heart_beat_mapper.update(&mut update_ctx, &state);
             state_watermark_latch_output = state_watermark_latch.update(&mut update_ctx, &(is_heart_beat_output, state.user_action_watermark));
             liveness_signal_output = liveness_signal.update(&mut update_ctx, &state_watermark_latch_output);
@@ -153,6 +153,7 @@ fn main() {
             p_e_level_duration_output, 
             p_e_duration_accu_output,
             state);
+        // TODO: Add measurements at this point
     }
 
 }

@@ -57,11 +57,11 @@
 ///         in: $totalTime
 ///         evaluationPoints: $rawEvents
 
-use std::{fs::File, io::BufReader};
+use std::{fs::File, io::{BufReader, BufWriter, Write}};
 use chrono::{DateTime, Utc};
 
-use lsp_component::processors::SignalMapper;
-use lsp_runtime::{WithTimestamp, InputState, LspContext, measurement::{DurationTrue, Measurement}, signal::SingnalProcessor};
+use lsp_component::{processors::SignalMapper, measurements::DurationTrue};
+use lsp_runtime::{WithTimestamp, InputState, LspContext, measurement::Measurement, signal::SingnalProcessor};
 use serde::Deserialize;
 use serde_json::Deserializer;
 
@@ -115,7 +115,12 @@ fn main() {
 
     // To simplify the problem, we just assume the data comes from a input file
     let fin = File::open("../input.json").unwrap();
+    let mut fout = BufWriter::new(File::open("/dev/null").unwrap());
     let reader = BufReader::new(fin);
+    if std::env::var("PARSING_ONLY").is_ok()  {
+        println!("{}", Deserializer::from_reader(reader).into_iter::<EventDataPatch>().filter_map(Result::ok).count());
+        return;
+    }
     let mut ctx = LspContext::<_, InputType>::new(Deserializer::from_reader(reader).into_iter::<EventDataPatch>().filter_map(Result::ok));
     let mut input_state = InputType::default();
 
@@ -133,7 +138,9 @@ fn main() {
 
         if moment.should_take_measurements() {
             total_duration_output = total_duration.measure_at(&mut uc, moment.timestamp());
+            write!(fout, "{}", total_duration_output).ok();
         }
     }
-    println!("{}", total_duration_output);
+
+    //println!("{}", total_duration_output);
 }

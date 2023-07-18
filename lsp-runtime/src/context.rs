@@ -82,7 +82,8 @@ where
     pub fn into_queue(self) -> InternalEventQueue {
         self.queue
     }
-
+    
+    #[inline(always)]
     pub fn borrow_update_context(&mut self) -> UpdateContext<I> {
         UpdateContext { 
             queue:  &mut self.queue, 
@@ -101,6 +102,7 @@ where
         }
     }
 
+    #[inline(always)]
     pub fn next_event<'a, 'b>(&'a mut self, state_buf: &'b mut S) -> Option<Moment> {
         //let external_frontier = self.iter.peek().map_or(Timestamp::MAX, |e| e.timestamp());
         let external_frontier = if let Some(ts) = self.iter.peek().map(WithTimestamp::timestamp) {
