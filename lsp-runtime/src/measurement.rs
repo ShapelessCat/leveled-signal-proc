@@ -1,19 +1,18 @@
-use crate::Timestamp;
 use crate::UpdateContext;
 
 /// A measurement is a inspection of the state of the signal processing system.
 /// Although all the signal processor doesn't take timestamp as input, the measurement can be
 /// a function of time. 
 /// For example you can measure the duration since an output is true, etc.
-pub trait Measurement<EventIter: Iterator> {
-    type Input;
+pub trait Measurement<'a, EventIter: Iterator> {
+    type Input : 'a;
     type Output;
 
     #[inline(always)]
     fn reset(&mut self) {}
 
     // Notify the value change take effect from now
-    fn update(&mut self, ctx: &mut UpdateContext<EventIter>, input: &Self::Input);
+    fn update(&mut self, ctx: &mut UpdateContext<EventIter>, input: Self::Input);
 
-    fn measure_at(&self, ctx: &mut UpdateContext<EventIter>, timestamp: Timestamp) -> Self::Output;
+    fn measure(&self, ctx: &mut UpdateContext<EventIter>) -> Self::Output;
 }

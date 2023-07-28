@@ -98,9 +98,9 @@ fn main() {
         let mut uc = ctx.borrow_update_context();
         if moment.should_update_signals() {
             has_started_mapper_output = has_started_mapper.update(&mut uc, &input_state);
-            has_started = has_started_latch.update(&mut uc, &(has_started_mapper_output, true));
+            has_started = has_started_latch.update(&mut uc, (&has_started_mapper_output, &true));
             has_seeked_mapper_output = has_seeked_mapper.update(&mut uc, &input_state);
-            has_seeked = has_seeked_latch.update(&mut uc, &(has_seeked_mapper_output, true));
+            has_seeked = has_seeked_latch.update(&mut uc, (&has_seeked_mapper_output, &true));
             is_buffer = is_buffered_mapper.update(&mut uc, &input_state);
             is_cdn1 = is_cdn1_mapper.update(&mut uc, &input_state);
             target_signal_output = target_mapper.update(&mut uc, &(has_started, has_seeked, is_buffer, is_cdn1));
@@ -108,7 +108,7 @@ fn main() {
         }
 
         if moment.should_take_measurements() {
-            total_duration_output = total_duration.measure_at(&mut uc, moment.timestamp());
+            total_duration_output = total_duration.measure(&mut uc);
             write!(fout, "{}", total_duration_output).ok();
         }
         

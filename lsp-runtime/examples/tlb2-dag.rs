@@ -48,7 +48,10 @@
 ///           - $isPlay
 ///           - $isWifi
 ///           - $isCDN1
-///       totalTime:
+///       totalTime:///       evaluatedInRealtime:
+///         op: evaluateAt
+///         in: $totalTime
+///         evaluationPoints: $rawEvents
 ///         op: durationTrue
 ///         in: $target
 ///         slidingWindow: +inf
@@ -142,7 +145,7 @@ fn main() {
         }
 
         if moment.should_take_measurements() {
-            total_duration_output = total_duration.measure_at(&mut uc, moment.timestamp());
+            total_duration_output = total_duration.measure(&mut uc);
             write!(fout, "{}", total_duration_output).ok();
         }
         

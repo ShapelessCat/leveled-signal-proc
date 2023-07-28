@@ -17,13 +17,13 @@ impl <T: Clone + Eq> ValueChangeCounter<T> {
     }
 }
 
-impl <T: Clone + Eq, I: Iterator> SingnalProcessor<I> for ValueChangeCounter<T> {
-    type Input = T;
+impl <'a, T: Clone + Eq + 'a, I: Iterator> SingnalProcessor<'a, I> for ValueChangeCounter<T> {
+    type Input = &'a T;
 
     type Output = usize;
 
     #[inline(always)]
-    fn update(&mut self, _: &mut UpdateContext<I>, input: &Self::Input) -> Self::Output {
+    fn update(&mut self, _: &mut UpdateContext<I>, input: Self::Input) -> Self::Output {
         if self.prev.as_ref().map_or(true, |value| value != input) {
             self.counter += 1;
             self.prev = Some(input.clone());

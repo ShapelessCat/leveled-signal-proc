@@ -27,18 +27,19 @@ impl <I, S: Clone, F, T: Default> StateMachine<I, S, F, T> {
     }
 }
 
-impl <Input, State, Transition, Iter, Trigger> SingnalProcessor<Iter> for StateMachine<Input, State, Transition, Trigger>
+impl <'a, Input, State, Transition, Iter, Trigger> SingnalProcessor<'a, Iter> for StateMachine<Input, State, Transition, Trigger>
 where
     Transition: Fn(&State, &Input) -> State,
     Iter:Iterator,
     State: Clone,
-    Trigger: Eq + Clone,
+    Trigger: Eq + Clone + 'a,
+    Input: 'a,
 {
-    type Input = (Trigger, Input);
+    type Input = (&'a Trigger, &'a Input);
 
     type Output = State;
 
-    fn update(&mut self, _: &mut UpdateContext<Iter>, &(ref trigger, ref input): &Self::Input) -> Self::Output {
+    fn update(&mut self, _: &mut UpdateContext<Iter>, (trigger, input): Self::Input) -> Self::Output {
         if trigger != &self.last_trigger_value {
             self.state = (self.transition)(&self.state, input);
             self.last_trigger_value = trigger.clone();

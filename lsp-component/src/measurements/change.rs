@@ -1,6 +1,6 @@
 use std::ops::Sub;
 
-use lsp_runtime::{measurement::Measurement, UpdateContext, Timestamp};
+use lsp_runtime::{measurement::Measurement, UpdateContext};
 
 
 
@@ -11,22 +11,22 @@ pub struct ChangeSinceCurrentLevel<ControlSignal, DataSignal> {
     data_at_frontier: DataSignal,
 }
 
-impl <ControlSignal, DataSignal, EvIt> Measurement<EvIt> for ChangeSinceCurrentLevel<ControlSignal, DataSignal> 
+impl <'a, ControlSignal, DataSignal, EvIt> Measurement<'a, EvIt> for ChangeSinceCurrentLevel<ControlSignal, DataSignal> 
 where
-    ControlSignal: PartialEq + Clone,
-    DataSignal: Sub<DataSignal> + Clone,
+    ControlSignal: PartialEq + Clone + 'a,
+    DataSignal: Sub<DataSignal> + Clone + 'a,
     EvIt: Iterator
 {
-    type Input = (ControlSignal, DataSignal);
+    type Input = (&'a ControlSignal, &'a DataSignal);
     type Output = DataSignal::Output;
-    fn update(&mut self, _: &mut UpdateContext<EvIt>, &(ref cont,ref data): &Self::Input) {
+    fn update(&mut self, _: &mut UpdateContext<EvIt>, (cont,data): Self::Input) {
         if cont != &self.current_control_level {
             self.current_control_level = cont.clone();
             self.data_at_current_level_starts = data.clone();
         }
         self.data_at_frontier = data.clone();
     }
-    fn measure_at(&self, _: &mut UpdateContext<EvIt>, _: Timestamp) -> Self::Output {
+    fn measure(&self, _: &mut UpdateContext<EvIt>) -> Self::Output {
         self.data_at_frontier.clone() - self.data_at_current_level_starts.clone()
     }
 }

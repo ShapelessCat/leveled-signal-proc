@@ -26,18 +26,18 @@ impl <F, E> LivenessChecker<F, E> {
     }
 }
 
-impl <F, E, I> SingnalProcessor<I> for LivenessChecker<F, E>
+impl <'a, F, E, I> SingnalProcessor<'a, I> for LivenessChecker<F, E>
 where
     I: Iterator<Item = E>,
     F: FnMut(&E) -> bool,
     E: WithTimestamp,
 {
-    type Input = Timestamp;
+    type Input = &'a Timestamp;
 
     type Output = bool;
 
     #[inline(always)]
-    fn update(&mut self, ctx: &mut UpdateContext<I>, input: &Self::Input) -> Self::Output {
+    fn update(&mut self, ctx: &mut UpdateContext<I>, input: Self::Input) -> Self::Output {
         let look_ahead_cutoff = input + self.expiration_period;
         let output = ctx.peek_fold(false, |v, e| {
             if *v || e.timestamp() >= look_ahead_cutoff {

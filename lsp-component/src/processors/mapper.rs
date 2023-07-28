@@ -18,11 +18,11 @@ where
     }
 }
 
-impl <T, U, F, I:Iterator> SingnalProcessor<I> for SignalMapper<T, U, F> 
+impl <'a, T: 'a, U, F, I:Iterator> SingnalProcessor<'a, I> for SignalMapper<T, U, F> 
 where
     F: FnMut(&T) -> U
 {
-    type Input = T;
+    type Input = &'a T;
 
     type Output = U;
 

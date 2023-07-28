@@ -11,12 +11,12 @@ pub struct DurationOfPreviousLevel<T> {
     output_buf: Timestamp,
 }
 
-impl <T: PartialEq + Clone, I:Iterator> SingnalProcessor<I> for DurationOfPreviousLevel<T> {
-    type Input = T;
+impl <'a, T: PartialEq + Clone + 'a, I:Iterator> SingnalProcessor<'a, I> for DurationOfPreviousLevel<T> {
+    type Input = &'a T;
 
     type Output = Timestamp;
 
-    fn update(&mut self, ctx: &mut UpdateContext<I>, input: &Self::Input) -> Self::Output {
+    fn update(&mut self, ctx: &mut UpdateContext<I>, input: Self::Input) -> Self::Output {
         if &self.current_value != input {
             self.output_buf = ctx.frontier() - self.current_value_since;
             self.current_value = input.clone();
