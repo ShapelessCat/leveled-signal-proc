@@ -115,7 +115,7 @@ fn main() {
         if moment.should_update_signals() {
             event_filter_output = event_filter.update(&mut uc, &state);
             event_filter_latch_output = event_filter_latch.update(&mut uc, (&event_filter_output, &state.user_action_watermark));
-            state_machine_output = state_machine.update(&mut uc, (&event_filter_latch_output, &state.user_action.to_string()));
+            state_machine_output = state_machine.update(&mut uc, (&event_filter_latch_output, &state.user_action));
             is_b_to_d = is_b_to_d_mapper.update(&mut uc, &state_machine_output);
             duration_b_to_d = duration_b_to_d_last_level.update(&mut uc, &is_b_to_d);
             b_to_d_duration_acc = b_to_d_acc.update(&mut uc, (&state_machine_output, &duration_b_to_d));
