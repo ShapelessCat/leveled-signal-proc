@@ -55,7 +55,7 @@ pub struct Latch<DataType: Clone, RetentionPolicy: Rentention<DataType> = KeepFo
     retention: RetentionPolicy,
 }
 
-impl <T: Clone> Latch<T, KeepForever> {
+impl <T: Clone> Latch<T> {
     pub fn with_initial_value(data: T) -> Self {
         Self {
             data,

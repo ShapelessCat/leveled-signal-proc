@@ -127,7 +127,7 @@ fn main() {
     let mut ctx = LspContext::<_, InputType>::new(Deserializer::from_reader(reader).into_iter::<EventDataPatch>().filter_map(Result::ok));
     let mut input_state = InputType::default();
 
-    let mut target_signal = SignalMapper::new(|e: &InputType| e.player_state.as_str() == "play" && e.cdn.as_str() == "cdn1" && e.network == "WIFI");
+    let mut target_signal = SignalMapper::new(|e: &InputType| e.player_state == "play" && e.cdn == "cdn1" && e.network == "WIFI");
     let mut total_duration = DurationTrue::default();
     let mut target_signal_output = false;
     let mut total_duration_output = 0;

@@ -5,10 +5,10 @@ use lsp_runtime::{signal::SingnalProcessor, UpdateContext};
 /// An accumlator is a signal processor that constantly add input to the internal state.
 /// Normally accumulator doesn't add input to the internal state, until it see the control signal
 /// has changed.
-pub struct Accumulator<T, C, F> {
-    prev_control_signal: C,
-    filter: F,
-    accumulator: T,
+pub struct Accumulator<Data, ControlSignal, Filter> {
+    prev_control_signal: ControlSignal,
+    filter: Filter,
+    accumulator: Data,
 }
 
 impl <T, C, F> Accumulator<T, C, F> 
@@ -17,7 +17,7 @@ where
     C: Clone + PartialEq + Default, 
     F: Fn(&C) -> bool,
 {
-    pub fn new(init_value: T, filter: F) -> Self {
+    pub fn with_event_filter(init_value: T, filter: F) -> Self {
         Self {
             accumulator: init_value,
             prev_control_signal: C::default(),

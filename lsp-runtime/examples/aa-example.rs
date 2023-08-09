@@ -85,27 +85,17 @@ fn main() {
     let mut all_counter = ValueChangeCounter::with_init_value(0);
 
     let mut p_e_state_machine = StateMachine::<String, u32, _, Timestamp>::new(0, |&prev_state, input| {
-        if prev_state == 0 {
-            if input.as_str() == "P" {
-                1
-            } else {
-                0
-            }
-        } else if prev_state == 1 {
-            if input.as_str() == "E" {
-                2
-            } else {
-                1
-            }
-        } else {
-            0
+        match prev_state {
+            0 => if input == "P" { 1 } else { 0 }
+            1 => if input == "E" { 2 } else { 1 }
+            _ => 0
         }
     });
 
     let mut p_e_state_filter = SignalMapper::new(|&s| s == 2);
     let mut p_e_event_latch = Latch::<Timestamp>::default();
 
-    let mut p_e_duration_accmulator = Accumulator::new(0, |_| true);
+    let mut p_e_duration_accmulator = Accumulator::with_event_filter(0, |_| true);
 
     let mut p_e_level_duration = DurationOfPreviousLevel::default();
 
@@ -136,7 +126,7 @@ fn main() {
 
             all_counter_output = all_counter.update(&mut update_ctx, &state.user_action_watermark);
 
-            p_e_state_machine_output = p_e_state_machine.update(&mut update_ctx, (&state.user_action_watermark, &state.user_action.clone()));
+            p_e_state_machine_output = p_e_state_machine.update(&mut update_ctx, (&state.user_action_watermark, &state.user_action));
 
             p_e_level_duration_output = p_e_level_duration.update(&mut update_ctx, &p_e_state_machine_output);
             p_e_state_filter_output = p_e_state_filter.update(&mut update_ctx, &p_e_state_machine_output);

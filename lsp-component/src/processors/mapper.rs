@@ -4,9 +4,9 @@ use lsp_runtime::signal::SingnalProcessor;
 use lsp_runtime::UpdateContext;
 
 /// Mapping input signals statelessly to a output signal
-pub struct SignalMapper<T, U, F> {
-    how: F,
-    _phantom_data: PhantomData<(T, U)>,
+pub struct SignalMapper<ParamType, OutputType, ClosureType> {
+    how: ClosureType,
+    _phantom_data: PhantomData<(ParamType, OutputType)>,
 }
 
 impl <T, U, F> SignalMapper<T, U, F>

@@ -104,7 +104,7 @@ fn main() {
     let mut duration_b_to_d;
 
 
-    let mut b_to_d_acc = Accumulator::new(0, |&s| s == 4);
+    let mut b_to_d_acc = Accumulator::with_event_filter(0, |&s| s == 4);
     let mut b_to_d_duration_acc;
 
     let mut peek_b_to_d = Peek::default();

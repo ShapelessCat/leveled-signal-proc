@@ -79,10 +79,10 @@ fn main() {
     let mut duration_last_level = DurationOfPreviousLevel::default();
     let mut p_e_state_duration;
     
-    let mut pe_dur_accu = Accumulator::new(0, |&s| s == 2);
+    let mut pe_dur_accu = Accumulator::with_event_filter(0, |&s| s == 2);
     let mut pe_duration;
 
-    let mut session_id_acc = Accumulator::new(0, |&s| s == true);
+    let mut session_id_acc = Accumulator::with_event_filter(0, |&s| s == true);
     let mut session_id;
 
     let mut user_active_time = DurationSinceBecomeTrue::default();

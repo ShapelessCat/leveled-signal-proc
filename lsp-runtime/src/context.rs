@@ -41,6 +41,9 @@ pub struct UpdateContext<'a, I: Iterator> {
 }
 
 impl <'a, I:Iterator> UpdateContext<'a, I> {
+    pub fn set_current_update_group(&mut self, _group_id: u32) {
+        // Dummy impelementation reserved for partial update
+    }
     pub fn schedule_measurement(&mut self, time_diff: Timestamp) {
         let scheduled_time = self.frontier.saturating_add(time_diff);
         self.queue.schedule_measurement(scheduled_time);

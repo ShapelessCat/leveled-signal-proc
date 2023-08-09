@@ -13,6 +13,10 @@ pub struct Moment{
 impl Moment {
     const UPDATE_FLAGS_SIGNAL: u32 = 0x1;
     const UPDATE_FLAGS_MEASUREMENT: u32 = 0x2;
+    pub fn should_update_group(&self, _group_id: u32) -> bool {
+        // Dummy implementation, will be used when the partial update is enabled
+        true
+    }
     pub fn measurement(timestamp: Timestamp) -> Self {
         Moment { timestamp, update_flags: Self::UPDATE_FLAGS_MEASUREMENT}
     }

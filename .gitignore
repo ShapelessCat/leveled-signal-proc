@@ -1,3 +1,7 @@
 /target
 
 perf.*
+
+lsdl/*.egg-info
+lsdl/build
+lsdl/**/__pycache__

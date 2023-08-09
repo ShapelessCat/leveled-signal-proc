@@ -7,10 +7,10 @@ use lsp_runtime::{UpdateContext, Timestamp, WithTimestamp};
 /// The output constantly answering the question: Is current session still alive?
 /// The liveness defined as we can find a heartbeat event within `expiuration_period` amount of time. 
 /// Thus, this operator uses the look ahead mechamism of the LSP system to see if there's a future heartbeat event.
-pub struct LivenessChecker<F, E> {
+pub struct LivenessChecker<IsLivenessEventFunc, Event> {
     expiration_period: Timestamp,
-    is_liveness_event: F,
-    phantom: PhantomData<E>,
+    is_liveness_event: IsLivenessEventFunc,
+    phantom: PhantomData<Event>,
 }
 
 impl <F, E> LivenessChecker<F, E> {

@@ -1,0 +1,62 @@
+{
+    "schema": {
+        "player_state": {
+            "type": "String",
+            "clock_companion": "player_state_clock",
+            "input_key": "newPlayerState"
+        },
+        "network": {
+            "type": "String",
+            "clock_companion": "network_clock",
+            "input_key": "newNetwork"
+        },
+        "cdn": {
+            "type": "String",
+            "clock_companion": "cdn_clock",
+            "input_key": "newCdn"
+        },
+        "user_action": {
+            "type": "String",
+            "clock_companion": "user_action_clock",
+            "input_key": "newUserAction"
+        }
+    },
+    "nodes": [
+        {
+            "id": 0,
+            "is_measurement": false,
+            "node_decl": "SignalMapper::new(|in:&InputSignalBag| \n        in.player_state == \"playting\" &&\n        in.cdn == \"cdn1\" &&\n        in.network == \"WIFI\"\n    )",
+            "upstreams": [
+                {
+                    "type": "InputBag"
+                }
+            ],
+            "package": "lsp-component",
+            "namespace": "lsp_component::processors::SignalMapper"
+        },
+        {
+            "id": 1,
+            "is_measurement": true,
+            "node_decl": "DurationTrue::default()",
+            "upstreams": [
+                {
+                    "type": "Component",
+                    "id": 0
+                }
+            ],
+            "package": "lsp-component",
+            "namespace": "lsp_component::measurements::DurationTrue"
+        }
+    ],
+    "measurement_policy": {
+        "measure_at_event_filter": "|_| true",
+        "measure_periodically_interval": -1,
+        "metrics_drain": "json",
+        "output_schema": {
+            "playTime": {
+                "type": "Component",
+                "id": 1
+            }
+        }
+    }
+}
