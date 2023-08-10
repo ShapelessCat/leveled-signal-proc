@@ -1,31 +1,34 @@
 {
     "schema": {
-        "player_state": {
-            "type": "String",
-            "clock_companion": "player_state_clock",
-            "input_key": "newPlayerState"
-        },
-        "network": {
-            "type": "String",
-            "clock_companion": "network_clock",
-            "input_key": "newNetwork"
-        },
-        "cdn": {
-            "type": "String",
-            "clock_companion": "cdn_clock",
-            "input_key": "newCdn"
-        },
-        "user_action": {
-            "type": "String",
-            "clock_companion": "user_action_clock",
-            "input_key": "newUserAction"
+        "type_name": "InputSignalBag",
+        "members": {
+            "player_state": {
+                "type": "String",
+                "clock_companion": "player_state_clock",
+                "input_key": "newPlayerState"
+            },
+            "network": {
+                "type": "String",
+                "clock_companion": "network_clock",
+                "input_key": "newNetwork"
+            },
+            "cdn": {
+                "type": "String",
+                "clock_companion": "cdn_clock",
+                "input_key": "newCdn"
+            },
+            "user_action": {
+                "type": "String",
+                "clock_companion": "user_action_clock",
+                "input_key": "newUserAction"
+            }
         }
     },
     "nodes": [
         {
             "id": 0,
             "is_measurement": false,
-            "node_decl": "SignalMapper::new(|lhs:&String| lhs == \"play\")",
+            "node_decl": "SignalMapper::new(|lhs:&String| *lhs == \"play\")",
             "upstreams": [
                 {
                     "type": "InputSignal",
@@ -56,7 +59,7 @@
         {
             "id": 2,
             "is_measurement": false,
-            "node_decl": "SignalMapper::new(|lhs:&String| lhs == \"seek\")",
+            "node_decl": "SignalMapper::new(|lhs:&String| *lhs == \"seek\")",
             "upstreams": [
                 {
                     "type": "InputSignal",
@@ -69,7 +72,7 @@
         {
             "id": 3,
             "is_measurement": false,
-            "node_decl": "Latch::<bool>::with_forget_behavor(5000000000)",
+            "node_decl": "Latch::with_forget_behavior(<bool as Default>::default(), <bool as Default>::default(), 5000000000)",
             "upstreams": [
                 {
                     "type": "Component",
@@ -87,11 +90,11 @@
         {
             "id": 4,
             "is_measurement": false,
-            "node_decl": "SignalMapper::new(|lhs:&String| lhs == \"buffer\")",
+            "node_decl": "SignalMapper::new(|lhs:&_| *lhs ^ true)",
             "upstreams": [
                 {
-                    "type": "InputSignal",
-                    "id": "player_state"
+                    "type": "Component",
+                    "id": 3
                 }
             ],
             "package": "lsp-component",
@@ -100,20 +103,7 @@
         {
             "id": 5,
             "is_measurement": false,
-            "node_decl": "SignalMapper::new(|lhs:&String| lhs == \"cdn1\")",
-            "upstreams": [
-                {
-                    "type": "InputSignal",
-                    "id": "cdn"
-                }
-            ],
-            "package": "lsp-component",
-            "namespace": "lsp_component::processors::SignalMapper"
-        },
-        {
-            "id": 6,
-            "is_measurement": false,
-            "node_decl": "SignalMapper::new(|(started, seeked, is_buffering, is_cdn1):&(_,_,_,_)| is_buffering && started && is_cdn1 && !seeked)",
+            "node_decl": "SignalMapper::new(|(lhs, rhs):&(_,_)| *lhs && *rhs)",
             "upstreams": [
                 {
                     "type": "Tuple",
@@ -124,15 +114,7 @@
                         },
                         {
                             "type": "Component",
-                            "id": 3
-                        },
-                        {
-                            "type": "Component",
                             "id": 4
-                        },
-                        {
-                            "type": "Component",
-                            "id": 5
                         }
                     ]
                 }
@@ -141,13 +123,83 @@
             "namespace": "lsp_component::processors::SignalMapper"
         },
         {
+            "id": 6,
+            "is_measurement": false,
+            "node_decl": "SignalMapper::new(|lhs:&String| *lhs == \"buffer\")",
+            "upstreams": [
+                {
+                    "type": "InputSignal",
+                    "id": "player_state"
+                }
+            ],
+            "package": "lsp-component",
+            "namespace": "lsp_component::processors::SignalMapper"
+        },
+        {
             "id": 7,
+            "is_measurement": false,
+            "node_decl": "SignalMapper::new(|(lhs, rhs):&(_,_)| *lhs && *rhs)",
+            "upstreams": [
+                {
+                    "type": "Tuple",
+                    "values": [
+                        {
+                            "type": "Component",
+                            "id": 5
+                        },
+                        {
+                            "type": "Component",
+                            "id": 6
+                        }
+                    ]
+                }
+            ],
+            "package": "lsp-component",
+            "namespace": "lsp_component::processors::SignalMapper"
+        },
+        {
+            "id": 8,
+            "is_measurement": false,
+            "node_decl": "SignalMapper::new(|lhs:&String| *lhs == \"cdn1\")",
+            "upstreams": [
+                {
+                    "type": "InputSignal",
+                    "id": "cdn"
+                }
+            ],
+            "package": "lsp-component",
+            "namespace": "lsp_component::processors::SignalMapper"
+        },
+        {
+            "id": 9,
+            "is_measurement": false,
+            "node_decl": "SignalMapper::new(|(lhs, rhs):&(_,_)| *lhs && *rhs)",
+            "upstreams": [
+                {
+                    "type": "Tuple",
+                    "values": [
+                        {
+                            "type": "Component",
+                            "id": 7
+                        },
+                        {
+                            "type": "Component",
+                            "id": 8
+                        }
+                    ]
+                }
+            ],
+            "package": "lsp-component",
+            "namespace": "lsp_component::processors::SignalMapper"
+        },
+        {
+            "id": 10,
             "is_measurement": true,
             "node_decl": "DurationTrue::default()",
             "upstreams": [
                 {
                     "type": "Component",
-                    "id": 6
+                    "id": 9
                 }
             ],
             "package": "lsp-component",
@@ -161,7 +213,7 @@
         "output_schema": {
             "totalTime": {
                 "type": "Component",
-                "id": 7
+                "id": 10
             }
         }
     }

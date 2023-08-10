@@ -96,10 +96,13 @@ class InputSchemaBase(TypeBase):
                 self._members.append(item_name)
         _defined_schema = self
     def to_dict(self)  -> dict:
-        ret = {}
+        ret = {
+            "type_name": self.get_rust_type_name(),
+            "members": {}
+        }
         for member in self._members:
             member_type = self.__getattribute__(member)
-            ret[member] = {
+            ret["members"][member] = {
                 "type": member_type.get_rust_type_name(),
                 "clock_companion": member_type.clock().get_name(),
                 "input_key": member_type.get_input_key()

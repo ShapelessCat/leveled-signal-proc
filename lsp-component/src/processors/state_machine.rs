@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use lsp_runtime::{signal::SingnalProcessor, UpdateContext};
+use lsp_runtime::{signal::SignalProcessor, UpdateContext};
 
 /// A state machine is a signal processor that maintains a state machine internally.
 /// The state transition is defined as a lambda function passed in when construction. 
@@ -27,7 +27,7 @@ impl <I, S: Clone, F, T: Default> StateMachine<I, S, F, T> {
     }
 }
 
-impl <'a, Input, State, Transition, Iter, Trigger> SingnalProcessor<'a, Iter> for StateMachine<Input, State, Transition, Trigger>
+impl <'a, Input, State, Transition, Iter, Trigger> SignalProcessor<'a, Iter> for StateMachine<Input, State, Transition, Trigger>
 where
     Transition: Fn(&State, &Input) -> State,
     Iter:Iterator,

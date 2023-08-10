@@ -1,6 +1,7 @@
 {
     "rust-analyzer.linkedProjects": [
-        "./lsp-component/Cargo.toml"
+        "./lsp-component/Cargo.toml",
+        ".\\lsp-codegen-test\\Cargo.toml"
     ],
     "files.watcherExclude": {
         "**/target": true

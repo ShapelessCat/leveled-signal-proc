@@ -1,4 +1,4 @@
-use lsp_runtime::signal::SingnalProcessor;
+use lsp_runtime::signal::SignalProcessor;
 use lsp_runtime::{UpdateContext, Timestamp};
 
 /// Abstracts the retention behavior of a latch
@@ -73,7 +73,7 @@ impl <T: Clone> Latch<T, TimeToLive<T>> {
     }
 }
 
-impl <'a, T: Clone + 'a, I:Iterator, R: Rentention<T>> SingnalProcessor<'a, I> for Latch<T, R> {
+impl <'a, T: Clone + 'a, I:Iterator, R: Rentention<T>> SignalProcessor<'a, I> for Latch<T, R> {
     type Input = (&'a bool, &'a T);
     type Output = T;
     #[inline(always)]

@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use lsp_runtime::signal::SingnalProcessor;
+use lsp_runtime::signal::SignalProcessor;
 use lsp_runtime::UpdateContext;
 
 /// Mapping input signals statelessly to a output signal
@@ -18,7 +18,7 @@ where
     }
 }
 
-impl <'a, T: 'a, U, F, I:Iterator> SingnalProcessor<'a, I> for SignalMapper<T, U, F> 
+impl <'a, T: 'a, U, F, I:Iterator> SignalProcessor<'a, I> for SignalMapper<T, U, F> 
 where
     F: FnMut(&T) -> U
 {

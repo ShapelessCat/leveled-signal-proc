@@ -12,9 +12,9 @@ pub struct SchemaField {
 }
 
 #[derive(Deserialize)]
-#[serde(transparent)]
 pub struct Schema {
-    pub schema_items: HashMap<String, SchemaField>
+    pub type_name: String,
+    pub members: HashMap<String, SchemaField>
 }
 
 #[derive(Deserialize)]
@@ -47,8 +47,8 @@ pub enum MetricsDrainType {
 pub struct MeasurementPolicy {
     pub measure_at_event_filter: String,
     pub measure_periodically_interval: i64,
-    pub metrics_drait: MetricsDrainType,
-    pub output_items: HashMap<String, NodeInput>,
+    pub metrics_drain: MetricsDrainType,
+    pub output_schema: HashMap<String, NodeInput>,
 }
 
 #[derive(Deserialize)]

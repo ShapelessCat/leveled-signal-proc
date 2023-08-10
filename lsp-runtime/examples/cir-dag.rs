@@ -2,7 +2,7 @@ use std::{fs::File, io::{BufReader, BufWriter, Write}};
 use chrono::{DateTime, Utc};
 
 use lsp_component::{processors::{SignalMapper, Latch}, measurements::DurationTrue};
-use lsp_runtime::{WithTimestamp, InputState, LspContext, measurement::Measurement, signal::SingnalProcessor};
+use lsp_runtime::{WithTimestamp, InputState, LspContext, measurement::Measurement, signal::SignalProcessor};
 use serde::Deserialize;
 use serde_json::Deserializer;
 

@@ -1,4 +1,4 @@
-use lsp_runtime::{Timestamp, signal::SingnalProcessor, UpdateContext};
+use lsp_runtime::{Timestamp, signal::SignalProcessor, UpdateContext};
 
 
 /// 
@@ -11,7 +11,7 @@ pub struct DurationOfPreviousLevel<T> {
     output_buf: Timestamp,
 }
 
-impl <'a, T: PartialEq + Clone + 'a, I:Iterator> SingnalProcessor<'a, I> for DurationOfPreviousLevel<T> {
+impl <'a, T: PartialEq + Clone + 'a, I:Iterator> SignalProcessor<'a, I> for DurationOfPreviousLevel<T> {
     type Input = &'a T;
 
     type Output = Timestamp;

@@ -1,6 +1,6 @@
 use std::ops::AddAssign;
 
-use lsp_runtime::{signal::SingnalProcessor, UpdateContext};
+use lsp_runtime::{signal::SignalProcessor, UpdateContext};
 
 /// An accumlator is a signal processor that constantly add input to the internal state.
 /// Normally accumulator doesn't add input to the internal state, until it see the control signal
@@ -26,7 +26,7 @@ where
     }
 }
 
-impl <'a, T, C, I, F> SingnalProcessor<'a, I> for Accumulator<T, C, F>
+impl <'a, T, C, I, F> SignalProcessor<'a, I> for Accumulator<T, C, F>
 where
     I: Iterator,
     T: AddAssign<T> + Clone + 'a,

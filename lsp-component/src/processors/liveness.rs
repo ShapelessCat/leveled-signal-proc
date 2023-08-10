@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use lsp_runtime::signal::SingnalProcessor;
+use lsp_runtime::signal::SignalProcessor;
 use lsp_runtime::{UpdateContext, Timestamp, WithTimestamp};
 
 /// This is the signal processor that analyze the liveness of a session based on heartbeat signal.
@@ -26,7 +26,7 @@ impl <F, E> LivenessChecker<F, E> {
     }
 }
 
-impl <'a, F, E, I> SingnalProcessor<'a, I> for LivenessChecker<F, E>
+impl <'a, F, E, I> SignalProcessor<'a, I> for LivenessChecker<F, E>
 where
     I: Iterator<Item = E>,
     F: FnMut(&E) -> bool,

@@ -1,6 +1,6 @@
 use std::any::Any;
 
-use lsp_runtime::{Timestamp, signal::SingnalProcessor, UpdateContext};
+use lsp_runtime::{Timestamp, signal::SignalProcessor, UpdateContext};
 
 /// A signal generator is a leveled signal processor that produce leveled signal
 /// based on the timestamp. 
@@ -44,7 +44,7 @@ where
     }
 }
 
-impl <'a, F, O, I> SingnalProcessor<'a, I> for SignalGenerator<F, O>
+impl <'a, F, O, I> SignalProcessor<'a, I> for SignalGenerator<F, O>
 where
     F: FnMut(Timestamp) -> (O, Timestamp),
     I: Iterator,

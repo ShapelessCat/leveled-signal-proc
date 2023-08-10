@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 
 use crate::UpdateContext;
 
-pub trait SingnalProcessor<'a, EventIt: Iterator> {
+pub trait SignalProcessor<'a, EventIt: Iterator> {
     type Input : 'a;
     type Output;
 
@@ -27,12 +27,12 @@ pub struct InputMap<Closure, MapIn, MapOut, InnerSignalProc> {
     _phantom: PhantomData<(MapIn, MapOut)>
 }
 
-impl <'a, Eit, Map, MapIn, MapOut, SigProc> SingnalProcessor<'a, Eit> for InputMap<Map, MapIn, MapOut, SigProc>
+impl <'a, Eit, Map, MapIn, MapOut, SigProc> SignalProcessor<'a, Eit> for InputMap<Map, MapIn, MapOut, SigProc>
 where
     Eit: Iterator,
     Map: FnMut(MapIn) -> MapOut,
     MapIn: 'a,
-    SigProc: SingnalProcessor<'a, Eit, Input = MapOut>,
+    SigProc: SignalProcessor<'a, Eit, Input = MapOut>,
 {
     type Input = MapIn;
 

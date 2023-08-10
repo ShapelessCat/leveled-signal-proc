@@ -1,4 +1,4 @@
-use lsp_runtime::{signal::SingnalProcessor, UpdateContext};
+use lsp_runtime::{signal::SignalProcessor, UpdateContext};
 
 
 /// A ValueChangeCounter counts the number of changes in the input 
@@ -17,7 +17,7 @@ impl <T: Clone + Eq> ValueChangeCounter<T> {
     }
 }
 
-impl <'a, T: Clone + Eq + 'a, I: Iterator> SingnalProcessor<'a, I> for ValueChangeCounter<T> {
+impl <'a, T: Clone + Eq + 'a, I: Iterator> SignalProcessor<'a, I> for ValueChangeCounter<T> {
     type Input = &'a T;
 
     type Output = usize;

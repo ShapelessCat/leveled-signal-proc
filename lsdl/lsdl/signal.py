@@ -22,13 +22,13 @@ class LeveledSignalBase(object):
         if isinstance(other, LeveledSignalBase):
             return SignalMapper(
                 bind_var="(lhs, rhs)",
-                lambda_src="lhs {op} rhs".format(op = op),
+                lambda_src="*lhs {op} *rhs".format(op = op),
                 upstream=[self, other]
             )
         else:
             return SignalMapper(
                 bind_var="lhs",
-                lambda_src="lhs {op} {other}".format(other=Const(other).get_rust_instant_value(), op = op),
+                lambda_src="*lhs {op} {other}".format(other=Const(other).get_rust_instant_value(), op = op),
                 upstream = self
             )
     def __eq__(self, other):
