@@ -1,5 +1,5 @@
 [workspace]
-members = ["lsp-runtime", "lsp-component"]
+members = ["lsp-runtime", "lsp-component", "lsp-ir"]
 
 [profile.release]
 debug = true

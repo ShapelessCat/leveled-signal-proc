@@ -9,15 +9,9 @@ class Input(InputSchemaBase):
     user_action  = named("newUserAction",  String())
 
 input = Input()
-playtime = input.map(
-    bind_var = "in",
-    lambda_src= """
-        in.player_state == "playting" &&
-        in.cdn == "cdn1" &&
-        in.network == "WIFI"
-    """
-).measure_duration_true()
 
-measurement_config().add_metric("playTime", playtime).set_metrics_drain("json")
+((input.player_state == "playing") & (input.cdn == "cdn1") & (input.network == "WIFI"))\
+    .measure_duration_true() \
+    .add_metric("playtime")
 
 print_ir_to_stdout()
