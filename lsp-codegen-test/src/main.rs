@@ -8,7 +8,7 @@ define_lsp_input_schema!("../lsdl/examples/cidr.json");
 
 fn main() {
     let fin = File::open("../input.json").unwrap();
-    let mut fout = BufWriter::new(File::open("/dev/null").unwrap());
+    let mut _fout = BufWriter::new(File::open("/dev/null").unwrap());
     let reader = BufReader::new(fin);
     let mut ctx = LspContext::<_, InputSignalBag>::new(Deserializer::from_reader(reader).into_iter::<InputSignalBagPatch>().filter_map(Result::ok));
 
