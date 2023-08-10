@@ -22,7 +22,7 @@ pub trait SingnalProcessor<'a, EventIt: Iterator> {
 }
 
 pub struct InputMap<Closure, MapIn, MapOut, InnerSignalProc> {
-    input_map_closure: InputMap,
+    input_map_closure: Closure,
     downstream: InnerSignalProc,
     _phantom: PhantomData<(MapIn, MapOut)>
 }
