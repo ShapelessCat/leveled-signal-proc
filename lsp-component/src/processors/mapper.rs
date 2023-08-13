@@ -9,18 +9,21 @@ pub struct SignalMapper<ParamType, OutputType, ClosureType> {
     _phantom_data: PhantomData<(ParamType, OutputType)>,
 }
 
-impl <T, U, F> SignalMapper<T, U, F>
+impl<T, U, F> SignalMapper<T, U, F>
 where
-    F: FnMut(&T) -> U
+    F: FnMut(&T) -> U,
 {
     pub fn new(how: F) -> Self {
-        SignalMapper { how, _phantom_data: PhantomData }
+        SignalMapper {
+            how,
+            _phantom_data: PhantomData,
+        }
     }
 }
 
-impl <'a, T: 'a, U, F, I:Iterator> SignalProcessor<'a, I> for SignalMapper<T, U, F> 
+impl<'a, T: 'a, U, F, I: Iterator> SignalProcessor<'a, I> for SignalMapper<T, U, F>
 where
-    F: FnMut(&T) -> U
+    F: FnMut(&T) -> U,
 {
     type Input = &'a T;
 

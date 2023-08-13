@@ -1,7 +1,6 @@
-use lsp_runtime::{Timestamp, signal::SignalProcessor, UpdateContext};
+use lsp_runtime::{signal::SignalProcessor, Timestamp, UpdateContext};
 
-
-/// 
+///
 /// Note: Although the duration of current level can not be a measurement, as it's a function of time
 /// But duration of previous level is a well defined signal - duration of previous level is a known value
 #[derive(Default)]
@@ -11,7 +10,9 @@ pub struct DurationOfPreviousLevel<T> {
     output_buf: Timestamp,
 }
 
-impl <'a, T: PartialEq + Clone + 'a, I:Iterator> SignalProcessor<'a, I> for DurationOfPreviousLevel<T> {
+impl<'a, T: PartialEq + Clone + 'a, I: Iterator> SignalProcessor<'a, I>
+    for DurationOfPreviousLevel<T>
+{
     type Input = &'a T;
 
     type Output = Timestamp;
@@ -21,7 +22,7 @@ impl <'a, T: PartialEq + Clone + 'a, I:Iterator> SignalProcessor<'a, I> for Dura
             self.output_buf = ctx.frontier() - self.current_value_since;
             self.current_value = input.clone();
             self.current_value_since = ctx.frontier();
-        } 
+        }
         self.output_buf
     }
 }

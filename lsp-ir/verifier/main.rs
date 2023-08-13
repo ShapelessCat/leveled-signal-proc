@@ -1,11 +1,11 @@
-use std::{env::args, fs::File, error::Error};
+use std::{env::args, error::Error, fs::File};
 
 use lsp_ir::LspIr;
 
-fn main() -> Result<(), Box<dyn Error>>{
+fn main() -> Result<(), Box<dyn Error>> {
     for ir_path in args().skip(1) {
         let input = File::open(&ir_path)?;
-        let parse_result: Result<LspIr, _>= serde_json::from_reader(input);
+        let parse_result: Result<LspIr, _> = serde_json::from_reader(input);
 
         match parse_result {
             Ok(ir) => {

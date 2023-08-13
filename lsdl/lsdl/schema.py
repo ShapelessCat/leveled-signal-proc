@@ -105,7 +105,8 @@ class InputSchemaBase(TypeBase):
             ret["members"][member] = {
                 "type": member_type.get_rust_type_name(),
                 "clock_companion": member_type.clock().get_name(),
-                "input_key": member_type.get_input_key()
+                "input_key": member_type.get_input_key(),
+                "debug_info": member_type._debug_info.to_dict(),
             }
         return ret
     def get_id(self):

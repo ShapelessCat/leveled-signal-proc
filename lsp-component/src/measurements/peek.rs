@@ -3,7 +3,7 @@ use lsp_runtime::{measurement::Measurement, UpdateContext};
 #[derive(Default)]
 pub struct Peek<T>(T);
 
-impl <'a, T : Clone + 'a, I: Iterator> Measurement<'a, I> for Peek<T> {
+impl<'a, T: Clone + 'a, I: Iterator> Measurement<'a, I> for Peek<T> {
     type Input = &'a T;
 
     type Output = T;

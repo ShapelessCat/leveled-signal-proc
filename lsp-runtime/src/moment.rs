@@ -1,11 +1,10 @@
 use crate::Timestamp;
 
-
-/// Moment in LSP system is a point of time when the LSP system may 
-/// change its state or the measurement may be taken. 
+/// Moment in LSP system is a point of time when the LSP system may
+/// change its state or the measurement may be taken.
 /// This is the type that describes the moment.
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
-pub struct Moment{
+pub struct Moment {
     timestamp: Timestamp,
     update_flags: u32,
 }
@@ -18,10 +17,16 @@ impl Moment {
         true
     }
     pub fn measurement(timestamp: Timestamp) -> Self {
-        Moment { timestamp, update_flags: Self::UPDATE_FLAGS_MEASUREMENT}
+        Moment {
+            timestamp,
+            update_flags: Self::UPDATE_FLAGS_MEASUREMENT,
+        }
     }
     pub fn signal_update(timestamp: Timestamp) -> Self {
-        Moment { timestamp, update_flags: Self::UPDATE_FLAGS_SIGNAL}
+        Moment {
+            timestamp,
+            update_flags: Self::UPDATE_FLAGS_SIGNAL,
+        }
     }
     pub fn should_update_signals(&self) -> bool {
         (self.update_flags & Self::UPDATE_FLAGS_SIGNAL) > 0
@@ -36,9 +41,9 @@ impl Moment {
         if self.timestamp != other.timestamp {
             return None;
         }
-        Some(Self{
+        Some(Self {
             timestamp: self.timestamp,
-            update_flags: self.update_flags | other.update_flags
+            update_flags: self.update_flags | other.update_flags,
         })
     }
 }

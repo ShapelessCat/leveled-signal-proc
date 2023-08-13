@@ -1,9 +1,9 @@
 use std::any::Any;
 
-use lsp_runtime::{Timestamp, signal::SignalProcessor, UpdateContext};
+use lsp_runtime::{signal::SignalProcessor, Timestamp, UpdateContext};
 
 /// A signal generator is a leveled signal processor that produce leveled signal
-/// based on the timestamp. 
+/// based on the timestamp.
 /// The SignalFunc is a lambda that is called to determine the current level of the signal
 /// it recieve a timestamp for now and returns a tuple of signal level and the timestamp when current level ends.
 pub struct SignalGenerator<SignalFunc, SignalType> {
@@ -12,10 +12,10 @@ pub struct SignalGenerator<SignalFunc, SignalType> {
     until_ts: Timestamp,
 }
 
-impl <F, O> SignalGenerator<F, O> 
+impl<F, O> SignalGenerator<F, O>
 where
     F: FnMut(Timestamp) -> (O, Timestamp),
-    O: Default
+    O: Default,
 {
     pub fn new(signal_func: F) -> Self {
         Self {
@@ -26,10 +26,18 @@ where
     }
     pub fn square_wave(period: Timestamp, phase: Timestamp) -> impl Any {
         SignalGenerator::new(move |now| {
-            (((now - phase) / period) & 1 > 0, period - (now + period - phase) % period)
+            (
+                ((now - phase) / period) & 1 > 0,
+                period - (now + period - phase) % period,
+            )
         })
     }
-    pub fn raising_level(mut start: i64, step: i64, duration: Timestamp, phase: Timestamp) -> impl Any {
+    pub fn raising_level(
+        mut start: i64,
+        step: i64,
+        duration: Timestamp,
+        phase: Timestamp,
+    ) -> impl Any {
         let mut next_level_starts = None;
         SignalGenerator::new(move |now| {
             if let Some(right) = next_level_starts {
@@ -44,11 +52,11 @@ where
     }
 }
 
-impl <'a, F, O, I> SignalProcessor<'a, I> for SignalGenerator<F, O>
+impl<'a, F, O, I> SignalProcessor<'a, I> for SignalGenerator<F, O>
 where
     F: FnMut(Timestamp) -> (O, Timestamp),
     I: Iterator,
-    O: Clone
+    O: Clone,
 {
     type Input = ();
 

@@ -5,6 +5,7 @@ import lsdl.schema
 import lsdl.signal
 import lsdl.const
 import lsdl.modules
+import lsdl.debug_info
 
 class _MeasurementConfiguration(object):
     def __init__(self):

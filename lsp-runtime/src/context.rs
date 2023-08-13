@@ -1,5 +1,5 @@
+use crate::{multipeek::MultiPeek, InternalEventQueue, Moment, Timestamp};
 use std::marker::PhantomData;
-use crate::{InternalEventQueue, Timestamp, Moment, multipeek::MultiPeek};
 
 /// Some type that contains timestamp information.
 /// Typically, we abstract an event taken from outside as this trait
@@ -26,11 +26,10 @@ pub trait InputState: Clone + Default {
 /// 1. Take the ownership of a event queue which contains all the pending internal event
 /// 2. Assemble events into valid global state
 /// 3. Controlls the iteration of the LSP main loop
-pub struct LspContext<I:Iterator, S> 
-{
+pub struct LspContext<I: Iterator, S> {
     frontier: Timestamp,
     iter: MultiPeek<I>,
-    queue : InternalEventQueue,
+    queue: InternalEventQueue,
     _phantom: PhantomData<S>,
 }
 
@@ -40,7 +39,7 @@ pub struct UpdateContext<'a, I: Iterator> {
     iter: &'a mut MultiPeek<I>,
 }
 
-impl <'a, I:Iterator> UpdateContext<'a, I> {
+impl<'a, I: Iterator> UpdateContext<'a, I> {
     pub fn set_current_update_group(&mut self, _group_id: u32) {
         // Dummy impelementation reserved for partial update
     }
@@ -54,7 +53,7 @@ impl <'a, I:Iterator> UpdateContext<'a, I> {
     }
     pub fn peek_fold<U, F>(&mut self, init: U, func: F) -> U
     where
-       F: FnMut(&U, &I::Item)  -> Option<U> 
+        F: FnMut(&U, &I::Item) -> Option<U>,
     {
         self.iter.peek_fold(init, func)
     }
@@ -63,7 +62,7 @@ impl <'a, I:Iterator> UpdateContext<'a, I> {
     }
 }
 
-impl <I, E, S> LspContext<I, S>
+impl<I, E, S> LspContext<I, S>
 where
     E: WithTimestamp,
     S: InputState<Event = E>,
@@ -85,11 +84,11 @@ where
     pub fn into_queue(self) -> InternalEventQueue {
         self.queue
     }
-    
+
     #[inline(always)]
     pub fn borrow_update_context(&mut self) -> UpdateContext<I> {
-        UpdateContext { 
-            queue:  &mut self.queue, 
+        UpdateContext {
+            queue: &mut self.queue,
             frontier: self.frontier,
             iter: &mut self.iter,
         }
@@ -109,7 +108,7 @@ where
     pub fn next_event<'a, 'b>(&'a mut self, state_buf: &'b mut S) -> Option<Moment> {
         //let external_frontier = self.iter.peek().map_or(Timestamp::MAX, |e| e.timestamp());
         let external_frontier = if let Some(ts) = self.iter.peek().map(WithTimestamp::timestamp) {
-             ts
+            ts
         } else {
             // If there's no more output, we just exit the scanning loop anyway
             return None;

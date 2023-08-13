@@ -1,14 +1,13 @@
 use lsp_runtime::{signal::SignalProcessor, UpdateContext};
 
-
-/// A ValueChangeCounter counts the number of changes in the input 
+/// A ValueChangeCounter counts the number of changes in the input
 #[derive(Default)]
-pub struct ValueChangeCounter<T:Clone + Eq> {
+pub struct ValueChangeCounter<T: Clone + Eq> {
     prev: Option<T>,
     counter: usize,
 }
 
-impl <T: Clone + Eq> ValueChangeCounter<T> {
+impl<T: Clone + Eq> ValueChangeCounter<T> {
     pub fn with_init_value(value: T) -> Self {
         Self {
             prev: Some(value),
@@ -17,7 +16,7 @@ impl <T: Clone + Eq> ValueChangeCounter<T> {
     }
 }
 
-impl <'a, T: Clone + Eq + 'a, I: Iterator> SignalProcessor<'a, I> for ValueChangeCounter<T> {
+impl<'a, T: Clone + Eq + 'a, I: Iterator> SignalProcessor<'a, I> for ValueChangeCounter<T> {
     type Input = &'a T;
 
     type Output = usize;

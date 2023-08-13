@@ -1,5 +1,4 @@
 from json import dumps as dump_json_str
-from lsdl.schema import CompilerInferredType
 from lsdl.signal import LeveledSignalBase
 
 def _make_assign_fresh_component_colsure():
@@ -16,6 +15,7 @@ _components = []
 
 class LspComponentBase(LeveledSignalBase):
     def __init__(self, is_measurement : bool, node_decl: str, upstreams: list):
+        super().__init__()
         self._is_measurement = is_measurement
         self._node_decl = node_decl
         self._upstreams = upstreams
@@ -52,6 +52,7 @@ class LspComponentBase(LeveledSignalBase):
             "upstreams": upstreams,
             "package": self._package,
             "namespace": self._namespace,
+            "debug_info": self._debug_info.to_dict(),
         }
     def add_metric(self, key):
         from lsdl import measurement_config

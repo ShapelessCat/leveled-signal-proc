@@ -1,7 +1,8 @@
+use chrono::{DateTime, Utc};
 /// This impelements the DAG that is used in TLB2 profiling (See https://conviva.atlassian.net/wiki/spaces/~589178245/pages/1867646607/DAG-level+instrumentation for details)
-/// Please note that this file will be automatically generate from the LSP DSL in the formal LSP system. 
+/// Please note that this file will be automatically generate from the LSP DSL in the formal LSP system.
 /// Currently this file is hand written for demostration purposes.
-/// 
+///
 ///     dag:
 ///       rawEvents:
 ///         op: eventSourceTimeline
@@ -59,15 +60,17 @@
 ///         op: evaluateAt
 ///         in: $totalTime
 ///         evaluationPoints: $rawEvents
+use std::{
+    fs::File,
+    io::{BufReader, BufWriter, Write},
+};
 
-use std::{fs::File, io::{BufReader, BufWriter, Write}};
-use chrono::{DateTime, Utc};
-
-use lsp_component::{processors::SignalMapper, measurements::DurationTrue};
-use lsp_runtime::{WithTimestamp, InputState, LspContext, measurement::Measurement, signal::SignalProcessor};
+use lsp_component::{measurements::DurationTrue, processors::SignalMapper};
+use lsp_runtime::{
+    measurement::Measurement, signal::SignalProcessor, InputState, LspContext, WithTimestamp,
+};
 use serde::Deserialize;
 use serde_json::Deserializer;
-
 
 #[derive(Default, Debug, Clone)]
 struct InputType {
@@ -79,13 +82,13 @@ struct InputType {
 
 #[derive(Deserialize, Clone)]
 struct EventDataPatch {
-    #[serde(rename="newPlayerState")]
+    #[serde(rename = "newPlayerState")]
     player_state: Option<String>,
-    #[serde(rename="newNetwork")]
+    #[serde(rename = "newNetwork")]
     network: Option<String>,
-    #[serde(rename="newCdn")]
+    #[serde(rename = "newCdn")]
     cdn: Option<String>,
-    #[serde(rename="userAction")]
+    #[serde(rename = "userAction")]
     user_action: Option<String>,
     #[serde(rename = "dateTime")]
     timestamp: DateTime<Utc>,
@@ -98,7 +101,6 @@ impl WithTimestamp for EventDataPatch {
 }
 
 impl InputState for InputType {
-
     type Event = EventDataPatch;
 
     fn patch(&mut self, patch: EventDataPatch) {
@@ -115,19 +117,30 @@ impl InputState for InputType {
 
 #[allow(unused_assignments)]
 fn main() {
-
     // To simplify the problem, we just assume the data comes from a input file
     let fin = File::open("../input.json").unwrap();
     let mut fout = BufWriter::new(File::open("/dev/null").unwrap());
     let reader = BufReader::new(fin);
-    if std::env::var("PARSING_ONLY").is_ok()  {
-        println!("{}", Deserializer::from_reader(reader).into_iter::<EventDataPatch>().filter_map(Result::ok).count());
+    if std::env::var("PARSING_ONLY").is_ok() {
+        println!(
+            "{}",
+            Deserializer::from_reader(reader)
+                .into_iter::<EventDataPatch>()
+                .filter_map(Result::ok)
+                .count()
+        );
         return;
     }
-    let mut ctx = LspContext::<_, InputType>::new(Deserializer::from_reader(reader).into_iter::<EventDataPatch>().filter_map(Result::ok));
+    let mut ctx = LspContext::<_, InputType>::new(
+        Deserializer::from_reader(reader)
+            .into_iter::<EventDataPatch>()
+            .filter_map(Result::ok),
+    );
     let mut input_state = InputType::default();
 
-    let mut target_signal = SignalMapper::new(|e: &InputType| e.player_state == "play" && e.cdn == "cdn1" && e.network == "WIFI");
+    let mut target_signal = SignalMapper::new(|e: &InputType| {
+        e.player_state == "play" && e.cdn == "cdn1" && e.network == "WIFI"
+    });
     let mut total_duration = DurationTrue::default();
     let mut target_signal_output = false;
     let mut total_duration_output = 0;
@@ -135,7 +148,6 @@ fn main() {
     let mut time_ops = 0.0;
 
     while let Some(moment) = ctx.next_event(&mut input_state) {
-
         let start_ts = std::time::Instant::now();
 
         let mut uc = ctx.borrow_update_context();
@@ -148,7 +160,7 @@ fn main() {
             total_duration_output = total_duration.measure(&mut uc);
             write!(fout, "{}", total_duration_output).ok();
         }
-        
+
         let end_ts = std::time::Instant::now();
         time_ops += end_ts.duration_since(start_ts).as_secs_f64();
     }

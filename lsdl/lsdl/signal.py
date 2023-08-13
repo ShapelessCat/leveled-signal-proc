@@ -1,8 +1,8 @@
-
+from lsdl.debug_info import DebugInfo
 
 class LeveledSignalBase(object):
     def __init__(self):
-        pass
+        self._debug_info = DebugInfo()
     def get_id(self):
         raise NotImplementedError()
     def get_rust_type_name(self) -> str:

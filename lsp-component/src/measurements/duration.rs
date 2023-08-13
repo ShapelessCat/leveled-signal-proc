@@ -1,17 +1,17 @@
-use lsp_runtime::{Timestamp, measurement::Measurement, UpdateContext};
+use lsp_runtime::{measurement::Measurement, Timestamp, UpdateContext};
 
 #[derive(Default)]
 pub struct DurationSinceBecomeTrue {
     last_input: bool,
-    last_assignment_timestamp: Timestamp,    
+    last_assignment_timestamp: Timestamp,
 }
 
-impl <'a, I:Iterator> Measurement<'a, I> for DurationSinceBecomeTrue {
+impl<'a, I: Iterator> Measurement<'a, I> for DurationSinceBecomeTrue {
     type Input = &'a bool;
     type Output = Timestamp;
 
     fn update(&mut self, ctx: &mut UpdateContext<I>, input: Self::Input) {
-        if *input  != self.last_input {
+        if *input != self.last_input {
             self.last_input = *input;
             self.last_assignment_timestamp = ctx.frontier();
         }
@@ -35,7 +35,7 @@ pub struct DurationTrue {
     accumulated_duration: Timestamp,
 }
 
-impl <'a, I:Iterator> Measurement<'a, I> for DurationTrue {
+impl<'a, I: Iterator> Measurement<'a, I> for DurationTrue {
     type Input = &'a bool;
     type Output = Timestamp;
 
@@ -52,10 +52,11 @@ impl <'a, I:Iterator> Measurement<'a, I> for DurationTrue {
     fn measure(&self, ctx: &mut UpdateContext<I>) -> Self::Output {
         let timestamp = ctx.frontier();
         assert!(self.last_input_timestamp <= timestamp && timestamp <= self.cur_input_timestamp);
-        self.accumulated_duration + if self.last_input {
-            timestamp - self.last_input_timestamp    
-        } else {
-            0
-        }
+        self.accumulated_duration
+            + if self.last_input {
+                timestamp - self.last_input_timestamp
+            } else {
+                0
+            }
     }
 }

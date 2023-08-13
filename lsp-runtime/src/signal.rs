@@ -3,31 +3,39 @@ use std::marker::PhantomData;
 use crate::UpdateContext;
 
 pub trait SignalProcessor<'a, EventIt: Iterator> {
-    type Input : 'a;
+    type Input: 'a;
     type Output;
 
     /// Update the signal - the data readiness contraint requires the output must be valid.
-    /// The semantics of this method is follow: All the input signals are defined by parameter `input` from now. 
+    /// The semantics of this method is follow: All the input signals are defined by parameter `input` from now.
     /// And the output is also valid from the now.
-    /// Data readiness isn't a problem in most of the computed signals. 
+    /// Data readiness isn't a problem in most of the computed signals.
     fn update(&mut self, ctx: &mut UpdateContext<EventIt>, input: Self::Input) -> Self::Output;
 
-    fn map_input<MapClosure, From, To>(self, closure: MapClosure) -> InputMap<MapClosure, From, To, Self> 
+    fn map_input<MapClosure, From, To>(
+        self,
+        closure: MapClosure,
+    ) -> InputMap<MapClosure, From, To, Self>
     where
         MapClosure: FnMut(From) -> To,
-        Self: Sized
+        Self: Sized,
     {
-        InputMap { input_map_closure: closure, downstream: self, _phantom: PhantomData }
+        InputMap {
+            input_map_closure: closure,
+            downstream: self,
+            _phantom: PhantomData,
+        }
     }
 }
 
 pub struct InputMap<Closure, MapIn, MapOut, InnerSignalProc> {
     input_map_closure: Closure,
     downstream: InnerSignalProc,
-    _phantom: PhantomData<(MapIn, MapOut)>
+    _phantom: PhantomData<(MapIn, MapOut)>,
 }
 
-impl <'a, Eit, Map, MapIn, MapOut, SigProc> SignalProcessor<'a, Eit> for InputMap<Map, MapIn, MapOut, SigProc>
+impl<'a, Eit, Map, MapIn, MapOut, SigProc> SignalProcessor<'a, Eit>
+    for InputMap<Map, MapIn, MapOut, SigProc>
 where
     Eit: Iterator,
     Map: FnMut(MapIn) -> MapOut,

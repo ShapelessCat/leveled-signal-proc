@@ -1,12 +1,11 @@
 use std::collections::VecDeque;
 
-
-pub struct MultiPeek<I:Iterator> {
+pub struct MultiPeek<I: Iterator> {
     inner: I,
     peek_buffer: VecDeque<I::Item>,
 }
 
-impl <I:Iterator> Iterator for MultiPeek<I> {
+impl<I: Iterator> Iterator for MultiPeek<I> {
     type Item = I::Item;
     fn next(&mut self) -> Option<Self::Item> {
         if self.peek_buffer.is_empty() {
@@ -17,9 +16,12 @@ impl <I:Iterator> Iterator for MultiPeek<I> {
     }
 }
 
-impl <I:Iterator> MultiPeek<I> {
+impl<I: Iterator> MultiPeek<I> {
     pub fn from_iter(iter: I) -> Self {
-        Self { inner: iter, peek_buffer: VecDeque::new() }
+        Self {
+            inner: iter,
+            peek_buffer: VecDeque::new(),
+        }
     }
     #[inline(always)]
     pub fn peek_n(&mut self, n: usize) -> Option<&I::Item> {
@@ -39,7 +41,7 @@ impl <I:Iterator> MultiPeek<I> {
 
     pub fn peek_fold<U, F>(&mut self, init: U, mut func: F) -> U
     where
-        F: FnMut(&U, &I::Item) -> Option<U>
+        F: FnMut(&U, &I::Item) -> Option<U>,
     {
         let mut ret = init;
         for i in 1.. {

@@ -5,3 +5,5 @@ perf.*
 lsdl/*.egg-info
 lsdl/build
 lsdl/**/__pycache__
+
+.vscode

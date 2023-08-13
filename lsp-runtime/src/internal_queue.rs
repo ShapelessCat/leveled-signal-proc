@@ -1,16 +1,16 @@
+use crate::{Moment, Timestamp};
 use std::collections::BinaryHeap;
-use crate::{Timestamp, Moment};
 
 /// The queue that sorts internal events
-/// 
-/// A event is a moment that leveled signals may be changed. 
-/// In most case, leveled signal is changed due to the external input or 
-/// in our terms, external event. 
-/// But in some cases, for instance, a sliding window, the leveled signal 
-/// spontanously change its value. To handle this case, we introduced the 
+///
+/// A event is a moment that leveled signals may be changed.
+/// In most case, leveled signal is changed due to the external input or
+/// in our terms, external event.
+/// But in some cases, for instance, a sliding window, the leveled signal
+/// spontanously change its value. To handle this case, we introduced the
 /// concept of internal event, which isn't triggered by any external event,
 /// but scheduled whenever the signal processor needs a recompute.
-/// 
+///
 /// Also, we handle the measurement request as a internal event.
 pub struct InternalEventQueue {
     queue: BinaryHeap<Moment>,
@@ -18,8 +18,8 @@ pub struct InternalEventQueue {
 
 impl InternalEventQueue {
     pub fn new() -> Self {
-        InternalEventQueue { 
-            queue: BinaryHeap::new()
+        InternalEventQueue {
+            queue: BinaryHeap::new(),
         }
     }
 

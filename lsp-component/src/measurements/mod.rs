@@ -1,7 +1,7 @@
-mod peek;
-mod duration;
 mod change;
+mod duration;
+mod peek;
 
-pub use peek::Peek;
-pub use duration::{DurationTrue, DurationSinceBecomeTrue};
 pub use change::ChangeSinceCurrentLevel;
+pub use duration::{DurationSinceBecomeTrue, DurationTrue};
+pub use peek::Peek;
