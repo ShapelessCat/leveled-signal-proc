@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-import os
-import sys
-import pathlib
-
 from setuptools import setup
-from setuptools.command.test import test as TestCommand
 from setuptools.command.sdist import sdist as SdistCommand
 
 setup(
@@ -14,8 +9,9 @@ setup(
         "Intended Audience :: Developers",
         "Operating System :: POSIX",
         "Operating System :: MacOS :: MacOS X",
+        "Operating System :: Windows",
     ],
-    packages=["lsdl"],
+    packages=["lsdl", "lsdl.signal_processors", "lsdl.measurements"],
     include_package_data=True,
     zip_safe=False,
     cmdclass={"sdist": SdistCommand},

@@ -1,5 +1,5 @@
-from lsdl.modules import has_been_true
 from lsdl.schema import *
+from lsdl.modules import *
 from lsdl import print_ir_to_stdout
 
 class Input(InputSchemaBase):

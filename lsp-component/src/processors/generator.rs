@@ -1,5 +1,3 @@
-use std::any::Any;
-
 use lsp_runtime::{signal::SignalProcessor, Timestamp, UpdateContext};
 
 /// A signal generator is a leveled signal processor that produce leveled signal
@@ -24,7 +22,7 @@ where
             until_ts: 0,
         }
     }
-    pub fn square_wave(period: Timestamp, phase: Timestamp) -> impl Any {
+    pub fn square_wave(period: Timestamp, phase: Timestamp) -> SignalGenerator<impl FnMut(u64) -> (bool, u64), bool> {
         SignalGenerator::new(move |now| {
             (
                 ((now - phase) / period) & 1 > 0,
@@ -32,12 +30,13 @@ where
             )
         })
     }
+
     pub fn raising_level(
         mut start: i64,
         step: i64,
         duration: Timestamp,
         phase: Timestamp,
-    ) -> impl Any {
+    ) -> SignalGenerator<impl FnMut(u64) -> (i64, u64), i64> {
         let mut next_level_starts = None;
         SignalGenerator::new(move |now| {
             if let Some(right) = next_level_starts {
