@@ -1,11 +1,5 @@
 import json
 from typing import Any
-import lsdl.component
-import lsdl.schema
-import lsdl.signal
-import lsdl.const
-import lsdl.modules
-import lsdl.debug_info
 
 class _MeasurementConfiguration(object):
     def __init__(self):
@@ -44,7 +38,7 @@ def _make_measurement_configuration():
 measurement_config = _make_measurement_configuration()
 
 def get_json_ir(pretty_print = False) -> str:
-    from lsdl.component import get_components
+    from lsdl.componet_base import get_components
     from lsdl.schema import get_schema
     ret_obj = {
         "schema": get_schema().to_dict(),

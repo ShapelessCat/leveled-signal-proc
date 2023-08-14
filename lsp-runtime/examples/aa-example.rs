@@ -15,7 +15,6 @@ use std::{fs::File, io::BufReader};
 use chrono::{DateTime, Utc};
 use lsp_component::processors::{
     Accumulator, DurationOfPreviousLevel, Latch, LivenessChecker, SignalMapper, StateMachine,
-    ValueChangeCounter,
 };
 use lsp_runtime::{signal::SignalProcessor, InputState, LspContext, Timestamp, WithTimestamp};
 use serde::Deserialize;
@@ -89,9 +88,9 @@ fn main() {
 
     let mut is_c_mapper = SignalMapper::new(|state: &StateBag| state.user_action == "C");
     let mut c_filter_latch = Latch::<Timestamp>::default();
-    let mut c_counter = ValueChangeCounter::with_init_value(0);
+    let mut c_counter = Accumulator::with_event_filter(0, |_| true);
 
-    let mut all_counter = ValueChangeCounter::with_init_value(0);
+    let mut all_counter = Accumulator::with_event_filter(0, |_| true);
 
     let mut p_e_state_machine =
         StateMachine::<String, u32, _, Timestamp>::new(0, |&prev_state, input| match prev_state {
@@ -149,9 +148,9 @@ fn main() {
                 &mut update_ctx,
                 (&is_c_mapper_output, &state.user_action_watermark),
             );
-            c_counter_output = c_counter.update(&mut update_ctx, &c_filter_latch_output);
+            c_counter_output = c_counter.update(&mut update_ctx, (&c_filter_latch_output, &1));
 
-            all_counter_output = all_counter.update(&mut update_ctx, &state.user_action_watermark);
+            all_counter_output = all_counter.update(&mut update_ctx, (&state.user_action_watermark, &1));
 
             p_e_state_machine_output = p_e_state_machine.update(
                 &mut update_ctx,

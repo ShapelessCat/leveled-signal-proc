@@ -8,7 +8,7 @@
                 "input_key": "newPlayerState",
                 "debug_info": {
                     "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/playtime.py",
-                    "line": 6
+                    "line": 5
                 }
             },
             "network": {
@@ -17,7 +17,7 @@
                 "input_key": "newNetwork",
                 "debug_info": {
                     "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/playtime.py",
-                    "line": 7
+                    "line": 6
                 }
             },
             "cdn": {
@@ -26,7 +26,7 @@
                 "input_key": "newCdn",
                 "debug_info": {
                     "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/playtime.py",
-                    "line": 8
+                    "line": 7
                 }
             },
             "user_action": {
@@ -35,7 +35,7 @@
                 "input_key": "newUserAction",
                 "debug_info": {
                     "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/playtime.py",
-                    "line": 9
+                    "line": 8
                 }
             }
         }
@@ -55,7 +55,7 @@
             "namespace": "lsp_component::processors::SignalMapper",
             "debug_info": {
                 "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/playtime.py",
-                "line": 13
+                "line": 12
             }
         },
         {
@@ -72,7 +72,7 @@
             "namespace": "lsp_component::processors::SignalMapper",
             "debug_info": {
                 "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/playtime.py",
-                "line": 13
+                "line": 12
             }
         },
         {
@@ -98,7 +98,7 @@
             "namespace": "lsp_component::processors::SignalMapper",
             "debug_info": {
                 "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/playtime.py",
-                "line": 13
+                "line": 12
             }
         },
         {
@@ -115,7 +115,7 @@
             "namespace": "lsp_component::processors::SignalMapper",
             "debug_info": {
                 "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/playtime.py",
-                "line": 13
+                "line": 12
             }
         },
         {
@@ -141,7 +141,7 @@
             "namespace": "lsp_component::processors::SignalMapper",
             "debug_info": {
                 "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/playtime.py",
-                "line": 13
+                "line": 12
             }
         },
         {
@@ -158,7 +158,7 @@
             "namespace": "lsp_component::measurements::DurationTrue",
             "debug_info": {
                 "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/playtime.py",
-                "line": 14
+                "line": 13
             }
         }
     ],

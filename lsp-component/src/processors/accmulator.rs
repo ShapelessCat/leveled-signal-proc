@@ -40,13 +40,13 @@ where
     fn update(
         &mut self,
         _: &mut UpdateContext<I>,
-        (this_signal, accu_input): Self::Input,
+        (control, data): Self::Input,
     ) -> Self::Output {
-        if &self.prev_control_signal != this_signal {
-            if (self.filter)(this_signal) {
-                self.accumulator += accu_input.clone();
+        if &self.prev_control_signal != control {
+            if (self.filter)(control) {
+                self.accumulator += data.clone();
             }
-            self.prev_control_signal = this_signal.clone();
+            self.prev_control_signal = control.clone();
         }
         self.accumulator.clone()
     }

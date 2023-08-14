@@ -1,5 +1,4 @@
 mod accmulator;
-mod counter;
 mod duration;
 mod generator;
 mod latch;
@@ -8,7 +7,6 @@ mod mapper;
 mod state_machine;
 
 pub use accmulator::Accumulator;
-pub use counter::ValueChangeCounter;
 pub use duration::DurationOfPreviousLevel;
 pub use generator::SignalGenerator;
 pub use latch::Latch;

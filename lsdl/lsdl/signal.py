@@ -8,16 +8,17 @@ class LeveledSignalBase(object):
     def get_rust_type_name(self) -> str:
         raise NotImplementedError()
     def map(self, bind_var: str, lambda_src: str):
-        from lsdl.component import SignalMapper
+        from lsdl.signal_processors import SignalMapper
         return SignalMapper(bind_var, lambda_src, self)
     def count_changes(self):
-        from lsdl.component import ValueChangeCounter
-        return ValueChangeCounter(self)
+        from lsdl.signal_processors import Accumulator 
+        from lsdl.const import Const
+        return Accumulator(self, Const(1))
     def measure_duration_true(self):
-        from lsdl.component import DurationTrue
+        from lsdl.measurements import DurationTrue
         return DurationTrue(self)
     def _bin_op(self, other, op):
-        from lsdl.component import SignalMapper
+        from lsdl.signal_processors import SignalMapper
         from lsdl.const import Const
         if isinstance(other, LeveledSignalBase):
             return SignalMapper(
