@@ -32,7 +32,11 @@ impl<I: Iterator> MultiPeek<I> {
                 return None;
             }
         }
-        self.peek_buffer.get(n - 1)
+        if n > 0 {
+            self.peek_buffer.get(n - 1)
+        } else {
+            None
+        }
     }
     #[inline(always)]
     pub fn peek(&mut self) -> Option<&I::Item> {
@@ -56,5 +60,48 @@ impl<I: Iterator> MultiPeek<I> {
             }
         }
         ret
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::MultiPeek;
+    #[test]
+    fn test_iter_api() {
+        let inner : Vec<_> = (0..1000).collect();
+        let mut mp_iter = MultiPeek::from_iter(inner.clone().into_iter());
+        assert_eq!(mp_iter.peek(), Some(&0));
+        assert_eq!(inner.into_iter().sum::<i32>(), mp_iter.sum());
+    }
+    #[test]
+    fn test_peek_out_of_bound() {
+        let inner : Vec<_> = (0..1000).collect();
+        let mut mp_iter = MultiPeek::from_iter(inner.clone().into_iter());
+        assert_eq!(mp_iter.peek_n(1001), None);
+        assert_eq!(mp_iter.peek_n(1000), Some(&999));
+        assert_eq!(mp_iter.peek_n(1002), None);
+        assert_eq!(mp_iter.peek_n(5002), None);
+    }
+    #[test]
+    fn test_peek_empty_inner_iter() {
+        let inner : Vec<_> = (0..0).collect();
+        let mut mp_iter = MultiPeek::from_iter(inner.clone().into_iter());
+        assert_eq!(mp_iter.peek_n(0), None);
+        assert_eq!(mp_iter.peek_n(1), None);
+        assert_eq!(mp_iter.peek_n(1000), None);
+    }
+    #[test]
+    fn test_peek_fold_full() {
+        let inner : Vec<_> = (0..1000).collect();
+        let mut mp_iter = MultiPeek::from_iter(inner.clone().into_iter());
+        assert_eq!(mp_iter.peek_fold(0, |a, b| Some(a + b)), inner.into_iter().sum::<i32>());
+        assert_eq!(mp_iter.next(), Some(0));
+    }
+    #[test]
+    fn test_peek_fold_early_terminate() {
+        let inner : Vec<_> = (0..1000).collect();
+        let mut mp_iter = MultiPeek::from_iter(inner.clone().into_iter());
+        assert_eq!(mp_iter.peek_fold(0, |a, b| if *b < 500 { Some(a + b) } else { None }), inner.into_iter().filter(|&x| x < 500).sum::<i32>());
+        assert_eq!(mp_iter.next(), Some(0));
     }
 }

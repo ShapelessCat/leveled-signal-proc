@@ -51,3 +51,36 @@ where
         self.accumulator.clone()
     }
 }
+
+#[cfg(test)]
+mod test {
+    use lsp_runtime::signal::SignalProcessor;
+    use crate::processors::test::create_lsp_context_for_test;
+    use super::Accumulator;
+
+    #[test]
+    fn test_basic_logic() {
+        let mut counter = Accumulator::with_event_filter(0, |_| true);
+        let mut ctx = create_lsp_context_for_test();
+        let mut uc = ctx.borrow_update_context();
+
+        assert_eq!(0, counter.update(&mut uc, (&0, &1)));
+        assert_eq!(1, counter.update(&mut uc, (&1, &1)));
+        assert_eq!(1, counter.update(&mut uc, (&1, &2)));
+        assert_eq!(4, counter.update(&mut uc, (&2, &3)));
+    }
+
+    #[test]
+    fn test_signal_filter() {
+        let mut counter = Accumulator::with_event_filter(0, |&x| x % 2 == 0);
+        let mut ctx = create_lsp_context_for_test();
+        let mut uc = ctx.borrow_update_context();
+
+        assert_eq!(0, counter.update(&mut uc, (&0, &1)));
+        assert_eq!(0, counter.update(&mut uc, (&1, &1)));
+        assert_eq!(2, counter.update(&mut uc, (&2, &2)));
+        assert_eq!(2, counter.update(&mut uc, (&3, &3)));
+        assert_eq!(6, counter.update(&mut uc, (&4, &4)));
+    }
+
+}

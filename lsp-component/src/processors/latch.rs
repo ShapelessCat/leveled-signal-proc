@@ -92,3 +92,63 @@ impl<'a, T: Clone + 'a, I: Iterator, R: Rentention<T>> SignalProcessor<'a, I> fo
         self.data.clone()
     }
 }
+
+#[cfg(test)]
+mod test {
+    use lsp_runtime::signal::SignalProcessor;
+
+    use crate::processors::{test::create_lsp_context_for_test, Latch};
+
+    #[test]
+    fn test_basic_latch() {
+        let mut latch = Latch::with_initial_value(0);
+        let mut c = create_lsp_context_for_test();
+        let mut ctx = c.borrow_update_context();
+        assert_eq!(latch.update(&mut ctx, (&true, &1)), 1);
+        assert_eq!(latch.update(&mut ctx, (&false, &2)), 1);
+        assert_eq!(latch.update(&mut ctx, (&true, &3)), 3);
+        assert_eq!(latch.update(&mut ctx, (&false, &4)), 3);
+        assert_eq!(latch.update(&mut ctx, (&false, &5)), 3);
+        assert_eq!(latch.update(&mut ctx, (&true, &6)), 6);
+        assert_eq!(latch.update(&mut ctx, (&false, &7)), 6);
+    }
+
+    #[test]
+    fn test_forget_behavior() {
+        let mut latch = Latch::with_forget_behavior(0, 0, 2);
+        let mut c = create_lsp_context_for_test();
+        let mut buf = Default::default();
+
+        c.next_event(&mut buf).unwrap();
+        let mut ctx = c.borrow_update_context();
+        assert_eq!(latch.update(&mut ctx, (&true, &1)), 1);
+        
+        c.next_event(&mut buf).unwrap();
+        let mut ctx = c.borrow_update_context();
+        assert_eq!(latch.update(&mut ctx, (&false, &2)), 1);
+
+        c.next_event(&mut buf).unwrap();
+        let mut ctx = c.borrow_update_context();
+        assert_eq!(latch.update(&mut ctx, (&false, &2)), 0);
+        
+        c.next_event(&mut buf).unwrap();
+        let mut ctx = c.borrow_update_context();
+        assert_eq!(latch.update(&mut ctx, (&true, &2)), 2);
+
+        c.next_event(&mut buf).unwrap();
+        let mut ctx = c.borrow_update_context();
+        assert_eq!(latch.update(&mut ctx, (&true, &2)), 2);
+
+        c.next_event(&mut buf).unwrap();
+        let mut ctx = c.borrow_update_context();
+        assert_eq!(latch.update(&mut ctx, (&false, &3)), 2);
+
+        c.next_event(&mut buf).unwrap();
+        let mut ctx = c.borrow_update_context();
+        assert_eq!(latch.update(&mut ctx, (&false, &2)), 0);
+        c.next_event(&mut buf).unwrap();
+        let mut ctx = c.borrow_update_context();
+        assert_eq!(latch.update(&mut ctx, (&false, &2)), 0);
+
+    }
+}

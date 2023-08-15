@@ -26,3 +26,55 @@ impl<'a, T: PartialEq + Clone + 'a, I: Iterator> SignalProcessor<'a, I>
         self.output_buf
     }
 }
+
+#[cfg(test)]
+mod test {
+    use lsp_runtime::signal::SignalProcessor;
+
+    use crate::processors::test::{create_lsp_context_for_test, TestSignalBag};
+
+    use super::DurationOfPreviousLevel;
+
+    #[test]
+    fn test_duration_prev_level() {
+        let mut signal_bag = TestSignalBag::default();
+        let mut node = DurationOfPreviousLevel::default();
+        let mut ctx = create_lsp_context_for_test();
+        
+        let moment = ctx.next_event(&mut signal_bag).unwrap();
+        assert_eq!(moment.timestamp(), 0);
+        let mut uc = ctx.borrow_update_context();
+        assert_eq!(node.update(&mut uc, &0), 0);
+        drop(uc);
+
+        let moment = ctx.next_event(&mut signal_bag).unwrap();
+        assert_eq!(moment.timestamp(), 1);
+        let mut uc = ctx.borrow_update_context();
+        assert_eq!(node.update(&mut uc, &0), 0);
+        drop(uc);
+        
+        let moment = ctx.next_event(&mut signal_bag).unwrap();
+        assert_eq!(moment.timestamp(), 2);
+        let mut uc = ctx.borrow_update_context();
+        assert_eq!(node.update(&mut uc, &1), 2);
+        drop(uc);
+        
+        let moment = ctx.next_event(&mut signal_bag).unwrap();
+        assert_eq!(moment.timestamp(), 3);
+        let mut uc = ctx.borrow_update_context();
+        assert_eq!(node.update(&mut uc, &1), 2);
+        drop(uc);
+        
+        let moment = ctx.next_event(&mut signal_bag).unwrap();
+        assert_eq!(moment.timestamp(), 4);
+        let mut uc = ctx.borrow_update_context();
+        assert_eq!(node.update(&mut uc, &1), 2);
+        drop(uc);
+
+        let moment = ctx.next_event(&mut signal_bag).unwrap();
+        assert_eq!(moment.timestamp(), 5);
+        let mut uc = ctx.borrow_update_context();
+        assert_eq!(node.update(&mut uc, &0), 3);
+        drop(uc);
+    }
+}

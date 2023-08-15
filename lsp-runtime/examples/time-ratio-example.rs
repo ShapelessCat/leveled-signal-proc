@@ -3,13 +3,13 @@ use std::{fs::File, io::BufReader};
 
 use chrono::{DateTime, Utc};
 use lsp_component::{
-    measurements::{ChangeSinceCurrentLevel, DurationSinceBecomeTrue},
+    measurements::{DiffSinceCurrentLevel, DurationSinceBecomeTrue},
     processors::{
         Accumulator, DurationOfPreviousLevel, Latch, LivenessChecker, SignalMapper, StateMachine,
     },
 };
 use lsp_runtime::{
-    measurement::Measurement, signal::SignalProcessor, InputState, LspContext, Timestamp,
+    measurement::Measurement, signal::SignalProcessor, InputSignalBag, LspContext, Timestamp,
     WithTimestamp,
 };
 use serde::Deserialize;
@@ -38,10 +38,10 @@ impl WithTimestamp for Event {
     }
 }
 
-impl InputState for StateBag {
-    type Event = Event;
+impl InputSignalBag for StateBag {
+    type Input = Event;
 
-    fn patch(&mut self, patch: Self::Event) {
+    fn patch(&mut self, patch: Self::Input) {
         let ts = patch.timestamp();
         if let Some(page) = patch.page {
             self.pending_measure = true;
@@ -109,7 +109,7 @@ fn main() {
 
     let mut user_active_time = DurationSinceBecomeTrue::default();
 
-    let mut p_e_seesion = ChangeSinceCurrentLevel::default();
+    let mut p_e_seesion = DiffSinceCurrentLevel::default();
 
     let mut first_iter = true;
 

@@ -80,8 +80,8 @@ impl MacroContext {
                     self.timestamp.timestamp_nanos() as u64
                 }
             }
-            impl lsp_runtime::InputState for #type_name {
-                type Event = #patch_type_name;
+            impl lsp_runtime::InputSignalBag for #type_name {
+                type Input = #patch_type_name;
                 fn patch(&mut self, patch: #patch_type_name) {
                     #(#patch_code_impls)*
                 }

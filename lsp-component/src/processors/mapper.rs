@@ -34,3 +34,19 @@ where
         (self.how)(input)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use lsp_runtime::signal::SignalProcessor;
+
+    use crate::processors::{SignalMapper, test::create_lsp_context_for_test};
+
+    #[test]
+    fn test_signal_mapper() {
+        let mut mapper = SignalMapper::new(|x: &i32| x + 1);
+        let mut ctx = create_lsp_context_for_test();
+        let mut uc = ctx.borrow_update_context();
+        assert_eq!(mapper.update(&mut uc, &1), 2);
+        assert_eq!(mapper.update(&mut uc, &2), 3);
+    }
+}

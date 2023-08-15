@@ -9,7 +9,7 @@ use lsp_component::{
     processors::{Latch, SignalMapper},
 };
 use lsp_runtime::{
-    measurement::Measurement, signal::SignalProcessor, InputState, LspContext, WithTimestamp,
+    measurement::Measurement, signal::SignalProcessor, InputSignalBag, LspContext, WithTimestamp,
 };
 use serde::Deserialize;
 use serde_json::Deserializer;
@@ -42,8 +42,8 @@ impl WithTimestamp for EventDataPatch {
     }
 }
 
-impl InputState for InputType {
-    type Event = EventDataPatch;
+impl InputSignalBag for InputType {
+    type Input = EventDataPatch;
 
     fn patch(&mut self, patch: EventDataPatch) {
         patch.player_state.map(|s| self.player_state = s);

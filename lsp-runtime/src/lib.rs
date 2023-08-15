@@ -5,7 +5,7 @@ mod internal_queue;
 mod moment;
 mod multipeek;
 
-pub use context::{InputState, LspContext, UpdateContext, WithTimestamp};
+pub use context::{InputSignalBag, LspContext, UpdateContext, WithTimestamp};
 pub use internal_queue::InternalEventQueue;
 pub use moment::Moment;
 pub use multipeek::MultiPeek;

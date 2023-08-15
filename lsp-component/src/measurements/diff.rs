@@ -3,14 +3,14 @@ use std::ops::Sub;
 use lsp_runtime::{measurement::Measurement, UpdateContext};
 
 #[derive(Default)]
-pub struct ChangeSinceCurrentLevel<ControlSignal, DataSignal> {
+pub struct DiffSinceCurrentLevel<ControlSignal, DataSignal> {
     current_control_level: ControlSignal,
     data_at_current_level_starts: DataSignal,
     data_at_frontier: DataSignal,
 }
 
 impl<'a, ControlSignal, DataSignal, EvIt> Measurement<'a, EvIt>
-    for ChangeSinceCurrentLevel<ControlSignal, DataSignal>
+    for DiffSinceCurrentLevel<ControlSignal, DataSignal>
 where
     ControlSignal: PartialEq + Clone + 'a,
     DataSignal: Sub<DataSignal> + Clone + 'a,

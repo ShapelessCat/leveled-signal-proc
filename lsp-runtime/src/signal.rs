@@ -1,5 +1,3 @@
-use std::marker::PhantomData;
-
 use crate::UpdateContext;
 
 pub trait SignalProcessor<'a, EventIt: Iterator> {
@@ -11,42 +9,4 @@ pub trait SignalProcessor<'a, EventIt: Iterator> {
     /// And the output is also valid from the now.
     /// Data readiness isn't a problem in most of the computed signals.
     fn update(&mut self, ctx: &mut UpdateContext<EventIt>, input: Self::Input) -> Self::Output;
-
-    fn map_input<MapClosure, From, To>(
-        self,
-        closure: MapClosure,
-    ) -> InputMap<MapClosure, From, To, Self>
-    where
-        MapClosure: FnMut(From) -> To,
-        Self: Sized,
-    {
-        InputMap {
-            input_map_closure: closure,
-            downstream: self,
-            _phantom: PhantomData,
-        }
-    }
-}
-
-pub struct InputMap<Closure, MapIn, MapOut, InnerSignalProc> {
-    input_map_closure: Closure,
-    downstream: InnerSignalProc,
-    _phantom: PhantomData<(MapIn, MapOut)>,
-}
-
-impl<'a, Eit, Map, MapIn, MapOut, SigProc> SignalProcessor<'a, Eit>
-    for InputMap<Map, MapIn, MapOut, SigProc>
-where
-    Eit: Iterator,
-    Map: FnMut(MapIn) -> MapOut,
-    MapIn: 'a,
-    SigProc: SignalProcessor<'a, Eit, Input = MapOut>,
-{
-    type Input = MapIn;
-
-    type Output = SigProc::Output;
-
-    fn update(&mut self, ctx: &mut UpdateContext<Eit>, input: Self::Input) -> Self::Output {
-        self.downstream.update(ctx, (self.input_map_closure)(input))
-    }
 }

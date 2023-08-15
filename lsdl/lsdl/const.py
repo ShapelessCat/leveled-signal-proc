@@ -24,3 +24,4 @@ class Const(LeveledSignalBase):
             "value": self._rs_value,
             "type_name": self._type.get_rust_type_name(),
         }
+    

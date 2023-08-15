@@ -11,8 +11,9 @@ pub trait Measurement<'a, EventIter: Iterator> {
     #[inline(always)]
     fn reset(&mut self) {}
 
-    // Notify the value change take effect from now
+    /// Notify the value change take effect from now
     fn update(&mut self, ctx: &mut UpdateContext<EventIter>, input: Self::Input);
 
+    /// Measure the observation value now
     fn measure(&self, ctx: &mut UpdateContext<EventIter>) -> Self::Output;
 }

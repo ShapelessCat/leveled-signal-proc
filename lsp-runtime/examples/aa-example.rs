@@ -16,7 +16,7 @@ use chrono::{DateTime, Utc};
 use lsp_component::processors::{
     Accumulator, DurationOfPreviousLevel, Latch, LivenessChecker, SignalMapper, StateMachine,
 };
-use lsp_runtime::{signal::SignalProcessor, InputState, LspContext, Timestamp, WithTimestamp};
+use lsp_runtime::{signal::SignalProcessor, InputSignalBag, LspContext, Timestamp, WithTimestamp};
 use serde::Deserialize;
 use serde_json::Deserializer;
 
@@ -43,10 +43,10 @@ impl WithTimestamp for Event {
     }
 }
 
-impl InputState for StateBag {
-    type Event = Event;
+impl InputSignalBag for StateBag {
+    type Input = Event;
 
-    fn patch(&mut self, patch: Self::Event) {
+    fn patch(&mut self, patch: Self::Input) {
         let ts = patch.timestamp();
         if let Some(page) = patch.page {
             self.pending_measure = true;

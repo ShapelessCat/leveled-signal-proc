@@ -25,7 +25,7 @@ use lsp_component::{
     processors::{Accumulator, DurationOfPreviousLevel, Latch, SignalMapper, StateMachine},
 };
 use lsp_runtime::{
-    measurement::Measurement, signal::SignalProcessor, InputState, LspContext, Timestamp,
+    measurement::Measurement, signal::SignalProcessor, InputSignalBag, LspContext, Timestamp,
     WithTimestamp,
 };
 use serde::Deserialize;
@@ -50,10 +50,10 @@ impl WithTimestamp for Event {
     }
 }
 
-impl InputState for StateBag {
-    type Event = Event;
+impl InputSignalBag for StateBag {
+    type Input = Event;
 
-    fn patch(&mut self, patch: Self::Event) {
+    fn patch(&mut self, patch: Self::Input) {
         let ts = patch.timestamp();
         if let Some(user_action) = patch.user_action {
             self.user_action = user_action;
