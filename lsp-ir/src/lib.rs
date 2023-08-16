@@ -1,14 +1,14 @@
 use std::collections::HashMap;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct DebugInfo {
     pub file: String,
     pub line: i32,
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct SchemaField {
     #[serde(rename = "type")]
     pub type_name: String,
@@ -18,13 +18,13 @@ pub struct SchemaField {
     pub debug_info: Option<DebugInfo>,
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct Schema {
     pub type_name: String,
     pub members: HashMap<String, SchemaField>,
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Serialize, Clone)]
 #[serde(tag = "type")]
 pub enum NodeInput {
     InputBag,
@@ -34,7 +34,7 @@ pub enum NodeInput {
     Tuple { values: Vec<NodeInput> },
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct Node {
     pub id: usize,
     pub is_measurement: bool,
@@ -46,20 +46,20 @@ pub struct Node {
     pub debug_info: Option<DebugInfo>,
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Serialize, Clone)]
 pub enum MetricsDrainType {
     #[serde(rename = "json")]
     Json,
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct MetricSpec {
     #[serde(rename = "type")]
     pub typename: String,
     pub source: NodeInput,
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct MeasurementPolicy {
     pub measure_at_event_filter: String,
     pub measure_periodically_interval: i64,
@@ -67,7 +67,7 @@ pub struct MeasurementPolicy {
     pub output_schema: HashMap<String, MetricSpec>,
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct LspIr {
     pub schema: Schema,
     pub nodes: Vec<Node>,

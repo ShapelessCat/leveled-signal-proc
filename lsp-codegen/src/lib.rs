@@ -80,7 +80,7 @@ pub fn lsp_data_logic_main(input: TokenStream) -> TokenStream {
             use lsp_runtime::LspContext;
             use serde_json::Deserializer;
             let mut input_state = Default::default();
-            lsp_codegen::define_data_logic_nodes!("../lsdl/examples/cidr.json");
+            lsp_codegen::define_data_logic_nodes!(#path);
             let mut ctx = LspContext::<_, InputSignalBag>::new(input_iter);
             while let Some(moment) = ctx.next_event(&mut input_state) {
                 let mut update_context = ctx.borrow_update_context();

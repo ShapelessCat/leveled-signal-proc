@@ -2,7 +2,7 @@ from lsdl.componet_base import BuiltinComponentBase
 from lsdl.signal import LeveledSignalBase
 
 class Accumulator(BuiltinComponentBase):
-    def __init__(self, control: LeveledSignalBase, data: LeveledSignalBase, init_val = None, filter_lambda = None):
+    def __init__(self, control: LeveledSignalBase, data: LeveledSignalBase, init_val = None, filter_lambda = None, type_name = "i32"):
         if filter_lambda is None:
             filter_lambda = "|_| true"
         if init_val is None:
@@ -19,3 +19,4 @@ class Accumulator(BuiltinComponentBase):
             node_decl = node_decl,
             upstreams = [control, data]
         )
+        self._output_type = type_name

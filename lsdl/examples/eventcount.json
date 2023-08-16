@@ -1,0 +1,118 @@
+{
+    "schema": {
+        "type_name": "InputSignalBag",
+        "members": {
+            "user_action": {
+                "type": "String",
+                "clock_companion": "user_action_clock",
+                "input_key": "userAction",
+                "debug_info": {
+                    "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\eventcount.py",
+                    "line": 6
+                }
+            },
+            "page": {
+                "type": "String",
+                "clock_companion": "page_clock",
+                "input_key": "page",
+                "debug_info": {
+                    "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\eventcount.py",
+                    "line": 9
+                }
+            }
+        }
+    },
+    "nodes": [
+        {
+            "id": 0,
+            "is_measurement": false,
+            "node_decl": "SignalMapper::new(|lhs:&String| *lhs == \"P\")",
+            "upstreams": [
+                {
+                    "type": "InputSignal",
+                    "id": "user_action"
+                }
+            ],
+            "package": "lsp-component",
+            "namespace": "lsp_component::processors::SignalMapper",
+            "debug_info": {
+                "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\eventcount.py",
+                "line": 11
+            }
+        },
+        {
+            "id": 1,
+            "is_measurement": false,
+            "node_decl": "Latch::<u64>::default()",
+            "upstreams": [
+                {
+                    "type": "Component",
+                    "id": 0
+                },
+                {
+                    "type": "InputSignal",
+                    "id": "user_action_clock"
+                }
+            ],
+            "package": "lsp-component",
+            "namespace": "lsp_component::processors::Latch",
+            "debug_info": {
+                "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\eventcount.py",
+                "line": 11
+            }
+        },
+        {
+            "id": 2,
+            "is_measurement": false,
+            "node_decl": "Accumulator::<i32,_, _>::with_event_filter(Default::default(), |_| true)",
+            "upstreams": [
+                {
+                    "type": "Component",
+                    "id": 1
+                },
+                {
+                    "type": "Constant",
+                    "value": "1i32",
+                    "type_name": "i32"
+                }
+            ],
+            "package": "lsp-component",
+            "namespace": "lsp_component::processors::Accumulator",
+            "debug_info": {
+                "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\eventcount.py",
+                "line": 14
+            }
+        },
+        {
+            "id": 3,
+            "is_measurement": true,
+            "node_decl": "Peek::default()",
+            "upstreams": [
+                {
+                    "type": "Component",
+                    "id": 2
+                }
+            ],
+            "package": "lsp-component",
+            "namespace": "lsp_component::measurements::Peek",
+            "debug_info": {
+                "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\eventcount.py",
+                "line": 14
+            }
+        }
+    ],
+    "measurement_policy": {
+        "measure_at_event_filter": "|_| true",
+        "measure_periodically_interval": -1,
+        "metrics_drain": "json",
+        "output_schema": {
+            "bufferCount": {
+                "source": {
+                    "type": "Component",
+                    "id": 3
+                },
+                "type": "i32"
+            }
+        }
+    }
+}

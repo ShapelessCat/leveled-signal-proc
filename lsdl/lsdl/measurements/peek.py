@@ -6,7 +6,8 @@ class PeekValue(BuiltinComponentBase):
         super().__init__(
             name = "Peek",
             is_measurement = True,
-            node_decl = "DurationTrue::default()",
+            node_decl = "Peek::default()",
             upstreams = [input]
         )
+        self._output_type = input.get_rust_type_name()
 

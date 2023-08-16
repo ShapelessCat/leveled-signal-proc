@@ -20,9 +20,11 @@ impl MacroContext {
         let decl_namespace: syn::Path =
             syn::parse_str(&node.namespace).map_err(self.map_lsdl_error(node))?;
         let decl_expr: syn::Expr = syn::parse_str(&node.node_decl)?;
+        //let decl = serde_json::to_string_pretty(&node).unwrap();
         let decl_code = quote! {
             let mut #node_id = {
                 use #decl_namespace;
+                //let code = #decl;
                 #decl_expr
             };
             let mut #output_var;
@@ -34,6 +36,8 @@ impl MacroContext {
         let nodes = &self.get_ir_data().nodes;
 
         let mut decl_codes = Vec::new();
+
+        //let ir = serde_json::to_string_pretty(self.get_ir_data()).unwrap();
 
         for node in nodes.iter() {
             decl_codes.push(self.generate_lsp_node_declaration(node)?);
