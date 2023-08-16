@@ -39,7 +39,7 @@ where
 mod test {
     use lsp_runtime::signal::SignalProcessor;
 
-    use crate::processors::{SignalMapper, test::create_lsp_context_for_test};
+    use crate::{processors::SignalMapper, test::create_lsp_context_for_test};
 
     #[test]
     fn test_signal_mapper() {

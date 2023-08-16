@@ -13,8 +13,15 @@ class _MeasurementConfiguration(object):
     def set_metrics_drain(self, fmt: str):
         self._metrics_drain = fmt
         return self
-    def add_metric(self, key, measurement):
-        self._output_schema[key] = measurement.get_id()
+    def add_metric(self, key, measurement, typename = "_"):
+        if typename == "_":
+            typename = measurement.get_rust_type_name()
+        if typename == "_":
+            raise "Type name must specified for a metric"
+        self._output_schema[key] = {
+            "source": measurement.get_id(),
+            "type": typename
+        }
         return self
     def to_dict(self):
         ret = {

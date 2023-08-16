@@ -99,7 +99,7 @@ where
 mod test {
     use lsp_runtime::signal::SignalProcessor;
 
-    use crate::processors::test::{create_lsp_context_for_test, TestSignalBag};
+    use crate::test::{create_lsp_context_for_test, TestSignalBag};
 
     use super::SignalGenerator;
 

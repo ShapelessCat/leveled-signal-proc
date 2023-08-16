@@ -55,7 +55,7 @@ where
 #[cfg(test)]
 mod test {
     use lsp_runtime::signal::SignalProcessor;
-    use crate::processors::test::create_lsp_context_for_test;
+    use crate::test::create_lsp_context_for_test;
     use super::Accumulator;
 
     #[test]

@@ -97,7 +97,7 @@ impl<'a, T: Clone + 'a, I: Iterator, R: Rentention<T>> SignalProcessor<'a, I> fo
 mod test {
     use lsp_runtime::signal::SignalProcessor;
 
-    use crate::processors::{test::create_lsp_context_for_test, Latch};
+    use crate::{test::create_lsp_context_for_test, processors::Latch};
 
     #[test]
     fn test_basic_latch() {

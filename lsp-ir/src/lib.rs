@@ -53,11 +53,18 @@ pub enum MetricsDrainType {
 }
 
 #[derive(Deserialize, Clone)]
+pub struct MetricSpec {
+    #[serde(rename = "type")]
+    pub typename: String,
+    pub source: NodeInput,
+}
+
+#[derive(Deserialize, Clone)]
 pub struct MeasurementPolicy {
     pub measure_at_event_filter: String,
     pub measure_periodically_interval: i64,
     pub metrics_drain: MetricsDrainType,
-    pub output_schema: HashMap<String, NodeInput>,
+    pub output_schema: HashMap<String, MetricSpec>,
 }
 
 #[derive(Deserialize, Clone)]

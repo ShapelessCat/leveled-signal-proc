@@ -9,3 +9,4 @@ class DurationTrue(BuiltinComponentBase):
             node_decl = "DurationTrue::default()",
             upstreams = [input]
         )
+        self._output_type = "u64"

@@ -4,7 +4,7 @@ use proc_macro2::TokenStream as TokenStream2;
 use quote::{quote, ToTokens};
 
 impl MacroContext {
-    fn get_node_ident(&self, id: usize) -> syn::Ident {
+    pub(crate) fn get_node_ident(&self, id: usize) -> syn::Ident {
         let node_id = syn::Ident::new(&format!("__lsp_node_{}", id), self.span());
         node_id
     }
@@ -44,7 +44,7 @@ impl MacroContext {
         .into())
     }
 
-    fn generate_downstream_ref(
+    pub (crate) fn generate_downstream_ref(
         &self,
         reference: &NodeInput,
         node: &Node,
@@ -126,7 +126,7 @@ impl MacroContext {
         for node in nodes.iter() {
             update_code_vec.push(self.generate_node_update_code(node)?);
         }
-
+        
         let out = quote! {
             #(#update_code_vec)*
         };

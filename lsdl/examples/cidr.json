@@ -272,8 +272,11 @@
         "metrics_drain": "json",
         "output_schema": {
             "totalTime": {
-                "type": "Component",
-                "id": 10
+                "source": {
+                    "type": "Component",
+                    "id": 10
+                },
+                "type": "u64"
             }
         }
     }

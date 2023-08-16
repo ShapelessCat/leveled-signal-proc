@@ -168,8 +168,11 @@
         "metrics_drain": "json",
         "output_schema": {
             "playtime": {
-                "type": "Component",
-                "id": 5
+                "source": {
+                    "type": "Component",
+                    "id": 5
+                },
+                "type": "u64"
             }
         }
     }
