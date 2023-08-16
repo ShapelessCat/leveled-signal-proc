@@ -1,4 +1,3 @@
-
 from lsdl.signal import LeveledSignalBase
 from lsdl.schema import MappedInputType
 
