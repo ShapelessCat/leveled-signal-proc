@@ -11,6 +11,6 @@ input = Input()
 event_filter(
     event_signal = input.user_action,
     event_value = "P",
-).count_changes().add_metric("bufferCount")
+).count_changes().add_metric("pCount")
 
 print_ir_to_stdout()
