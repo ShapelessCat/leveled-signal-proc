@@ -4,7 +4,7 @@ The experimential time-state analytics platform written in Rust.
 
 # Dependecies
 
-- Latest Rust compiler (MSRV is still unknown)
+- Latest Rust compiler (MSRV is still unknown but rustc 1.71 sucessfully compiles)
 - Python 3 (For LSDL)
 
 # Build

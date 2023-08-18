@@ -9,8 +9,12 @@ edition = "2021"
 path = "src/lib.rs"
 
 [[bin]]
-name = "lsp-ir-verifier"
-path = "verifier/main.rs"
+name = "verify-lsp-ir"
+path = "src/verifier/main.rs"
+
+[[bin]]
+name = "lsp-ir-dot-graph"
+path = "src/visualize/main.rs"
 
 [dependencies]
 serde = {version = "1.0.158", features = ["derive"]}

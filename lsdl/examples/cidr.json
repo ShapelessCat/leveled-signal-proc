@@ -7,7 +7,7 @@
                 "clock_companion": "player_state_clock",
                 "input_key": "newPlayerState",
                 "debug_info": {
-                    "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/cidr.py",
+                    "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\cidr.py",
                     "line": 6
                 }
             },
@@ -16,7 +16,7 @@
                 "clock_companion": "network_clock",
                 "input_key": "newNetwork",
                 "debug_info": {
-                    "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/cidr.py",
+                    "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\cidr.py",
                     "line": 7
                 }
             },
@@ -25,7 +25,7 @@
                 "clock_companion": "cdn_clock",
                 "input_key": "newCdn",
                 "debug_info": {
-                    "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/cidr.py",
+                    "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\cidr.py",
                     "line": 8
                 }
             },
@@ -34,7 +34,7 @@
                 "clock_companion": "user_action_clock",
                 "input_key": "newUserAction",
                 "debug_info": {
-                    "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/cidr.py",
+                    "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\cidr.py",
                     "line": 9
                 }
             }
@@ -54,7 +54,7 @@
             "package": "lsp-component",
             "namespace": "lsp_component::processors::SignalMapper",
             "debug_info": {
-                "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/cidr.py",
+                "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\cidr.py",
                 "line": 13
             }
         },
@@ -76,7 +76,7 @@
             "package": "lsp-component",
             "namespace": "lsp_component::processors::Latch",
             "debug_info": {
-                "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/cidr.py",
+                "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\cidr.py",
                 "line": 13
             }
         },
@@ -93,7 +93,7 @@
             "package": "lsp-component",
             "namespace": "lsp_component::processors::SignalMapper",
             "debug_info": {
-                "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/cidr.py",
+                "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\cidr.py",
                 "line": 14
             }
         },
@@ -115,7 +115,7 @@
             "package": "lsp-component",
             "namespace": "lsp_component::processors::Latch",
             "debug_info": {
-                "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/cidr.py",
+                "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\cidr.py",
                 "line": 14
             }
         },
@@ -132,7 +132,7 @@
             "package": "lsp-component",
             "namespace": "lsp_component::processors::SignalMapper",
             "debug_info": {
-                "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/cidr.py",
+                "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\cidr.py",
                 "line": 14
             }
         },
@@ -158,7 +158,7 @@
             "package": "lsp-component",
             "namespace": "lsp_component::processors::SignalMapper",
             "debug_info": {
-                "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/cidr.py",
+                "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\cidr.py",
                 "line": 13
             }
         },
@@ -175,7 +175,7 @@
             "package": "lsp-component",
             "namespace": "lsp_component::processors::SignalMapper",
             "debug_info": {
-                "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/cidr.py",
+                "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\cidr.py",
                 "line": 15
             }
         },
@@ -201,7 +201,7 @@
             "package": "lsp-component",
             "namespace": "lsp_component::processors::SignalMapper",
             "debug_info": {
-                "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/cidr.py",
+                "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\cidr.py",
                 "line": 13
             }
         },
@@ -218,7 +218,7 @@
             "package": "lsp-component",
             "namespace": "lsp_component::processors::SignalMapper",
             "debug_info": {
-                "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/cidr.py",
+                "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\cidr.py",
                 "line": 16
             }
         },
@@ -244,7 +244,7 @@
             "package": "lsp-component",
             "namespace": "lsp_component::processors::SignalMapper",
             "debug_info": {
-                "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/cidr.py",
+                "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\cidr.py",
                 "line": 13
             }
         },
@@ -261,7 +261,7 @@
             "package": "lsp-component",
             "namespace": "lsp_component::measurements::DurationTrue",
             "debug_info": {
-                "file": "/mnt/d/source/leveled-signal-proc/lsdl/examples/cidr.py",
+                "file": "D:\\source\\leveled-signal-proc\\lsdl\\examples\\cidr.py",
                 "line": 17
             }
         }
@@ -271,7 +271,7 @@
         "measure_periodically_interval": -1,
         "metrics_drain": "json",
         "output_schema": {
-            "totalTime": {
+            "totalPlayTime": {
                 "source": {
                     "type": "Component",
                     "id": 10

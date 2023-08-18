@@ -14,6 +14,6 @@ target = has_been_true(input.user_action == "play") &\
       ~has_been_true(input.user_action == "seek", 5_000_000_000) &\
         (input.player_state == "buffer") &\
         (input.cdn == "cdn1")
-target.measure_duration_true().add_metric("totalTime")
+target.measure_duration_true().add_metric("totalPlayTime")
 
 print_ir_to_stdout()

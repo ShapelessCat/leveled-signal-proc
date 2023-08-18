@@ -67,9 +67,15 @@ impl syn::parse::Parse for MainFnMeta {
 }
 
 #[proc_macro]
-pub fn lsp_data_logic_main(input: TokenStream) -> TokenStream {
+pub fn include_lsp_ir(input: TokenStream) -> TokenStream {
     let MainFnMeta{id, path} = parse_macro_input!(input as MainFnMeta);
+    let real_ir_path = match context::MacroContext::normalize_ir_path(&path.value()) {
+        Ok(path) => path,
+        Err(e) => panic!("{}", e.to_string()),
+    };
+    let real_ir_path = real_ir_path.to_str();
     quote::quote! {
+        const _ : () = { include_str!(#real_ir_path); };
         lsp_codegen::define_input_schema!(#path);
         lsp_codegen::define_output_schema!(#path);
         pub fn #id<InputIter, OutputHandler>(input_iter: InputIter, mut out_handle: OutputHandler) -> Result<(), anyhow::Error> 

@@ -106,7 +106,7 @@
         "measure_periodically_interval": -1,
         "metrics_drain": "json",
         "output_schema": {
-            "bufferCount": {
+            "pCount": {
                 "source": {
                     "type": "Component",
                     "id": 3

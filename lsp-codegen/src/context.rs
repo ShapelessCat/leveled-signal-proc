@@ -1,6 +1,6 @@
 use std::{
     fs::File,
-    path::{Path as FilePath, PathBuf},
+    path::{Path as FilePath, PathBuf}, env::VarError,
 };
 
 use lsp_ir::{DebugInfo, LspIr, Node, SchemaField};
@@ -49,24 +49,26 @@ impl MacroContext {
             syn::Error::new(err.span(), message)
         }
     }
+    pub fn normalize_ir_path<P: AsRef<FilePath>>(ir_path: &P) -> Result<PathBuf, VarError> {
+        let manifest_dir_str = std::env::var("CARGO_MANIFEST_DIR")?;
+        let ir_path = ir_path.as_ref();
+
+        Ok(if ir_path.is_relative() {
+            let mut ir_path_buf = PathBuf::from(manifest_dir_str);
+            ir_path_buf.extend(ir_path.components());
+            ir_path_buf
+        } else {
+            ir_path.to_path_buf()
+        })
+    }
 }
 
 impl Parse for MacroContext {
     fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
         let path_lit: LitStr = input.parse()?;
         let ir_path_str = path_lit.value();
-        let ir_path: &FilePath = ir_path_str.as_ref();
-
-        let manifest_dir_str = std::env::var("CARGO_MANIFEST_DIR")
+        let ir_path = Self::normalize_ir_path(&ir_path_str)
             .map_err(|e| syn::Error::new_spanned(&path_lit, e.to_string()))?;
-
-        let ir_path = if ir_path.is_relative() {
-            let mut ir_path_buf = PathBuf::from(manifest_dir_str);
-            ir_path_buf.extend(ir_path.components());
-            ir_path_buf
-        } else {
-            ir_path.to_path_buf()
-        };
 
         let input =
             File::open(&ir_path).map_err(|e| syn::Error::new_spanned(&path_lit, e.to_string()))?;

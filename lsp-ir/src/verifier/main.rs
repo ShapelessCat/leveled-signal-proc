@@ -9,13 +9,12 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         match parse_result {
             Ok(ir) => {
-                println!("LSPIR in {} is valid.", ir_path);
-                println!("Number of Nodes: {}", ir.nodes.len());
-                println!("Number of Metrics: {}", ir.measurement_policy.output_schema.len());
+
+                eprintln!("LSPIR in {} is valid. (# of nodes: {}, # of metrics: {}).", ir_path, ir.nodes.len(), ir.measurement_policy.output_schema.len());
             }
             Err(err) => {
-                println!("LSPIR in {} is malformed", ir_path);
-                println!("Error: {}", err);
+                eprintln!("LSPIR in {} is malformed: {}", ir_path, err);
+                std::process::exit(1);
             }
         }
     }
