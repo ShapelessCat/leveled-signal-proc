@@ -8,12 +8,12 @@ impl MacroContext {
         let derive_lines = match self.get_ir_data().measurement_policy.metrics_drain {
             lsp_ir::MetricsDrainType::Json => quote! {
                 #[derive(serde::Serialize)]
-            }
+            },
         };
         for (name, data_spec) in self.get_ir_data().measurement_policy.output_schema.iter() {
             let id = syn::Ident::new(name, self.span());
-            let ty : syn::Type = syn::parse_str(&data_spec.typename)?;
-            item_list.push(quote!{
+            let ty: syn::Type = syn::parse_str(&data_spec.typename)?;
+            item_list.push(quote! {
                 #id: #ty
             });
         }
@@ -23,7 +23,8 @@ impl MacroContext {
             pub struct MetricsBag {
                 #(#item_list,)*
             }
-        }.into())
+        }
+        .into())
     }
 
     pub(crate) fn impl_metrics_measuring(&self) -> TokenStream2 {
@@ -32,19 +33,20 @@ impl MacroContext {
             let id = syn::Ident::new(name, self.span());
             let node_ref = match data_spec.source {
                 lsp_ir::NodeInput::Component { id } => self.get_node_ident(id),
-                _ => panic!("Unsupported measurement input")
+                _ => panic!("Unsupported measurement input"),
             };
-            item_list.push(quote!{
-                #id: { 
+            item_list.push(quote! {
+                #id: {
                     use lsp_runtime::measurement::Measurement;
                     #node_ref . measure(&mut update_context)
                 }
             });
         }
-        quote!{
+        quote! {
             let _metrics_bag = MetricsBag {
                 #(#item_list,)*
             };
-        }.into()
+        }
+        .into()
     }
 }

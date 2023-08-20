@@ -150,7 +150,8 @@ fn main() {
             );
             c_counter_output = c_counter.update(&mut update_ctx, (&c_filter_latch_output, &1));
 
-            all_counter_output = all_counter.update(&mut update_ctx, (&state.user_action_watermark, &1));
+            all_counter_output =
+                all_counter.update(&mut update_ctx, (&state.user_action_watermark, &1));
 
             p_e_state_machine_output = p_e_state_machine.update(
                 &mut update_ctx,

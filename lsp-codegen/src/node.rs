@@ -48,7 +48,7 @@ impl MacroContext {
         .into())
     }
 
-    pub (crate) fn generate_downstream_ref(
+    pub(crate) fn generate_downstream_ref(
         &self,
         reference: &NodeInput,
         node: &Node,
@@ -113,11 +113,25 @@ impl MacroContext {
                 )
             }
         };
+        let mut before_node_update = quote!();
+        let mut after_node_update = quote!();
+        let node_id = node.id;
+        if let Some(inst_id) = self.get_instrument_var() {
+            before_node_update = quote!{
+                #inst_id . node_update_begin(#node_id);
+            };
+            after_node_update = quote! {
+                #inst_id . node_update_end(#node_id);
+                #inst_id . handle_node_output(&#out_ident);
+            }
+        }
         Ok(quote! {
             {
                 use lsp_runtime::signal::SignalProcessor;
                 use lsp_runtime::measurement::Measurement;
+                #before_node_update
                 #out_ident = #node_ident . update(&mut update_context, #input_expr);
+                #after_node_update
             }
         }
         .into())
@@ -130,7 +144,7 @@ impl MacroContext {
         for node in nodes.iter() {
             update_code_vec.push(self.generate_node_update_code(node)?);
         }
-        
+
         let out = quote! {
             #(#update_code_vec)*
         };

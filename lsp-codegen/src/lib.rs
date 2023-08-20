@@ -3,9 +3,9 @@ use proc_macro::TokenStream;
 use syn::parse_macro_input;
 
 mod context;
+mod metrics;
 mod node;
 mod schema;
-mod metrics;
 
 #[proc_macro]
 pub fn define_input_schema(input: TokenStream) -> TokenStream {
@@ -56,32 +56,31 @@ struct MainFnMeta {
 
 impl syn::parse::Parse for MainFnMeta {
     fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
-        let id : syn::Ident = input.parse()?;
+        let id: syn::Ident = input.parse()?;
         let _at: syn::Token![@] = input.parse()?;
-        let path : syn::LitStr = input.parse()?;
-        Ok(Self {
-            id,
-            path
-        })
+        let path: syn::LitStr = input.parse()?;
+        Ok(Self { id, path })
     }
 }
 
 #[proc_macro]
 pub fn include_lsp_ir(input: TokenStream) -> TokenStream {
-    let MainFnMeta{id, path} = parse_macro_input!(input as MainFnMeta);
+    let MainFnMeta { id, path } = parse_macro_input!(input as MainFnMeta);
     let real_ir_path = match context::MacroContext::normalize_ir_path(&path.value()) {
         Ok(path) => path,
         Err(e) => panic!("{}", e.to_string()),
     };
     let real_ir_path = real_ir_path.to_str();
+
     quote::quote! {
         const _ : () = { include_str!(#real_ir_path); };
         lsp_codegen::define_input_schema!(#path);
         lsp_codegen::define_output_schema!(#path);
-        pub fn #id<InputIter, OutputHandler>(input_iter: InputIter, mut out_handle: OutputHandler) -> Result<(), anyhow::Error> 
+        pub fn #id<InputIter, OutputHandler, Inst>(input_iter: InputIter, mut out_handle: OutputHandler, instrument_ctx: &mut Inst) -> Result<(), anyhow::Error>
         where
             InputIter: Iterator<Item = InputSignalBagPatch>,
-            OutputHandler: FnMut(MetricsBag) -> Result<(), anyhow::Error>
+            OutputHandler: FnMut(MetricsBag) -> Result<(), anyhow::Error>,
+            Inst: lsp_runtime::instrument::LspDataLogicInstrument,
         {
             use lsp_runtime::LspContext;
             use serde_json::Deserializer;
@@ -89,13 +88,17 @@ pub fn include_lsp_ir(input: TokenStream) -> TokenStream {
             lsp_codegen::define_data_logic_nodes!(#path);
             let mut ctx = LspContext::<_, InputSignalBag>::new(input_iter);
             while let Some(moment) = ctx.next_event(&mut input_state) {
+                instrument_ctx.data_logic_update_begin();
                 let mut update_context = ctx.borrow_update_context();
                 if moment.should_update_signals() {
-                    lsp_codegen::impl_data_logic_updates!(#path);
+                    lsp_codegen::impl_data_logic_updates!(#path , instrument_ctx);
                 }
                 if moment.should_take_measurements() {
                     lsp_codegen::impl_metrics_measurement!(#path);
+                    instrument_ctx.data_logic_update_end();
                     out_handle(_metrics_bag)?;
+                } else {
+                    instrument_ctx.data_logic_update_end();
                 }
             }
             Ok(())

@@ -9,8 +9,12 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         match parse_result {
             Ok(ir) => {
-
-                eprintln!("LSPIR in {} is valid. (# of nodes: {}, # of metrics: {}).", ir_path, ir.nodes.len(), ir.measurement_policy.output_schema.len());
+                eprintln!(
+                    "LSPIR in {} is valid. (# of nodes: {}, # of metrics: {}).",
+                    ir_path,
+                    ir.nodes.len(),
+                    ir.measurement_policy.output_schema.len()
+                );
             }
             Err(err) => {
                 eprintln!("LSPIR in {} is malformed: {}", ir_path, err);

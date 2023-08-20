@@ -59,8 +59,12 @@ mod test {
 
     #[test]
     fn test_liveness_checker() {
-        let input =  [1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1];
-        let output = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0];
+        let input = [
+            1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
+        ];
+        let output = [
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0,
+        ];
         let mut context = create_lsp_context_for_test_from_input_slice(&input);
         let mut liveness = LivenessChecker::<_, TestSignalInput>::new(|data| data.value > 0, 6);
         let mut latch_output = 0;
@@ -72,7 +76,11 @@ mod test {
             if buf.value > 0 {
                 latch_output = m.timestamp();
             }
-            let value = if liveness.update(&mut context.borrow_update_context(), &latch_output) { 1 } else { 0 };
+            let value = if liveness.update(&mut context.borrow_update_context(), &latch_output) {
+                1
+            } else {
+                0
+            };
             assert_eq!(Some(value), out_iter.next().cloned())
         }
     }

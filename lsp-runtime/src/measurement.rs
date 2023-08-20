@@ -8,9 +8,6 @@ pub trait Measurement<'a, EventIter: Iterator> {
     type Input: 'a;
     type Output;
 
-    #[inline(always)]
-    fn reset(&mut self) {}
-
     /// Notify the value change take effect from now
     fn update(&mut self, ctx: &mut UpdateContext<EventIter>, input: Self::Input);
 

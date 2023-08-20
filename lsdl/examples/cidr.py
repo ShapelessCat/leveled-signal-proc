@@ -3,6 +3,7 @@ from lsdl.modules import *
 from lsdl import print_ir_to_stdout
 
 class Input(InputSchemaBase):
+    _timestamp_key = "dateTime"
     player_state = named("newPlayerState", String())
     network      = named("newNetwork",     String())
     cdn          = named("newCdn",         String())

@@ -35,8 +35,8 @@ pub struct LspContext<InputIter: Iterator, InputSignalBagType> {
 
 pub struct UpdateContext<'a, InputIter: Iterator> {
     queue: &'a mut InternalEventQueue,
-    frontier: Timestamp,
     iter: &'a mut MultiPeek<InputIter>,
+    frontier: Timestamp,
 }
 
 impl<'a, InputIter: Iterator> UpdateContext<'a, InputIter> {
@@ -94,6 +94,7 @@ where
         }
     }
 
+    #[inline(always)]
     fn assemble_next_state(&mut self, timestamp: Timestamp, state: &mut SignalBag) {
         while let Some(ts) = self.iter.peek().map(|p| p.timestamp()) {
             if ts != timestamp {
@@ -159,25 +160,29 @@ mod test {
         }
     }
 
-    fn create_test_context() -> LspContext<<Vec<TestInput> as IntoIterator>::IntoIter, TestSignalBag> {
-        LspContext::new(vec![
-            TestInput {
-                timestamp: 0,
-                value: 1,
-            },
-            TestInput {
-                timestamp: 0,
-                value: 2,
-            },
-            TestInput {
-                timestamp: 1,
-                value: 3,
-            },
-            TestInput {
-                timestamp: 20,
-                value: 4,
-            },
-        ].into_iter())
+    fn create_test_context() -> LspContext<<Vec<TestInput> as IntoIterator>::IntoIter, TestSignalBag>
+    {
+        LspContext::new(
+            vec![
+                TestInput {
+                    timestamp: 0,
+                    value: 1,
+                },
+                TestInput {
+                    timestamp: 0,
+                    value: 2,
+                },
+                TestInput {
+                    timestamp: 1,
+                    value: 3,
+                },
+                TestInput {
+                    timestamp: 20,
+                    value: 4,
+                },
+            ]
+            .into_iter(),
+        )
     }
 
     #[test]
@@ -234,5 +239,4 @@ mod test {
         assert_eq!(state.value, 4);
         assert_eq!(context.next_event(&mut state), None);
     }
-
 }

@@ -1,2 +1,2 @@
-from lsdl.measurements.duration_true import DurationTrue
+from lsdl.measurements.duration import DurationTrue, DurationSinceBecomeTrue
 from lsdl.measurements.peek import PeekValue

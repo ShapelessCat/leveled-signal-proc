@@ -5,7 +5,7 @@ pub mod processors;
 pub(crate) mod test {
     use std::vec::IntoIter;
 
-    use lsp_runtime::{Timestamp, WithTimestamp, InputSignalBag, LspContext};
+    use lsp_runtime::{InputSignalBag, LspContext, Timestamp, WithTimestamp};
 
     #[derive(Default, Clone)]
     pub(crate) struct TestSignalBag {
@@ -31,17 +31,32 @@ pub(crate) mod test {
         }
     }
 
-    pub(crate) fn create_lsp_context_for_test() -> LspContext<IntoIter<TestSignalInput>, TestSignalBag> {
-        LspContext::new((0..1000).map(|i| TestSignalInput {
-            value: i as u32,
-            timestamp: i,
-        }).collect::<Vec<_>>().into_iter())
+    pub(crate) fn create_lsp_context_for_test(
+    ) -> LspContext<IntoIter<TestSignalInput>, TestSignalBag> {
+        LspContext::new(
+            (0..1000)
+                .map(|i| TestSignalInput {
+                    value: i as u32,
+                    timestamp: i,
+                })
+                .collect::<Vec<_>>()
+                .into_iter(),
+        )
     }
 
-    pub(crate) fn create_lsp_context_for_test_from_input_slice(input: &[u32]) -> LspContext<IntoIter<TestSignalInput>, TestSignalBag> {
-        LspContext::new(input.iter().zip(0..).map(|(&v, t)| TestSignalInput {
-            value: v,
-            timestamp: t
-        }).collect::<Vec<_>>().into_iter())
+    pub(crate) fn create_lsp_context_for_test_from_input_slice(
+        input: &[u32],
+    ) -> LspContext<IntoIter<TestSignalInput>, TestSignalBag> {
+        LspContext::new(
+            input
+                .iter()
+                .zip(0..)
+                .map(|(&v, t)| TestSignalInput {
+                    value: v,
+                    timestamp: t,
+                })
+                .collect::<Vec<_>>()
+                .into_iter(),
+        )
     }
 }

@@ -51,7 +51,7 @@ impl<'a, I: Iterator> Measurement<'a, I> for DurationTrue {
 
     fn measure(&self, ctx: &mut UpdateContext<I>) -> Self::Output {
         let timestamp = ctx.frontier();
-        assert!(self.last_input_timestamp <= timestamp && timestamp <= self.cur_input_timestamp);
+        //assert!(self.last_input_timestamp <= timestamp && timestamp <= self.cur_input_timestamp);
         self.accumulated_duration
             + if self.last_input {
                 timestamp - self.last_input_timestamp

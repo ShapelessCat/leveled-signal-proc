@@ -17,6 +17,7 @@ impl<'a, T: PartialEq + Clone + 'a, I: Iterator> SignalProcessor<'a, I>
 
     type Output = Timestamp;
 
+    #[inline(always)]
     fn update(&mut self, ctx: &mut UpdateContext<I>, input: Self::Input) -> Self::Output {
         if &self.current_value != input {
             self.output_buf = ctx.frontier() - self.current_value_since;
@@ -40,7 +41,7 @@ mod test {
         let mut signal_bag = TestSignalBag::default();
         let mut node = DurationOfPreviousLevel::default();
         let mut ctx = create_lsp_context_for_test();
-        
+
         let moment = ctx.next_event(&mut signal_bag).unwrap();
         assert_eq!(moment.timestamp(), 0);
         let mut uc = ctx.borrow_update_context();
@@ -52,19 +53,19 @@ mod test {
         let mut uc = ctx.borrow_update_context();
         assert_eq!(node.update(&mut uc, &0), 0);
         drop(uc);
-        
+
         let moment = ctx.next_event(&mut signal_bag).unwrap();
         assert_eq!(moment.timestamp(), 2);
         let mut uc = ctx.borrow_update_context();
         assert_eq!(node.update(&mut uc, &1), 2);
         drop(uc);
-        
+
         let moment = ctx.next_event(&mut signal_bag).unwrap();
         assert_eq!(moment.timestamp(), 3);
         let mut uc = ctx.borrow_update_context();
         assert_eq!(node.update(&mut uc, &1), 2);
         drop(uc);
-        
+
         let moment = ctx.next_event(&mut signal_bag).unwrap();
         assert_eq!(moment.timestamp(), 4);
         let mut uc = ctx.borrow_update_context();

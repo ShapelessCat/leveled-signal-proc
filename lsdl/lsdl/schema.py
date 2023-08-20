@@ -15,6 +15,12 @@ class CompilerInferredType(TypeBase):
     def __init__(self):
         super().__init__("_")
 
+class DateTime(TypeBase):
+    def __init__(self, timezone: str = "Utc"):
+        super().__init__("DateTime<chrono::" + timezone + ">")
+    def render_rust_const(self, val) -> str:
+        raise "Date time const value is not supported"
+
 class String(TypeBase):
     def __init__(self):
         super().__init__("String")
@@ -86,6 +92,8 @@ class InputSchemaBase(TypeBase):
         global _defined_schema
         super().__init__(name)
         self._members = []
+        if "_timestamp_key" not in self.__dir__():
+            self._timestamp_key = "timestamp"
         for item_name in self.__dir__():
             item = self.__getattribute__(item_name)
             if isinstance(item, TypeBase):
@@ -98,6 +106,7 @@ class InputSchemaBase(TypeBase):
     def to_dict(self)  -> dict:
         ret = {
             "type_name": self.get_rust_type_name(),
+            "patch_timestamp_key": self._timestamp_key,
             "members": {}
         }
         for member in self._members:

@@ -1,11 +1,12 @@
 use std::{
+    env::VarError,
     fs::File,
-    path::{Path as FilePath, PathBuf}, env::VarError,
+    path::{Path as FilePath, PathBuf},
 };
 
 use lsp_ir::{DebugInfo, LspIr, Node, SchemaField};
-use proc_macro2::Span;
-use syn::{parse::Parse, LitStr};
+use proc_macro2::{Span, Ident};
+use syn::{parse::Parse, LitStr, Token};
 
 pub(crate) trait LsdlDebugInfo {
     fn debug_info(&self) -> Option<&DebugInfo>;
@@ -26,9 +27,13 @@ impl LsdlDebugInfo for SchemaField {
 pub(crate) struct MacroContext {
     ir_path_span: Span,
     ir_data: LspIr,
+    instrument_var: Option<Ident>,
 }
 
 impl MacroContext {
+    pub fn get_instrument_var(&self) -> Option<&Ident> {
+        self.instrument_var.as_ref()
+    }
     pub fn get_ir_data(&self) -> &LspIr {
         &self.ir_data
     }
@@ -66,6 +71,12 @@ impl MacroContext {
 impl Parse for MacroContext {
     fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
         let path_lit: LitStr = input.parse()?;
+        let instrument_var: Option<Ident> = if input.peek(Token![,]) {
+            let _ : Token![,] = input.parse()?;
+            Some(input.parse()?)
+        } else {
+            None
+        };
         let ir_path_str = path_lit.value();
         let ir_path = Self::normalize_ir_path(&ir_path_str)
             .map_err(|e| syn::Error::new_spanned(&path_lit, e.to_string()))?;
@@ -85,6 +96,7 @@ impl Parse for MacroContext {
         Ok(Self {
             ir_path_span: path_lit.span().clone(),
             ir_data: ir_obj,
+            instrument_var,
         })
     }
 }

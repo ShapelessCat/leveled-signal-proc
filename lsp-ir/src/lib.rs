@@ -21,6 +21,7 @@ pub struct SchemaField {
 #[derive(Deserialize, Serialize, Clone)]
 pub struct Schema {
     pub type_name: String,
+    pub patch_timestamp_key: String,
     pub members: HashMap<String, SchemaField>,
 }
 

@@ -8,9 +8,10 @@ class Input(InputSchemaBase):
 
 input = Input()
 
-event_filter(
-    event_signal = input.user_action,
-    event_value = "P",
-).count_changes().add_metric("pCount")
+SignalFilterBuilder(input.user_action)\
+    .filter_values("P")\
+    .build_clock_filter()\
+    .count_changes()\
+    .add_metric("pCount")
 
 print_ir_to_stdout()

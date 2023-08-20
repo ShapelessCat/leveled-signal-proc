@@ -17,6 +17,9 @@ class LeveledSignalBase(object):
     def measure_duration_true(self):
         from lsdl.measurements import DurationTrue
         return DurationTrue(self)
+    def measure_duration_since_true(self):
+        from lsdl.measurements import DurationSinceBecomeTrue
+        return DurationSinceBecomeTrue(self)
     def _bin_op(self, other, op):
         from lsdl.signal_processors import SignalMapper
         from lsdl.const import Const
@@ -42,4 +45,11 @@ class LeveledSignalBase(object):
         return self._bin_op(other, "^")
     def __invert__(self):
         return self._bin_op(True, "^")
-    
+    def __lt__(self, other):
+        return self._bin_op(other, "<")
+    def __gt__(self, other):
+        return self._bin_op(other, ">")
+    def __le__(self, other):
+        return self._bin_op(other, "<=")
+    def __ge__(self, other):
+        return self._bin_op(other, "<=")

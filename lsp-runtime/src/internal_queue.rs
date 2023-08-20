@@ -1,5 +1,5 @@
 use crate::{Moment, Timestamp};
-use std::{collections::BinaryHeap, cmp::Reverse};
+use std::{cmp::Reverse, collections::BinaryHeap};
 
 /// The queue sorting internal events
 ///
@@ -32,7 +32,9 @@ impl InternalEventQueue {
     }
 
     pub fn earliest_scheduled_time(&self) -> Timestamp {
-        self.queue.peek().map_or(Timestamp::MAX, |Reverse(e)| e.timestamp())
+        self.queue
+            .peek()
+            .map_or(Timestamp::MAX, |Reverse(e)| e.timestamp())
     }
 
     pub fn pop(&mut self) -> Option<Moment> {
@@ -53,7 +55,7 @@ impl InternalEventQueue {
 }
 
 #[cfg(test)]
-mod test{
+mod test {
     use super::*;
     #[test]
     fn test_internal_event_queue() {

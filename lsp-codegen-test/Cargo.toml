@@ -15,3 +15,7 @@ path = "../lsp-codegen"
 path = "../lsp-runtime"
 [dependencies.lsp-component]
 path = "../lsp-component"
+
+#[[bin]]
+#name = "expanded"
+#path = "src/main.exp.rs"

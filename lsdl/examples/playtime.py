@@ -2,6 +2,7 @@ from lsdl.schema import *
 from lsdl import print_ir_to_stdout
 
 class Input(InputSchemaBase):
+    _timestamp_key = "dateTime"
     player_state = named("newPlayerState", String())
     network      = named("newNetwork",     String())
     cdn          = named("newCdn",         String())
@@ -9,7 +10,7 @@ class Input(InputSchemaBase):
 
 input = Input()
 
-((input.player_state == "playing") & (input.cdn == "cdn1") & (input.network == "WIFI"))\
+((input.player_state == "play") & (input.cdn == "cdn1") & (input.network == "WIFI"))\
     .measure_duration_true() \
     .add_metric("playtime")
 

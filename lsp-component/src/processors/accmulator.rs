@@ -37,11 +37,8 @@ where
 
     type Output = T;
 
-    fn update(
-        &mut self,
-        _: &mut UpdateContext<I>,
-        (control, data): Self::Input,
-    ) -> Self::Output {
+    #[inline(always)]
+    fn update(&mut self, _: &mut UpdateContext<I>, (control, data): Self::Input) -> Self::Output {
         if &self.prev_control_signal != control {
             if (self.filter)(control) {
                 self.accumulator += data.clone();
@@ -54,9 +51,9 @@ where
 
 #[cfg(test)]
 mod test {
-    use lsp_runtime::signal::SignalProcessor;
-    use crate::test::create_lsp_context_for_test;
     use super::Accumulator;
+    use crate::test::create_lsp_context_for_test;
+    use lsp_runtime::signal::SignalProcessor;
 
     #[test]
     fn test_basic_logic() {
@@ -82,5 +79,4 @@ mod test {
         assert_eq!(2, counter.update(&mut uc, (&3, &3)));
         assert_eq!(6, counter.update(&mut uc, (&4, &4)));
     }
-
 }

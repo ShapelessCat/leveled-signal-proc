@@ -4,7 +4,7 @@ pub trait SignalFunc<T> {
     fn call(&mut self, ts: Timestamp) -> (T, Timestamp);
 }
 
-impl <T, F: FnMut(Timestamp) -> (T, Timestamp)> SignalFunc<T> for F {
+impl<T, F: FnMut(Timestamp) -> (T, Timestamp)> SignalFunc<T> for F {
     fn call(&mut self, ts: Timestamp) -> (T, Timestamp) {
         self(ts)
     }
@@ -12,7 +12,7 @@ impl <T, F: FnMut(Timestamp) -> (T, Timestamp)> SignalFunc<T> for F {
 
 pub struct ConstSignalFunc<T>(pub T);
 
-impl <T: Clone> SignalFunc<T> for ConstSignalFunc<T> {
+impl<T: Clone> SignalFunc<T> for ConstSignalFunc<T> {
     fn call(&mut self, _: Timestamp) -> (T, Timestamp) {
         (self.0.clone(), Timestamp::MAX)
     }
@@ -43,7 +43,10 @@ where
 }
 
 impl SignalGenerator {
-    pub fn square_wave(period: Timestamp, phase: Timestamp) -> SignalGenerator<impl FnMut(u64) -> (bool, u64), bool> {
+    pub fn square_wave(
+        period: Timestamp,
+        phase: Timestamp,
+    ) -> SignalGenerator<impl FnMut(u64) -> (bool, u64), bool> {
         SignalGenerator::new(move |now| {
             (
                 ((now - phase) / period) & 1 > 0,
@@ -82,6 +85,7 @@ where
 
     type Output = O;
 
+    #[inline(always)]
     fn update(&mut self, ctx: &mut UpdateContext<I>, (): ()) -> Self::Output {
         if self.until_ts <= ctx.frontier() {
             let (last_value, time_diff) = (self.signal_func)(ctx.frontier());
@@ -151,10 +155,10 @@ mod test {
 
             if moment.timestamp() % 100 == 0 {
                 let c = fa + fb;
-                fa = fb; 
+                fa = fb;
                 fb = c;
             }
-            
+
             assert_eq!(value, fa);
         }
     }

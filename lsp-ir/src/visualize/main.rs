@@ -1,4 +1,4 @@
-use std::{io::Read, error::Error, fmt::Write, path::{Path, PathBuf}};
+use std::{error::Error, fmt::Write, io::Read, path::PathBuf};
 
 use lsp_ir::{LspIr, NodeInput};
 
@@ -16,14 +16,16 @@ fn render_upstream_refs(input: &NodeInput) -> Vec<String> {
         NodeInput::InputSignal { id } => {
             vec![format!("input:{}", id)]
         }
-        NodeInput::Tuple { values } => {
-            values.iter().map(|node| render_upstream_refs(node).into_iter()).flatten().collect()
-        }
+        NodeInput::Tuple { values } => values
+            .iter()
+            .map(|node| render_upstream_refs(node).into_iter())
+            .flatten()
+            .collect(),
     };
     upstream
 }
 fn visualize_lsp_ir<R: Read>(reader: R) -> Result<(), Box<dyn Error>> {
-    let ir : LspIr = serde_json::from_reader(reader)?;
+    let ir: LspIr = serde_json::from_reader(reader)?;
 
     println!("digraph{{\n\trankdir=LR;");
 
@@ -32,21 +34,28 @@ fn visualize_lsp_ir<R: Read>(reader: R) -> Result<(), Box<dyn Error>> {
     let mut schema_node = String::new();
     for (name, tn) in ir.schema.members.iter() {
         write!(&mut schema_node, "<{name}>{name}|", name = name)?;
-        write!(&mut schema_node, "<{name}>&lt;clk&gt;|", name = tn.clock_companion)?;
+        write!(
+            &mut schema_node,
+            "<{name}>&lt;clk&gt;|",
+            name = tn.clock_companion
+        )?;
     }
     schema_node.pop();
 
-    println!("\t\tinput[shape=record;style=filled;label=\"{schema}\"]", schema = schema_node);
+    println!(
+        "\t\tinput[shape=record;style=filled;label=\"{schema}\"]",
+        schema = schema_node
+    );
 
     for node in ir.nodes.iter() {
         let mut ins = String::new();
         for (id, _input) in node.upstreams.iter().enumerate() {
-            write!(&mut ins, "<input{id}>[{id}]|", id=id).unwrap();
+            write!(&mut ins, "<input{id}>[{id}]|", id = id).unwrap();
         }
         ins.pop();
         let namespace = {
             if let Some(pos) = node.namespace.rfind("::") {
-                node.namespace[pos+2..].to_string()
+                node.namespace[pos + 2..].to_string()
             } else {
                 node.namespace.clone()
             }
@@ -59,7 +68,10 @@ fn visualize_lsp_ir<R: Read>(reader: R) -> Result<(), Box<dyn Error>> {
         );
     }
     for (metric_name, _) in ir.measurement_policy.output_schema.iter() {
-        println!("\t\toutput_{name}[shape=box;style=filled;fillcolor=gray;label=\"{name}\"]", name = metric_name);
+        println!(
+            "\t\toutput_{name}[shape=box;style=filled;fillcolor=gray;label=\"{name}\"]",
+            name = metric_name
+        );
     }
     println!("\t}}");
 
@@ -82,11 +94,15 @@ fn visualize_lsp_ir<R: Read>(reader: R) -> Result<(), Box<dyn Error>> {
     let mut subgraphs = std::collections::HashMap::<_, Vec<_>>::new();
     for node in ir.nodes.iter() {
         if let Some(di) = &node.debug_info {
-            let name = PathBuf::from(&di.file).file_name()
+            let name = PathBuf::from(&di.file)
+                .file_name()
                 .map(|s| s.to_string_lossy().to_string())
                 .unwrap_or("<unknown>".to_string());
             let key = format!("{}:{}", name, di.line);
-            subgraphs.entry(key).or_default().push(format!("node_{}", node.id));
+            subgraphs
+                .entry(key)
+                .or_default()
+                .push(format!("node_{}", node.id));
         }
     }
     for (id, (label, subgraph)) in subgraphs.iter().enumerate() {
@@ -103,7 +119,7 @@ fn visualize_lsp_ir<R: Read>(reader: R) -> Result<(), Box<dyn Error>> {
 }
 
 fn main() {
-    let args:Vec<_> = std::env::args().skip(1).collect();
+    let args: Vec<_> = std::env::args().skip(1).collect();
     if args.is_empty() {
         visualize_lsp_ir(std::io::stdin()).unwrap();
     } else {

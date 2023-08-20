@@ -97,7 +97,7 @@ impl<'a, T: Clone + 'a, I: Iterator, R: Rentention<T>> SignalProcessor<'a, I> fo
 mod test {
     use lsp_runtime::signal::SignalProcessor;
 
-    use crate::{test::create_lsp_context_for_test, processors::Latch};
+    use crate::{processors::Latch, test::create_lsp_context_for_test};
 
     #[test]
     fn test_basic_latch() {
@@ -122,7 +122,7 @@ mod test {
         c.next_event(&mut buf).unwrap();
         let mut ctx = c.borrow_update_context();
         assert_eq!(latch.update(&mut ctx, (&true, &1)), 1);
-        
+
         c.next_event(&mut buf).unwrap();
         let mut ctx = c.borrow_update_context();
         assert_eq!(latch.update(&mut ctx, (&false, &2)), 1);
@@ -130,7 +130,7 @@ mod test {
         c.next_event(&mut buf).unwrap();
         let mut ctx = c.borrow_update_context();
         assert_eq!(latch.update(&mut ctx, (&false, &2)), 0);
-        
+
         c.next_event(&mut buf).unwrap();
         let mut ctx = c.borrow_update_context();
         assert_eq!(latch.update(&mut ctx, (&true, &2)), 2);
@@ -149,6 +149,5 @@ mod test {
         c.next_event(&mut buf).unwrap();
         let mut ctx = c.borrow_update_context();
         assert_eq!(latch.update(&mut ctx, (&false, &2)), 0);
-
     }
 }

@@ -65,6 +65,7 @@ impl MacroContext {
             diff_item_impls.push(self.expand_input_patch_item(id, field)?);
             patch_code_impls.push(self.expand_input_patch_code(id, field)?);
         }
+        let timestamp_key = &schema.patch_timestamp_key;
         let item_impl = quote! {
             #[derive(Clone, Default)]
             pub struct #type_name {
@@ -72,6 +73,7 @@ impl MacroContext {
             }
             #[derive(serde::Deserialize, Clone)]
             pub struct #patch_type_name {
+                #[serde(rename = #timestamp_key)]
                 timestamp: chrono::DateTime<chrono::Utc>,
                 #(#diff_item_impls)*
             }
