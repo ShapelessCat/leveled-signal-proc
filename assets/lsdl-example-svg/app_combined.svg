@@ -11,73 +11,73 @@
 <polygon fill="white" stroke="transparent" points="-4,4 -4,-596 2347,-596 2347,4 -4,4"/>
 <g id="clust2" class="cluster">
 <title>sg_0</title>
-<g id="a_clust2"><a xlink:title="(player_state == VE_PLAY).measure_duration_true().add_metric(&quot;bufferingTime&quot;)">
-<polygon fill="none" stroke="black" points="794.5,-507 794.5,-584 1256,-584 1256,-507 794.5,-507"/>
-<text text-anchor="middle" x="1025.25" y="-568.8" font-family="Times,serif" font-size="14.00">app_combined.py:39</text>
-</a>
-</g>
-</g>
-<g id="clust3" class="cluster">
-<title>sg_1</title>
-<g id="a_clust3"><a xlink:title="has_attempted = StateMachine(clock = attempt_event, data = Const(1), transition_fn = &quot;|_, _| 1&quot;) &gt; 0">
-<polygon fill="none" stroke="black" points="577,-131 577,-218 989.5,-218 989.5,-131 577,-131"/>
-<text text-anchor="middle" x="783.25" y="-202.8" font-family="Times,serif" font-size="14.00">app_combined.py:29</text>
-</a>
-</g>
-</g>
-<g id="clust4" class="cluster">
-<title>sg_2</title>
-<g id="a_clust4"><a xlink:title=" &#160;&#160;&#160;.measure_duration_since_true().add_metric(&quot;connectionInducedBufferingTime&quot;)">
-<polygon fill="none" stroke="black" points="1767,-261 1767,-338 2061,-338 2061,-261 1767,-261"/>
-<text text-anchor="middle" x="1914" y="-322.8" font-family="Times,serif" font-size="14.00">app_combined.py:48</text>
-</a>
-</g>
-</g>
-<g id="clust5" class="cluster">
-<title>sg_3</title>
-<g id="a_clust5"><a xlink:title="is_buffering = player_state == VE_BUFFER">
-<polygon fill="none" stroke="black" points="790,-422 790,-499 994,-499 994,-422 790,-422"/>
-<text text-anchor="middle" x="892" y="-483.8" font-family="Times,serif" font-size="14.00">app_combined.py:46</text>
-</a>
-</g>
-</g>
-<g id="clust6" class="cluster">
-<title>sg_4</title>
-<g id="a_clust6"><a xlink:title="attempt_event = SignalFilterBuilder(input.video_event).filter_values(VE_ATEMPT).build_clock_filter()">
-<polygon fill="none" stroke="black" points="133.5,-194 133.5,-281 522,-281 522,-194 133.5,-194"/>
-<text text-anchor="middle" x="327.75" y="-265.8" font-family="Times,serif" font-size="14.00">app_combined.py:27</text>
-</a>
-</g>
-</g>
-<g id="clust7" class="cluster">
-<title>sg_5</title>
-<g id="a_clust7"><a xlink:title="seeking = (input.raw_event == RE_SEEK_F) | (input.raw_event == RE_SEEK_B)">
+<g id="a_clust2"><a xlink:title="seeking = (input.raw_event == RE_SEEK_F) | (input.raw_event == RE_SEEK_B)">
 <polygon fill="none" stroke="black" points="129,-8 129,-140 557,-140 557,-8 129,-8"/>
 <text text-anchor="middle" x="343" y="-124.8" font-family="Times,serif" font-size="14.00">app_combined.py:45</text>
 </a>
 </g>
 </g>
-<g id="clust8" class="cluster">
-<title>sg_6</title>
-<g id="a_clust8"><a xlink:title="(is_buffering &amp; has_been_true(player_state == VE_PLAY) &amp; has_been_true(seeking, duration = &quot;5s&quot;))\">
-<polygon fill="none" stroke="black" points="790,-226 790,-368 1747,-368 1747,-226 790,-226"/>
-<text text-anchor="middle" x="1268.5" y="-352.8" font-family="Times,serif" font-size="14.00">app_combined.py:47</text>
-</a>
-</g>
-</g>
-<g id="clust9" class="cluster">
-<title>sg_7</title>
-<g id="a_clust9"><a xlink:title="has_attempted.measure_duration_since_true().add_metric(&quot;timeToFirstAttempt&quot;)">
+<g id="clust3" class="cluster">
+<title>sg_1</title>
+<g id="a_clust3"><a xlink:title="has_attempted.measure_duration_since_true().add_metric(&quot;timeToFirstAttempt&quot;)">
 <polygon fill="none" stroke="black" points="1014,-16 1014,-93 1299,-93 1299,-16 1014,-16"/>
 <text text-anchor="middle" x="1156.5" y="-77.8" font-family="Times,serif" font-size="14.00">app_combined.py:31</text>
 </a>
 </g>
 </g>
-<g id="clust10" class="cluster">
-<title>sg_8</title>
-<g id="a_clust10"><a xlink:title="player_state = SignalFilterBuilder(input.video_event).filter_values(VE_BUFFER, VE_PLAY).build_value_filter()">
+<g id="clust4" class="cluster">
+<title>sg_2</title>
+<g id="a_clust4"><a xlink:title="player_state = SignalFilterBuilder(input.video_event).filter_values(VE_BUFFER, VE_PLAY).build_value_filter()">
 <polygon fill="none" stroke="black" points="133.5,-319 133.5,-451 740.5,-451 740.5,-319 133.5,-319"/>
 <text text-anchor="middle" x="437" y="-435.8" font-family="Times,serif" font-size="14.00">app_combined.py:36</text>
+</a>
+</g>
+</g>
+<g id="clust5" class="cluster">
+<title>sg_3</title>
+<g id="a_clust5"><a xlink:title="(is_buffering &amp; has_been_true(player_state == VE_PLAY) &amp; has_been_true(seeking, duration = &quot;5s&quot;))\">
+<polygon fill="none" stroke="black" points="790,-226 790,-368 1747,-368 1747,-226 790,-226"/>
+<text text-anchor="middle" x="1268.5" y="-352.8" font-family="Times,serif" font-size="14.00">app_combined.py:47</text>
+</a>
+</g>
+</g>
+<g id="clust6" class="cluster">
+<title>sg_4</title>
+<g id="a_clust6"><a xlink:title="is_buffering = player_state == VE_BUFFER">
+<polygon fill="none" stroke="black" points="790,-422 790,-499 994,-499 994,-422 790,-422"/>
+<text text-anchor="middle" x="892" y="-483.8" font-family="Times,serif" font-size="14.00">app_combined.py:46</text>
+</a>
+</g>
+</g>
+<g id="clust7" class="cluster">
+<title>sg_5</title>
+<g id="a_clust7"><a xlink:title="attempt_event = SignalFilterBuilder(input.video_event).filter_values(VE_ATEMPT).build_clock_filter()">
+<polygon fill="none" stroke="black" points="133.5,-194 133.5,-281 522,-281 522,-194 133.5,-194"/>
+<text text-anchor="middle" x="327.75" y="-265.8" font-family="Times,serif" font-size="14.00">app_combined.py:27</text>
+</a>
+</g>
+</g>
+<g id="clust8" class="cluster">
+<title>sg_6</title>
+<g id="a_clust8"><a xlink:title="has_attempted = StateMachine(clock = attempt_event, data = Const(1), transition_fn = &quot;|_, _| 1&quot;) &gt; 0">
+<polygon fill="none" stroke="black" points="577,-131 577,-218 989.5,-218 989.5,-131 577,-131"/>
+<text text-anchor="middle" x="783.25" y="-202.8" font-family="Times,serif" font-size="14.00">app_combined.py:29</text>
+</a>
+</g>
+</g>
+<g id="clust9" class="cluster">
+<title>sg_7</title>
+<g id="a_clust9"><a xlink:title=" &#160;&#160;&#160;.measure_duration_since_true().add_metric(&quot;connectionInducedBufferingTime&quot;)">
+<polygon fill="none" stroke="black" points="1767,-261 1767,-338 2061,-338 2061,-261 1767,-261"/>
+<text text-anchor="middle" x="1914" y="-322.8" font-family="Times,serif" font-size="14.00">app_combined.py:48</text>
+</a>
+</g>
+</g>
+<g id="clust10" class="cluster">
+<title>sg_8</title>
+<g id="a_clust10"><a xlink:title="(player_state == VE_PLAY).measure_duration_true().add_metric(&quot;bufferingTime&quot;)">
+<polygon fill="none" stroke="black" points="794.5,-507 794.5,-584 1256,-584 1256,-507 794.5,-507"/>
+<text text-anchor="middle" x="1025.25" y="-568.8" font-family="Times,serif" font-size="14.00">app_combined.py:39</text>
 </a>
 </g>
 </g>
@@ -276,13 +276,13 @@
 <polygon fill="black" stroke="black" points="1011.28,-48.22 1020.5,-43 1010.04,-41.33 1011.28,-48.22"/>
 </g>
 <!-- output_timeToFirstAttempt -->
-<g id="node23" class="node">
+<g id="node25" class="node">
 <title>output_timeToFirstAttempt</title>
 <polygon fill="gray" stroke="black" points="1500,-61 1342,-61 1342,-25 1500,-25 1500,-61"/>
 <text text-anchor="middle" x="1421" y="-39.3" font-family="Times,serif" font-size="14.00">timeToFirstAttempt</text>
 </g>
 <!-- node_4&#45;&gt;output_timeToFirstAttempt -->
-<g id="edge31" class="edge">
+<g id="edge33" class="edge">
 <title>node_4:output&#45;&gt;output_timeToFirstAttempt</title>
 <path fill="none" stroke="black" d="M1292.5,-43C1305.2,-43 1318.61,-43 1331.78,-43"/>
 <polygon fill="black" stroke="black" points="1331.78,-46.5 1341.78,-43 1331.78,-39.5 1331.78,-46.5"/>
@@ -385,13 +385,13 @@
 <polygon fill="black" stroke="black" points="1053.5,-537.5 1063.5,-534 1053.5,-530.5 1053.5,-537.5"/>
 </g>
 <!-- output_bufferingTime -->
-<g id="node25" class="node">
+<g id="node24" class="node">
 <title>output_bufferingTime</title>
 <polygon fill="gray" stroke="black" points="1480,-552 1362,-552 1362,-516 1480,-516 1480,-552"/>
 <text text-anchor="middle" x="1421" y="-530.3" font-family="Times,serif" font-size="14.00">bufferingTime</text>
 </g>
 <!-- node_10&#45;&gt;output_bufferingTime -->
-<g id="edge33" class="edge">
+<g id="edge32" class="edge">
 <title>node_10:output&#45;&gt;output_bufferingTime</title>
 <path fill="none" stroke="black" d="M1249.5,-534C1283.14,-534 1320.52,-534 1351.68,-534"/>
 <polygon fill="black" stroke="black" points="1352,-537.5 1362,-534 1352,-530.5 1352,-537.5"/>
@@ -521,13 +521,13 @@
 <polygon fill="black" stroke="black" points="1764,-291.5 1774,-288 1764,-284.5 1764,-291.5"/>
 </g>
 <!-- output_connectionInducedBufferingTime -->
-<g id="node24" class="node">
+<g id="node23" class="node">
 <title>output_connectionInducedBufferingTime</title>
 <polygon fill="gray" stroke="black" points="2343,-306 2089,-306 2089,-270 2343,-270 2343,-306"/>
 <text text-anchor="middle" x="2216" y="-284.3" font-family="Times,serif" font-size="14.00">connectionInducedBufferingTime</text>
 </g>
 <!-- node_20&#45;&gt;output_connectionInducedBufferingTime -->
-<g id="edge32" class="edge">
+<g id="edge31" class="edge">
 <title>node_20:output&#45;&gt;output_connectionInducedBufferingTime</title>
 <path fill="none" stroke="black" d="M2054,-288C2062.05,-288 2070.32,-288 2078.67,-288"/>
 <polygon fill="black" stroke="black" points="2078.88,-291.5 2088.88,-288 2078.88,-284.5 2078.88,-291.5"/>

@@ -11,9 +11,9 @@
 <polygon fill="white" stroke="transparent" points="-4,4 -4,-163 951.79,-163 951.79,4 -4,4"/>
 <g id="clust2" class="cluster">
 <title>sg_0</title>
-<g id="a_clust2"><a xlink:title=" &#160;&#160;&#160;.add_metric(&quot;pCount&quot;)">
-<polygon fill="none" stroke="black" points="711.79,-21 711.79,-98 851.79,-98 851.79,-21 711.79,-21"/>
-<text text-anchor="middle" x="781.79" y="-82.8" font-family="Times,serif" font-size="14.00">eventcount.py:15</text>
+<g id="a_clust2"><a xlink:title=" &#160;&#160;&#160;.build_clock_filter()\">
+<polygon fill="none" stroke="black" points="344.39,-46 344.39,-133 484.39,-133 484.39,-46 344.39,-46"/>
+<text text-anchor="middle" x="414.39" y="-117.8" font-family="Times,serif" font-size="14.00">eventcount.py:13</text>
 </a>
 </g>
 </g>
@@ -35,23 +35,23 @@
 </g>
 <g id="clust5" class="cluster">
 <title>sg_3</title>
-<g id="a_clust5"><a xlink:title=" &#160;&#160;&#160;.build_clock_filter()\">
-<polygon fill="none" stroke="black" points="344.39,-46 344.39,-133 484.39,-133 484.39,-46 344.39,-46"/>
-<text text-anchor="middle" x="414.39" y="-117.8" font-family="Times,serif" font-size="14.00">eventcount.py:13</text>
+<g id="a_clust5"><a xlink:title=" &#160;&#160;&#160;.add_metric(&quot;pCount&quot;)">
+<polygon fill="none" stroke="black" points="711.79,-21 711.79,-98 851.79,-98 851.79,-21 711.79,-21"/>
+<text text-anchor="middle" x="781.79" y="-82.8" font-family="Times,serif" font-size="14.00">eventcount.py:15</text>
 </a>
 </g>
 </g>
 <!-- input -->
 <g id="node1" class="node">
 <title>input</title>
-<polygon fill="lightgrey" stroke="black" points="0,-55 0,-147 98,-147 98,-55 0,-55"/>
-<text text-anchor="middle" x="49" y="-131.8" font-family="Times,serif" font-size="14.00">page</text>
-<polyline fill="none" stroke="black" points="0,-124 98,-124 "/>
-<text text-anchor="middle" x="49" y="-108.8" font-family="Times,serif" font-size="14.00">&lt;clk&gt;</text>
-<polyline fill="none" stroke="black" points="0,-101 98,-101 "/>
-<text text-anchor="middle" x="49" y="-85.8" font-family="Times,serif" font-size="14.00">user_action</text>
-<polyline fill="none" stroke="black" points="0,-78 98,-78 "/>
-<text text-anchor="middle" x="49" y="-62.8" font-family="Times,serif" font-size="14.00">&lt;clk&gt;</text>
+<polygon fill="lightgrey" stroke="black" points="0,-8 0,-100 98,-100 98,-8 0,-8"/>
+<text text-anchor="middle" x="49" y="-84.8" font-family="Times,serif" font-size="14.00">user_action</text>
+<polyline fill="none" stroke="black" points="0,-77 98,-77 "/>
+<text text-anchor="middle" x="49" y="-61.8" font-family="Times,serif" font-size="14.00">&lt;clk&gt;</text>
+<polyline fill="none" stroke="black" points="0,-54 98,-54 "/>
+<text text-anchor="middle" x="49" y="-38.8" font-family="Times,serif" font-size="14.00">page</text>
+<polyline fill="none" stroke="black" points="0,-31 98,-31 "/>
+<text text-anchor="middle" x="49" y="-15.8" font-family="Times,serif" font-size="14.00">&lt;clk&gt;</text>
 </g>
 <!-- node_0 -->
 <g id="node2" class="node">

@@ -1,6 +1,6 @@
 EXAMPLE_DIR_NAME=$(shell basename ${PWD})
 
-all: cidr.json playtime.json eventcount.json app_combined.json
+all: cidr.json playtime.json eventcount.json app_combined.json earliest_event_to_state.json
 
 clean:
 	rm -rf *.json
