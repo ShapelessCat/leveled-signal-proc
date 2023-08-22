@@ -17,17 +17,21 @@ lsp-component = { path = "../lsp-component" }
 lsdl-build = { path = "../lsdl-build" }
 
 [[bin]]
-name = "app-combined"
-path = "src/app-combined/main.rs"
+name = "lsdl-example-app-combined"
+path = "src/app-combined.rs"
 
 [[bin]]
-name = "cidr"
-path = "src/cidr/main.rs"
+name = "lsdl-example-cidr"
+path = "src/cidr.rs"
 
 [[bin]]
-name = "playtime"
-path = "src/playtime/main.rs"
+name = "lsdl-example-playtime"
+path = "src/playtime.rs"
 
 [[bin]]
-name = "eventcount"
-path = "src/eventcount/main.rs"
+name = "lsdl-example-eventcount"
+path = "src/eventcount.rs"
+
+[[bin]]
+name = "lsdl-example-earliest-event-to-state"
+path = "src/earliest_event_to_state.rs"
