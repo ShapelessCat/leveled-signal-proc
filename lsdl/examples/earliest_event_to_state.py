@@ -1,3 +1,5 @@
+# This is the implementation for https://conviva.atlassian.net/browse/TSA-473
+
 from lsdl.schema import *
 from lsdl.modules import *
 from lsdl.signal_processors import *
