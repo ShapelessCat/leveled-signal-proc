@@ -9,13 +9,25 @@ chrono = {version = "0.4.19", features = ["serde"] }
 anyhow = "1.0.42"
 serde = { version = "1.0.130", features = ["derive"] }
 serde_json = "1.0.68"
-[dependencies.lsp-codegen]
-path = "../lsp-codegen"
-[dependencies.lsp-runtime]
-path = "../lsp-runtime"
-[dependencies.lsp-component]
-path = "../lsp-component"
+lsp-codegen = { path = "../lsp-codegen" }
+lsp-runtime = { path = "../lsp-runtime" }
+lsp-component = { path = "../lsp-component" }
 
-#[[bin]]
-#name = "expanded"
-#path = "src/main.exp.rs"
+[build-dependencies]
+lsdl-build = { path = "../lsdl-build" }
+
+[[bin]]
+name = "app-combined"
+path = "src/app-combined/main.rs"
+
+[[bin]]
+name = "cidr"
+path = "src/cidr/main.rs"
+
+[[bin]]
+name = "playtime"
+path = "src/playtime/main.rs"
+
+[[bin]]
+name = "eventcount"
+path = "src/eventcount/main.rs"

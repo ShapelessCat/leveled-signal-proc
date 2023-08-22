@@ -72,6 +72,10 @@ pub fn include_lsp_ir(input: TokenStream) -> TokenStream {
     };
     let real_ir_path = real_ir_path.to_str();
 
+    if let Err(e) = context::MacroContext::parse_ir_file(&path) {
+        return e.to_compile_error().into();
+    }
+
     quote::quote! {
         const _ : () = { include_str!(#real_ir_path); };
         lsp_codegen::define_input_schema!(#path);

@@ -1,6 +1,7 @@
-use std::{error::Error, fmt::Write, io::Read, path::PathBuf};
+use std::{fmt::Write, io::{Read, BufReader, BufRead}, path::Path, collections::HashMap, fs::File};
 
-use lsp_ir::{LspIr, NodeInput};
+use anyhow::Error;
+use lsp_ir::{LspIr, NodeInput, DebugInfo};
 
 fn render_upstream_refs(input: &NodeInput) -> Vec<String> {
     let upstream = match input {
@@ -24,7 +25,7 @@ fn render_upstream_refs(input: &NodeInput) -> Vec<String> {
     };
     upstream
 }
-fn visualize_lsp_ir<R: Read>(reader: R) -> Result<(), Box<dyn Error>> {
+fn visualize_lsp_ir<R: Read>(reader: R) -> Result<(), Error> {
     let ir: LspIr = serde_json::from_reader(reader)?;
 
     println!("digraph{{\n\trankdir=LR;");
@@ -47,7 +48,20 @@ fn visualize_lsp_ir<R: Read>(reader: R) -> Result<(), Box<dyn Error>> {
         schema = schema_node
     );
 
+    let mut source_code_list = HashMap::<_, Vec<_>>::new();
+
     for node in ir.nodes.iter() {
+        if let Some(DebugInfo{ file, .. }) = node.debug_info.as_ref() {
+            if let Ok(fp) = File::open(file) {
+                let reader = BufReader::new(fp);
+                let file : &Path = file.as_ref();
+                if let Some(filename) = file.file_name().map(|s| s.to_string_lossy()) {
+                    source_code_list.entry(filename.to_string()).or_insert_with(|| {
+                        reader.lines().filter_map(|l| l.ok()).collect()
+                    });
+                }
+            }
+        }
         let mut ins = String::new();
         for (id, _input) in node.upstreams.iter().enumerate() {
             write!(&mut ins, "<input{id}>[{id}]|", id = id).unwrap();
@@ -91,24 +105,33 @@ fn visualize_lsp_ir<R: Read>(reader: R) -> Result<(), Box<dyn Error>> {
             println!("\t{} -> output_{};", upstream, metric_name);
         }
     }
-    let mut subgraphs = std::collections::HashMap::<_, Vec<_>>::new();
+    let mut subgraphs = std::collections::HashMap::<_, (String, i32, Vec<_>)>::new();
     for node in ir.nodes.iter() {
         if let Some(di) = &node.debug_info {
-            let name = PathBuf::from(&di.file)
-                .file_name()
+            let file: &Path = di.file.as_ref();
+            let name = file.file_name()
                 .map(|s| s.to_string_lossy().to_string())
                 .unwrap_or("<unknown>".to_string());
             let key = format!("{}:{}", name, di.line);
             subgraphs
                 .entry(key)
-                .or_default()
+                .or_insert_with(|| (name, di.line, Vec::new()))
+                .2
                 .push(format!("node_{}", node.id));
         }
     }
-    for (id, (label, subgraph)) in subgraphs.iter().enumerate() {
+    for (id, (label, (file, line, subgraph))) in subgraphs.iter().enumerate() {
         println!("\tsubgraph sg_{} {{", id);
         println!("\t\tcluster = true;");
         println!("\t\tlabel = \"{label}\";", label = label);
+        if let Some(src_list) = source_code_list.get(file) {
+            if *line > 0 {
+                let line = *line as usize - 1;
+                if let Some(line) = src_list.get(line) {
+                    println!("\t\ttooltip = {code}", code = serde_json::to_string(line).unwrap());
+                }
+            }
+        }
         for node in subgraph {
             println!("\t\t{};", node);
         }

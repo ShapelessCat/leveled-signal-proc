@@ -60,38 +60,3 @@ class SignalFilterBuilder(object):
             data = self._filter_signal,
             control = self._filter_node
         )
-    
-"""
-def event_filter(event_signal: MappedInputType, **kwargs) -> LeveledSignalBase:
-    from lsdl.signal_processors import SignalMapper, Latch
-    if 'filter_input' not in kwargs:
-        kwargs['filter_input'] = event_signal
-    if 'event_clock' not in kwargs:
-        kwargs['event_clock'] = event_signal.clock()
-    if 'event_value' in kwargs:
-        if type(kwargs['event_value']) == list:
-            filter_node = (kwargs['filter_input'] == kwargs['event_value'][0])
-            for value in kwargs['event_value'][1:]:
-                filter_node = filter_node | (kwargs['filter_input'] == value)
-        else:
-            filter_node = (kwargs['filter_input'] == kwargs['event_value'])
-    elif 'filter_lambda' in kwargs:
-        filter_node = SignalMapper(
-            bind_var = kwargs['bind_var'],
-            upstream = kwargs['filter_input'],
-            lambda_src = kwargs['filter_lambda']
-        )
-    elif 'filter_node' in kwargs:
-        filter_node = kwargs['filter_node']
-    else:
-        raise "Unsupported event filter type"
-    if kwargs.get('output') == "value":
-        return Latch(
-            control = filter_node,
-            data = kwargs['filter_input'] 
-        )
-    else:
-        return Latch(
-            control = filter_node,
-            data = kwargs['event_clock']
-        )"""

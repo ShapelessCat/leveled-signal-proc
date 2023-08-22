@@ -32,6 +32,7 @@ impl <'a, T> NodeOutputHandler<'a, T> for DropNodeOutput {
     fn handle_node_output<Instr: LspDataLogicInstrument + ?Sized>(&self, _: &mut Instr) {}
 }
 
+#[derive(Default)]
 pub struct NoInstrument;
 impl Display for NoInstrument {
     fn fmt(&self, _: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

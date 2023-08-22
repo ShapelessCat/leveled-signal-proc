@@ -66,17 +66,7 @@ impl MacroContext {
             ir_path.to_path_buf()
         })
     }
-}
-
-impl Parse for MacroContext {
-    fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
-        let path_lit: LitStr = input.parse()?;
-        let instrument_var: Option<Ident> = if input.peek(Token![,]) {
-            let _ : Token![,] = input.parse()?;
-            Some(input.parse()?)
-        } else {
-            None
-        };
+    pub(super) fn parse_ir_file(path_lit: &LitStr) -> syn::Result<LspIr> {
         let ir_path_str = path_lit.value();
         let ir_path = Self::normalize_ir_path(&ir_path_str)
             .map_err(|e| syn::Error::new_spanned(&path_lit, e.to_string()))?;
@@ -93,6 +83,20 @@ impl Parse for MacroContext {
             );
             syn::Error::new_spanned(&path_lit, error_message)
         })?;
+        Ok(ir_obj)
+    }
+}
+
+impl Parse for MacroContext {
+    fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
+        let path_lit: LitStr = input.parse()?;
+        let instrument_var: Option<Ident> = if input.peek(Token![,]) {
+            let _ : Token![,] = input.parse()?;
+            Some(input.parse()?)
+        } else {
+            None
+        };
+        let ir_obj = Self::parse_ir_file(&path_lit)?;
         Ok(Self {
             ir_path_span: path_lit.span().clone(),
             ir_data: ir_obj,
