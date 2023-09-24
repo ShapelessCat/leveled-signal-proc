@@ -8,3 +8,5 @@ lsdl/**/__pycache__
 lsdl/examples/*.json
 
 .vscode
+
+.DS_Store
