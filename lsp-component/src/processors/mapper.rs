@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 use lsp_runtime::signal::SignalProcessor;
 use lsp_runtime::UpdateContext;
 
-/// Mapping input signals statelessly to a output signal
+/// Mapping each input signal statelessly to an output signal.
 pub struct SignalMapper<ParamType, OutputType, ClosureType> {
     how: ClosureType,
     _phantom_data: PhantomData<(ParamType, OutputType)>,
