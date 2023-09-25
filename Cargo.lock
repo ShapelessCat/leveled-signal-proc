@@ -241,9 +241,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.104"
+version = "1.0.107"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "076066c5f1078eac5b722a31827a8832fe108bed65dfa75e233c89f8206e976c"
+checksum = "6b420ce6e3d8bd882e9b243c6eed35dbc9a6110c9769e74b584e0d68d1f20c65"
 dependencies = [
  "itoa",
  "ryu",
@@ -282,7 +282,14 @@ checksum = "301abaae475aa91687eb82514b328ab47a211a533026cb25fc3e519b86adfc3c"
 name = "video-metrics-demo"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "chrono",
  "lsdl-build",
+ "lsp-codegen",
+ "lsp-component",
+ "lsp-runtime",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
