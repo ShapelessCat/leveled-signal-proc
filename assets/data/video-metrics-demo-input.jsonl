@@ -1,0 +1,300 @@
+{"timestamp": "2023-09-25 16:16:56.277841 UTC", "sessionId": "SSID_1", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 16:17:47.477880 UTC", "sessionId": "SSID_1", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 16:18:44.877898 UTC", "sessionId": "SSID_1", "data": {"CDN": "c2"}}
+{"timestamp": "2023-09-25 16:18:58.977914 UTC", "sessionId": "SSID_1", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 16:19:42.877929 UTC", "sessionId": "SSID_1", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 16:20:05.277941 UTC", "sessionId": "SSID_1", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 16:20:20.477952 UTC", "sessionId": "SSID_1", "data": {"CDN": "c1"}}
+{"timestamp": "2023-09-25 16:21:33.677966 UTC", "sessionId": "SSID_1", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 16:23:02.877979 UTC", "sessionId": "SSID_2", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 16:23:47.977990 UTC", "sessionId": "SSID_2", "data": {"BitRate": 3000}}
+{"timestamp": "2023-09-25 16:24:01.778001 UTC", "sessionId": "SSID_2", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 16:25:04.578011 UTC", "sessionId": "SSID_3", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 16:26:24.978021 UTC", "sessionId": "SSID_3", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 16:28:04.378031 UTC", "sessionId": "SSID_3", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 16:28:26.078040 UTC", "sessionId": "SSID_3", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 16:28:58.678050 UTC", "sessionId": "SSID_3", "data": {"BitRate": 3000}}
+{"timestamp": "2023-09-25 16:30:31.778060 UTC", "sessionId": "SSID_3", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 16:32:10.378069 UTC", "sessionId": "SSID_3", "data": {"CDN": "c2"}}
+{"timestamp": "2023-09-25 16:32:45.978079 UTC", "sessionId": "SSID_3", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 16:33:14.278089 UTC", "sessionId": "SSID_3", "data": {"BitRate": 3000}}
+{"timestamp": "2023-09-25 16:34:35.978099 UTC", "sessionId": "SSID_4", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 16:35:35.978108 UTC", "sessionId": "SSID_4", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 16:35:39.978118 UTC", "sessionId": "SSID_4", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 16:35:52.678127 UTC", "sessionId": "SSID_4", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 16:36:38.678136 UTC", "sessionId": "SSID_4", "data": {"BitRate": 5000}}
+{"timestamp": "2023-09-25 16:36:39.878146 UTC", "sessionId": "SSID_4", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 16:36:49.478155 UTC", "sessionId": "SSID_4", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 16:38:21.678164 UTC", "sessionId": "SSID_4", "data": {"CDN": "c1"}}
+{"timestamp": "2023-09-25 16:38:25.778184 UTC", "sessionId": "SSID_5", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 16:39:23.378194 UTC", "sessionId": "SSID_5", "data": {"CDN": "c1"}}
+{"timestamp": "2023-09-25 16:40:53.778204 UTC", "sessionId": "SSID_6", "data": {"CDN": "c1"}}
+{"timestamp": "2023-09-25 16:41:45.578214 UTC", "sessionId": "SSID_6", "data": {"BitRate": 4000}}
+{"timestamp": "2023-09-25 16:41:58.578223 UTC", "sessionId": "SSID_6", "data": {"CDN": "c2"}}
+{"timestamp": "2023-09-25 16:42:22.378233 UTC", "sessionId": "SSID_6", "data": {"BitRate": 5000}}
+{"timestamp": "2023-09-25 16:42:35.578243 UTC", "sessionId": "SSID_6", "data": {"CDN": "c2"}}
+{"timestamp": "2023-09-25 16:43:54.678252 UTC", "sessionId": "SSID_6", "data": {"BitRate": 5000}}
+{"timestamp": "2023-09-25 16:44:33.178262 UTC", "sessionId": "SSID_6", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 16:45:45.678271 UTC", "sessionId": "SSID_6", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 16:46:08.278281 UTC", "sessionId": "SSID_6", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 16:47:00.078290 UTC", "sessionId": "SSID_6", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 16:48:36.378300 UTC", "sessionId": "SSID_6", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 16:49:58.978309 UTC", "sessionId": "SSID_6", "data": {"BitRate": 1000}}
+{"timestamp": "2023-09-25 16:51:11.278322 UTC", "sessionId": "SSID_6", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 16:51:37.478332 UTC", "sessionId": "SSID_6", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 16:52:31.478341 UTC", "sessionId": "SSID_6", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 16:53:44.278351 UTC", "sessionId": "SSID_6", "data": {"BitRate": 1000}}
+{"timestamp": "2023-09-25 16:53:49.278360 UTC", "sessionId": "SSID_6", "data": {"BitRate": 5000}}
+{"timestamp": "2023-09-25 16:54:18.678370 UTC", "sessionId": "SSID_6", "data": {"CDN": "c1"}}
+{"timestamp": "2023-09-25 16:55:52.978380 UTC", "sessionId": "SSID_6", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 16:56:50.378389 UTC", "sessionId": "SSID_6", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 16:57:33.578399 UTC", "sessionId": "SSID_6", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 16:58:02.678408 UTC", "sessionId": "SSID_6", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 16:58:17.778417 UTC", "sessionId": "SSID_6", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 16:59:15.178427 UTC", "sessionId": "SSID_6", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 16:59:44.178436 UTC", "sessionId": "SSID_6", "data": {"BitRate": 4000}}
+{"timestamp": "2023-09-25 17:00:42.178446 UTC", "sessionId": "SSID_6", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 17:02:02.878455 UTC", "sessionId": "SSID_7", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 17:02:23.478465 UTC", "sessionId": "SSID_7", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 17:02:33.778474 UTC", "sessionId": "SSID_8", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 17:02:34.978483 UTC", "sessionId": "SSID_8", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 17:03:06.978493 UTC", "sessionId": "SSID_8", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 17:03:54.978502 UTC", "sessionId": "SSID_8", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 17:05:28.978511 UTC", "sessionId": "SSID_8", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 17:06:47.578520 UTC", "sessionId": "SSID_8", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 17:07:50.678530 UTC", "sessionId": "SSID_8", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 17:09:12.378540 UTC", "sessionId": "SSID_8", "data": {"CDN": "c1"}}
+{"timestamp": "2023-09-25 17:10:40.078550 UTC", "sessionId": "SSID_9", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 17:10:46.278559 UTC", "sessionId": "SSID_9", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 17:11:50.678568 UTC", "sessionId": "SSID_9", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 17:12:34.378577 UTC", "sessionId": "SSID_9", "data": {"BitRate": 2000}}
+{"timestamp": "2023-09-25 17:13:42.078587 UTC", "sessionId": "SSID_9", "data": {"BitRate": 4000}}
+{"timestamp": "2023-09-25 17:14:34.778597 UTC", "sessionId": "SSID_9", "data": {"BitRate": 2000}}
+{"timestamp": "2023-09-25 17:15:41.778607 UTC", "sessionId": "SSID_9", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 17:16:54.678616 UTC", "sessionId": "SSID_9", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 17:17:12.378625 UTC", "sessionId": "SSID_9", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 17:18:43.978635 UTC", "sessionId": "SSID_10", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 17:19:22.578644 UTC", "sessionId": "SSID_10", "data": {"CDN": "c1"}}
+{"timestamp": "2023-09-25 17:20:49.878655 UTC", "sessionId": "SSID_10", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 17:21:24.378667 UTC", "sessionId": "SSID_10", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 17:21:31.878677 UTC", "sessionId": "SSID_10", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 17:22:07.178686 UTC", "sessionId": "SSID_10", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 17:23:05.978696 UTC", "sessionId": "SSID_10", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 17:23:17.078705 UTC", "sessionId": "SSID_10", "data": {"CDN": "c2"}}
+{"timestamp": "2023-09-25 17:24:10.178715 UTC", "sessionId": "SSID_10", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 17:24:30.778724 UTC", "sessionId": "SSID_10", "data": {"BitRate": 4000}}
+{"timestamp": "2023-09-25 17:25:08.778734 UTC", "sessionId": "SSID_10", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 17:26:21.178743 UTC", "sessionId": "SSID_10", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 17:26:24.278752 UTC", "sessionId": "SSID_10", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 17:27:01.278762 UTC", "sessionId": "SSID_10", "data": {"BitRate": 1000}}
+{"timestamp": "2023-09-25 17:27:46.578772 UTC", "sessionId": "SSID_10", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 17:28:45.978781 UTC", "sessionId": "SSID_10", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 17:30:25.678791 UTC", "sessionId": "SSID_10", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 17:31:55.978800 UTC", "sessionId": "SSID_10", "data": {"CDN": "c2"}}
+{"timestamp": "2023-09-25 17:32:30.578810 UTC", "sessionId": "SSID_10", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 17:33:33.478819 UTC", "sessionId": "SSID_10", "data": {"BitRate": 4000}}
+{"timestamp": "2023-09-25 17:34:05.378829 UTC", "sessionId": "SSID_10", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 17:34:55.678839 UTC", "sessionId": "SSID_10", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 17:36:12.778848 UTC", "sessionId": "SSID_10", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 17:37:36.878858 UTC", "sessionId": "SSID_10", "data": {"CDN": "c1"}}
+{"timestamp": "2023-09-25 17:38:22.178867 UTC", "sessionId": "SSID_10", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 17:38:47.878877 UTC", "sessionId": "SSID_11", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 17:39:51.978886 UTC", "sessionId": "SSID_11", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 17:41:12.278896 UTC", "sessionId": "SSID_11", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 17:42:38.478905 UTC", "sessionId": "SSID_11", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 17:42:39.578915 UTC", "sessionId": "SSID_11", "data": {"BitRate": 1000}}
+{"timestamp": "2023-09-25 17:44:00.578925 UTC", "sessionId": "SSID_11", "data": {"BitRate": 5000}}
+{"timestamp": "2023-09-25 17:44:48.978934 UTC", "sessionId": "SSID_11", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 17:45:41.678943 UTC", "sessionId": "SSID_11", "data": {"BitRate": 1000}}
+{"timestamp": "2023-09-25 17:46:37.778954 UTC", "sessionId": "SSID_11", "data": {"BitRate": 4000}}
+{"timestamp": "2023-09-25 17:47:27.478964 UTC", "sessionId": "SSID_11", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 17:48:20.878974 UTC", "sessionId": "SSID_11", "data": {"CDN": "c1"}}
+{"timestamp": "2023-09-25 17:49:46.678983 UTC", "sessionId": "SSID_11", "data": {"CDN": "c2"}}
+{"timestamp": "2023-09-25 17:50:25.178992 UTC", "sessionId": "SSID_11", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 17:50:35.479002 UTC", "sessionId": "SSID_11", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 17:51:46.479011 UTC", "sessionId": "SSID_11", "data": {"BitRate": 3000}}
+{"timestamp": "2023-09-25 17:52:14.279021 UTC", "sessionId": "SSID_11", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 17:52:42.879030 UTC", "sessionId": "SSID_11", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 17:52:59.979040 UTC", "sessionId": "SSID_11", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 17:53:51.879051 UTC", "sessionId": "SSID_11", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 17:55:17.879061 UTC", "sessionId": "SSID_11", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 17:56:53.279070 UTC", "sessionId": "SSID_11", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 17:58:22.779080 UTC", "sessionId": "SSID_11", "data": {"CDN": "c2"}}
+{"timestamp": "2023-09-25 17:59:45.379089 UTC", "sessionId": "SSID_11", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 18:00:15.979098 UTC", "sessionId": "SSID_11", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 18:01:30.979108 UTC", "sessionId": "SSID_11", "data": {"BitRate": 1000}}
+{"timestamp": "2023-09-25 18:02:25.479117 UTC", "sessionId": "SSID_11", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 18:03:04.079127 UTC", "sessionId": "SSID_11", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 18:03:35.679136 UTC", "sessionId": "SSID_11", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 18:04:21.779146 UTC", "sessionId": "SSID_11", "data": {"BitRate": 3000}}
+{"timestamp": "2023-09-25 18:05:44.879156 UTC", "sessionId": "SSID_11", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 18:07:03.979166 UTC", "sessionId": "SSID_11", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 18:08:28.979183 UTC", "sessionId": "SSID_11", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 18:09:37.679192 UTC", "sessionId": "SSID_11", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 18:09:54.079202 UTC", "sessionId": "SSID_11", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 18:10:07.279211 UTC", "sessionId": "SSID_11", "data": {"BitRate": 5000}}
+{"timestamp": "2023-09-25 18:10:17.179221 UTC", "sessionId": "SSID_11", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 18:11:54.779230 UTC", "sessionId": "SSID_11", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 18:13:17.479240 UTC", "sessionId": "SSID_12", "data": {"BitRate": 1000}}
+{"timestamp": "2023-09-25 18:14:50.379249 UTC", "sessionId": "SSID_13", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 18:15:53.279259 UTC", "sessionId": "SSID_13", "data": {"BitRate": 5000}}
+{"timestamp": "2023-09-25 18:17:19.179268 UTC", "sessionId": "SSID_13", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 18:18:42.779278 UTC", "sessionId": "SSID_13", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 18:19:50.779287 UTC", "sessionId": "SSID_13", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 18:20:38.879297 UTC", "sessionId": "SSID_13", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 18:22:05.879306 UTC", "sessionId": "SSID_13", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 18:22:21.579315 UTC", "sessionId": "SSID_13", "data": {"BitRate": 4000}}
+{"timestamp": "2023-09-25 18:23:01.179327 UTC", "sessionId": "SSID_13", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 18:23:13.979337 UTC", "sessionId": "SSID_13", "data": {"CDN": "c1"}}
+{"timestamp": "2023-09-25 18:23:16.979347 UTC", "sessionId": "SSID_13", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 18:24:13.079357 UTC", "sessionId": "SSID_13", "data": {"BitRate": 3000}}
+{"timestamp": "2023-09-25 18:24:37.779366 UTC", "sessionId": "SSID_13", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 18:24:55.079375 UTC", "sessionId": "SSID_13", "data": {"BitRate": 5000}}
+{"timestamp": "2023-09-25 18:26:07.279385 UTC", "sessionId": "SSID_13", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 18:27:14.779394 UTC", "sessionId": "SSID_14", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 18:28:45.279403 UTC", "sessionId": "SSID_14", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 18:29:58.579413 UTC", "sessionId": "SSID_14", "data": {"BitRate": 1000}}
+{"timestamp": "2023-09-25 18:31:33.179422 UTC", "sessionId": "SSID_14", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 18:33:00.279432 UTC", "sessionId": "SSID_14", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 18:34:29.379441 UTC", "sessionId": "SSID_14", "data": {"CDN": "c2"}}
+{"timestamp": "2023-09-25 18:35:39.179451 UTC", "sessionId": "SSID_14", "data": {"CDN": "c2"}}
+{"timestamp": "2023-09-25 18:36:49.579460 UTC", "sessionId": "SSID_15", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 18:38:12.979470 UTC", "sessionId": "SSID_15", "data": {"BitRate": 5000}}
+{"timestamp": "2023-09-25 18:38:52.879480 UTC", "sessionId": "SSID_16", "data": {"CDN": "c1"}}
+{"timestamp": "2023-09-25 18:39:15.679489 UTC", "sessionId": "SSID_16", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 18:40:24.779501 UTC", "sessionId": "SSID_16", "data": {"BitRate": 2000}}
+{"timestamp": "2023-09-25 18:40:57.979511 UTC", "sessionId": "SSID_16", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 18:41:45.079521 UTC", "sessionId": "SSID_16", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 18:41:47.279530 UTC", "sessionId": "SSID_16", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 18:42:08.479539 UTC", "sessionId": "SSID_17", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 18:43:13.979548 UTC", "sessionId": "SSID_17", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 18:44:53.479558 UTC", "sessionId": "SSID_17", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 18:45:39.879567 UTC", "sessionId": "SSID_17", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 18:46:46.879579 UTC", "sessionId": "SSID_17", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 18:47:44.379589 UTC", "sessionId": "SSID_17", "data": {"BitRate": 4000}}
+{"timestamp": "2023-09-25 18:48:29.879599 UTC", "sessionId": "SSID_17", "data": {"BitRate": 3000}}
+{"timestamp": "2023-09-25 18:49:53.079608 UTC", "sessionId": "SSID_17", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 18:50:38.079618 UTC", "sessionId": "SSID_18", "data": {"CDN": "c1"}}
+{"timestamp": "2023-09-25 18:51:17.279627 UTC", "sessionId": "SSID_18", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 18:51:34.479637 UTC", "sessionId": "SSID_18", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 18:52:50.779646 UTC", "sessionId": "SSID_18", "data": {"BitRate": 2000}}
+{"timestamp": "2023-09-25 18:52:55.579656 UTC", "sessionId": "SSID_18", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 18:54:35.179668 UTC", "sessionId": "SSID_18", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 18:54:54.479678 UTC", "sessionId": "SSID_18", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 18:55:52.479687 UTC", "sessionId": "SSID_18", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 18:56:55.879700 UTC", "sessionId": "SSID_18", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 18:58:34.379710 UTC", "sessionId": "SSID_18", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 18:59:53.879719 UTC", "sessionId": "SSID_18", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 19:00:50.179729 UTC", "sessionId": "SSID_18", "data": {"BitRate": 4000}}
+{"timestamp": "2023-09-25 19:01:43.579739 UTC", "sessionId": "SSID_18", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 19:02:50.579748 UTC", "sessionId": "SSID_18", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 19:04:07.979757 UTC", "sessionId": "SSID_18", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 19:04:32.279767 UTC", "sessionId": "SSID_18", "data": {"BitRate": 1000}}
+{"timestamp": "2023-09-25 19:04:49.479776 UTC", "sessionId": "SSID_18", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 19:04:58.179786 UTC", "sessionId": "SSID_18", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 19:05:09.079795 UTC", "sessionId": "SSID_18", "data": {"BitRate": 4000}}
+{"timestamp": "2023-09-25 19:05:22.979805 UTC", "sessionId": "SSID_18", "data": {"BitRate": 3000}}
+{"timestamp": "2023-09-25 19:06:48.479814 UTC", "sessionId": "SSID_18", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 19:07:37.879823 UTC", "sessionId": "SSID_18", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 19:07:57.579833 UTC", "sessionId": "SSID_19", "data": {"CDN": "c2"}}
+{"timestamp": "2023-09-25 19:08:13.079843 UTC", "sessionId": "SSID_19", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 19:08:27.779852 UTC", "sessionId": "SSID_19", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 19:09:04.679862 UTC", "sessionId": "SSID_19", "data": {"BitRate": 3000}}
+{"timestamp": "2023-09-25 19:09:24.779871 UTC", "sessionId": "SSID_19", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 19:10:22.979881 UTC", "sessionId": "SSID_19", "data": {"BitRate": 5000}}
+{"timestamp": "2023-09-25 19:11:55.879890 UTC", "sessionId": "SSID_19", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 19:13:00.079900 UTC", "sessionId": "SSID_19", "data": {"BitRate": 4000}}
+{"timestamp": "2023-09-25 19:13:24.879909 UTC", "sessionId": "SSID_19", "data": {"BitRate": 5000}}
+{"timestamp": "2023-09-25 19:13:44.779919 UTC", "sessionId": "SSID_19", "data": {"BitRate": 2000}}
+{"timestamp": "2023-09-25 19:15:20.779929 UTC", "sessionId": "SSID_19", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 19:15:48.179938 UTC", "sessionId": "SSID_19", "data": {"BitRate": 5000}}
+{"timestamp": "2023-09-25 19:17:01.879948 UTC", "sessionId": "SSID_20", "data": {"BitRate": 3000}}
+{"timestamp": "2023-09-25 19:17:52.479958 UTC", "sessionId": "SSID_20", "data": {"BitRate": 1000}}
+{"timestamp": "2023-09-25 19:18:39.279967 UTC", "sessionId": "SSID_20", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 19:19:48.479977 UTC", "sessionId": "SSID_20", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 19:20:33.379986 UTC", "sessionId": "SSID_21", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 19:20:49.479996 UTC", "sessionId": "SSID_21", "data": {"CDN": "c2"}}
+{"timestamp": "2023-09-25 19:21:35.880005 UTC", "sessionId": "SSID_21", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 19:21:39.980015 UTC", "sessionId": "SSID_21", "data": {"CDN": "c1"}}
+{"timestamp": "2023-09-25 19:22:39.780024 UTC", "sessionId": "SSID_22", "data": {"BitRate": 5000}}
+{"timestamp": "2023-09-25 19:23:08.880036 UTC", "sessionId": "SSID_22", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 19:23:34.480046 UTC", "sessionId": "SSID_22", "data": {"BitRate": 2000}}
+{"timestamp": "2023-09-25 19:23:49.480055 UTC", "sessionId": "SSID_22", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 19:23:52.880064 UTC", "sessionId": "SSID_22", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 19:23:54.280074 UTC", "sessionId": "SSID_22", "data": {"CDN": "c1"}}
+{"timestamp": "2023-09-25 19:24:50.480084 UTC", "sessionId": "SSID_22", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 19:25:17.580094 UTC", "sessionId": "SSID_22", "data": {"CDN": "c2"}}
+{"timestamp": "2023-09-25 19:26:22.180103 UTC", "sessionId": "SSID_22", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 19:27:00.380113 UTC", "sessionId": "SSID_22", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 19:28:05.180122 UTC", "sessionId": "SSID_22", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 19:28:21.280131 UTC", "sessionId": "SSID_22", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 19:29:06.480141 UTC", "sessionId": "SSID_22", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 19:30:39.380150 UTC", "sessionId": "SSID_22", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 19:31:52.080160 UTC", "sessionId": "SSID_22", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 19:33:21.580170 UTC", "sessionId": "SSID_22", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 19:34:49.480186 UTC", "sessionId": "SSID_22", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 19:35:29.480195 UTC", "sessionId": "SSID_22", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 19:36:01.680205 UTC", "sessionId": "SSID_22", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 19:36:28.680214 UTC", "sessionId": "SSID_22", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 19:37:31.780223 UTC", "sessionId": "SSID_22", "data": {"BitRate": 4000}}
+{"timestamp": "2023-09-25 19:37:57.180233 UTC", "sessionId": "SSID_22", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 19:39:00.880242 UTC", "sessionId": "SSID_22", "data": {"BitRate": 5000}}
+{"timestamp": "2023-09-25 19:40:30.180252 UTC", "sessionId": "SSID_22", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 19:40:59.580261 UTC", "sessionId": "SSID_22", "data": {"CDN": "c2"}}
+{"timestamp": "2023-09-25 19:42:32.380271 UTC", "sessionId": "SSID_22", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 19:43:57.080280 UTC", "sessionId": "SSID_22", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 19:44:29.380289 UTC", "sessionId": "SSID_22", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 19:45:34.180298 UTC", "sessionId": "SSID_22", "data": {"BitRate": 1000}}
+{"timestamp": "2023-09-25 19:46:33.180308 UTC", "sessionId": "SSID_22", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 19:47:04.180317 UTC", "sessionId": "SSID_22", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 19:47:50.180326 UTC", "sessionId": "SSID_22", "data": {"BitRate": 4000}}
+{"timestamp": "2023-09-25 19:48:32.080338 UTC", "sessionId": "SSID_22", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 19:48:59.480348 UTC", "sessionId": "SSID_22", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 19:49:54.380359 UTC", "sessionId": "SSID_22", "data": {"BitRate": 2000}}
+{"timestamp": "2023-09-25 19:50:37.580369 UTC", "sessionId": "SSID_22", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 19:51:34.980379 UTC", "sessionId": "SSID_22", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 19:52:44.580388 UTC", "sessionId": "SSID_22", "data": {"BitRate": 3000}}
+{"timestamp": "2023-09-25 19:53:54.280398 UTC", "sessionId": "SSID_22", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 19:55:02.380407 UTC", "sessionId": "SSID_22", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 19:55:33.180416 UTC", "sessionId": "SSID_22", "data": {"CDN": "c1"}}
+{"timestamp": "2023-09-25 19:55:48.980426 UTC", "sessionId": "SSID_22", "data": {"BitRate": 2000}}
+{"timestamp": "2023-09-25 19:57:19.980435 UTC", "sessionId": "SSID_22", "data": {"BitRate": 1000}}
+{"timestamp": "2023-09-25 19:57:51.380445 UTC", "sessionId": "SSID_22", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 19:57:54.980455 UTC", "sessionId": "SSID_22", "data": {"BitRate": 4000}}
+{"timestamp": "2023-09-25 19:57:58.280465 UTC", "sessionId": "SSID_22", "data": {"PlayerState": "pause"}}
+{"timestamp": "2023-09-25 19:58:28.180474 UTC", "sessionId": "SSID_22", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 19:59:10.380484 UTC", "sessionId": "SSID_23", "data": {"CDN": "c2"}}
+{"timestamp": "2023-09-25 19:59:17.180494 UTC", "sessionId": "SSID_23", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 19:59:37.080503 UTC", "sessionId": "SSID_23", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 20:00:37.380512 UTC", "sessionId": "SSID_23", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 20:00:44.280522 UTC", "sessionId": "SSID_24", "data": {"CDN": "c2"}}
+{"timestamp": "2023-09-25 20:01:25.380532 UTC", "sessionId": "SSID_24", "data": {"BitRate": 4000}}
+{"timestamp": "2023-09-25 20:01:58.080541 UTC", "sessionId": "SSID_24", "data": {"BitRate": 5000}}
+{"timestamp": "2023-09-25 20:02:07.080551 UTC", "sessionId": "SSID_24", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 20:02:40.980562 UTC", "sessionId": "SSID_24", "data": {"BitRate": 1000}}
+{"timestamp": "2023-09-25 20:02:48.180572 UTC", "sessionId": "SSID_24", "data": {"CDN": "c1"}}
+{"timestamp": "2023-09-25 20:04:13.780581 UTC", "sessionId": "SSID_24", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 20:04:56.480591 UTC", "sessionId": "SSID_25", "data": {"CDN": "c1"}}
+{"timestamp": "2023-09-25 20:06:08.580600 UTC", "sessionId": "SSID_25", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 20:07:32.080609 UTC", "sessionId": "SSID_25", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 20:08:25.680618 UTC", "sessionId": "SSID_25", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 20:10:04.280628 UTC", "sessionId": "SSID_26", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 20:11:33.880637 UTC", "sessionId": "SSID_26", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 20:13:06.880646 UTC", "sessionId": "SSID_26", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 20:13:53.480656 UTC", "sessionId": "SSID_26", "data": {"placeholder": "p1"}}
+{"timestamp": "2023-09-25 20:15:10.980666 UTC", "sessionId": "SSID_26", "data": {"CDN": "c2"}}
+{"timestamp": "2023-09-25 20:15:33.480675 UTC", "sessionId": "SSID_26", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 20:15:45.180684 UTC", "sessionId": "SSID_26", "data": {"placeholder": "p0"}}
+{"timestamp": "2023-09-25 20:15:46.780696 UTC", "sessionId": "SSID_26", "data": {"PlayerState": "buffering"}}
+{"timestamp": "2023-09-25 20:17:11.380706 UTC", "sessionId": "SSID_26", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 20:17:48.280715 UTC", "sessionId": "SSID_26", "data": {"CDN": "c3"}}
+{"timestamp": "2023-09-25 20:18:23.180725 UTC", "sessionId": "SSID_26", "data": {"ev": "seek start"}}
+{"timestamp": "2023-09-25 20:19:54.580734 UTC", "sessionId": "SSID_26", "data": {"BitRate": 4000}}
+{"timestamp": "2023-09-25 20:20:24.680744 UTC", "sessionId": "SSID_26", "data": {"BitRate": 3000}}
+{"timestamp": "2023-09-25 20:21:53.580753 UTC", "sessionId": "SSID_26", "data": {"BitRate": 2000}}
+{"timestamp": "2023-09-25 20:22:17.180763 UTC", "sessionId": "SSID_26", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 20:23:38.580772 UTC", "sessionId": "SSID_26", "data": {"PlayerState": "playing"}}
+{"timestamp": "2023-09-25 20:24:33.980782 UTC", "sessionId": "SSID_26", "data": {"ev": "seek end"}}
+{"timestamp": "2023-09-25 20:24:35.180791 UTC", "sessionId": "SSID_26", "data": {"CDN": "c2"}}
+{"timestamp": "2023-09-25 20:25:39.180800 UTC", "sessionId": "SSID_26", "data": {"BitRate": 3000}}
+{"timestamp": "2023-09-25 20:26:09.480809 UTC", "sessionId": "SSID_26", "data": {"CDN": "c2"}}
