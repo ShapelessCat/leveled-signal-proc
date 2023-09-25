@@ -5,7 +5,16 @@ The experimental time-state analytics platform written in Rust.
 ## Dependencies
 
 - Latest Rust compiler (MSRV is still unknown but _rustc_ 1.71 successfully compiles)
-- Python 3 (For LSDL)
+
+- Python 3.10+ (For LSDL)
+  - If you use _pyenv_, you can:
+
+    ```shell
+    pyenv install -v 3.11.5
+    pyenv virtualenv 3.11.5 lsp-py
+    ```
+
+    and then activate `lsp-py` after opening this project.
 
 ## Build
 
