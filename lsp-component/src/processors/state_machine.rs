@@ -5,7 +5,7 @@ use lsp_runtime::{signal::SignalProcessor, UpdateContext};
 /// A state machine is a signal processor that maintains a state machine internally.
 /// The state transition is defined as a lambda function passed in when construction.
 /// The state transition is triggered when the control input gets changed.
-/// The output is simply the current internal state
+/// The output is simply the current internal state.
 pub struct StateMachine<Input, State: Clone, TransitionFunc, Trigger> {
     state: State,
     transition: TransitionFunc,

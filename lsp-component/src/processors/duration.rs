@@ -1,8 +1,8 @@
 use lsp_runtime::{signal::SignalProcessor, Timestamp, UpdateContext};
 
-///
-/// Note: Although the duration of current level can not be a measurement, as it's a function of time
-/// But duration of previous level is a well defined signal - duration of previous level is a known value
+/// Note:
+/// Although the duration of current level cannot be a measurement, as it's a function of time,
+/// duration of previous level is a well defined signal -- duration of previous level is a known value.
 #[derive(Default)]
 pub struct DurationOfPreviousLevel<T> {
     current_value: T,

@@ -11,6 +11,7 @@ pub(crate) mod test {
     pub(crate) struct TestSignalBag {
         pub(crate) value: u32,
     }
+
     #[derive(Default, Clone)]
     pub(crate) struct TestSignalInput {
         pub(crate) value: u32,
