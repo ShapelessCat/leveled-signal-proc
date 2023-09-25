@@ -35,7 +35,7 @@ def random_event_data():
     else:
         value = random.randint(1, 5) * 1000
     
-    return f'{{"{key}": {value}}}'
+    return f'"{key}": {value}'
 
 if __name__ == '__main__':
     if len(sys.argv) != 2 or not sys.argv[1].isdigit():
@@ -45,7 +45,7 @@ if __name__ == '__main__':
         required_count = int(sys.argv[1])
 
         result = []
-        template = """{{"timestamp": "{}", "sessionId": "{}", "data": {}}}"""
+        template = '''{{"timestamp": "{}", "sessionId": "{}", {}}}'''
 
         session_id = 0
         time_delta = timedelta(seconds = 0)
