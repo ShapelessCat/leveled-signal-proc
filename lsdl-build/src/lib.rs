@@ -61,7 +61,7 @@ impl LsdlSourceDirectory {
             ir_dir: p.as_ref().to_owned(),
         }
     }
-    pub fn set_output_dir<P: AsRef<Path>>(mut self, path: &P) -> Self {
+    pub fn set_output_dir<P: AsRef<Path> + ?Sized>(mut self, path: &P) -> Self {
         self.ir_dir = path.as_ref().to_owned();
         self
     }

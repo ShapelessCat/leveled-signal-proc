@@ -6,6 +6,7 @@ lsdl/*.egg-info
 lsdl/build
 lsdl/**/__pycache__
 lsdl/examples/*.json
+video-metrics-demo/**/*.json
 
 .vscode
 
