@@ -83,7 +83,7 @@ impl LsdlSourceDirectory {
             let source_obj = LsdlSource {
                 src_path: source_file,
                 out_path: ir_file_buf,
-                lsdl_runtime_dir: None,
+                lsdl_runtime_dir: env!("CARGO_MANIFEST_DIR").into()
             };
             source_callback(source_obj)?;
             count += 1;
@@ -95,15 +95,18 @@ impl LsdlSourceDirectory {
 pub struct LsdlSource {
     src_path: PathBuf,
     out_path: PathBuf,
-    lsdl_runtime_dir: Option<PathBuf>,
+    lsdl_runtime_dir: PathBuf,
 }
 
 impl LsdlSource {
+    pub fn get_lsdl_runtime_path(&self) -> &Path {
+        &self.lsdl_runtime_dir
+    }
     pub fn set_output_path<P: AsRef<Path> + ?Sized>(&mut self, p: &P) {
         self.out_path = p.as_ref().to_owned();
     }
     pub fn set_lsdl_runtime_path<P: AsRef<Path> + ?Sized>(&mut self, p: &P) {
-        self.lsdl_runtime_dir = Some(p.as_ref().to_owned());
+        self.lsdl_runtime_dir = p.as_ref().to_owned();
     }
     pub fn lower_to_ir(&self) -> Result<&Path, anyhow::Error> {
         if let Ok(metadata) = self.out_path.metadata() {
@@ -117,12 +120,10 @@ impl LsdlSource {
         let mut py_instance = Command::new(get_python_interpreter());
         py_instance.arg(self.src_path.as_path())
             .stdout(File::create(self.out_path.as_path())?);
-        if let Some(lsdl_runtime_dir) = self.lsdl_runtime_dir.as_ref() {
-            let mut python_path = env::var("PYTHONPATH").unwrap_or_else(|_| "".to_string());
-            python_path.push(':');
-            python_path.push_str(lsdl_runtime_dir.to_string_lossy().as_ref());
-            py_instance.env("PYTHONPATH", python_path);
-        }
+        let mut python_path = env::var("PYTHONPATH").unwrap_or_else(|_| "".to_string());
+        python_path.push(':');
+        python_path.push_str(self.lsdl_runtime_dir.to_string_lossy().as_ref());
+        py_instance.env("PYTHONPATH", python_path);
         let child_handle = py_instance.spawn()?.wait()?;
         println!("cargo:rerun-if-changed={}", self.src_path.display());
         if !child_handle.success() {
