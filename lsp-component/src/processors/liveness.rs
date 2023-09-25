@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 use lsp_runtime::signal::SignalProcessor;
 use lsp_runtime::{Timestamp, UpdateContext, WithTimestamp};
 
-/// This is the signal processor that analyze the liveness of a session based on heartbeat signal.
+/// This is the signal processor that analyzes the liveness of a session based on heartbeat signals.
 /// The output constantly answering the question: Is current session still alive?
 /// The liveness defined as we can find a heartbeat event within `expiuration_period` amount of time.
 /// Thus, this operator uses the look ahead mechamism of the LSP system to see if there's a future heartbeat event.

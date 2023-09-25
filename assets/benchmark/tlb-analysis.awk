@@ -1,4 +1,5 @@
 #!/bin/awk -f
+
 $1 == "processing_time_secs{op=\"process_event\"}" {
 	s += $2
 	c ++;
@@ -6,4 +7,3 @@ $1 == "processing_time_secs{op=\"process_event\"}" {
 END {
 	print s/c
 }
-

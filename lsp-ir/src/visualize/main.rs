@@ -25,6 +25,7 @@ fn render_upstream_refs(input: &NodeInput) -> Vec<String> {
     };
     upstream
 }
+
 fn visualize_lsp_ir<R: Read>(reader: R) -> Result<(), Error> {
     let ir: LspIr = serde_json::from_reader(reader)?;
 

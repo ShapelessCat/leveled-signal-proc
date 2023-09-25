@@ -7,7 +7,7 @@ pub trait Rentention<T> {
     fn should_drop(&mut self, now: Timestamp) -> Option<T>;
 }
 
-/// The retention policy for latch that keeps the value forever
+/// The retention policy for latches that keep the value forever
 #[derive(Default)]
 pub struct KeepForever;
 
@@ -21,7 +21,7 @@ impl<T> Rentention<T> for KeepForever {
     }
 }
 
-/// The retention policy for latch that keeps the value for a period of time
+/// The retention policy for latches that keep the value for a period of time
 pub struct TimeToLive<T> {
     default_value: T,
     value_forgotten_timestamp: Timestamp,
@@ -44,9 +44,9 @@ impl<T: Clone> Rentention<T> for TimeToLive<T> {
 }
 
 /// A latch is a signal processor that takes a control input and a data input.
-/// For each time, a latch produce the same output as the internal state.
-/// When the control input becomes true, the latch change it internal state to the data input.
-/// This concept borrowed from the hardware component which shares the same name. And it's widely use
+/// For each time, a latch produces the same output as the internal state.
+/// When the control input becomes true, the latch changes its internal state to the data input.
+/// This concept borrowed from the hardware component which shares the same name. And it's widely used
 /// as one bit memory in digital circuits.
 #[derive(Default)]
 pub struct Latch<DataType: Clone, RetentionPolicy: Rentention<DataType> = KeepForever> {
