@@ -124,7 +124,9 @@ impl LsdlSource {
             py_instance.env("PYTHONPATH", python_path);
         }
         let child_handle = py_instance.spawn()?.wait()?;
+        println!("cargo:rerun-if-changed={}", self.src_path.display());
         if !child_handle.success() {
+            std::fs::remove_file(self.out_path.as_path())?;
             Err(std::io::Error::new(
                 std::io::ErrorKind::Other,
                 format!("Unable to lower LSDL source to LSPIR. (lsdl_file_name: {})", self.src_path.display())
