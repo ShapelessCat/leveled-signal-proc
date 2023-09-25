@@ -1,4 +1,5 @@
 #!/bin/zsh
+
 set -x
 rm -f {poc,tlb2}-{playtime,cir}.txt
 for ((i=0;i<5;i++))

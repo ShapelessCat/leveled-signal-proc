@@ -1,4 +1,5 @@
 #!/usr/bin/zsh
+
 set -ex
 REPO_DIRECTORY=$(dirname $(readlink -f $0))/..
 cargo build --release --bin lsp-ir-dot-graph
