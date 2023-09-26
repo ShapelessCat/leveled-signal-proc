@@ -60,3 +60,37 @@ impl<'a, I: Iterator> Measurement<'a, I> for DurationTrue {
             }
     }
 }
+
+
+#[derive(Default)]
+pub struct ScopedDurationTrue<T: Clone> {
+    current_control_level: T,
+    current_level_timestamp: Timestamp,
+    inner: DurationTrue,
+    current_base: Timestamp,
+    prev_base: Option<Timestamp>,
+}
+
+impl<'a, T:Clone + Eq + 'a, I: Iterator> Measurement<'a, I> for ScopedDurationTrue<T> {
+    type Input = (&'a T, &'a bool);
+    type Output = Timestamp;
+
+    fn update(&mut self, ctx: &mut UpdateContext<I>, (level, data): (&T, &bool)) {
+        self.inner.update(ctx, data);
+
+        if &self.current_control_level != level {
+            self.current_control_level = level.clone();
+            self.current_level_timestamp = ctx.frontier();
+            self.prev_base = Some(self.current_base);
+            self.current_base = self.inner.measure(ctx);
+        }
+    }
+
+    fn measure(&self, ctx: &mut UpdateContext<I>) -> Self::Output {
+        let base = match self.prev_base {
+            Some(prev_base) if prev_base == ctx.frontier() => prev_base,
+            _ => self.current_base,
+        };
+        self.inner.measure(ctx) - base
+    }
+}

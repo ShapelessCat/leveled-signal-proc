@@ -14,9 +14,9 @@ class LeveledSignalBase(object):
         from lsdl.signal_processors import Accumulator 
         from lsdl.const import Const
         return Accumulator(self, Const(1))
-    def measure_duration_true(self):
+    def measure_duration_true(self, scope_signal = None):
         from lsdl.measurements import DurationTrue
-        return DurationTrue(self)
+        return DurationTrue(self, scope_signal = scope_signal)
     def measure_duration_since_true(self):
         from lsdl.measurements import DurationSinceBecomeTrue
         return DurationSinceBecomeTrue(self)

@@ -46,9 +46,11 @@ init_play_state.add_metric("state", "i32")
                                
 is_init_buffering = ((init_play_state == 0) & is_buffering)
 
-is_init_buffering.measure_duration_true().add_metric("initBufferingTime")
-is_buffering.measure_duration_true().add_metric("bufferingTime")
+is_init_buffering.measure_duration_true(scope_signal = num_sid).add_metric("initBufferingTime")
+is_buffering.measure_duration_true(scope_signal = num_sid).add_metric("bufferingTime")
 num_sid.add_metric("sid")
 input.player_state.peek().add_metric("ps")
+
+
 
 print_ir_to_stdout()
