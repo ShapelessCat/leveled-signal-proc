@@ -20,6 +20,9 @@ class LeveledSignalBase(object):
     def measure_duration_since_true(self):
         from lsdl.measurements import DurationSinceBecomeTrue
         return DurationSinceBecomeTrue(self)
+    def measure_change(self, control_signal):
+        from lsdl.measurements import DiffSinceCurrentLevel
+        return DiffSinceCurrentLevel(control = control_signal, data = self)
     def _bin_op(self, other, op):
         from lsdl.signal_processors import SignalMapper
         from lsdl.const import Const
