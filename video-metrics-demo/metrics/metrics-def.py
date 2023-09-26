@@ -1,6 +1,6 @@
 from lsdl.schema import InputSchemaBase, named, String, Integer
 from lsdl import print_ir_to_stdout
-from lsdl.signal_processors import StateMachine
+from lsdl.signal_processors import StateMachineBuilder
 
 PS_PLAYING = "playing"
 PS_BUFFERING = "buffering"
@@ -35,19 +35,14 @@ num_ps = input.player_state.map(bind_var = "s", lambda_src = f"""
     }}
 """)
 
-init_play_state = StateMachine(input.session_id.clock(), [num_sid, num_ps], transition_fn = """
-    |state, &(sid, ps)| {
-        let last_sid = state >> 3;
-        let last_state = if sid != last_sid { 0 } else { state & 0x7 };
-        let new_state = match last_state {
-            0 => if ps != 0 { 0 } else { 1 },
-            _ => 1,       
-        };
-        (sid << 3) + new_state
-    }
-""").map(bind_var="value" , lambda_src="value & 0x7")
-                               
-is_init_buffering = ((init_play_state == 1) & is_buffering)
+has_been_playing = StateMachineBuilder(input.session_id.clock(), num_ps)\
+    .transition_fn("|s: &bool, ps: &i32| *s || *ps == 0")\
+    .scoped(num_sid)\
+    .build()
+
+is_init_buffering = (has_been_playing & is_buffering)
 is_init_buffering.measure_duration_true(scope_signal = num_sid).add_metric("RebufferingTime")
+
+input.session_id.peek().add_metric("sessionId")
 
 print_ir_to_stdout()
