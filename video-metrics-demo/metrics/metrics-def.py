@@ -26,7 +26,7 @@ is_buffering = (input.player_state == PS_BUFFERING)
 is_buffering.measure_duration_true(scope_signal = num_sid).add_metric("bufferingTime")
 
 
-## Initial buffering time
+## Re-buffering time
 num_ps = input.player_state.map(bind_var = "s", lambda_src = f"""
     match s.as_str() {{
         "{PS_PLAYING}" => 0,
@@ -47,7 +47,7 @@ init_play_state = StateMachine(input.session_id.clock(), [num_sid, num_ps], tran
     }
 """).map(bind_var="value" , lambda_src="value & 0x7")
                                
-is_init_buffering = ((init_play_state == 0) & is_buffering)
-is_init_buffering.measure_duration_true(scope_signal = num_sid).add_metric("initBufferingTime")
+is_init_buffering = ((init_play_state == 1) & is_buffering)
+is_init_buffering.measure_duration_true(scope_signal = num_sid).add_metric("RebufferingTime")
 
 print_ir_to_stdout()
