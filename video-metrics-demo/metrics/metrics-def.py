@@ -42,15 +42,9 @@ init_play_state = StateMachine(input.session_id.clock(), [num_sid, num_ps], tran
     }
 """).map(bind_var="value" , lambda_src="value & 0x7")
                                
-init_play_state.add_metric("state", "i32")
-                               
 is_init_buffering = ((init_play_state == 0) & is_buffering)
 
 is_init_buffering.measure_duration_true(scope_signal = num_sid).add_metric("initBufferingTime")
 is_buffering.measure_duration_true(scope_signal = num_sid).add_metric("bufferingTime")
-num_sid.add_metric("sid")
-input.player_state.peek().add_metric("ps")
-
-
 
 print_ir_to_stdout()
