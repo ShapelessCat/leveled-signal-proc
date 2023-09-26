@@ -54,13 +54,13 @@ class LspComponentBase(LeveledSignalBase):
             "namespace": self._namespace,
             "debug_info": self._debug_info.to_dict(),
         }
-    def add_metric(self, key):
+    def add_metric(self, key, typename = "_"):
         from lsdl import measurement_config
         from lsdl.measurements import PeekValue
         if self.is_signal():
-            measurement_config().add_metric(key, PeekValue(self))
+            measurement_config().add_metric(key, PeekValue(self), typename)
         else:
-            measurement_config().add_metric(key, self)
+            measurement_config().add_metric(key, self, typename)
 
 class BuiltinComponentBase(LspComponentBase):
     def __init__(self, name, **kwargs):

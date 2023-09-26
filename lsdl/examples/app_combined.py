@@ -36,7 +36,7 @@ has_attempted.measure_duration_since_true().add_metric("timeToFirstAttempt")
 player_state = SignalFilterBuilder(input.video_event).filter_values(VE_BUFFER, VE_PLAY).build_value_filter()
 
 # So the buffering time is simply defined as the duration of the player_state being "buffering"
-(player_state == VE_PLAY).measure_duration_true().add_metric("bufferingTime")
+(player_state == VE_BUFFER).measure_duration_true().add_metric("bufferingTime")
 
 # we can define the connection induced buffering as following:
 #   1. The player_state is "buffering"

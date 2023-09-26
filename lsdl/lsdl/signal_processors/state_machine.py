@@ -15,3 +15,4 @@ class StateMachine(BuiltinComponentBase):
             node_decl = node_decl, 
             upstreams = [clock, data]
         )
+        self._output_type = "i32"

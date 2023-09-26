@@ -67,11 +67,11 @@ impl MacroContext {
         }
         let timestamp_key = &schema.patch_timestamp_key;
         let item_impl = quote! {
-            #[derive(Clone, Default)]
+            #[derive(Clone, Default, Debug)]
             pub struct #type_name {
                 #(#item_impls)*
             }
-            #[derive(serde::Deserialize, Clone)]
+            #[derive(serde::Deserialize, Clone, Debug)]
             pub struct #patch_type_name {
                 #[serde(rename = #timestamp_key)]
                 timestamp: chrono::DateTime<chrono::Utc>,
