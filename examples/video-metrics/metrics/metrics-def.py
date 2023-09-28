@@ -3,6 +3,7 @@ from lsdl import print_ir_to_stdout
 from lsdl.signal import LeveledSignalBase
 from lsdl.signal_processors import StateMachineBuilder
 
+# String constants
 PS_PLAYING = "playing"
 PS_BUFFERING = "buffering"
 PS_PAUSE = "pause"
@@ -10,6 +11,7 @@ PS_PAUSE = "pause"
 EV_SEEK_START = "seek start"
 EV_SEEK_END = "seek end"
 
+# Input data schema
 class Input(SessionizedInputSchemaBase):
     _timestamp_key = "timestamp"
     session_id     = named("sessionId",   String())
@@ -52,4 +54,5 @@ is_re_buffering.measure_duration_true(scope_signal = input.session_signal).add_m
 is_seek_start = (input.ev == EV_SEEK_START)
 is_seek_start.measure_duration_true(scope_signal = input.session_signal).add_metric("seekTime")
 
+# Dump IR from metric defnitions
 print_ir_to_stdout()
