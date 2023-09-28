@@ -61,6 +61,7 @@ class LspComponentBase(LeveledSignalBase):
             measurement_config().add_metric(key, PeekValue(self), typename)
         else:
             measurement_config().add_metric(key, self, typename)
+        return self
 
 class BuiltinComponentBase(LspComponentBase):
     def __init__(self, name, **kwargs):
