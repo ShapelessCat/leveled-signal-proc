@@ -1,6 +1,6 @@
 from lsdl.schema import InputSchemaBase, named, String, Integer
 from lsdl import print_ir_to_stdout
-from lsdl.signal_processors import StateMachineBuilder
+from lsdl.signal_processors import StateMachineBuilder, EdgeTriggeredLatch, SignalMapper
 
 PS_PLAYING = "playing"
 PS_BUFFERING = "buffering"
@@ -25,7 +25,6 @@ num_sid = input.session_id.count_changes()
 is_buffering = (input.player_state == PS_BUFFERING)
 is_buffering.measure_duration_true(scope_signal = num_sid).add_metric("bufferingTime")
 
-
 ## Re-buffering time
 num_ps = input.player_state.map(bind_var = "s", lambda_src = f"""
     match s.as_str() {{
@@ -35,8 +34,16 @@ num_ps = input.player_state.map(bind_var = "s", lambda_src = f"""
     }}
 """)
 
-has_been_playing = StateMachineBuilder(input.session_id.clock(), num_ps)\
-    .transition_fn("|s: &bool, ps: &i32| *s || *ps == 0")\
+ps_event_ts = EdgeTriggeredLatch(input.player_state.clock(), input.session_id.clock())
+session_ts = EdgeTriggeredLatch(num_sid, input.session_id.clock())
+sessionized_ps = SignalMapper(
+    bind_var = "(session_ts, ets, ps)", 
+    lambda_src = "if *ets < *session_ts { -1 } else {*ps}", 
+    upstream = [session_ts, ps_event_ts, num_ps])
+sessionized_ps.add_metric("playerState", "i32")
+
+has_been_playing = StateMachineBuilder(input.session_id.clock(), sessionized_ps)\
+    .transition_fn("|&res: &bool, &state: &i32| res || state == 0")\
     .scoped(num_sid)\
     .build()
 

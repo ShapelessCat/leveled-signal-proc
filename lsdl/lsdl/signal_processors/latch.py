@@ -18,3 +18,14 @@ class Latch(BuiltinComponentBase):
         )
         if "output_type" in kwargs:
             self._output_type = kwargs["output_type"]
+
+class EdgeTriggeredLatch(BuiltinComponentBase):
+    def __init__(self, control: LeveledSignalBase, data: LeveledSignalBase):
+        node_decl = f"StateMachine::new(Default::default(), |_, data| *data)"
+        super().__init__(
+            name = "StateMachine",
+            is_measurement = False,
+            node_decl = node_decl,
+            upstreams = [control, data]
+        )
+        self._output_type = data.get_rust_type_name()
