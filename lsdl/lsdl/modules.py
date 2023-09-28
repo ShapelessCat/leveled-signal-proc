@@ -60,3 +60,19 @@ class SignalFilterBuilder(object):
             data = self._filter_signal,
             control = self._filter_node
         )
+    
+class ScopeContext(object):
+    def __init__(self, scope_level: LeveledSignalBase, epoch: LeveledSignalBase):
+        self._scope = scope_level
+        self._epoch = epoch
+    def scoped(self, data: LeveledSignalBase, clock: LeveledSignalBase, default = None) -> LeveledSignalBase:
+        from lsdl.signal_processors import EdgeTriggeredLatch, SignalMapper
+        scope_starts = EdgeTriggeredLatch(control = self._scope, data = self._epoch)
+        event_starts = EdgeTriggeredLatch(control = data, data = self._epoch)
+        return SignalMapper(
+            bind_var = "(sep, eep, signal)", 
+            lambda_src = f"""if *sep <= *eep {{ signal.clone() }} else {{ 
+                { "Default::default()" if default is None else str(default) }
+            }}""", 
+            upstream = [scope_starts, event_starts, data]
+        ).annotate_type(data.get_rust_type_name())

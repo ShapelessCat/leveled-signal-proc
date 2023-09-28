@@ -136,23 +136,16 @@ class SessionizedInputSchemaBase(InputSchemaBase):
             self._sessionized_signals[key] = self.sessionized(raw_signal, raw_signal_clock, default_value)
         return self._sessionized_signals[key]
     def sessionized(self, signal, signal_clock = None, default_value = None):
-        from lsdl.signal_processors import EdgeTriggeredLatch, SignalMapper
         if signal_clock is None:
             signal_clock = signal.clock()
-        session_epoch = EdgeTriggeredLatch(control = self.session_signal, data = self.epoch_signal)
-        event_epoch = EdgeTriggeredLatch(control = signal_clock, data = self.epoch_signal)
-        return SignalMapper(
-            bind_var = "(sep, eep, signal)", 
-            lambda_src = f"""if *sep <= *eep {{ signal.clone() }} else {{ 
-                { "Default::default()" if default_value is None else str(default_value) }
-            }}""", 
-            upstream = [session_epoch, event_epoch, signal])\
-                .annotate_type(signal.get_rust_type_name())
+        return self._scope_ctx.scoped(data = signal, clock = signal_clock, default = default_value)
     def __init__(self, name="InputSignalBag"):
+        from lsdl.modules import ScopeContext
         super().__init__(name)
         self.session_signal = self.create_session_signal()
         self.epoch_signal = self.create_epoch_signal()
         self._sessionized_signals = dict()
+        self._scope_ctx = ScopeContext(scope_level = self.session_signal, epoch = self.epoch_signal)
     def __getattribute__(self, name: str) -> Any:
         sessionized_prefix = "sessionized_"
         if name.startswith(sessionized_prefix):
