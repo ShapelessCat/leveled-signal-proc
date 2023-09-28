@@ -24,6 +24,9 @@ class LspComponentBase(LeveledSignalBase):
         self._id = _assign_fresh_component_id()
         self._output_type = "_"
         _components.append(self)
+    def annotate_type(self, typename: str):
+        self._output_type = typename
+        return self
     def get_rust_type_name(self) -> str:
         return self._output_type
     def get_id(self):

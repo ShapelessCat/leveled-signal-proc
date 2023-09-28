@@ -26,8 +26,8 @@ def sessionized(signal, signal_clock, default):
     event_epoch = EdgeTriggeredLatch(control = signal_clock, data = input.session_id.clock())
     return SignalMapper(
         bind_var = "(sep, eep, signal)", 
-        lambda_src = f"if *sep <= *eep {{ *signal }} else {{ {default} }}", 
-        upstream = [session_epoch, event_epoch, signal])
+        lambda_src = f"if *sep <= *eep {{ signal.clone() }} else {{ {default} }}", 
+        upstream = [session_epoch, event_epoch, signal]).annotate_type(signal.get_rust_type_name())
 
 num_ps = input.player_state.map(bind_var = "s", lambda_src = f"""
     match s.as_str() {{
@@ -35,7 +35,7 @@ num_ps = input.player_state.map(bind_var = "s", lambda_src = f"""
         "{PS_BUFFERING}" => 1,
         _ => 2,
     }}
-""")
+""").annotate_type("i32")
 
 # State
 player_state = sessionized(num_ps, input.player_state.clock(), "-1")
@@ -47,8 +47,8 @@ player_state.map(bind_var = "n", lambda_src = f"""
         _ => "",
     }} 
 """).add_metric("playerState", typename="&'static str")
-# TODO: !!!
-# sessionized(input.cdn, input.cdn.clock(), '''""''').add_metric("cdn", typename="&'static str")
+cdn = input.cdn.map(bind_var="s", lambda_src="s.to_string()").annotate_type("String")
+sessionized(cdn, input.cdn.clock(), '"".to_string()').add_metric("cdn")
 sessionized(input.bit_rate, input.bit_rate.clock(), "-1").add_metric("bitrate", typename='i32')
 
 # Buffering time per session
