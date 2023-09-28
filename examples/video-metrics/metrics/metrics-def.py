@@ -43,16 +43,13 @@ has_been_playing = StateMachineBuilder(input.session_id.clock(), input.player_st
     .scoped(input.session_signal)\
     .build()
 
-is_init_buffering = (~has_been_playing & is_buffering)
-is_init_buffering.measure_duration_true(scope_signal = input.session_signal).add_metric("initialBufferingTime")
+(~has_been_playing & is_buffering).measure_duration_true(scope_signal = input.session_signal).add_metric("initialBufferingTime")
 
 ## Re-buffering time
-is_re_buffering = (has_been_playing & is_buffering)
-is_re_buffering.measure_duration_true(scope_signal = input.session_signal).add_metric("rebufferingTime")
+(has_been_playing & is_buffering).measure_duration_true(scope_signal = input.session_signal).add_metric("rebufferingTime")
 
 # ev - seek time
-is_seek_start = (input.ev == EV_SEEK_START)
-is_seek_start.measure_duration_true(scope_signal = input.session_signal).add_metric("seekTime")
+(input.ev == EV_SEEK_START).measure_duration_true(scope_signal = input.session_signal).add_metric("seekTime")
 
 # Dump IR from metric defnitions
 print_ir_to_stdout()
