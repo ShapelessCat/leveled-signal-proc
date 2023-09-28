@@ -29,12 +29,6 @@ def sessionized(signal, signal_clock, default):
         lambda_src = f"if *sep <= *eep {{ *signal }} else {{ {default} }}", 
         upstream = [session_epoch, event_epoch, signal])
 
-# Buffering time per session
-
-is_buffering = (input.player_state == PS_BUFFERING)
-is_buffering.measure_duration_true(scope_signal = num_sid).add_metric("bufferingTime")
-
-## Re-buffering time
 num_ps = input.player_state.map(bind_var = "s", lambda_src = f"""
     match s.as_str() {{
         "{PS_PLAYING}" => 0,
@@ -43,16 +37,39 @@ num_ps = input.player_state.map(bind_var = "s", lambda_src = f"""
     }}
 """)
 
+# State
 player_state = sessionized(num_ps, input.player_state.clock(), "-1")
+player_state.map(bind_var = "n", lambda_src = f"""
+    match n {{
+        0 => "{PS_PLAYING}",
+        1 => "{PS_BUFFERING}",
+        2 => "{PS_PAUSE}",
+        _ => "",
+    }} 
+""").add_metric("playerState", typename="&'static str")
+# TODO: !!!
+# sessionized(input.cdn, input.cdn.clock(), '''""''').add_metric("cdn", typename="&'static str")
+sessionized(input.bit_rate, input.bit_rate.clock(), "-1").add_metric("bitrate", typename='i32')
+
+# Buffering time per session
+
+is_buffering = (input.player_state == PS_BUFFERING)
+is_buffering.measure_duration_true(scope_signal = num_sid).add_metric("bufferingTime")
+
+## Re-buffering time
 
 has_been_playing = StateMachineBuilder(input.session_id.clock(), player_state)\
     .transition_fn("|&res: &bool, &state: &i32| res || state == 0")\
     .scoped(num_sid)\
     .build()
 
-is_init_buffering = (has_been_playing & is_buffering)
-is_init_buffering.measure_duration_true(scope_signal = num_sid).add_metric("RebufferingTime")
+is_init_buffering = (~has_been_playing & is_buffering)
+is_init_buffering.measure_duration_true(scope_signal = num_sid).add_metric("InitBufferingTime")
 
+is_re_buffering = (has_been_playing & is_buffering)
+is_re_buffering.measure_duration_true(scope_signal = num_sid).add_metric("RebufferingTime")
+
+# Debug
 input.session_id.peek().add_metric("sessionId")
 
 print_ir_to_stdout()
