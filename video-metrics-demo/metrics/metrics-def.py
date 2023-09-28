@@ -45,7 +45,7 @@ player_state.map(bind_var = "n", lambda_src = f"""
     }} 
 """).add_metric("playerState", typename="&'static str")
 cdn = input.cdn.map(bind_var="s", lambda_src="s.to_string()").annotate_type("String")
-input.sessionized(cdn, signal_clock = input.cdn.clock(), default_value = "String::new()").add_metric("cdn")
+input.sessionized(cdn, signal_clock = input.cdn.clock()).add_metric("cdn")
 input.sessionized_bit_rate.add_metric("bitrate")
 
 # Buffering time per session
