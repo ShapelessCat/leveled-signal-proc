@@ -30,6 +30,13 @@ def has_been_true(input: LeveledSignalBase, duration = -1) -> LeveledSignalBase:
             forget_duration = _normalize_duration(duration)
         )
 
+def make_tuple(*args) -> LeveledSignalBase:
+    return SignalMapper(
+        bind_var = "&s",
+        lambda_src = "s",
+        upstream = list(args)
+    )
+
 class SignalFilterBuilder(object):
     def __init__(self, filter_signal: LeveledSignalBase, clock_signal: LeveledSignalBase = None):
         self._filter_signal = filter_signal
