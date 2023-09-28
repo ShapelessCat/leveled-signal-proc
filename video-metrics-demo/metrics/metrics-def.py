@@ -7,8 +7,8 @@ PS_PLAYING = "playing"
 PS_BUFFERING = "buffering"
 PS_PAUSE = "pause"
 
-EV_SEEK_S = "seek start"
-EV_SEEK_E = "seek end"
+EV_SEEK_START = "seek start"
+EV_SEEK_END = "seek end"
 
 class Input(SessionizedInputSchemaBase):
     _timestamp_key = "timestamp"
@@ -19,10 +19,13 @@ class Input(SessionizedInputSchemaBase):
     ev             = named("ev",          String())
     # Sessionized signal descriptions
     bit_rate_default = -1
+
     def create_epoch_signal(self) -> LeveledSignalBase:
         return self.session_id.clock()
+
     def create_session_signal(self) -> LeveledSignalBase:
         return self.session_id.count_changes()
+
 
 input = Input()
 
@@ -53,18 +56,22 @@ input.sessionized_bit_rate.add_metric("bitrate")
 is_buffering = (input.player_state == PS_BUFFERING)
 is_buffering.measure_duration_true(scope_signal = input.session_signal).add_metric("bufferingTime")
 
-## Re-buffering time
-
 has_been_playing = StateMachineBuilder(input.session_id.clock(), player_state)\
     .transition_fn("|&res: &bool, &state: &i32| res || state == 0")\
     .scoped(input.session_signal)\
     .build()
 
+## Initial buffering time
 is_init_buffering = (~has_been_playing & is_buffering)
-is_init_buffering.measure_duration_true(scope_signal = input.session_signal).add_metric("InitBufferingTime")
+is_init_buffering.measure_duration_true(scope_signal = input.session_signal).add_metric("initialBufferingTime")
 
+## Re-buffering time
 is_re_buffering = (has_been_playing & is_buffering)
-is_re_buffering.measure_duration_true(scope_signal = input.session_signal).add_metric("RebufferingTime")
+is_re_buffering.measure_duration_true(scope_signal = input.session_signal).add_metric("rebufferingTime")
+
+# ev - seek time
+is_seek_start = (input.ev == EV_SEEK_START)
+is_seek_start.measure_duration_true(scope_signal = input.session_signal).add_metric("seekTime")
 
 # Debug
 input.session_id.peek().add_metric("sessionId")
