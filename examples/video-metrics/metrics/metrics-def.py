@@ -1,7 +1,7 @@
-from lsdl.schema import InputSchemaBase, named, String, Integer, SessionizedInputSchemaBase
+from lsdl.schema import named, String, Integer, SessionizedInputSchemaBase
 from lsdl import print_ir_to_stdout
 from lsdl.signal import LeveledSignalBase
-from lsdl.signal_processors import StateMachineBuilder, EdgeTriggeredLatch, SignalMapper
+from lsdl.signal_processors import StateMachineBuilder
 
 PS_PLAYING = "playing"
 PS_BUFFERING = "buffering"

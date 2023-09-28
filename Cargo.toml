@@ -1,5 +1,5 @@
 [workspace]
-members = ["lsp-runtime", "lsp-component", "lsp-ir", "lsp-codegen", "lsp-codegen-test", "lsdl-build", "video-metrics-demo"]
+members = ["lsp-runtime", "lsp-component", "lsp-ir", "lsp-codegen", "lsp-codegen-test", "lsdl-build", "examples/video-metrics", "examples/app-analytics"]
 
 [profile.release]
 debug = false
