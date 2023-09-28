@@ -82,7 +82,7 @@ impl MacroContext {
                 }
                 quote! {
                     (
-                        #(#value_code,)*
+                        #(#value_code.clone(),)*
                     )
                 }
                 .into()

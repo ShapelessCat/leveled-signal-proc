@@ -23,11 +23,11 @@ class StateMachineBuilder(object):
         else:
             actual_transition_fn = f"""{{
                 let mut inner_fn = {self._transition_fn};
-                move |&(last_scope, mut last_state), &(this_scope, this_input)|{{
+                move |&(last_scope, mut last_state), &(this_scope, ref this_input)|{{
                     if last_scope != this_scope {{
                         last_state = Default::default();
                     }}
-                    (this_scope, (inner_fn)(&last_state, &this_input))
+                    (this_scope, (inner_fn)(&last_state, this_input))
                 }}
             }}"""
             state_machine = StateMachine(

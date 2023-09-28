@@ -29,26 +29,10 @@ class Input(SessionizedInputSchemaBase):
 
 input = Input()
 
-num_ps = input.player_state.map(bind_var = "s", lambda_src = f"""
-    match s.as_str() {{
-        "{PS_PLAYING}" => 0,
-        "{PS_BUFFERING}" => 1,
-        _ => 2,
-    }}
-""").annotate_type("i32")
 
 # State
-player_state = input.sessionized(num_ps, signal_clock = input.player_state.clock(), default_value = -1)
-player_state.map(bind_var = "n", lambda_src = f"""
-    match n {{
-        0 => "{PS_PLAYING}",
-        1 => "{PS_BUFFERING}",
-        2 => "{PS_PAUSE}",
-        _ => "",
-    }} 
-""").add_metric("playerState", typename="&'static str")
-cdn = input.cdn.map(bind_var="s", lambda_src="s.to_string()").annotate_type("String")
-input.sessionized(cdn, signal_clock = input.cdn.clock()).add_metric("cdn")
+input.sessionized_player_state.add_metric("playerState")
+input.sessionized_cdn.add_metric("cdn")
 input.sessionized_bit_rate.add_metric("bitrate")
 
 # Buffering time per session
@@ -56,8 +40,8 @@ input.sessionized_bit_rate.add_metric("bitrate")
 is_buffering = (input.player_state == PS_BUFFERING)
 is_buffering.measure_duration_true(scope_signal = input.session_signal).add_metric("bufferingTime")
 
-has_been_playing = StateMachineBuilder(input.session_id.clock(), player_state)\
-    .transition_fn("|&res: &bool, &state: &i32| res || state == 0")\
+has_been_playing = StateMachineBuilder(input.session_id.clock(), input.player_state)\
+    .transition_fn(f"|&res: &bool, state: &String| res || state == \"{PS_PLAYING}\"")\
     .scoped(input.session_signal)\
     .build()
 
