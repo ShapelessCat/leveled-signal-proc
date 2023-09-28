@@ -37,7 +37,7 @@ input.sessionized_bit_rate.add_metric("bitrate")
 
 # Buffering time per session
 
-is_buffering = (input.player_state == PS_BUFFERING)
+is_buffering = (input.sessionized_player_state == PS_BUFFERING)
 is_buffering.measure_duration_true(scope_signal = input.session_signal).add_metric("bufferingTime")
 
 has_been_playing = StateMachineBuilder(input.session_id.clock(), input.player_state)\
