@@ -1,5 +1,6 @@
-from lsdl.schema import InputSchemaBase, named, String, Integer
+from lsdl.schema import InputSchemaBase, named, String, Integer, SessionizedInputSchemaBase
 from lsdl import print_ir_to_stdout
+from lsdl.signal import LeveledSignalBase
 from lsdl.signal_processors import StateMachineBuilder, EdgeTriggeredLatch, SignalMapper
 
 PS_PLAYING = "playing"
@@ -9,25 +10,21 @@ PS_PAUSE = "pause"
 EV_SEEK_S = "seek start"
 EV_SEEK_E = "seek end"
 
-class Input(InputSchemaBase):
+class Input(SessionizedInputSchemaBase):
     _timestamp_key = "timestamp"
     session_id     = named("sessionId",   String())
     player_state   = named("PlayerState", String())
     cdn            = named("CDN",         String())
     bit_rate       = named("BitRate",     Integer())
     ev             = named("ev",          String())
+    # Sessionized signal descriptions
+    bit_rate_default = -1
+    def create_epoch_signal(self) -> LeveledSignalBase:
+        return self.session_id.clock()
+    def create_session_signal(self) -> LeveledSignalBase:
+        return self.session_id.count_changes()
 
 input = Input()
-num_sid = input.session_id.count_changes()
-
-def sessionized(signal, signal_clock, default):
-    global input, num_sid
-    session_epoch = EdgeTriggeredLatch(control = num_sid, data = input.session_id.clock())
-    event_epoch = EdgeTriggeredLatch(control = signal_clock, data = input.session_id.clock())
-    return SignalMapper(
-        bind_var = "(sep, eep, signal)", 
-        lambda_src = f"if *sep <= *eep {{ signal.clone() }} else {{ {default} }}", 
-        upstream = [session_epoch, event_epoch, signal]).annotate_type(signal.get_rust_type_name())
 
 num_ps = input.player_state.map(bind_var = "s", lambda_src = f"""
     match s.as_str() {{
@@ -38,7 +35,7 @@ num_ps = input.player_state.map(bind_var = "s", lambda_src = f"""
 """).annotate_type("i32")
 
 # State
-player_state = sessionized(num_ps, input.player_state.clock(), "-1")
+player_state = input.sessionized(num_ps, signal_clock = input.player_state.clock(), default_value = -1)
 player_state.map(bind_var = "n", lambda_src = f"""
     match n {{
         0 => "{PS_PLAYING}",
@@ -48,26 +45,26 @@ player_state.map(bind_var = "n", lambda_src = f"""
     }} 
 """).add_metric("playerState", typename="&'static str")
 cdn = input.cdn.map(bind_var="s", lambda_src="s.to_string()").annotate_type("String")
-sessionized(cdn, input.cdn.clock(), '"".to_string()').add_metric("cdn")
-sessionized(input.bit_rate, input.bit_rate.clock(), "-1").add_metric("bitrate", typename='i32')
+input.sessionized(cdn, signal_clock = input.cdn.clock(), default_value = "String::new()").add_metric("cdn")
+input.sessionized_bit_rate.add_metric("bitrate")
 
 # Buffering time per session
 
 is_buffering = (input.player_state == PS_BUFFERING)
-is_buffering.measure_duration_true(scope_signal = num_sid).add_metric("bufferingTime")
+is_buffering.measure_duration_true(scope_signal = input.session_signal).add_metric("bufferingTime")
 
 ## Re-buffering time
 
 has_been_playing = StateMachineBuilder(input.session_id.clock(), player_state)\
     .transition_fn("|&res: &bool, &state: &i32| res || state == 0")\
-    .scoped(num_sid)\
+    .scoped(input.session_signal)\
     .build()
 
 is_init_buffering = (~has_been_playing & is_buffering)
-is_init_buffering.measure_duration_true(scope_signal = num_sid).add_metric("InitBufferingTime")
+is_init_buffering.measure_duration_true(scope_signal = input.session_signal).add_metric("InitBufferingTime")
 
 is_re_buffering = (has_been_playing & is_buffering)
-is_re_buffering.measure_duration_true(scope_signal = num_sid).add_metric("RebufferingTime")
+is_re_buffering.measure_duration_true(scope_signal = input.session_signal).add_metric("RebufferingTime")
 
 # Debug
 input.session_id.peek().add_metric("sessionId")

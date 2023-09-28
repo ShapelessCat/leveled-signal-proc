@@ -122,6 +122,44 @@ class InputSchemaBase(TypeBase):
         return {
             "type": "InputBag",
         }
+    
+class SessionizedInputSchemaBase(InputSchemaBase):
+    def create_session_signal(self) -> LeveledSignalBase:
+        raise NotImplemented()
+    def create_epoch_signal(self) -> LeveledSignalBase:
+        raise NotImplemented()
+    def _make_sessionized_input(self, key) -> LeveledSignalBase:
+        if key not in self._sessionized_signals:
+            raw_signal = super().__getattribute__(key)
+            raw_signal_clock = raw_signal.clock()
+            default_value = getattr(self, key + "_default", None)
+            self._sessionized_signals[key] = self.sessionized(raw_signal, raw_signal_clock, default_value)
+        return self._sessionized_signals[key]
+    def sessionized(self, signal, signal_clock = None, default_value = None):
+        from lsdl.signal_processors import EdgeTriggeredLatch, SignalMapper
+        if signal_clock is None:
+            signal_clock = signal.clock()
+        session_epoch = EdgeTriggeredLatch(control = self.session_signal, data = self.epoch_signal)
+        event_epoch = EdgeTriggeredLatch(control = signal_clock, data = self.epoch_signal)
+        return SignalMapper(
+            bind_var = "(sep, eep, signal)", 
+            lambda_src = f"""if *sep <= *eep {{ signal.clone() }} else {{ 
+                { "Default::default()" if default_value is None else str(default_value) }
+            }}""", 
+            upstream = [session_epoch, event_epoch, signal])\
+                .annotate_type(signal.get_rust_type_name())
+    def __init__(self, name="InputSignalBag"):
+        super().__init__(name)
+        self.session_signal = self.create_session_signal()
+        self.epoch_signal = self.create_epoch_signal()
+        self._sessionized_signals = dict()
+    def __getattribute__(self, name: str) -> Any:
+        sessionized_prefix = "sessionized_"
+        if name.startswith(sessionized_prefix):
+            actual_key = name[len(sessionized_prefix):]
+            return self._make_sessionized_input(actual_key)
+        else:
+            return super().__getattribute__(name)
 
 def named(name: str, inner: TypeBase) -> TypeBase:
     return MappedInputType(name, inner)
