@@ -54,6 +54,12 @@ pub struct Latch<DataType: Clone, RetentionPolicy: Rentention<DataType> = KeepFo
     retention: RetentionPolicy,
 }
 
+pub struct EdgeTriggeredLatch<Control, Data, RetentionPolicy: Rentention<Data> = KeepForever> {
+    last_control_level: Control,
+    data: Data,
+    retention: RetentionPolicy,
+}
+
 impl<T: Clone> Latch<T> {
     pub fn with_initial_value(data: T) -> Self {
         Self {
@@ -63,10 +69,34 @@ impl<T: Clone> Latch<T> {
     }
 }
 
+impl <C: Default, D> EdgeTriggeredLatch<C, D>{
+    pub fn with_initial_value(data: D) -> Self {
+        Self {
+            last_control_level: Default::default(),
+            data,
+            retention: KeepForever,
+        }
+    }
+} 
+
 impl<T: Clone> Latch<T, TimeToLive<T>> {
     pub fn with_forget_behavior(data: T, default: T, time_to_memorize: Timestamp) -> Self {
         Self {
             data,
+            retention: TimeToLive {
+                default_value: default,
+                value_forgotten_timestamp: 0,
+                time_to_live: time_to_memorize,
+            },
+        }
+    }
+}
+
+impl<C: Default, D: Clone> EdgeTriggeredLatch<C, D, TimeToLive<D>> {
+    pub fn with_forget_behavior(data: D, default: D, time_to_memorize: Timestamp) -> Self {
+        Self {
+            data,
+            last_control_level: Default::default(),
             retention: TimeToLive {
                 default_value: default,
                 value_forgotten_timestamp: 0,
@@ -82,6 +112,29 @@ impl<'a, T: Clone + 'a, I: Iterator, R: Rentention<T>> SignalProcessor<'a, I> fo
     #[inline(always)]
     fn update(&mut self, ctx: &mut UpdateContext<I>, (set, value): Self::Input) -> T {
         if *set {
+            self.data = value.clone();
+            if let Some(ttl) = self.retention.drop_timestamp(ctx.frontier()) {
+                ctx.schedule_signal_update(ttl);
+            }
+        } else if let Some(value) = self.retention.should_drop(ctx.frontier()) {
+            self.data = value;
+        }
+        self.data.clone()
+    }
+}
+
+impl<'a, C: 'a + PartialEq + Clone, D: Clone + 'a, I: Iterator, R: Rentention<D>> SignalProcessor<'a, I> for EdgeTriggeredLatch<C, D, R> {
+    type Input = (&'a C, &'a D);
+    type Output = D;
+    #[inline(always)]
+    fn update(&mut self, ctx: &mut UpdateContext<I>, (control, value): Self::Input) -> D {
+        let should_set = if &self.last_control_level != control {
+            self.last_control_level = control.clone();
+            true
+        } else {
+            false
+        };
+        if should_set {
             self.data = value.clone();
             if let Some(ttl) = self.retention.drop_timestamp(ctx.frontier()) {
                 ctx.schedule_signal_update(ttl);
