@@ -24,7 +24,7 @@ class Latch(BuiltinComponentBase):
 class EdgeTriggeredLatch(BuiltinComponentBase):
     def __init__(self, control: LeveledSignalBase, data: LeveledSignalBase, forget_duration = -1, **kwargs):
         if forget_duration < 0:
-            node_decl = "EdgeTriggeredLatch::<{type_name}>::default()".format(type_name = data.get_rust_type_name())
+            node_decl = "EdgeTriggeredLatch::<{control_type_name}, {data_type_name}>::default()".format(control_type_name = control.get_rust_type_name(), data_type_name = data.get_rust_type_name())
         else:
             node_decl = "EdgeTriggeredLatch::with_forget_behavior(<{type_name} as Default>::default(), <{type_name} as Default>::default(), {forget_duration})".format(
                 type_name = data.get_rust_type_name(),
