@@ -54,6 +54,7 @@ pub struct Latch<DataType: Clone, RetentionPolicy: Rentention<DataType> = KeepFo
     retention: RetentionPolicy,
 }
 
+#[derive(Default)]
 pub struct EdgeTriggeredLatch<Control, Data, RetentionPolicy: Rentention<Data> = KeepForever> {
     last_control_level: Control,
     data: Data,
