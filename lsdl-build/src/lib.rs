@@ -108,14 +108,27 @@ impl LsdlSource {
     pub fn set_lsdl_runtime_path<P: AsRef<Path> + ?Sized>(&mut self, p: &P) {
         self.lsdl_runtime_dir = p.as_ref().to_owned();
     }
-    pub fn lower_to_ir(&self) -> Result<&Path, anyhow::Error> {
-        if let Ok(metadata) = self.out_path.metadata() {
-            let json_file_modify_time = metadata.modified()?;
-            let lsdl_file_modify_time = self.src_path.metadata()?.modified()?;
-            if lsdl_file_modify_time < json_file_modify_time {
-                return Ok(&self.out_path);
+    fn trigger_rebuild_for_lsdl_package(&self, root: Option<PathBuf>) -> Result<(), anyhow::Error> {
+        let root = if let Some(root) = root {
+            root
+        } else {
+            let mut lsdl_package_path = self.lsdl_runtime_dir.clone();
+            lsdl_package_path.push("lsdl");
+            lsdl_package_path
+        };
+        for entry in read_dir(root)?.filter_map(|e|e.ok()) {
+            if let Ok(metadata) = entry.metadata() {
+                if metadata.is_dir() && !metadata.is_symlink() {
+                    self.trigger_rebuild_for_lsdl_package(Some(entry.path())).ok();
+                }
+                if metadata.is_file() && entry.path().extension().map_or(false, |e| e == "py") {
+                    println!("cargo:rerun-if-changed={}", entry.path().display());
+                }
             }
         }
+        Ok(())
+    }
+    pub fn lower_to_ir(&self) -> Result<&Path, anyhow::Error> {
         eprintln!("Lowering LSDL to LSPIR: {}", self.src_path.display());
         let mut py_instance = Command::new(get_python_interpreter());
         py_instance.arg(self.src_path.as_path())
@@ -126,6 +139,7 @@ impl LsdlSource {
         py_instance.env("PYTHONPATH", python_path);
         let child_handle = py_instance.spawn()?.wait()?;
         println!("cargo:rerun-if-changed={}", self.src_path.display());
+        self.trigger_rebuild_for_lsdl_package(None)?;
         if !child_handle.success() {
             std::fs::remove_file(self.out_path.as_path())?;
             Err(std::io::Error::new(
