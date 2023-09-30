@@ -1,11 +1,6 @@
-use lsdl_build::LsdlSourceDirectory;
+use lsdl_build::LsdlSource;
 
 fn main() {
-    LsdlSourceDirectory::new("metrics")
-        .set_output_dir("src")
-        .for_each_lsdl_source(|src| {
-            src.lower_to_ir()?;
-            Ok(())
-        })
-        .expect("Unable to generate IR file from LSDL");
+    let mut metrics_src : LsdlSource = "metrics/metrics-def.py".into();
+    metrics_src.set_output_dir("src").lower_to_ir().expect("Unable to generate IR from LSDL");
 }

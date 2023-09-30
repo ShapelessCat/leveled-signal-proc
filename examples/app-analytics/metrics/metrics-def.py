@@ -11,7 +11,7 @@ class Input(InputSchemaBase):
     bit_rate       = named("BitRate",     Integer())
     page_id        = named("pageId",      String())
     ev             = String()
-    special_event  = volatile(String())
+    special_event  = String()
 
 input = Input()
 

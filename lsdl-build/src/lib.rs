@@ -77,14 +77,10 @@ impl LsdlSourceDirectory {
         let mut count = 0;
         for source_file in source_iter {
             let source_file_name = source_file.file_name().unwrap();
-            let mut ir_file_buf = self.ir_dir.to_path_buf();
-            ir_file_buf.push(source_file_name);
-            ir_file_buf.set_extension("json");
-            let source_obj = LsdlSource {
-                src_path: source_file,
-                out_path: ir_file_buf,
-                lsdl_runtime_dir: env!("CARGO_MANIFEST_DIR").into()
-            };
+            let mut source_obj : LsdlSource = (&source_file).into();
+            source_obj.out_path = self.ir_dir.to_path_buf();
+            source_obj.out_path.push(source_file_name);
+            source_obj.out_path.set_extension("json");
             source_callback(source_obj)?;
             count += 1;
         }
@@ -98,15 +94,38 @@ pub struct LsdlSource {
     lsdl_runtime_dir: PathBuf,
 }
 
+impl <'a, T: AsRef<Path> + ?Sized> From<&'a T> for LsdlSource {
+    fn from(value: &'a T) -> Self {
+        let source_file_name = value.as_ref().to_owned();
+        let mut ir_file_name = source_file_name.clone();
+        ir_file_name.set_extension("json");
+        Self {
+            src_path: source_file_name,
+            out_path: ir_file_name,
+            lsdl_runtime_dir: env!("CARGO_MANIFEST_DIR").into()
+        }
+    }
+}
+
 impl LsdlSource {
     pub fn get_lsdl_runtime_path(&self) -> &Path {
         &self.lsdl_runtime_dir
     }
-    pub fn set_output_path<P: AsRef<Path> + ?Sized>(&mut self, p: &P) {
-        self.out_path = p.as_ref().to_owned();
+    pub fn set_output_dir<P: AsRef<Path> + ?Sized>(&mut self, p: &P) -> &mut Self {
+        if let Some(filename) = self.out_path.file_name() {
+            let filename = filename.to_owned();
+            self.out_path = p.as_ref().to_owned();
+            self.out_path.push(filename)
+        }
+        self
     }
-    pub fn set_lsdl_runtime_path<P: AsRef<Path> + ?Sized>(&mut self, p: &P) {
+    pub fn set_output_path<P: AsRef<Path> + ?Sized>(&mut self, p: &P) -> &mut Self {
+        self.out_path = p.as_ref().to_owned();
+        self
+    }
+    pub fn set_lsdl_runtime_path<P: AsRef<Path> + ?Sized>(&mut self, p: &P) -> &mut Self {
         self.lsdl_runtime_dir = p.as_ref().to_owned();
+        self
     }
     fn trigger_rebuild_for_lsdl_package(&self, root: Option<PathBuf>) -> Result<(), anyhow::Error> {
         let root = if let Some(root) = root {
