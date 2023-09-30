@@ -1,7 +1,7 @@
 use std::{
     process::Command, 
     borrow::Cow, 
-    io::Read, 
+    io::{Read, BufReader, BufRead}, 
     fs::{File, read_dir}, 
     path::{PathBuf, Path}, 
     sync::OnceLock, 
@@ -108,6 +108,9 @@ impl <'a, T: AsRef<Path> + ?Sized> From<&'a T> for LsdlSource {
 }
 
 impl LsdlSource {
+    pub fn from_path<P: AsRef<Path> + ?Sized>(p: &P) -> Self {
+        p.into()
+    }
     pub fn get_lsdl_runtime_path(&self) -> &Path {
         &self.lsdl_runtime_dir
     }
@@ -126,6 +129,30 @@ impl LsdlSource {
     pub fn set_lsdl_runtime_path<P: AsRef<Path> + ?Sized>(&mut self, p: &P) -> &mut Self {
         self.lsdl_runtime_dir = p.as_ref().to_owned();
         self
+    }
+    fn trigger_rebuild_for_extra_src(&self) -> Result<(), anyhow::Error> {
+        let fp = BufReader::new(File::open(self.src_path.as_path())?);
+        let mut src_prefix = self.src_path.clone();
+        src_prefix.pop();
+        for line in fp.lines().filter_map(Result::ok) {
+            if line.starts_with("#") {
+                if let Some(comment_body) = line[1..].strip_prefix(|c| c == ' ' || c == '\t') {
+                    const EXTRA_SRC_LIT: &'static str = "extra-src:";
+                    if !comment_body.starts_with(EXTRA_SRC_LIT) {
+                        continue;
+                    }
+                    let list = comment_body[EXTRA_SRC_LIT.len()..].split(|c| c == ' ' || c == '\t');
+                    for item in list {
+                        if item.len() > 0 {
+                            src_prefix.push(item);
+                            println!("cargo:rerun-if-changed={}", src_prefix.display());
+                            src_prefix.pop();
+                        }
+                    }
+                }
+            }
+        }
+        Ok(())
     }
     fn trigger_rebuild_for_lsdl_package(&self, root: Option<PathBuf>) -> Result<(), anyhow::Error> {
         let root = if let Some(root) = root {
@@ -159,6 +186,7 @@ impl LsdlSource {
         let child_handle = py_instance.spawn()?.wait()?;
         println!("cargo:rerun-if-changed={}", self.src_path.display());
         self.trigger_rebuild_for_lsdl_package(None)?;
+        self.trigger_rebuild_for_extra_src()?;
         if !child_handle.success() {
             std::fs::remove_file(self.out_path.as_path())?;
             Err(std::io::Error::new(

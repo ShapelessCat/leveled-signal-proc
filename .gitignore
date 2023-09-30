@@ -4,7 +4,7 @@ perf.*
 
 lsdl/*.egg-info
 lsdl/build
-lsdl/**/__pycache__
+**/__pycache__
 lsdl/examples/*.json
 examples/**/*.json
 
