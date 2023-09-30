@@ -62,3 +62,29 @@ class LeveledSignalBase(object):
         return self._bin_op(other, "<=", "bool")
     def __ge__(self, other):
         return self._bin_op(other, "<=", "bool")
+    def __add__(self, other):
+        return self._bin_op(other, "+")
+    def __sub__(self, other):
+        return self._bin_op(other, "-")
+    def __mul__(self, other):
+        return self._bin_op(other, "*")
+    def __div__(self, other):
+        return self._bin_op(other, "/")
+
+class If(LeveledSignalBase):
+    def __init__(self, cond_expr: LeveledSignalBase, then_expr: LeveledSignalBase, else_expr: LeveledSignalBase):
+        from lsdl.signal_processors import SignalMapper
+        self._cond = cond_expr
+        self._then = then_expr
+        self._else = else_expr
+        self._inner = SignalMapper(
+            bind_var = "(cond, then_expr, else_expr)",
+            lambda_src = """if *cond { then_expr.clone() } else { else_expr.clone() }""",
+            upstream = [self._cond, self._then, self._else]
+        )
+        if self._then.get_rust_type_name() == self._else.get_rust_type_name():
+            self._inner._output_type = self._then.get_rust_type_name()
+    def get_id(self):
+        return self._inner.get_id()
+    def get_rust_type_name(self) -> str:
+        return self._inner.get_rust_type_name()

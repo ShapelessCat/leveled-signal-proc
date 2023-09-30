@@ -18,7 +18,7 @@ class CompilerInferredType(TypeBase):
 
 class DateTime(TypeBase):
     def __init__(self, timezone: str = "Utc"):
-        super().__init__("DateTime<chrono::" + timezone + ">")
+        super().__init__("chrono::DateTime<chrono::" + timezone + ">")
     def render_rust_const(self, val) -> str:
         raise "Date time const value is not supported"
 

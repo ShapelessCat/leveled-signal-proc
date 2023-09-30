@@ -1,8 +1,9 @@
-from lsdl.schema import InputSchemaBase, named, String, Integer, volatile
-from lsdl.signal_processors import LivenessChecker, EdgeTriggeredLatch, SignalMapper
+from lsdl.schema import DateTime, InputSchemaBase, named, String, Integer, volatile 
+from lsdl.signal_processors import EdgeTriggeredLatch
 from lsdl import print_ir_to_stdout
 from lsdl.const import Const
 from lsdl.modules import make_tuple
+from lsdl.signal import If
 
 class Input(InputSchemaBase):
     _timestamp_key = "timestamp"
@@ -12,6 +13,9 @@ class Input(InputSchemaBase):
     page_id        = named("pageId",      String())
     ev             = String()
     special_event  = String()
+    start_ts       = volatile(DateTime())
+    end_ts         = volatile(DateTime())
+    prev_exist     = volatile(String())
 
 input = Input()
 
@@ -23,4 +27,5 @@ navigation_id = input.page_id.count_changes().add_metric("navId")
 
 subscope = make_tuple(session_id, navigation_id).count_changes()
 subscope.add_metric("subscope_id")
+
 print_ir_to_stdout()
