@@ -10,6 +10,7 @@ fn main() -> Result<(), Error> {
 
         match parse_result {
             Ok(ir) => {
+                println!("{}", serde_json::to_string_pretty(&ir)?);
                 eprintln!(
                     "LSPIR in {} is valid. (# of nodes: {}, # of metrics: {}).",
                     ir_path,

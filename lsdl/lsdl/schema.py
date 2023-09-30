@@ -6,6 +6,7 @@ class TypeBase(LeveledSignalBase):
     def __init__(self, rs_type: str):
         super().__init__()
         self._rust_type = rs_type
+        self._reset_expr = None
     def get_rust_type_name(self) -> str:
         return self._rust_type
     def render_rust_const(self, val) -> str:
@@ -78,6 +79,7 @@ class MappedInputType(InputMemberType):
         super().__init__(inner)
         self._input_key = input_key
         self._inner = inner
+        self._reset_expr = self._inner._reset_expr
     def get_input_key(self) -> str:
         return self._input_key
     def clock(self) -> ClockCompanion:
@@ -117,6 +119,11 @@ class InputSchemaBase(TypeBase):
                 "input_key": member_type.get_input_key(),
                 "debug_info": member_type._debug_info.to_dict(),
             }
+            if member_type._reset_expr is not None:
+                ret["members"][member]["signal_behavior"] = {
+                    "name": "Reset",
+                    "default_expr": member_type._reset_expr,
+                }
         return ret
     def get_id(self):
         return {
@@ -156,6 +163,12 @@ class SessionizedInputSchemaBase(InputSchemaBase):
 
 def named(name: str, inner: TypeBase) -> TypeBase:
     return MappedInputType(name, inner)
+
+def volatile(inner: TypeBase, default = None) -> TypeBase:
+    if default is None:
+        default = "Default::default()"
+    inner._reset_expr = default
+    return inner
 
 def get_schema():
     return _defined_schema

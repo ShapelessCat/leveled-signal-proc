@@ -1,4 +1,4 @@
-from lsdl.schema import InputSchemaBase, named, String, Integer
+from lsdl.schema import InputSchemaBase, named, String, Integer, volatile
 from lsdl.signal_processors import LivenessChecker, EdgeTriggeredLatch, SignalMapper
 from lsdl import print_ir_to_stdout
 from lsdl.const import Const
@@ -11,7 +11,7 @@ class Input(InputSchemaBase):
     bit_rate       = named("BitRate",     Integer())
     page_id        = named("pageId",      String())
     ev             = String()
-    special_event  = String()
+    special_event  = volatile(String())
 
 input = Input()
 

@@ -9,11 +9,28 @@ pub struct DebugInfo {
 }
 
 #[derive(Deserialize, Serialize, Clone)]
+#[serde(tag = "name")]
+pub enum SignalBehavior {
+    Persist,
+    Reset{
+        default_expr: String
+    },
+}
+
+impl Default for SignalBehavior {
+    fn default() -> Self {
+        Self::Persist
+    }
+}
+
+#[derive(Deserialize, Serialize, Clone)]
 pub struct SchemaField {
     #[serde(rename = "type")]
     pub type_name: String,
     pub clock_companion: String,
     pub input_key: String,
+    #[serde(default)]
+    pub signal_behavior: SignalBehavior,
     #[serde(default)]
     pub debug_info: Option<DebugInfo>,
 }
