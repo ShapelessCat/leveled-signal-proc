@@ -1,4 +1,5 @@
-from curses.ascii import isdigit
+#!/usr/bin/env python
+
 import logging
 import random
 import sys
