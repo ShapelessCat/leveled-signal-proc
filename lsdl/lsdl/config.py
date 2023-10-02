@@ -1,6 +1,7 @@
 class _MeasurementConfiguration(object):
     def __init__(self):
         self._measure_at_event_lambda = "|_| true"
+        self._measure_on_edge = None
         self._measure_periodically_interval = -1
         self._metrics_drain = "json"
         self._output_schema = {}
@@ -9,6 +10,9 @@ class _MeasurementConfiguration(object):
         return self
     def set_measure_periodically_interval(self, interval: int):
         self._measure_periodically_interval = interval
+        return self
+    def set_trigger_signal(self, signal):
+        self._measure_on_edge = signal
         return self
     def set_metrics_drain(self, fmt: str):
         self._metrics_drain = fmt
@@ -26,10 +30,12 @@ class _MeasurementConfiguration(object):
     def to_dict(self):
         ret = {
             "measure_at_event_filter": self._measure_at_event_lambda,
-            "measure_periodically_interval": self._measure_periodically_interval,
+            #"measure_periodically_interval": self._measure_periodically_interval,
             "metrics_drain": self._metrics_drain,
             "output_schema": self._output_schema,
         }
+        if self._measure_on_edge is not None:
+            ret["measure_trigger_signal"] = self._measure_on_edge.get_id()
         return ret
     
 def _make_measurement_configuration():

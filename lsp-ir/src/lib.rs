@@ -77,10 +77,15 @@ pub struct MetricSpec {
     pub source: NodeInput,
 }
 
+fn default_measure_trigger_signal() -> NodeInput {
+    NodeInput::Constant { value: "0i32".to_string(), type_name: "i32".to_string() }
+}
+
 #[derive(Deserialize, Serialize, Clone)]
 pub struct MeasurementPolicy {
     pub measure_at_event_filter: String,
-    pub measure_periodically_interval: i64,
+    #[serde(default = "default_measure_trigger_signal")]
+    pub measure_trigger_signal: NodeInput,
     pub metrics_drain: MetricsDrainType,
     pub output_schema: HashMap<String, MetricSpec>,
 }

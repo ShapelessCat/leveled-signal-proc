@@ -1,4 +1,4 @@
-use crate::MacroContext;
+use crate::{MacroContext, context::LsdlDebugInfo};
 use lsp_ir::{Node, NodeInput};
 use proc_macro2::TokenStream as TokenStream2;
 use quote::{quote, ToTokens};
@@ -48,10 +48,10 @@ impl MacroContext {
         .into())
     }
 
-    pub(crate) fn generate_downstream_ref(
+    pub(crate) fn generate_downstream_ref<T: LsdlDebugInfo>(
         &self,
         reference: &NodeInput,
-        node: &Node,
+        node: &T,
     ) -> Result<TokenStream2, syn::Error> {
         let ret = match reference {
             NodeInput::InputBag => syn::Ident::new("input_state", self.span()).into_token_stream(),

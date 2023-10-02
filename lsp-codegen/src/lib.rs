@@ -49,6 +49,18 @@ pub fn impl_metrics_measurement(input: TokenStream) -> TokenStream {
     ctx.impl_metrics_measuring().into()
 }
 
+#[proc_macro]
+pub fn define_measurement_trigger(input: TokenStream) -> TokenStream {
+    let ctx = parse_macro_input!(input as MacroContext);
+    ctx.define_signal_trigger_measurement_ctx().into()
+}
+
+#[proc_macro]
+pub fn impl_signal_measurement_trigger(input: TokenStream) -> TokenStream {
+    let ctx = parse_macro_input!(input as MacroContext);
+    ctx.impl_signal_triggered_measurement().into()
+}
+
 struct MainFnMeta {
     id: syn::Ident,
     path: syn::LitStr,
@@ -90,14 +102,18 @@ pub fn include_lsp_ir(input: TokenStream) -> TokenStream {
             use serde_json::Deserializer;
             let mut input_state = Default::default();
             lsp_codegen::define_data_logic_nodes!(#path);
+            lsp_codegen::define_measurement_trigger!(#path);
             let mut ctx = LspContext::<_, InputSignalBag>::new(input_iter);
             while let Some(moment) = ctx.next_event(&mut input_state) {
                 instrument_ctx.data_logic_update_begin();
                 let mut update_context = ctx.borrow_update_context();
+                let mut should_measure = moment.should_take_measurements();
                 if moment.should_update_signals() {
                     lsp_codegen::impl_data_logic_updates!(#path , instrument_ctx);
+                    lsp_codegen::impl_signal_measurement_trigger!(#path);
+                    should_measure = should_measure || __signal_trigger_fired;
                 }
-                if moment.should_take_measurements() {
+                if should_measure {
                     lsp_codegen::impl_metrics_measurement!(#path);
                     instrument_ctx.data_logic_update_end();
                     out_handle(_metrics_bag)?;

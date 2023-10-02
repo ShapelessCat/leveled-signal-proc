@@ -12,6 +12,12 @@ pub(crate) trait LsdlDebugInfo {
     fn debug_info(&self) -> Option<&DebugInfo>;
 }
 
+impl LsdlDebugInfo for () {
+    fn debug_info(&self) -> Option<&DebugInfo> {
+        None
+    }
+}
+
 impl LsdlDebugInfo for Node {
     fn debug_info(&self) -> Option<&DebugInfo> {
         self.debug_info.as_ref()
