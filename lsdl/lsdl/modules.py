@@ -6,7 +6,7 @@ import re
 
 def _normalize_duration(duration) -> int:
     if type(duration) == str:
-        value_str = re.search(r"\d+", duration).group()[0]
+        value_str = re.search(r"\d+", duration).group(0)
         value_unit = duration[len(value_str):]
         value = int(value_str)
         if value_unit == "s":

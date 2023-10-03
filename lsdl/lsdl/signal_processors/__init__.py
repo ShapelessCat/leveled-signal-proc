@@ -3,3 +3,4 @@ from lsdl.signal_processors.latch import Latch, EdgeTriggeredLatch
 from lsdl.signal_processors.signal_mapper import SignalMapper
 from lsdl.signal_processors.liveness import LivenessChecker
 from lsdl.signal_processors.state_machine import StateMachine, StateMachineBuilder
+from lsdl.signal_processors.signal_gen import SquareWave, MonotonicSteps, SignalGenerator
