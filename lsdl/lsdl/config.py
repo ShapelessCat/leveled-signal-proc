@@ -8,8 +8,8 @@ class _MeasurementConfiguration(object):
     def set_measure_at_filter(self, lambda_src: str):
         self._measure_at_event_lambda = lambda_src
         return self
-    def set_measure_periodically_interval(self, interval: int):
-        self._measure_periodically_interval = interval
+    def disable_measure_for_event(self):
+        self._measure_at_event_lambda = "|_| false" 
         return self
     def set_trigger_signal(self, signal):
         self._measure_on_edge = signal
