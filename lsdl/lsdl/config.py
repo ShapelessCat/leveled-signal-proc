@@ -8,6 +8,9 @@ class _MeasurementConfiguration(object):
     def set_measure_at_filter(self, lambda_src: str):
         self._measure_at_event_lambda = lambda_src
         return self
+    def enable_measure_for_event(self):
+        self._measure_at_event_lambda = "|_| true"
+        return self
     def disable_measure_for_event(self):
         self._measure_at_event_lambda = "|_| false" 
         return self
