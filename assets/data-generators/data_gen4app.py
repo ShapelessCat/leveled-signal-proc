@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import inspect
+import json
 import logging
 import random
 import re
@@ -209,7 +210,7 @@ if __name__ == '__main__':
         logging.info(f"Generate data for the {selected_platform} platform.")
         event_generators = collect_event_generators_for(selected_platform)
         generated_events = [
-            str({"timestamp": f"{ts}"} | random.choice(event_generators).generate())
+            json.dumps({"timestamp": f"{ts}"} | random.choice(event_generators).generate())
             for ts in generate_all_timestamps(required_count)
         ]
 
