@@ -3,6 +3,7 @@
 import inspect
 import json
 import logging
+import os
 import random
 import re
 import sys
@@ -191,28 +192,25 @@ def collect_event_generators_for(platform: Platform) -> list[Event]:
 
 
 def generate_all_timestamps(count: int):
-    result = []
     time_delta = timedelta(seconds=0)
     for _ in range(count):
         time_delta += timedelta(seconds=random.randint(10, 1000) / 10.0)
-        result.append(timestamp(time_delta))
-    return result
+        yield timestamp(time_delta)
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2 or not sys.argv[1].isdigit():
+    output_file = sys.stdout
+    if len(sys.argv) < 2 or not sys.argv[1].isdigit():
         logging.error('This script only accept one integer argument, which represent the required number of entries.')
         sys.exit(1)
     else:
         required_count = int(sys.argv[1])
-
-        selected_platform = random.choice([Platform.MOB, Platform.WEB])
-        logging.info(f"Generate data for the {selected_platform} platform.")
-        event_generators = collect_event_generators_for(selected_platform)
-        generated_events = [
-            json.dumps({"timestamp": f"{ts}"} | random.choice(event_generators).generate())
-            for ts in generate_all_timestamps(required_count)
-        ]
-
-        output_path = Path(__file__).parent.parent / 'data' / 'app-analytics-metrics-demo-input.jsonl'
-        print('\n'.join(generated_events), file=open(output_path, 'w'))
+        default_output_path = Path(__file__).parent.parent / 'data' / 'app-analytics-metrics-demo-input.jsonl'
+        output_path = sys.argv[2] if len(sys.argv) >= 3 else default_output_path
+        if output_path != "-":
+            output_file = open(output_path, "w")
+    selected_platform = random.choice([Platform.MOB, Platform.WEB])
+    logging.info(f"Generate data for the {selected_platform} platform.")
+    event_generators = collect_event_generators_for(selected_platform)
+    for ts in generate_all_timestamps(required_count):
+        print(json.dumps({"timestamp": f"{ts}"} | random.choice(event_generators).generate()), file = output_file)

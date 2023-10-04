@@ -42,24 +42,26 @@ def random_event_data():
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2 or not sys.argv[1].isdigit():
+    output_file = sys.stdout
+    if len(sys.argv) < 2 or not sys.argv[1].isdigit():
         logging.error('This script only accept one integer argument, which represent the required number of entries.')
         sys.exit(1)
     else:
         required_count = int(sys.argv[1])
+        default_output_path = Path(__file__).parent.parent / 'data' / 'video-metrics-demo-input.jsonl'
+        output_path = sys.argv[2] if len(sys.argv) >= 3 else default_output_path
+        if output_path != "-":
+            output_file = open(output_path, "w")
 
-        result = []
-        template = '''{{"timestamp": "{}", "sessionId": "{}", {}}}'''
+    template = '''{{"timestamp": "{}", "sessionId": "{}", {}}}'''
 
-        session_id = 0
-        time_delta = timedelta(seconds=0)
+    session_id = 0
+    time_delta = timedelta(seconds=0)
 
-        for i in range(required_count):
-            should_switch_session = i % random.randint(1, 20) == 0 and bool(random.getrandbits(1))
-            if should_switch_session:
-                session_id += 1
-            time_delta += timedelta(seconds=random.randint(10, 1000) / 10.0)
-            result.append(template.format(timestamp(time_delta), f'SSID_{session_id}', random_event_data()))
-
-        output_path = Path(__file__).parent.parent / 'data' / 'video-metrics-demo-input.jsonl'
-        print('\n'.join(result), file=open(output_path, 'w'))
+    for i in range(required_count):
+        should_switch_session = i % random.randint(1, 20) == 0 and bool(random.getrandbits(1))
+        if should_switch_session:
+            session_id += 1
+        time_delta += timedelta(seconds=random.randint(10, 1000) / 10.0)
+        recbuf = template.format(timestamp(time_delta), f'SSID_{session_id}', random_event_data())
+        print(recbuf, file = output_file)
