@@ -6,7 +6,7 @@ import sys
 from datetime import timedelta
 from pathlib import Path
 
-from gen_utils import timestamp
+from gen_utils import random_bool, timestamp
 
 logging.basicConfig(level=logging.INFO)
 
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     time_delta = timedelta(seconds=0)
 
     for i in range(required_count):
-        should_switch_session = i % random.randint(1, 20) == 0 and bool(random.getrandbits(1))
+        should_switch_session = i % random.randint(1, 20) == 0 and random_bool()
         if should_switch_session:
             session_id += 1
         time_delta += timedelta(seconds=random.randint(10, 1000) / 10.0)
