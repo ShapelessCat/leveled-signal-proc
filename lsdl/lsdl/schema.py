@@ -161,7 +161,7 @@ class SessionizedInputSchemaBase(InputSchemaBase):
         else:
             return super().__getattribute__(name)
 
-def named(name: str, inner: TypeBase) -> TypeBase:
+def named(name: str, inner: TypeBase = String()) -> TypeBase:
     return MappedInputType(name, inner)
 
 def volatile(inner: TypeBase, default = None) -> TypeBase:
