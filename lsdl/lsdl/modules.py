@@ -72,7 +72,10 @@ class SignalFilterBuilder(object):
     def then_filter(self, filter_signal: LeveledSignalBase):
         from lsdl.modules import SignalFilterBuilder
         signal_clock = self.build_clock_filter()
-        return SignalFilterBuilder(filter_signal, signal_clock)
+        ret = SignalFilterBuilder(filter_signal, signal_clock)
+        if filter_signal.get_rust_type_name() == "bool":
+            ret.filter_true()
+        return ret
     def build_clock_filter(self) -> LeveledSignalBase:
         return Latch(
             data = self._clock_signal,

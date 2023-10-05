@@ -9,7 +9,7 @@ is_valid_app_startup_duration = (input.app_startup_previous_exist == "") & (star
 app_startup_time = If(is_valid_app_startup_duration, duration, Const(-1))
 
 app_startup_clock = SignalFilterBuilder(input.event_name).filter_values('conviva_screen_view')\
-    .then_filter(app_startup_time > 0).filter_true()\
+    .then_filter(app_startup_time > 0)\
     .build_clock_filter()
 
 total_startup_count = app_startup_clock.count_changes()
