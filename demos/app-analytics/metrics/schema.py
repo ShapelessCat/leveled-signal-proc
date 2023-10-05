@@ -11,10 +11,6 @@ class Input(InputSchemaBase):
     conviva_video_events_name  = named('conviva_video_events_name')
     reponse_code               = named('reponse_code')
     network_request_duration   = named('network_request_duration')
-    app_startup_start          = named('app_startup_start')
-    app_startup_end            = named('app_startup_enda')
-    app_startup_previous_exist = named('app_startup_previous_exist')
-
-    start_ts       = volatile(DateTime())
-    end_ts         = volatile(DateTime())
-    prev_exist     = volatile(String())
+    app_startup_start          = volatile(named('app_startup_start'))
+    app_startup_end            = volatile(named('app_startup_enda'))
+    app_startup_previous_exist = volatile(named('app_startup_previous_exist'))
