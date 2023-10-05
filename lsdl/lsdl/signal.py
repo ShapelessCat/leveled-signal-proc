@@ -49,7 +49,7 @@ class LeveledSignalBase(object):
     def __and__(self, other):
         return self._bin_op(other, "&&", "bool")
     def __or__(self, other):
-        return self._bin_op(other, "&&", "bool")
+        return self._bin_op(other, "||", "bool")
     def __xor__(self, other):
         return self._bin_op(other, "^", "bool")
     def __invert__(self):
@@ -61,7 +61,7 @@ class LeveledSignalBase(object):
     def __le__(self, other):
         return self._bin_op(other, "<=", "bool")
     def __ge__(self, other):
-        return self._bin_op(other, "<=", "bool")
+        return self._bin_op(other, ">=", "bool")
     def __add__(self, other):
         return self._bin_op(other, "+")
     def __sub__(self, other):
@@ -74,6 +74,7 @@ class LeveledSignalBase(object):
 class If(LeveledSignalBase):
     def __init__(self, cond_expr: LeveledSignalBase, then_expr: LeveledSignalBase, else_expr: LeveledSignalBase):
         from lsdl.signal_processors import SignalMapper
+        super().__init__()
         self._cond = cond_expr
         self._then = then_expr
         self._else = else_expr

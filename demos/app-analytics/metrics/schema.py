@@ -12,5 +12,5 @@ class Input(InputSchemaBase):
     reponse_code               = named('reponse_code')
     network_request_duration   = named('network_request_duration')
     app_startup_start          = volatile(named('app_startup_start'))
-    app_startup_end            = volatile(named('app_startup_enda'))
+    app_startup_end            = volatile(named('app_startup_end'))
     app_startup_previous_exist = volatile(named('app_startup_previous_exist'))
