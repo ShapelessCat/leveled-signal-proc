@@ -57,6 +57,9 @@ class SignalFilterBuilder(object):
         for value in values[1:]:
             self._filter_node = self._filter_node | (self._filter_signal == value)
         return self
+    def filter_true(self):
+        self._filter_node = self._filter_signal
+        return self
     def build_clock_filter(self) -> LeveledSignalBase:
         return Latch(
             data = self._clock_signal,
