@@ -13,7 +13,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Type
 
-from gen_utils import timestamp
+from gen_utils import random_bool, timestamp
 
 logging.basicConfig(level=logging.INFO)
 
@@ -48,21 +48,23 @@ class Event(ABC):
             'event_category': random.choice(self.EVENT_CATEGORY_POOL),
             'platform': self.platform,
         }
-        no_load_info = bool(random.getrandbits(1))
+        page_id_info = ({}
+                        if bool(random.getrandbits(3))
+                        else {'page_id': f"pid-{random.randint(0, 5)}"})
         load_threshold = (self.PAGE_LOAD_TIME_THRESHOLD
                           if self.platform is Platform.WEB
                           else self.SCREEN_LOAD_TIME_THRESHOLD)
-        extra_info = ({}
-                      if no_load_info
-                      else self._random_time_interval('load_start', 'load_end', load_threshold))
-        return basic_info | extra_info
+        load_start_end_info = ({}
+                               if random_bool()
+                               else self._random_time_interval('load_start', 'load_end', load_threshold))
+        return basic_info | page_id_info | load_start_end_info
 
     # This time interval can be valid or invalid
     @classmethod
     def _random_time_interval(cls, start_key: str, end_key: str, threshold: int) -> dict[str, str]:
         smaller = random.randint(0, 10)
         greater = random.randint(10, 1000)
-        valid_order = bool(random.getrandbits(1))
+        valid_order = random_bool()
         return {
             start_key: str(smaller if valid_order else greater),
             end_key: str((greater if valid_order else smaller) + random.choice([0, 10, 100, threshold]))
@@ -98,7 +100,7 @@ class ConvivaScreenView(MobileOnlyEvent):
 
     def generate(self):
         basic_info = super().generate()
-        no_previous_exist = bool(random.getrandbits(1))
+        no_previous_exist = random_bool()
         return (
                 basic_info |
                 self._random_time_interval('app_startup_start',

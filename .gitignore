@@ -6,6 +6,6 @@ lsdl/*.egg-info
 lsdl/build
 **/__pycache__
 lsdl/examples/*.json
-examples/**/*.json
+demos/**/*.json
 
 .DS_Store

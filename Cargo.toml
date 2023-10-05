@@ -1,5 +1,6 @@
 [workspace]
-members = ["lsp-runtime", "lsp-component", "lsp-ir", "lsp-codegen", "lsp-codegen-test", "lsdl-build", "examples/video-metrics", "examples/app-analytics"]
+members = ["lsp-runtime", "lsp-component", "lsp-ir", "lsp-codegen", "lsp-codegen-test", "lsdl-build", "demos/video-metrics", "demos/app-analytics"]
+resolver = "2"
 
 [profile.release]
 debug = false
