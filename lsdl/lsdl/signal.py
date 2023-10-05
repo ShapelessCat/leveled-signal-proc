@@ -9,6 +9,12 @@ class LeveledSignalBase(object):
         raise NotImplementedError()
     def is_signal(self) -> bool:
         raise NotImplemented
+    def has_been_true(self, duration = -1):
+        from lsdl.modules import has_been_true
+        return has_been_true(self, duration)
+    def has_changed(self, duration = -1):
+        from lsdl.modules import has_changed
+        return has_changed(self, duration)
     def map(self, bind_var: str, lambda_src: str):
         from lsdl.signal_processors import SignalMapper
         return SignalMapper(bind_var, lambda_src, self)

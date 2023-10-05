@@ -1,9 +1,7 @@
-from lsdl.const import Const
-from lsdl.modules import SignalFilterBuilder, make_tuple
-from lsdl.signal_processors.latch import EdgeTriggeredLatch
+from lsdl.prelude import *
 from schema import input
 
-unconditional = SignalFilterBuilder(input.event_name).filter_values(
+_unconditional = SignalFilterBuilder(input.event_name).filter_values(
     "conviva_screen_view",
     "conviva_periodic_heartbeat",
     "conviva_application_foreground",
@@ -12,14 +10,14 @@ unconditional = SignalFilterBuilder(input.event_name).filter_values(
     "conviva_page_ping"
 ).build_clock_filter() # TODO: Try build_value_filter()
 
-video_event_clock = SignalFilterBuilder(input.event_name).filter_values('conviva_video_events').build_clock_filter()
-conditional = SignalFilterBuilder(input.conviva_video_events_name, video_event_clock).filter_values('c3.sdk.custom_event', 'c3.video.custom_event').build_clock_filter()
+_conditional = SignalFilterBuilder(input.event_name).filter_values('conviva_video_events')\
+    .then_filter(input.conviva_video_events_name).filter_values('c3.sdk.custom_event', 'c3.video.custom_event')\
+    .build_clock_filter()
 
-is_session_alive = EdgeTriggeredLatch(make_tuple(unconditional, conditional), data = Const(True), forget_duration = "90s")
+_is_session_alive = make_tuple(_unconditional, _conditional).has_changed("90s")
 
-session_id = is_session_alive.count_changes().add_metric("sessionId")
+session_id = _is_session_alive.count_changes().add_metric("sessionId")
 
-navigation_id = input.page_id.count_changes().add_metric("navId")
+_navigation_id = input.page_id.count_changes()
 
-subscope = make_tuple(session_id, navigation_id).count_changes()
-subscope.add_metric("subscope_id")
+page_id = make_tuple(session_id, _navigation_id).count_changes()

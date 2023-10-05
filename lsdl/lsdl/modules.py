@@ -4,6 +4,8 @@ from lsdl.signal_processors import SignalMapper, Latch
 from lsdl.const import Const
 import re
 
+from lsdl.signal_processors.latch import EdgeTriggeredLatch
+
 def _normalize_duration(duration) -> int:
     if type(duration) == str:
         value_str = re.search(r"\d+", duration).group(0)
@@ -29,6 +31,13 @@ def has_been_true(input: LeveledSignalBase, duration = -1) -> LeveledSignalBase:
             control = input,
             forget_duration = _normalize_duration(duration)
         )
+
+def has_changed(input: LeveledSignalBase, duration = -1) -> LeveledSignalBase:
+    return EdgeTriggeredLatch(
+        control = input,
+        data = Const(True),
+        forget_duration = _normalize_duration(duration) 
+    )
 
 def make_tuple(*args) -> LeveledSignalBase:
     return SignalMapper(
@@ -60,6 +69,10 @@ class SignalFilterBuilder(object):
     def filter_true(self):
         self._filter_node = self._filter_signal
         return self
+    def then_filter(self, filter_signal: LeveledSignalBase):
+        from lsdl.modules import SignalFilterBuilder
+        signal_clock = self.build_clock_filter()
+        return SignalFilterBuilder(filter_signal, signal_clock)
     def build_clock_filter(self) -> LeveledSignalBase:
         return Latch(
             data = self._clock_signal,
