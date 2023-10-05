@@ -1,3 +1,4 @@
+from lsdl.measurements.diff import DiffSinceCurrentLevel
 from schema import Input
 from lsdl.signal_processors import EdgeTriggeredLatch
 from lsdl import print_ir_to_stdout, measurement_config

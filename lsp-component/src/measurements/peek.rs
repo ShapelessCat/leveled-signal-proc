@@ -1,5 +1,7 @@
 use lsp_runtime::{measurement::Measurement, UpdateContext};
 
+use super::combinator::ScopedMeasurement;
+
 #[derive(Default)]
 pub struct Peek<T>(T);
 
@@ -16,3 +18,5 @@ impl<'a, T: Clone + 'a, I: Iterator> Measurement<'a, I> for Peek<T> {
         self.0.clone()
     }
 }
+
+pub type DiffSinceCurrentLevel<C, T> = ScopedMeasurement<C, Peek<T>, T>;

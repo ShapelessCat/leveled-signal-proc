@@ -1,7 +1,7 @@
-mod diff;
 mod duration;
 mod peek;
+pub mod combinator;
 
-pub use diff::DiffSinceCurrentLevel;
-pub use duration::{DurationSinceBecomeTrue, DurationTrue, ScopedDurationTrue};
-pub use peek::Peek;
+pub use duration::{DurationSinceBecomeTrue, DurationTrue , ScopedDurationTrue};
+pub use peek::{Peek, DiffSinceCurrentLevel};
+

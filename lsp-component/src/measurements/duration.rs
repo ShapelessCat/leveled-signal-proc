@@ -1,5 +1,7 @@
 use lsp_runtime::{measurement::Measurement, Timestamp, UpdateContext};
 
+use super::combinator::ScopedMeasurement;
+
 #[derive(Default)]
 pub struct DurationSinceBecomeTrue {
     last_input: bool,
@@ -61,7 +63,9 @@ impl<'a, I: Iterator> Measurement<'a, I> for DurationTrue {
     }
 }
 
+pub type ScopedDurationTrue<T> = ScopedMeasurement<T, DurationTrue, Timestamp>;
 
+/* 
 #[derive(Default)]
 pub struct ScopedDurationTrue<T: Clone> {
     current_control_level: T,
@@ -93,4 +97,4 @@ impl<'a, T:Clone + Eq + 'a, I: Iterator> Measurement<'a, I> for ScopedDurationTr
         };
         self.inner.measure(ctx) - base
     }
-}
+}*/
