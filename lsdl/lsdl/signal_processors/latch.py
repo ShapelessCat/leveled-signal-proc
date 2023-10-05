@@ -40,11 +40,3 @@ class EdgeTriggeredLatch(BuiltinComponentBase):
             self._output_type = kwargs["output_type"]
         else:
             self._output_type = data.get_rust_type_name()
-        # node_decl = f"StateMachine::new(Default::default(), |_, data| *data)"
-        # super().__init__(
-        #     name = "StateMachine",
-        #     is_measurement = False,
-        #     node_decl = node_decl,
-        #     upstreams = [control, data]
-        # )
-        # self._output_type = data.get_rust_type_name()

@@ -32,10 +32,10 @@ def has_been_true(input: LeveledSignalBase, duration = -1) -> LeveledSignalBase:
 
 def make_tuple(*args) -> LeveledSignalBase:
     return SignalMapper(
-        bind_var = "&s",
-        lambda_src = "s",
+        bind_var = "s",
+        lambda_src = "s.clone()",
         upstream = list(args)
-    )
+    ).annotate_type(f'({",".join([arg.get_rust_type_name() for arg in args])})')
 
 class SignalFilterBuilder(object):
     def __init__(self, filter_signal: LeveledSignalBase, clock_signal: LeveledSignalBase = None):

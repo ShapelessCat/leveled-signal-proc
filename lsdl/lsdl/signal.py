@@ -82,6 +82,12 @@ class If(LeveledSignalBase):
             lambda_src = """if *cond { then_expr.clone() } else { else_expr.clone() }""",
             upstream = [self._cond, self._then, self._else]
         )
+        then_type = self._then.get_rust_type_name()
+        else_type = self._else.get_rust_type_name()
+        if then_type == "_":
+            then_type = else_type
+        elif else_type == "_":
+            else_type = then_type
         if self._then.get_rust_type_name() == self._else.get_rust_type_name():
             self._inner._output_type = self._then.get_rust_type_name()
     def get_id(self):
