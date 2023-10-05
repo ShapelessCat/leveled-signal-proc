@@ -7,6 +7,10 @@ class StateMachineBuilder(object):
         self._data = data
         self._transition_fn = '|_,_|()'
         self._scope_signal = None
+        self._init_state = "Default::default()"
+    def init_state(self, init_state):
+        self._init_state = init_state
+        return self
     def transition_fn(self, fn):
         self._transition_fn = fn
         return self
@@ -25,7 +29,7 @@ class StateMachineBuilder(object):
                 let mut inner_fn = {self._transition_fn};
                 move |&(last_scope, mut last_state), &(this_scope, ref this_input)|{{
                     if last_scope != this_scope {{
-                        last_state = Default::default();
+                        last_state = {self._init_state};
                     }}
                     (this_scope, (inner_fn)(&last_state, this_input))
                 }}
@@ -34,6 +38,7 @@ class StateMachineBuilder(object):
                 clock = self._clock,
                 data = [self._scope_signal, self._data],
                 transition_fn = actual_transition_fn,
+                init_state = f"(Default::default(), {self._init_state})",
             )
             return state_machine.map(bind_var = "&(_, s)", lambda_src = "s")
 
@@ -43,7 +48,8 @@ class StateMachine(BuiltinComponentBase):
             transition_fn = kwargs['transition_fn']
         else:
             raise "Currently only support transition_fn"
-        node_decl = f"StateMachine::new(Default::default(), {transition_fn})"
+        init_state = kwargs.get("init_state", "Default::default()")
+        node_decl = f"StateMachine::new({init_state}, {transition_fn})"
         super().__init__(
             name = "StateMachine",
             is_measurement = False, 

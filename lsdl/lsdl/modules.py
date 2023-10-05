@@ -83,3 +83,30 @@ class ScopeContext(object):
             }}""", 
             upstream = [scope_starts, event_starts, data]
         ).annotate_type(data.get_rust_type_name())
+
+def time_domain_fold(data: LeveledSignalBase, clock = None, scope = None, fold_method = "sum", init_state = None):
+    if clock is None:
+        clock = data
+    from lsdl.signal_processors.state_machine import StateMachineBuilder
+    data_type = data.get_rust_type_name()
+    lambda_param = f"s: &{data_type}, d: &{data_type}"
+    if fold_method == "sum":
+        fold_method = f"|{lambda_param}| s.clone() + d.clone()"
+        init_state = f"{data_type}::default()" if init_state is None else init_state
+    elif fold_method == "min":
+        fold_method = f"|{lambda_param}| s.clone().min(d.clone())"
+        init_state = f"{data_type}::MAX" if init_state is None else init_state
+    elif fold_method == "max":
+        fold_method = f"|{lambda_param}| s.clone().max(d.clone())"
+        init_state = f"{data_type}::MIN" if init_state is None else init_state
+    builder = StateMachineBuilder(clock = clock, data = data)
+
+    if init_state is not None:
+        builder.init_state(init_state)
+
+    builder.transition_fn(fold_method)
+
+    if scope is not None:
+        builder.scoped(scope)
+
+    return builder.build().annotate_type(data.get_rust_type_name())

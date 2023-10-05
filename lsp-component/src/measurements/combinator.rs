@@ -8,6 +8,7 @@ pub struct ScopedMeasurement<ScopeType, Measurement, MeasurementOutput> {
     current_level_timestamp: Timestamp,
     inner: Measurement,
     current_base: MeasurementOutput,
+    last_measurement: MeasurementOutput,
     prev_base: Option<(Timestamp, MeasurementOutput)>,
 }
 
@@ -23,13 +24,14 @@ where
 
     fn update(&mut self, ctx: &mut UpdateContext<EventIterator>, (level, data): Self::Input) {
         self.inner.update(ctx, data);
-
+        
         if &self.current_control_level != level {
             self.current_control_level = level.clone();
             self.current_level_timestamp = ctx.frontier();
             self.prev_base = Some((ctx.frontier(), self.current_base.clone()));
-            self.current_base = self.inner.measure(ctx);
+            self.current_base = self.last_measurement.clone();
         }
+        self.last_measurement = self.inner.measure(ctx);
     }
 
     fn measure(&self, ctx: &mut UpdateContext<EventIterator>) -> Self::Output {
@@ -50,6 +52,7 @@ where
         ScopedMeasurement {
             current_control_level: initial_level,
             current_level_timestamp: Default::default(),
+            last_measurement: Default::default(),
             inner: self,
             current_base: Default::default(),
             prev_base: None,

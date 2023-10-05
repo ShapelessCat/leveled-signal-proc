@@ -7,6 +7,8 @@ class LeveledSignalBase(object):
         raise NotImplementedError()
     def get_rust_type_name(self) -> str:
         raise NotImplementedError()
+    def is_signal(self) -> bool:
+        raise NotImplemented
     def map(self, bind_var: str, lambda_src: str):
         from lsdl.signal_processors import SignalMapper
         return SignalMapper(bind_var, lambda_src, self)
@@ -26,6 +28,14 @@ class LeveledSignalBase(object):
     def peek(self):
         from lsdl.measurements import PeekValue
         return PeekValue(self)
+    def add_metric(self, key, typename = "_"):
+        from lsdl import measurement_config
+        from lsdl.measurements import PeekValue
+        if self.is_signal():
+            measurement_config().add_metric(key, PeekValue(self), typename)
+        else:
+            measurement_config().add_metric(key, self, typename)
+        return self
     def _bin_op(self, other, op, typename = None):
         from lsdl.signal_processors import SignalMapper
         from lsdl.const import Const
@@ -63,13 +73,13 @@ class LeveledSignalBase(object):
     def __ge__(self, other):
         return self._bin_op(other, ">=", "bool")
     def __add__(self, other):
-        return self._bin_op(other, "+")
+        return self._bin_op(other, "+", self.get_rust_type_name())
     def __sub__(self, other):
-        return self._bin_op(other, "-")
+        return self._bin_op(other, "-", self.get_rust_type_name())
     def __mul__(self, other):
-        return self._bin_op(other, "*")
+        return self._bin_op(other, "*", self.get_rust_type_name())
     def __div__(self, other):
-        return self._bin_op(other, "/")
+        return self._bin_op(other, "/", self.get_rust_type_name())
 
 class If(LeveledSignalBase):
     def __init__(self, cond_expr: LeveledSignalBase, then_expr: LeveledSignalBase, else_expr: LeveledSignalBase):
@@ -95,3 +105,5 @@ class If(LeveledSignalBase):
         return self._inner.get_id()
     def get_rust_type_name(self) -> str:
         return self._inner.get_rust_type_name()
+    def is_signal(self) -> bool:
+        return True

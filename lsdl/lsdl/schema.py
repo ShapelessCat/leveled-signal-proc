@@ -7,10 +7,18 @@ class TypeBase(LeveledSignalBase):
         super().__init__()
         self._rust_type = rs_type
         self._reset_expr = None
+        self._parent = None
     def get_rust_type_name(self) -> str:
         return self._rust_type
     def render_rust_const(self, val) -> str:
         raise NotImplementedError()
+    def get_id(self):
+        try:
+            return super().get_id()
+        except Exception as e:
+            if self._parent is not None:
+                return self._parent.get_id()
+            raise e
 
 class CompilerInferredType(TypeBase):
     def __init__(self):
@@ -27,6 +35,8 @@ class String(TypeBase):
         super().__init__("String")
     def render_rust_const(self, val) -> str:
         return json.dumps(val)
+    def parse(self, type_name, default_value = "Default::default()") -> LeveledSignalBase:
+        return self.map(bind_var = "s", lambda_src = f"s.parse::<{type_name}>().unwrap_or({default_value})").annotate_type(type_name)
 
 class Bool(TypeBase):
     def __init__(self):
@@ -59,6 +69,7 @@ class InputMemberType(TypeBase):
     def __init__(self, inner: TypeBase):
         super().__init__(rs_type = inner.get_rust_type_name())
         self._inner = inner
+        inner._parent = self
         self._name = ""
     def set_name(self, name: str):
         self._name  = name
@@ -80,6 +91,11 @@ class MappedInputType(InputMemberType):
         self._input_key = input_key
         self._inner = inner
         self._reset_expr = self._inner._reset_expr
+    def __getattribute__(self, __name: str) -> Any:
+        try:
+            return super().__getattribute__(__name)
+        except AttributeError:
+            return getattr(self._inner, __name)
     def get_input_key(self) -> str:
         return self._input_key
     def clock(self) -> ClockCompanion:
