@@ -1,3 +1,4 @@
+from const import CONVIVA_SCREEN_VIEW
 from lsdl.prelude import *
 from schema import input
 from scope import session_id, page_id
@@ -8,7 +9,9 @@ duration = end - start
 is_valid_app_startup_duration = (input.app_startup_previous_exist == "") & (start > 0) & (duration > 0) & (duration < 300_000)
 app_startup_time = If(is_valid_app_startup_duration, duration, Const(-1))
 
-app_startup_clock = SignalFilterBuilder(input.event_name).filter_values('conviva_screen_view')\
+app_startup_clock =\
+    SignalFilterBuilder(input.event_name)\
+    .filter_values(CONVIVA_SCREEN_VIEW)\
     .then_filter(app_startup_time > 0)\
     .build_clock_filter()
 

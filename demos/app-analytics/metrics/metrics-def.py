@@ -1,4 +1,4 @@
-# extra-src: app_startup.py schema.py scope.py user_active_time.py
+# extra-src: app_startup.py const.py schema.py scope.py user_active_time.py
 from lsdl import print_ir_to_stdout, measurement_config
 import schema
 
