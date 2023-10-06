@@ -9,7 +9,7 @@ class Input(InputSchemaBase):
     load_start                 = String()
     load_end                   = String()
     conviva_video_events_name  = String()
-    reponse_code               = String()
+    response_code              = String()
     network_request_duration   = String()
     app_startup_start          = volatile(String())
     app_startup_end            = volatile(String())
