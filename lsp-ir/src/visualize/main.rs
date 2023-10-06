@@ -9,7 +9,7 @@ fn render_upstream_refs(input: &NodeInput) -> Vec<String> {
             vec![format!("node_{}:output", id)]
         }
         NodeInput::Constant { value, .. } => {
-            vec![format!("Const_{}", value)]
+            vec![format!("\"{}\"", value)]
         }
         NodeInput::InputBag => {
             vec!["input".to_string()]

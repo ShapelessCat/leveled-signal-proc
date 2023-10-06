@@ -125,10 +125,18 @@ impl MacroContext {
                 #inst_id . handle_node_output(&#out_ident);
             }
         }
+        let use_stmt = if node.is_measurement {
+            quote! {
+                use lsp_runtime::measurement::Measurement;
+            }
+        } else {
+            quote! {
+                use lsp_runtime::signal::SignalProcessor;
+            }
+        };
         Ok(quote! {
             {
-                use lsp_runtime::signal::SignalProcessor;
-                use lsp_runtime::measurement::Measurement;
+                #use_stmt;
                 #before_node_update
                 #out_ident = #node_ident . update(&mut update_context, #input_expr);
                 #after_node_update

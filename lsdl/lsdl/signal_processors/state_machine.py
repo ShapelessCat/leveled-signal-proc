@@ -26,7 +26,7 @@ class StateMachineBuilder(object):
             )
         else:
             actual_transition_fn = f"""{{
-                let mut inner_fn = {self._transition_fn};
+                let inner_fn = {self._transition_fn};
                 move |&(last_scope, mut last_state), &(this_scope, ref this_input)|{{
                     if last_scope != this_scope {{
                         last_state = {self._init_state};

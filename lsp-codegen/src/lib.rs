@@ -99,7 +99,6 @@ pub fn include_lsp_ir(input: TokenStream) -> TokenStream {
             Inst: lsp_runtime::instrument::LspDataLogicInstrument,
         {
             use lsp_runtime::LspContext;
-            use serde_json::Deserializer;
             let mut input_state = Default::default();
             lsp_codegen::define_data_logic_nodes!(#path);
             lsp_codegen::define_measurement_trigger!(#path);
