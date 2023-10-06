@@ -1,4 +1,5 @@
 from const import CONVIVA_VIDEO_EVENTS, CRITICAL_CONVIVA_VIDEO_EVENTS_NAMES, UNCONDITIONAL_CRITICAL_EVENT_NAMES
+from enum import Enum
 from lsdl.prelude import *
 from schema import input
 
@@ -23,3 +24,5 @@ _screen_id = input.screen_id.count_changes()
 _unsessionized_navigation_id = make_tuple(_page_id, _screen_id)
 
 navigation_id = make_tuple(session_id, _unsessionized_navigation_id).count_changes()
+
+ScopeName = Enum('ScopeName', ['Session', 'Navigation'])
