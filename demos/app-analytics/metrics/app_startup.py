@@ -21,7 +21,7 @@ def fold_app_startup_time(method, init = None, scope = session_id):
         clock = app_startup_clock, 
         init_state = init, 
         fold_method = method, 
-        scope = session_id)
+        scope = scope)
 
 def define_app_startup_metrics(scope_signal, scope_name):
     global total_startup_count
