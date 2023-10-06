@@ -1,7 +1,7 @@
 from const import CONVIVA_SCREEN_VIEW
 from lsdl.prelude import *
 from schema import input
-from scope import session_id, page_id
+from scope import session_id, navigation_id
 
 start = input.app_startup_start.parse("i32")
 end = input.app_startup_end.parse("i32")
@@ -26,11 +26,11 @@ def fold_app_startup_time(method, init = None, scope = session_id):
         fold_method = method, 
         scope = scope)
 
-def define_app_startup_metrics(scope_signal, scope_name):
+def create_app_startup_metrics_for(scope_signal, scope_name):
     global total_startup_count
     DiffSinceCurrentLevel(control = scope_signal, data = total_startup_count).add_metric(f"life{scope_name}StartUpCount")
     fold_app_startup_time("max", init = 0, scope = scope_signal).add_metric(f"life{scope_name}MaxStartupDuration")
     fold_app_startup_time("sum", scope = scope_signal).add_metric(f"life{scope_name}StartUpDuration")
 
-define_app_startup_metrics(session_id, "Session")
-define_app_startup_metrics(page_id, "Page")
+create_app_startup_metrics_for(session_id, "Session")
+create_app_startup_metrics_for(navigation_id, "Page")

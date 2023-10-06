@@ -18,6 +18,8 @@ _is_session_alive = make_tuple(_unconditional, _conditional).has_changed("90s")
 
 session_id = _is_session_alive.count_changes().add_metric("sessionId")
 
-_navigation_id = input.page_id.count_changes()
+_page_id = input.page_id.count_changes()
+_screen_id = input.screen_id.count_changes()
+_unsessionized_navigation_id = make_tuple(_page_id, _screen_id)
 
-page_id = make_tuple(session_id, _navigation_id).count_changes()
+navigation_id = make_tuple(session_id, _unsessionized_navigation_id).count_changes()
