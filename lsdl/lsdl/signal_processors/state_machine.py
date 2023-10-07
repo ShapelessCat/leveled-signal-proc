@@ -27,20 +27,25 @@ class StateMachineBuilder(object):
         else:
             actual_transition_fn = f"""{{
                 let inner_fn = {self._transition_fn};
-                move |&(last_scope, mut last_state), &(this_scope, ref this_input)|{{
+                move |&(last_scope, last_clock, mut last_state), &(this_scope, this_clock, ref this_input)|{{
                     if last_scope != this_scope {{
                         last_state = {self._init_state};
                     }}
-                    (this_scope, (inner_fn)(&last_state, this_input))
+                    if last_clock == this_clock {{
+                        (this_scope, this_clock, last_state)
+                    }}
+                    else {{
+                        (this_scope, this_clock, (inner_fn)(&last_state, this_input))
+                    }}
                 }}
             }}"""
             state_machine = StateMachine(
-                clock = self._clock,
-                data = [self._scope_signal, self._data],
+                clock = [self._scope_signal, self._clock],
+                data = [self._scope_signal, self._clock, self._data],
                 transition_fn = actual_transition_fn,
-                init_state = f"(Default::default(), {self._init_state})",
+                init_state = f"(Default::default(), Default::default(), {self._init_state})",
             )
-            return state_machine.map(bind_var = "&(_, s)", lambda_src = "s")
+            return state_machine.map(bind_var = "&(_, _, s)", lambda_src = "s")
 
 class StateMachine(BuiltinComponentBase):
     def __init__(self, clock:LeveledSignalBase, data:LeveledSignalBase, **kwargs):
