@@ -18,7 +18,6 @@ _request_succeeded = input.response_code.starts_with("2")
 
 def create_network_request_metrics_for(scope_singal, scope_name: ScopeName, status: ResponseStatus):
     global _network_request_filter_partial_builder, _request_succeeded
-    op = '' if status is ResponseStatus.Success else '!'
     network_request_with_given_status_clock =\
         _network_request_filter_partial_builder\
         .then_filter(_request_succeeded if status == ResponseStatus.Success else (~_request_succeeded))\
