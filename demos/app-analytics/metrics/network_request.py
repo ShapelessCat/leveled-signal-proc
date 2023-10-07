@@ -12,16 +12,16 @@ network_request_duration = input.network_request_duration.parse("i32")
 _network_request_filter_partial_builder =\
     SignalFilterBuilder(input.event_name)\
     .filter_values(CONVIVA_NETWORK_REQUEST)\
-    .then_filter(network_request_duration > 0)\
-    .then_filter(input.response_code)
+    .then_filter(network_request_duration > 0)
+_request_succeeded = input.response_code.starts_with("2")
 
 
 def create_network_request_metrics_for(scope_singal, scope_name: ScopeName, status: ResponseStatus):
-    global _checked_network_request
+    global _network_request_filter_partial_builder, _request_succeeded
     op = '' if status is ResponseStatus.Success else '!'
     network_request_with_given_status_clock =\
         _network_request_filter_partial_builder\
-        .filter_fn('c', f"{op}c.starts_with('2')")\
+        .then_filter(_request_succeeded if status == ResponseStatus.Success else (~_request_succeeded))\
         .build_clock_filter()
     count_with_given_status = network_request_with_given_status_clock.count_changes()
     DiffSinceCurrentLevel(
