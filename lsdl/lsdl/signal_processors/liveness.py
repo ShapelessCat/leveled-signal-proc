@@ -17,4 +17,4 @@ class LivenessChecker(BuiltinComponentBase):
             node_decl = node_decl, 
             upstreams = [liveness_clock],
         )
-        self._output_type = "bool"
+        self.annotate_type("bool")

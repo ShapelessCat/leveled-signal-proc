@@ -34,10 +34,20 @@ class String(TypeBase):
     def __init__(self):
         super().__init__("String")
     def render_rust_const(self, val) -> str:
-        return json.dumps(val)
+        return f"{json.dumps(val)}.to_string()"
     def parse(self, type_name, default_value = "Default::default()") -> LeveledSignalBase:
         return self.map(bind_var = "s", lambda_src = f"s.parse::<{type_name}>().unwrap_or({default_value})").annotate_type(type_name)
-
+    def starts_with(self, other) -> LeveledSignalBase:
+        from lsdl.const import Const
+        from lsdl.modules import make_tuple
+        if not isinstance(other, LeveledSignalBase):
+            other = Const(other)
+        return make_tuple(self, other)\
+            .map(
+                bind_var = "(s, p)", 
+                lambda_src = "s.starts_with(p)"
+            ).annotate_type("bool")
+            
 class Bool(TypeBase):
     def __init__(self):
         super().__init__("bool")
@@ -188,3 +198,17 @@ def volatile(inner: TypeBase, default = None) -> TypeBase:
 
 def get_schema():
     return _defined_schema
+
+def create_type_model_from_rust_type_name(rust_type_name: str) -> TypeBase:
+    if rust_type_name == "String":
+        return String()
+    if rust_type_name[0] in ['i', 'u']:
+        width = int(rust_type_name[1:])
+        signed = rust_type_name[0] == 'i'
+        return Integer(signed, width)
+    if rust_type_name[0] == 'f':
+        width = int(rust_type_name[1:])
+        return Float(width) 
+    if rust_type_name[0] == 'bool':
+        return Bool()
+    return None

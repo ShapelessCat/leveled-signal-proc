@@ -1,4 +1,5 @@
 from json import dumps as dump_json_str
+from lsdl.schema import create_type_model_from_rust_type_name
 from lsdl.signal import LeveledSignalBase
 
 def _make_assign_fresh_component_colsure():
@@ -24,6 +25,16 @@ class LspComponentBase(LeveledSignalBase):
         self._id = _assign_fresh_component_id()
         self._output_type = "_"
         _components.append(self)
+    def __getattribute__(self, __name: str):
+        try:
+            return super().__getattribute__(__name)
+        except AttributeError as e:
+            type_model = create_type_model_from_rust_type_name(self._output_type)
+            type_model._parent = self
+            if type_model is not None:
+                return getattr(type_model, __name)
+            else:
+                raise e
     def annotate_type(self, typename: str):
         self._output_type = typename
         return self

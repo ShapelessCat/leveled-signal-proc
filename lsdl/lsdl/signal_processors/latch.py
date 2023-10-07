@@ -17,9 +17,9 @@ class Latch(BuiltinComponentBase):
             upstreams = [control, data]
         )
         if "output_type" in kwargs:
-            self._output_type = kwargs["output_type"]
+            self.annotate_type(kwargs["output_type"])
         else:
-            self._output_type = data.get_rust_type_name()
+            self.annotate_type(data.get_rust_type_name())
 
 class EdgeTriggeredLatch(BuiltinComponentBase):
     def __init__(self, control: LeveledSignalBase, data: LeveledSignalBase, forget_duration = -1, **kwargs):
@@ -39,6 +39,6 @@ class EdgeTriggeredLatch(BuiltinComponentBase):
             upstreams = [control, data]
         )
         if "output_type" in kwargs:
-            self._output_type = kwargs["output_type"]
+            self.annotate_type(kwargs["output_type"])
         else:
-            self._output_type = data.get_rust_type_name()
+            self.annotate_type(data.get_rust_type_name())

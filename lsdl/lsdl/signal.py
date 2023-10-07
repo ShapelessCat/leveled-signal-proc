@@ -58,7 +58,7 @@ class LeveledSignalBase(object):
                 upstream = self
             )
         if typename is not None:
-            ret._output_type = typename
+            ret.annotate_type(typename)
         return ret
     def __eq__(self, other):
         return self._bin_op(other, "==", "bool")
@@ -106,7 +106,7 @@ class If(LeveledSignalBase):
         elif else_type == "_":
             else_type = then_type
         if self._then.get_rust_type_name() == self._else.get_rust_type_name():
-            self._inner._output_type = self._then.get_rust_type_name()
+            self._inner.annotate_type(self._then.get_rust_type_name())
     def get_id(self):
         return self._inner.get_id()
     def get_rust_type_name(self) -> str:

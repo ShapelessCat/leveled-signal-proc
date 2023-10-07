@@ -9,4 +9,4 @@ class DiffSinceCurrentLevel(BuiltinComponentBase):
             node_decl = "DiffSinceCurrentLevel::default()",
             upstreams = [control, data],
         )
-        self._output_type = data.get_rust_type_name()
+        self.annotate_type(data.get_rust_type_name())

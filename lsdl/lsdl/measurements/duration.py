@@ -17,7 +17,7 @@ class DurationTrue(BuiltinComponentBase):
                 node_decl = "ScopedDurationTrue::default()",
                 upstreams = [scope_signal, input]
             )
-        self._output_type = "u64"
+        self.annotate_type("u64")
 
 class DurationSinceBecomeTrue(BuiltinComponentBase):
     def __init__(self, input: LeveledSignalBase):
@@ -27,4 +27,4 @@ class DurationSinceBecomeTrue(BuiltinComponentBase):
             node_decl = "DurationSinceBecomeTrue::default()",
             upstreams = [input]
         )
-        self._output_type = "u64"
+        self.annotate_type("u64")

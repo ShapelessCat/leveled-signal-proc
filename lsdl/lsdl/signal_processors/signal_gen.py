@@ -13,7 +13,7 @@ class SquareWave(BuiltinComponentBase):
             node_decl = f"SignalGenerator::square_wave({period}, {phase})", 
             upstreams = []
         )
-        self._output_type = "bool"
+        self.annotate_type("bool")
 
 #    let b = SignalGenerator::raising_level(0, 2, 60_000_000_000, 0);
 class MonotonicSteps(BuiltinComponentBase):
@@ -26,7 +26,7 @@ class MonotonicSteps(BuiltinComponentBase):
             node_decl = f"SignalGenerator::raising_level({start}, {step}, {period}, {phase})", 
             upstreams = []
         )
-        self._output_type = "f64"
+        self.annotate_type("f64")
 
 #    let c = SignalGenerator::<_, f64>::new(|ts| ((ts as f64).sin(), ts + 10));
 class SignalGenerator(BuiltinComponentBase):

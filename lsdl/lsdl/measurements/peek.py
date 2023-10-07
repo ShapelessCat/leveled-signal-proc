@@ -9,5 +9,5 @@ class PeekValue(BuiltinComponentBase):
             node_decl = "Peek::default()",
             upstreams = [input]
         )
-        self._output_type = input.get_rust_type_name()
+        self.annotate_type(input.get_rust_type_name())
 

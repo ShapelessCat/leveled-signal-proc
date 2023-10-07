@@ -19,4 +19,4 @@ class Accumulator(BuiltinComponentBase):
             node_decl = node_decl,
             upstreams = [control, data]
         )
-        self._output_type = type_name
+        self.annotate_type(type_name)
