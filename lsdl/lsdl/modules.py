@@ -1,29 +1,34 @@
-from lsdl.signal import LeveledSignalBase
-from lsdl.schema import MappedInputType
-from lsdl.signal_processors import SignalMapper, Latch
-from lsdl.const import Const
 import re
 
+from lsdl.const import Const
+from lsdl.schema import MappedInputType
+from lsdl.signal import LeveledSignalBase
+from lsdl.signal_processors import SignalMapper, Latch
 from lsdl.signal_processors.latch import EdgeTriggeredLatch
+
 
 def _normalize_duration(duration) -> int:
     if type(duration) == str:
         value_str = re.search(r"\d+", duration).group(0)
         value_unit = duration[len(value_str):]
         value = int(value_str)
-        if value_unit == "s":
-            duration = value * 1_000_000_000
-        elif value_unit == "ms":
-            duration = value * 1_000_000
-        elif value_unit == "us":
-            duration = value * 1_000
-        elif duration == "ns":
-            duration = value
-        elif duration == "m":
-            duration = value * 60_000_000_000
-        elif duration == "h":
-            duration = value * 3_600_000_000_000
+        match value_unit: 
+            case 's':
+                duration = value * 1_000_000_000
+            case 'ms':
+                duration = value * 1_000_000
+            case 'us':
+                duration = value * 1_000
+            case 'ns':
+                duration = value
+            case 'm':
+                duration = value * 60_000_000_000
+            case 'h':
+                duration = value * 3_600_000_000_000
+            case _:
+                raise ValueError(f"Unknown duration unit: {value_unit}")
     return duration
+
 
 def has_been_true(input: LeveledSignalBase, duration = -1) -> LeveledSignalBase:
     return Latch(
@@ -32,6 +37,7 @@ def has_been_true(input: LeveledSignalBase, duration = -1) -> LeveledSignalBase:
             forget_duration = _normalize_duration(duration)
         )
 
+
 def has_changed(input: LeveledSignalBase, duration = -1) -> LeveledSignalBase:
     return EdgeTriggeredLatch(
         control = input,
@@ -39,12 +45,14 @@ def has_changed(input: LeveledSignalBase, duration = -1) -> LeveledSignalBase:
         forget_duration = _normalize_duration(duration) 
     )
 
+
 def make_tuple(*args) -> LeveledSignalBase:
     return SignalMapper(
         bind_var = "s",
         lambda_src = "s.clone()",
         upstream = list(args)
     ).annotate_type(f'({",".join([arg.get_rust_type_name() for arg in args])})')
+
 
 class SignalFilterBuilder(object):
     def __init__(self, filter_signal: LeveledSignalBase, clock_signal: LeveledSignalBase = None):
@@ -87,6 +95,7 @@ class SignalFilterBuilder(object):
             control = self._filter_node
         )
     
+
 class ScopeContext(object):
     def __init__(self, scope_level: LeveledSignalBase, epoch: LeveledSignalBase):
         self._scope = scope_level
@@ -102,6 +111,7 @@ class ScopeContext(object):
             }}""", 
             upstream = [scope_starts, event_starts, data]
         ).annotate_type(data.get_rust_type_name())
+
 
 def time_domain_fold(data: LeveledSignalBase, clock = None, scope = None, fold_method = "sum", init_state = None):
     if clock is None:
