@@ -94,7 +94,7 @@ class ScopeContext(object):
     def scoped(self, data: LeveledSignalBase, clock: LeveledSignalBase, default = None) -> LeveledSignalBase:
         from lsdl.signal_processors import EdgeTriggeredLatch, SignalMapper
         scope_starts = EdgeTriggeredLatch(control = self._scope, data = self._epoch)
-        event_starts = EdgeTriggeredLatch(control = data, data = self._epoch)
+        event_starts = EdgeTriggeredLatch(control = clock, data = self._epoch)
         return SignalMapper(
             bind_var = "(sep, eep, signal)", 
             lambda_src = f"""if *sep <= *eep {{ signal.clone() }} else {{ 
