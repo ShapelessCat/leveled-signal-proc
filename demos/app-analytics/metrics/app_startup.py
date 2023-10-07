@@ -17,8 +17,8 @@ app_startup_clock =\
 
 total_startup_count = app_startup_clock.count_changes()
 
-def fold_app_startup_time(method, init = None, scope = session_id):
-    global app_startup_time, app_startup_clock, session_id
+def fold_app_startup_time(scope, method, init = None):
+    global app_startup_time, app_startup_clock
     return time_domain_fold(
         data = app_startup_time, 
         clock = app_startup_clock, 
@@ -29,8 +29,8 @@ def fold_app_startup_time(method, init = None, scope = session_id):
 def create_app_startup_metrics_for(scope_signal, scope_name: ScopeName):
     global total_startup_count
     DiffSinceCurrentLevel(control = scope_signal, data = total_startup_count).add_metric(f"life{scope_name.name}StartupCount")
-    fold_app_startup_time("max", init = 0, scope = scope_signal).add_metric(f"life{scope_name.name}MaxStartupDuration")
-    fold_app_startup_time("sum", scope = scope_signal).add_metric(f"life{scope_name.name}StartupDuration")
+    fold_app_startup_time(scope_signal, "max", init = 0).add_metric(f"life{scope_name.name}MaxStartupDuration")
+    fold_app_startup_time(scope_signal, "sum").add_metric(f"life{scope_name.name}StartupDuration")
 
 create_app_startup_metrics_for(session_id, ScopeName.Session)
 create_app_startup_metrics_for(navigation_id, ScopeName.Navigation)
