@@ -9,22 +9,28 @@ ResponseStatus = Enum('ResponseStatus', ['Success', 'Failure'])
 
 network_request_duration = input.network_request_duration.parse("i32")
 
-_network_request = SignalFilterBuilder(input.event_name).filter_values(CONVIVA_NETWORK_REQUEST)
-_checked_network_request = _network_request.then_filter(network_request_duration > 0).then_filter(input.response_code)
+_network_request_filter_partial_builder =\
+    SignalFilterBuilder(input.event_name)\
+    .filter_values(CONVIVA_NETWORK_REQUEST)\
+    .then_filter(network_request_duration > 0)\
+    .then_filter(input.response_code)
 
 
 def create_network_request_metrics_for(scope_singal, scope_name: ScopeName, status: ResponseStatus):
     global _checked_network_request
     op = '' if status is ResponseStatus.Success else '!'
-    request_with_given_status = _checked_network_request.filter_fn('c', f"{op}c.starts_with('2')").build_clock_filter()
-    count_with_given_status = request_with_given_status.count_changes()
+    network_request_with_given_status_clock =\
+        _network_request_filter_partial_builder\
+        .filter_fn('c', f"{op}c.starts_with('2')")\
+        .build_clock_filter()
+    count_with_given_status = network_request_with_given_status_clock.count_changes()
     DiffSinceCurrentLevel(
         control=scope_singal,
         data=count_with_given_status
     ).add_metric(f"life{scope_name.name}{status.name}NetworkRequestCount")
     time_domain_fold(
-        data=request_with_given_status,
-        clock=count_with_given_status,
+        data=network_request_duration,
+        clock=network_request_with_given_status_clock,
         scope=scope_singal
     ).add_metric(f"life{scope_name.name}{status.name}NetworkRequestDuration")
 
