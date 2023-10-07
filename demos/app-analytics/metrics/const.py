@@ -30,3 +30,7 @@ CONVIVA_NETWORK_REQUEST = 'conviva_network_request'
 # - Network request related keys:
 RESPONSE_CODE = 'response_code'
 NETWORK_REQUEST_DURATION = 'network_request_duration'
+
+# Thresholds:
+PAGE_LOAD_TIME_THRESHOLD = 90000
+SCREEN_LOADTIME_THRESHOLD = 60000
