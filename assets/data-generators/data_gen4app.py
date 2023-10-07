@@ -3,7 +3,6 @@
 import inspect
 import json
 import logging
-import os
 import random
 import re
 import sys
@@ -40,24 +39,24 @@ class Event(ABC):
     @abstractmethod
     def __init__(self, event_name: str, platform: Platform):
         self.event_name = event_name
-        self.platform = str(platform)
-
-    def generate(self):
-        basic_info = {
+        self.platform = platform
+        self.basic_info = {
             'event_name': self.event_name,
             'event_category': random.choice(self.EVENT_CATEGORY_POOL),
-            'platform': self.platform,
+            'platform': str(self.platform),
         }
-        page_id_info = ({}
-                        if bool(random.getrandbits(3))
-                        else {'page_id': f"pid-{random.randint(0, 5)}"})
-        load_threshold = (self.PAGE_LOAD_TIME_THRESHOLD
-                          if self.platform is Platform.WEB
-                          else self.SCREEN_LOAD_TIME_THRESHOLD)
+        self.is_web = platform is Platform.WEB
+
+    def generate(self):
+        id_key = 'page_id' if self.is_web else 'screen_id'
+        navigation_id_info = ({}
+                              if bool(random.getrandbits(3))
+                              else {id_key: f"nav-id-{random.randint(0, 5)}"})
+        load_threshold = self.PAGE_LOAD_TIME_THRESHOLD if self.is_web else self.SCREEN_LOAD_TIME_THRESHOLD
         load_start_end_info = ({}
                                if random_bool()
                                else self._random_time_interval('load_start', 'load_end', load_threshold))
-        return basic_info | page_id_info | load_start_end_info
+        return self.basic_info | navigation_id_info | load_start_end_info
 
     # This time interval can be valid or invalid
     @classmethod
