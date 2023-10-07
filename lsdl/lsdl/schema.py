@@ -29,6 +29,12 @@ class DateTime(TypeBase):
         super().__init__("chrono::DateTime<chrono::" + timezone + ">")
     def render_rust_const(self, val) -> str:
         raise "Date time const value is not supported"
+    def timestamp(self):
+        return self\
+            .map(
+                bind_var = "t",
+                lambda_src = "t.timestamp()"
+            ).annotate_type("i64")
 
 class String(TypeBase):
     def __init__(self):
@@ -36,7 +42,11 @@ class String(TypeBase):
     def render_rust_const(self, val) -> str:
         return f"{json.dumps(val)}.to_string()"
     def parse(self, type_name, default_value = "Default::default()") -> LeveledSignalBase:
-        return self.map(bind_var = "s", lambda_src = f"s.parse::<{type_name}>().unwrap_or({default_value})").annotate_type(type_name)
+        return self\
+            .map(
+                bind_var = "s", 
+                lambda_src = f"s.parse::<{type_name}>().unwrap_or({default_value})"
+            ).annotate_type(type_name)
     def starts_with(self, other) -> LeveledSignalBase:
         from lsdl.const import Const
         from lsdl.modules import make_tuple
