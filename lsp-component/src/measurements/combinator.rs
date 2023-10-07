@@ -25,13 +25,13 @@ where
     fn update(&mut self, ctx: &mut UpdateContext<EventIterator>, (level, data): Self::Input) {
         self.inner.update(ctx, data);
         
+        self.last_measurement = self.inner.measure(ctx);
         if &self.current_control_level != level {
             self.current_control_level = level.clone();
             self.current_level_timestamp = ctx.frontier();
             self.prev_base = Some((ctx.frontier(), self.current_base.clone()));
             self.current_base = self.last_measurement.clone();
         }
-        self.last_measurement = self.inner.measure(ctx);
     }
 
     fn measure(&self, ctx: &mut UpdateContext<EventIterator>) -> Self::Output {
