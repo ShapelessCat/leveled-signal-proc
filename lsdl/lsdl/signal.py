@@ -45,6 +45,24 @@ class LeveledSignalBase(object):
         """
         from lsdl.signal_processors import SignalMapper
         return SignalMapper(bind_var, lambda_src, self)
+    
+    def prior_different_value(self, scope: 'LeveledSignalBase' = None) -> 'LeveledSignalBase':
+        return self.prior_value(self, scope)
+
+    def prior_value(self, clock: 'LeveledSignalBase' = None, scope: 'LeveledSignalBase' = None) -> 'LeveledSignalBase':
+        from lsdl.signal_processors import StateMachineBuilder
+        if clock is None:
+            clock = self.clock()
+        ty = self.get_rust_type_name()
+        builder = StateMachineBuilder(data = self, clock = clock)\
+            .transition_fn(f'|(_, current): &({ty}, {ty}), data : &{ty}| (current.clone(), data.clone())')
+        if scope is not None:
+            builder.scoped(scope)
+        return builder.build().annotate_type(f"({ty}, {ty})").map(
+            bind_var = f'(ret, _)',
+            lambda_src = 'ret.clone()'
+        ).annotate_type(self.get_rust_type_name())
+    
     def count_changes(self) -> 'LeveledSignalBase':
         """
             Creates a new signal that counts the number of changes for current signal.

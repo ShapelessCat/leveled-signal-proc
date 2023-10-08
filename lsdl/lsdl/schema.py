@@ -12,6 +12,8 @@ class TypeBase(LeveledSignalBase):
         return self._rust_type
     def render_rust_const(self, val) -> str:
         raise NotImplementedError()
+    def is_signal(self) -> bool:
+        return True
     def get_id(self):
         try:
             return super().get_id()

@@ -11,7 +11,7 @@ class StateMachineBuilder(object):
     def init_state(self, init_state):
         self._init_state = init_state
         return self
-    def transition_fn(self, fn):
+    def transition_fn(self, fn: str):
         self._transition_fn = fn
         return self
     def scoped(self, scope_signal: LeveledSignalBase):
@@ -22,7 +22,7 @@ class StateMachineBuilder(object):
             return StateMachine(
                 clock = self._clock, 
                 data = self._data, 
-                transition_fn = self.transition_fn
+                transition_fn = self._transition_fn
             )
         else:
             actual_transition_fn = f"""{{
