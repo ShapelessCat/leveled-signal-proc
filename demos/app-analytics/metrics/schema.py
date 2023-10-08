@@ -1,4 +1,4 @@
-from lsdl.schema import InputSchemaBase, String, volatile 
+from lsdl.prelude import *
 
 class Input(InputSchemaBase):
     _timestamp_key             = 'timestamp'

@@ -61,6 +61,12 @@ pub fn impl_signal_measurement_trigger(input: TokenStream) -> TokenStream {
     ctx.impl_signal_triggered_measurement().into()
 }
 
+#[proc_macro]
+pub fn impl_signal_measurement_limit_side_control(input: TokenStream) -> TokenStream {
+    let ctx = parse_macro_input!(input as MacroContext);
+    ctx.impl_measurement_limit_side_control().into()
+}
+
 struct MainFnMeta {
     id: syn::Ident,
     path: syn::LitStr,
@@ -107,13 +113,28 @@ pub fn include_lsp_ir(input: TokenStream) -> TokenStream {
                 instrument_ctx.data_logic_update_begin();
                 let mut update_context = ctx.borrow_update_context();
                 let mut should_measure = moment.should_take_measurements();
+                let mut should_use_left_limit = false;
+
+                let left_limit_measurements = {
+                    lsp_codegen::impl_metrics_measurement!(#path);
+                    _metrics_bag
+                };
+
                 if moment.should_update_signals() {
                     lsp_codegen::impl_data_logic_updates!(#path , instrument_ctx);
                     lsp_codegen::impl_signal_measurement_trigger!(#path);
                     should_measure = should_measure || __signal_trigger_fired;
+                    lsp_codegen::impl_signal_measurement_limit_side_control!(#path);
+                    should_use_left_limit = __should_measure_left_side_limit;
                 }
+
                 if should_measure {
-                    lsp_codegen::impl_metrics_measurement!(#path);
+                    let _metrics_bag = if should_use_left_limit {
+                        left_limit_measurements
+                    } else {
+                        lsp_codegen::impl_metrics_measurement!(#path);
+                        _metrics_bag
+                    };
                     instrument_ctx.data_logic_update_end();
                     out_handle(_metrics_bag)?;
                 } else {

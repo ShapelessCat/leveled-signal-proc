@@ -11,4 +11,4 @@ lto = "fat"
 inherits = "release"
 debug = true
 strip = false
-lto = false
+lto = "fat"

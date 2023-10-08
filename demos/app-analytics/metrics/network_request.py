@@ -1,7 +1,7 @@
 from enum import Enum
+from lsdl.prelude import *
 
 from const import CONVIVA_NETWORK_REQUEST
-from lsdl.prelude import *
 from schema import input
 from scope import ScopeName, session_id, navigation_id
 

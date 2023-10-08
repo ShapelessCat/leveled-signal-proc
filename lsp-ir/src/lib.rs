@@ -81,11 +81,17 @@ fn default_measure_trigger_signal() -> NodeInput {
     NodeInput::Constant { value: "0i32".to_string(), type_name: "i32".to_string() }
 }
 
+fn default_measure_left_side_limit_signal() -> NodeInput {
+    NodeInput::Constant { value: "false".to_string(), type_name: "bool".to_string() }
+}
+
 #[derive(Deserialize, Serialize, Clone)]
 pub struct MeasurementPolicy {
     pub measure_at_event_filter: String,
     #[serde(default = "default_measure_trigger_signal")]
     pub measure_trigger_signal: NodeInput,
+    #[serde(default = "default_measure_left_side_limit_signal")]
+    pub measure_left_side_limit_signal: NodeInput,
     pub metrics_drain: MetricsDrainType,
     pub output_schema: HashMap<String, MetricSpec>,
 }

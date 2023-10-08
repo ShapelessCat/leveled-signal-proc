@@ -45,6 +45,14 @@ impl MacroContext {
             };
         }.into()
     }
+    
+    pub(crate) fn impl_measurement_limit_side_control(&self) -> TokenStream2 {
+        let signal_node = &self.get_ir_data().measurement_policy.measure_left_side_limit_signal;
+        let signal_ref = self.generate_downstream_ref(signal_node, &()).unwrap_or_else(|e| e.into_compile_error());
+        quote! {
+            let __should_measure_left_side_limit : bool = (#signal_ref).clone();
+        }.into()
+    }
 
     pub(crate) fn impl_metrics_measuring(&self) -> TokenStream2 {
         let mut item_list = Vec::new();

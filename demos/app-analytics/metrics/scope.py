@@ -1,6 +1,7 @@
-from const import CONVIVA_VIDEO_EVENTS, CRITICAL_CONVIVA_VIDEO_EVENTS_NAMES, UNCONDITIONAL_CRITICAL_EVENT_NAMES
 from enum import Enum
 from lsdl.prelude import *
+
+from const import CONVIVA_VIDEO_EVENTS, CRITICAL_CONVIVA_VIDEO_EVENTS_NAMES, UNCONDITIONAL_CRITICAL_EVENT_NAMES
 from schema import input
 
 _unconditional =\

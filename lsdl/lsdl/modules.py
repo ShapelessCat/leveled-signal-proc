@@ -30,7 +30,12 @@ def _normalize_duration(duration) -> int:
     return duration
 
 
-def has_been_true(input: LeveledSignalBase, duration = -1) -> LeveledSignalBase:
+def has_been_true(input: LeveledSignalBase, duration: int | str = -1) -> LeveledSignalBase:
+    """
+        Checks if the boolean signal has ever becomes true and returns the result as a leveled signal.
+        When `duration` is given, it checks if the signal has been true within `duration` amount of time.
+        Note: `duration` can be either a integer as number of nanosecs or a string of "<value><unit>". For example, "100ms", "2h", etc...
+    """
     return Latch(
             data = Const(True),
             control = input,
@@ -39,6 +44,11 @@ def has_been_true(input: LeveledSignalBase, duration = -1) -> LeveledSignalBase:
 
 
 def has_changed(input: LeveledSignalBase, duration = -1) -> LeveledSignalBase:
+    """
+        Checks if the signal has ever changed and returns the result as a leveled signal.
+        When `duration` is given, it checks if the signal has changed within `duration` amount of time.
+        Note: `duration` can be either a integer as number of nanosecs or a string of "<value><unit>". For example, "100ms", "2h", etc...
+    """
     return EdgeTriggeredLatch(
         control = input,
         data = Const(True),
@@ -46,7 +56,11 @@ def has_changed(input: LeveledSignalBase, duration = -1) -> LeveledSignalBase:
     )
 
 
-def make_tuple(*args) -> LeveledSignalBase:
+def make_tuple(*args : LeveledSignalBase) -> LeveledSignalBase:
+    """
+        Make a tuple from multiple input signals.
+        The result is also a leveled signal.
+    """
     return SignalMapper(
         bind_var = "s",
         lambda_src = "s.clone()",
@@ -55,29 +69,46 @@ def make_tuple(*args) -> LeveledSignalBase:
 
 
 class SignalFilterBuilder(object):
+    """
+        The builder class to build a signal filter. 
+        A signal filter is a filter that filters either the clock or value signal.
+        It can filter with a Rust lambda function or a list of values.
+    """
     def __init__(self, filter_signal: LeveledSignalBase, clock_signal: LeveledSignalBase = None):
         self._filter_signal = filter_signal
         self._clock_signal = clock_signal
         if isinstance(filter_signal, MappedInputType) and clock_signal is None:
             self._clock_signal = filter_signal.clock()
         self._filter_lambda = None
-    def filter_fn(self, bind_var: str, lambda_body: str):
+    def filter_fn(self, bind_var: str, lambda_body: str) -> 'SignalFilterBuilder':
+        """
+            Set the Rust lambda function that filters the signal
+        """
         self._filter_node = SignalMapper(
             bind_var = bind_var,
             upstream = self._filter_signal,
             lambda_src = lambda_body, 
         )
         return self
-    def filter_values(self, *args):
+    def filter_values(self, *args) -> 'SignalFilterBuilder':
+        """
+            Set the list of values that to filter
+        """
         values = args
         self._filter_node = (self._filter_signal == values[0])
         for value in values[1:]:
             self._filter_node = self._filter_node | (self._filter_signal == value)
         return self
-    def filter_true(self):
+    def filter_true(self) -> 'SignalFilterBuilder':
+        """
+            Filters the boolean signal when its values is true
+        """
         self._filter_node = self._filter_signal
         return self
-    def then_filter(self, filter_signal: LeveledSignalBase):
+    def then_filter(self, filter_signal: LeveledSignalBase) -> 'SignalFilterBuilder':
+        """
+            Builds the clock signal filter and then create a builder that performing cascade filtering
+        """
         from lsdl.modules import SignalFilterBuilder
         signal_clock = self.build_clock_filter()
         ret = SignalFilterBuilder(filter_signal, signal_clock)

@@ -1,6 +1,9 @@
 # extra-src: app_startup.py const.py network_request.py schema.py scope.py user_active_time.py
-from lsdl import print_ir_to_stdout, measurement_config
+from lsdl.prelude import *
+
 import schema
+
+import scope
 
 # App Startup
 import app_startup

@@ -1,5 +1,6 @@
-from const import CONVIVA_SCREEN_VIEW
 from lsdl.prelude import *
+
+from const import CONVIVA_SCREEN_VIEW
 from schema import input
 from scope import ScopeName, session_id, navigation_id
 
