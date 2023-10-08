@@ -139,7 +139,7 @@ class ConvivaApplicationError(Event):
 
 class ConvivaVideoEvents(Event):
     _names = (['c3.sdk.custom_event', 'c3.video.custom_event'] + # can keep session alive in next 90s
-              ['"c3.video.attempt"'] +
+              ['c3.video.attempt'] +
               [f"cannot-keep-session-alive-{i}" for i in range(2)])
 
     def __init__(self, platform: Platform):

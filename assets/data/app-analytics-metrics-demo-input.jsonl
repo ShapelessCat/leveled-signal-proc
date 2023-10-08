@@ -12,11 +12,11 @@
 {"timestamp": "2023-10-07 00:14:37.861760 UTC", "event_name": "random_event_3", "event_category": "ec1", "platform": "mob", "load_start": "1", "load_end": "60282"}
 {"timestamp": "2023-10-07 00:15:36.561777 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob"}
 {"timestamp": "2023-10-07 00:16:14.461790 UTC", "event_name": "conviva_network_request", "event_category": "ec1", "platform": "mob", "load_start": "4", "load_end": "789", "response_code": "200", "network_request_duration": "734"}
-{"timestamp": "2023-10-07 00:17:32.261812 UTC", "event_name": "conviva_screen_view", "event_category": "ec0", "platform": "mob", "screen_id": "nav-id-1", "app_startup_start": "671", "app_startup_end": "15"}
+{"timestamp": "2023-10-07 00:17:32.261812 UTC", "event_name": "conviva_screen_view", "event_category": "ec0", "platform": "mob", "screen_id": "nav-id-1", "app_startup_start": "15", "app_startup_end": "671"}
 {"timestamp": "2023-10-07 00:17:43.661831 UTC", "event_name": "conviva_screen_view", "event_category": "ec0", "platform": "mob", "screen_id": "nav-id-3", "load_start": "5", "load_end": "60632", "app_startup_start": "4", "app_startup_end": "428"}
 {"timestamp": "2023-10-07 00:19:11.861854 UTC", "event_name": "random_event_7", "event_category": "ec2", "platform": "mob"}
 {"timestamp": "2023-10-07 00:20:08.561867 UTC", "event_name": "random_event_7", "event_category": "ec2", "platform": "mob"}
-{"timestamp": "2023-10-07 00:20:59.561879 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 00:20:59.561879 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "conviva_video_events_name": "c3.video.attempt"}
 {"timestamp": "2023-10-07 00:22:25.461894 UTC", "event_name": "conviva_network_request", "event_category": "ec1", "platform": "mob", "response_code": "100", "network_request_duration": "217"}
 {"timestamp": "2023-10-07 00:22:45.461910 UTC", "event_name": "conviva_periodic_heartbeat", "event_category": "ec0", "platform": "mob", "load_start": "388", "load_end": "60007"}
 {"timestamp": "2023-10-07 00:23:31.261926 UTC", "event_name": "random_event_7", "event_category": "ec2", "platform": "mob"}
@@ -26,7 +26,7 @@
 {"timestamp": "2023-10-07 00:26:27.561981 UTC", "event_name": "conviva_application_error", "event_category": "ec1", "platform": "mob", "load_start": "8", "load_end": "845"}
 {"timestamp": "2023-10-07 00:26:32.761996 UTC", "event_name": "conviva_screen_view", "event_category": "ec0", "platform": "mob", "screen_id": "nav-id-2", "load_start": "763", "load_end": "60010", "app_startup_start": "9", "app_startup_end": "252", "app_startup_previous_exist": "previous-name"}
 {"timestamp": "2023-10-07 00:26:49.662017 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "load_start": "2", "load_end": "60046"}
-{"timestamp": "2023-10-07 00:27:31.762033 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "screen_id": "nav-id-4", "load_start": "1", "load_end": "963", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 00:27:31.762033 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "screen_id": "nav-id-4", "load_start": "1", "load_end": "963", "conviva_video_events_name": "c3.video.attempt"}
 {"timestamp": "2023-10-07 00:29:11.362051 UTC", "event_name": "conviva_periodic_heartbeat", "event_category": "ec0", "platform": "mob"}
 {"timestamp": "2023-10-07 00:29:16.362063 UTC", "event_name": "conviva_periodic_heartbeat", "event_category": "ec0", "platform": "mob"}
 {"timestamp": "2023-10-07 00:30:43.862075 UTC", "event_name": "conviva_periodic_heartbeat", "event_category": "ec0", "platform": "mob"}
@@ -74,7 +74,7 @@
 {"timestamp": "2023-10-07 01:04:02.162735 UTC", "event_name": "random_event_3", "event_category": "ec1", "platform": "mob", "load_start": "5", "load_end": "622"}
 {"timestamp": "2023-10-07 01:04:46.562751 UTC", "event_name": "conviva_application_foreground", "event_category": "ec0", "platform": "mob", "load_start": "6", "load_end": "18"}
 {"timestamp": "2023-10-07 01:05:32.562766 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "load_start": "9", "load_end": "542"}
-{"timestamp": "2023-10-07 01:05:47.462781 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 01:05:47.462781 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "conviva_video_events_name": "c3.video.attempt"}
 {"timestamp": "2023-10-07 01:06:14.462795 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "conviva_video_events_name": "c3.sdk.custom_event"}
 {"timestamp": "2023-10-07 01:07:19.062808 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob"}
 {"timestamp": "2023-10-07 01:08:19.062821 UTC", "event_name": "conviva_application_error", "event_category": "ec1", "platform": "mob", "screen_id": "nav-id-3", "load_start": "9", "load_end": "827"}
@@ -82,7 +82,7 @@
 {"timestamp": "2023-10-07 01:10:00.262851 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "635", "load_end": "60003", "conviva_video_events_name": "cannot-keep-session-alive-0"}
 {"timestamp": "2023-10-07 01:10:44.862868 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob"}
 {"timestamp": "2023-10-07 01:11:15.362880 UTC", "event_name": "conviva_application_error", "event_category": "ec1", "platform": "mob", "load_start": "7", "load_end": "673"}
-{"timestamp": "2023-10-07 01:12:18.362894 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "418", "load_end": "110", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 01:12:18.362894 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "418", "load_end": "110", "conviva_video_events_name": "c3.video.attempt"}
 {"timestamp": "2023-10-07 01:13:34.562910 UTC", "event_name": "random_event_3", "event_category": "ec1", "platform": "mob", "load_start": "122", "load_end": "17"}
 {"timestamp": "2023-10-07 01:15:05.262924 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "load_start": "569", "load_end": "19"}
 {"timestamp": "2023-10-07 01:15:08.162938 UTC", "event_name": "conviva_application_error", "event_category": "ec1", "platform": "mob", "screen_id": "nav-id-5", "load_start": "6", "load_end": "820"}
@@ -101,7 +101,7 @@
 {"timestamp": "2023-10-07 01:27:04.463161 UTC", "event_name": "conviva_application_foreground", "event_category": "ec0", "platform": "mob", "load_start": "288", "load_end": "60008"}
 {"timestamp": "2023-10-07 01:28:06.663177 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob"}
 {"timestamp": "2023-10-07 01:28:08.263189 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "9", "load_end": "60898", "conviva_video_events_name": "cannot-keep-session-alive-1"}
-{"timestamp": "2023-10-07 01:29:21.763205 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "screen_id": "nav-id-0", "load_start": "912", "load_end": "13", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 01:29:21.763205 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "screen_id": "nav-id-0", "load_start": "912", "load_end": "13", "conviva_video_events_name": "c3.video.attempt"}
 {"timestamp": "2023-10-07 01:30:57.563223 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob"}
 {"timestamp": "2023-10-07 01:31:32.263235 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "conviva_video_events_name": "c3.video.custom_event"}
 {"timestamp": "2023-10-07 01:32:43.563249 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "720", "load_end": "108", "conviva_video_events_name": "cannot-keep-session-alive-1"}
@@ -112,7 +112,7 @@
 {"timestamp": "2023-10-07 01:36:36.363319 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob"}
 {"timestamp": "2023-10-07 01:37:59.463331 UTC", "event_name": "random_event_3", "event_category": "ec1", "platform": "mob", "load_start": "598", "load_end": "103"}
 {"timestamp": "2023-10-07 01:39:37.763346 UTC", "event_name": "random_event_3", "event_category": "ec1", "platform": "mob", "load_start": "68", "load_end": "20"}
-{"timestamp": "2023-10-07 01:40:43.263361 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 01:40:43.263361 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "conviva_video_events_name": "c3.video.attempt"}
 {"timestamp": "2023-10-07 01:41:08.563374 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "screen_id": "nav-id-5", "load_start": "860", "load_end": "4", "conviva_video_events_name": "cannot-keep-session-alive-1"}
 {"timestamp": "2023-10-07 01:42:34.463391 UTC", "event_name": "conviva_network_request", "event_category": "ec1", "platform": "mob", "load_start": "968", "load_end": "103", "response_code": "400", "network_request_duration": "464"}
 {"timestamp": "2023-10-07 01:42:55.563409 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "load_start": "3", "load_end": "918"}
@@ -188,7 +188,7 @@
 {"timestamp": "2023-10-07 02:45:20.664447 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "402", "load_end": "3", "conviva_video_events_name": "cannot-keep-session-alive-1"}
 {"timestamp": "2023-10-07 02:46:15.764481 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob"}
 {"timestamp": "2023-10-07 02:46:40.164548 UTC", "event_name": "conviva_screen_view", "event_category": "ec0", "platform": "mob", "app_startup_start": "1", "app_startup_end": "300884", "app_startup_previous_exist": "previous-name"}
-{"timestamp": "2023-10-07 02:46:41.364576 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 02:46:41.364576 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "conviva_video_events_name": "c3.video.attempt"}
 {"timestamp": "2023-10-07 02:47:39.664594 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "screen_id": "nav-id-2", "load_start": "777", "load_end": "109"}
 {"timestamp": "2023-10-07 02:47:41.064612 UTC", "event_name": "conviva_application_error", "event_category": "ec1", "platform": "mob", "load_start": "665", "load_end": "6"}
 {"timestamp": "2023-10-07 02:48:18.764629 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "conviva_video_events_name": "cannot-keep-session-alive-1"}
@@ -199,7 +199,7 @@
 {"timestamp": "2023-10-07 02:53:45.264699 UTC", "event_name": "random_event_3", "event_category": "ec1", "platform": "mob", "load_start": "844", "load_end": "110"}
 {"timestamp": "2023-10-07 02:54:02.664714 UTC", "event_name": "conviva_application_foreground", "event_category": "ec0", "platform": "mob", "screen_id": "nav-id-2", "load_start": "847", "load_end": "13"}
 {"timestamp": "2023-10-07 02:54:07.664730 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "load_start": "9", "load_end": "648"}
-{"timestamp": "2023-10-07 02:54:34.564745 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 02:54:34.564745 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "conviva_video_events_name": "c3.video.attempt"}
 {"timestamp": "2023-10-07 02:54:35.964759 UTC", "event_name": "random_event_7", "event_category": "ec2", "platform": "mob", "screen_id": "nav-id-4"}
 {"timestamp": "2023-10-07 02:55:15.564772 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "load_start": "1", "load_end": "865"}
 {"timestamp": "2023-10-07 02:55:56.864787 UTC", "event_name": "random_event_7", "event_category": "ec2", "platform": "mob"}
@@ -265,7 +265,7 @@
 {"timestamp": "2023-10-07 03:43:52.165668 UTC", "event_name": "conviva_periodic_heartbeat", "event_category": "ec0", "platform": "mob", "screen_id": "nav-id-0", "load_start": "24", "load_end": "60004"}
 {"timestamp": "2023-10-07 03:44:45.965684 UTC", "event_name": "conviva_periodic_heartbeat", "event_category": "ec0", "platform": "mob", "load_start": "577", "load_end": "106"}
 {"timestamp": "2023-10-07 03:46:10.265698 UTC", "event_name": "conviva_application_error", "event_category": "ec1", "platform": "mob", "load_start": "9", "load_end": "934"}
-{"timestamp": "2023-10-07 03:46:42.765712 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "9", "load_end": "60214", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 03:46:42.765712 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "9", "load_end": "60214", "conviva_video_events_name": "c3.video.attempt"}
 {"timestamp": "2023-10-07 03:46:44.465728 UTC", "event_name": "conviva_application_foreground", "event_category": "ec0", "platform": "mob"}
 {"timestamp": "2023-10-07 03:48:09.465740 UTC", "event_name": "conviva_application_foreground", "event_category": "ec0", "platform": "mob"}
 {"timestamp": "2023-10-07 03:49:05.365752 UTC", "event_name": "random_event_7", "event_category": "ec2", "platform": "mob", "screen_id": "nav-id-0"}
@@ -330,7 +330,7 @@
 {"timestamp": "2023-10-07 04:43:01.366581 UTC", "event_name": "random_event_3", "event_category": "ec1", "platform": "mob", "load_start": "203", "load_end": "4"}
 {"timestamp": "2023-10-07 04:44:15.866595 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "load_start": "0", "load_end": "60031"}
 {"timestamp": "2023-10-07 04:45:19.666610 UTC", "event_name": "conviva_application_error", "event_category": "ec1", "platform": "mob", "load_start": "0", "load_end": "150"}
-{"timestamp": "2023-10-07 04:45:49.466625 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "961", "load_end": "10", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 04:45:49.466625 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "961", "load_end": "10", "conviva_video_events_name": "c3.video.attempt"}
 {"timestamp": "2023-10-07 04:47:25.166640 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "screen_id": "nav-id-1", "load_start": "9", "load_end": "153"}
 {"timestamp": "2023-10-07 04:48:22.466656 UTC", "event_name": "conviva_network_request", "event_category": "ec1", "platform": "mob", "response_code": "300", "network_request_duration": "393"}
 {"timestamp": "2023-10-07 04:49:31.566691 UTC", "event_name": "conviva_application_foreground", "event_category": "ec0", "platform": "mob", "load_start": "0", "load_end": "648"}
@@ -352,7 +352,7 @@
 {"timestamp": "2023-10-07 05:03:05.966919 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "conviva_video_events_name": "c3.sdk.custom_event"}
 {"timestamp": "2023-10-07 05:04:30.166933 UTC", "event_name": "random_event_7", "event_category": "ec2", "platform": "mob"}
 {"timestamp": "2023-10-07 05:05:22.166944 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob"}
-{"timestamp": "2023-10-07 05:05:26.366956 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 05:05:26.366956 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "conviva_video_events_name": "c3.video.attempt"}
 {"timestamp": "2023-10-07 05:06:15.366969 UTC", "event_name": "conviva_application_error", "event_category": "ec1", "platform": "mob", "load_start": "6", "load_end": "405"}
 {"timestamp": "2023-10-07 05:06:31.666984 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "screen_id": "nav-id-0"}
 {"timestamp": "2023-10-07 05:07:55.066997 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob"}
@@ -394,7 +394,7 @@
 {"timestamp": "2023-10-07 05:43:00.267530 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob"}
 {"timestamp": "2023-10-07 05:44:38.967542 UTC", "event_name": "conviva_application_error", "event_category": "ec1", "platform": "mob", "load_start": "8", "load_end": "606"}
 {"timestamp": "2023-10-07 05:45:34.167556 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "screen_id": "nav-id-3"}
-{"timestamp": "2023-10-07 05:47:10.867569 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "screen_id": "nav-id-3", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 05:47:10.867569 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "screen_id": "nav-id-3", "conviva_video_events_name": "c3.video.attempt"}
 {"timestamp": "2023-10-07 05:47:13.767584 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "load_start": "3", "load_end": "60742"}
 {"timestamp": "2023-10-07 05:47:53.067598 UTC", "event_name": "conviva_application_error", "event_category": "ec1", "platform": "mob", "screen_id": "nav-id-0"}
 {"timestamp": "2023-10-07 05:48:07.767611 UTC", "event_name": "random_event_3", "event_category": "ec1", "platform": "mob"}
@@ -440,7 +440,7 @@
 {"timestamp": "2023-10-07 06:18:27.368183 UTC", "event_name": "conviva_screen_view", "event_category": "ec0", "platform": "mob", "app_startup_start": "6", "app_startup_end": "300455", "app_startup_previous_exist": "previous-name"}
 {"timestamp": "2023-10-07 06:18:29.768200 UTC", "event_name": "random_event_3", "event_category": "ec1", "platform": "mob", "load_start": "3", "load_end": "1027"}
 {"timestamp": "2023-10-07 06:20:05.468215 UTC", "event_name": "conviva_application_foreground", "event_category": "ec0", "platform": "mob", "screen_id": "nav-id-2", "load_start": "3", "load_end": "60876"}
-{"timestamp": "2023-10-07 06:20:15.268230 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "3", "load_end": "389", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 06:20:15.268230 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "3", "load_end": "389", "conviva_video_events_name": "c3.video.attempt"}
 {"timestamp": "2023-10-07 06:21:25.068247 UTC", "event_name": "conviva_network_request", "event_category": "ec1", "platform": "mob", "load_start": "7", "load_end": "137", "response_code": "200", "network_request_duration": "243"}
 {"timestamp": "2023-10-07 06:22:09.668265 UTC", "event_name": "conviva_periodic_heartbeat", "event_category": "ec0", "platform": "mob"}
 {"timestamp": "2023-10-07 06:22:27.768277 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob"}
@@ -550,7 +550,7 @@
 {"timestamp": "2023-10-07 07:54:23.169758 UTC", "event_name": "random_event_3", "event_category": "ec1", "platform": "mob", "load_start": "0", "load_end": "900"}
 {"timestamp": "2023-10-07 07:55:25.269772 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob"}
 {"timestamp": "2023-10-07 07:55:47.669783 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob"}
-{"timestamp": "2023-10-07 07:56:48.869794 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "7", "load_end": "60725", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 07:56:48.869794 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "7", "load_end": "60725", "conviva_video_events_name": "c3.video.attempt"}
 {"timestamp": "2023-10-07 07:58:05.869810 UTC", "event_name": "conviva_screen_view", "event_category": "ec0", "platform": "mob", "screen_id": "nav-id-4", "load_start": "949", "load_end": "5", "app_startup_start": "947", "app_startup_end": "300005"}
 {"timestamp": "2023-10-07 07:58:49.469829 UTC", "event_name": "random_event_3", "event_category": "ec1", "platform": "mob", "load_start": "790", "load_end": "60003"}
 {"timestamp": "2023-10-07 07:59:06.069843 UTC", "event_name": "conviva_periodic_heartbeat", "event_category": "ec0", "platform": "mob", "load_start": "497", "load_end": "109"}
@@ -569,7 +569,7 @@
 {"timestamp": "2023-10-07 08:06:48.770033 UTC", "event_name": "conviva_network_request", "event_category": "ec1", "platform": "mob", "screen_id": "nav-id-4", "response_code": "100", "network_request_duration": "718"}
 {"timestamp": "2023-10-07 08:08:02.670048 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob"}
 {"timestamp": "2023-10-07 08:08:27.570060 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "load_start": "10", "load_end": "301"}
-{"timestamp": "2023-10-07 08:09:26.870074 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "6", "load_end": "60878", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 08:09:26.870074 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "6", "load_end": "60878", "conviva_video_events_name": "c3.video.attempt"}
 {"timestamp": "2023-10-07 08:10:42.770089 UTC", "event_name": "conviva_application_foreground", "event_category": "ec0", "platform": "mob"}
 {"timestamp": "2023-10-07 08:11:24.470101 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "conviva_video_events_name": "cannot-keep-session-alive-0"}
 {"timestamp": "2023-10-07 08:12:17.270115 UTC", "event_name": "conviva_application_foreground", "event_category": "ec0", "platform": "mob", "load_start": "464", "load_end": "5"}
@@ -637,7 +637,7 @@
 {"timestamp": "2023-10-07 09:06:17.771014 UTC", "event_name": "conviva_screen_view", "event_category": "ec0", "platform": "mob", "screen_id": "nav-id-4", "app_startup_start": "7", "app_startup_end": "272", "app_startup_previous_exist": "previous-name"}
 {"timestamp": "2023-10-07 09:07:08.071031 UTC", "event_name": "conviva_application_foreground", "event_category": "ec0", "platform": "mob", "load_start": "737", "load_end": "10"}
 {"timestamp": "2023-10-07 09:07:16.771045 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "load_start": "705", "load_end": "11"}
-{"timestamp": "2023-10-07 09:08:17.271059 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 09:08:17.271059 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "conviva_video_events_name": "c3.video.attempt"}
 {"timestamp": "2023-10-07 09:09:50.571076 UTC", "event_name": "conviva_application_error", "event_category": "ec1", "platform": "mob", "screen_id": "nav-id-4"}
 {"timestamp": "2023-10-07 09:10:15.571089 UTC", "event_name": "conviva_application_foreground", "event_category": "ec0", "platform": "mob", "load_start": "362", "load_end": "108"}
 {"timestamp": "2023-10-07 09:11:46.271103 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob"}
@@ -719,7 +719,7 @@
 {"timestamp": "2023-10-07 10:15:24.372159 UTC", "event_name": "conviva_periodic_heartbeat", "event_category": "ec0", "platform": "mob", "screen_id": "nav-id-0"}
 {"timestamp": "2023-10-07 10:16:01.772172 UTC", "event_name": "random_event_7", "event_category": "ec2", "platform": "mob"}
 {"timestamp": "2023-10-07 10:16:23.072201 UTC", "event_name": "conviva_screen_view", "event_category": "ec0", "platform": "mob", "screen_id": "nav-id-4", "app_startup_start": "904", "app_startup_end": "20", "app_startup_previous_exist": "previous-name"}
-{"timestamp": "2023-10-07 10:16:42.172221 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "screen_id": "nav-id-4", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 10:16:42.172221 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "screen_id": "nav-id-4", "conviva_video_events_name": "c3.video.attempt"}
 {"timestamp": "2023-10-07 10:17:35.172236 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "screen_id": "nav-id-4", "load_start": "216", "load_end": "2"}
 {"timestamp": "2023-10-07 10:18:05.872252 UTC", "event_name": "conviva_periodic_heartbeat", "event_category": "ec0", "platform": "mob", "load_start": "9", "load_end": "62"}
 {"timestamp": "2023-10-07 10:19:41.872267 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "load_start": "100", "load_end": "9"}
@@ -832,7 +832,7 @@
 {"timestamp": "2023-10-07 11:53:12.273796 UTC", "event_name": "conviva_application_foreground", "event_category": "ec0", "platform": "mob", "load_start": "38", "load_end": "106"}
 {"timestamp": "2023-10-07 11:53:35.673811 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob"}
 {"timestamp": "2023-10-07 11:55:11.073822 UTC", "event_name": "conviva_application_error", "event_category": "ec1", "platform": "mob", "load_start": "46", "load_end": "17"}
-{"timestamp": "2023-10-07 11:56:03.173836 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "899", "load_end": "4", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 11:56:03.173836 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "899", "load_end": "4", "conviva_video_events_name": "c3.video.attempt"}
 {"timestamp": "2023-10-07 11:57:19.573852 UTC", "event_name": "random_event_7", "event_category": "ec2", "platform": "mob", "load_start": "536", "load_end": "107"}
 {"timestamp": "2023-10-07 11:58:09.373866 UTC", "event_name": "conviva_screen_view", "event_category": "ec0", "platform": "mob", "load_start": "7", "load_end": "851", "app_startup_start": "6", "app_startup_end": "318", "app_startup_previous_exist": "previous-name"}
 {"timestamp": "2023-10-07 11:59:05.373884 UTC", "event_name": "conviva_screen_view", "event_category": "ec0", "platform": "mob", "app_startup_start": "2", "app_startup_end": "300144", "app_startup_previous_exist": "previous-name"}
@@ -861,7 +861,7 @@
 {"timestamp": "2023-10-07 12:17:41.474188 UTC", "event_name": "conviva_network_request", "event_category": "ec1", "platform": "mob", "load_start": "506", "load_end": "110", "response_code": "400", "network_request_duration": "243"}
 {"timestamp": "2023-10-07 12:18:54.174228 UTC", "event_name": "random_event_7", "event_category": "ec2", "platform": "mob", "load_start": "5", "load_end": "60020"}
 {"timestamp": "2023-10-07 12:19:29.774246 UTC", "event_name": "conviva_network_request", "event_category": "ec1", "platform": "mob", "response_code": "400", "network_request_duration": "214"}
-{"timestamp": "2023-10-07 12:20:57.974261 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "6", "load_end": "337", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 12:20:57.974261 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "6", "load_end": "337", "conviva_video_events_name": "c3.video.attempt"}
 {"timestamp": "2023-10-07 12:22:27.374278 UTC", "event_name": "conviva_application_error", "event_category": "ec1", "platform": "mob"}
 {"timestamp": "2023-10-07 12:22:38.774296 UTC", "event_name": "random_event_3", "event_category": "ec1", "platform": "mob"}
 {"timestamp": "2023-10-07 12:22:47.874314 UTC", "event_name": "conviva_application_error", "event_category": "ec1", "platform": "mob", "screen_id": "nav-id-2", "load_start": "8", "load_end": "809"}
@@ -962,7 +962,7 @@
 {"timestamp": "2023-10-07 13:40:06.075940 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "load_start": "4", "load_end": "122"}
 {"timestamp": "2023-10-07 13:41:45.075954 UTC", "event_name": "conviva_periodic_heartbeat", "event_category": "ec0", "platform": "mob"}
 {"timestamp": "2023-10-07 13:41:52.575966 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob"}
-{"timestamp": "2023-10-07 13:42:12.675978 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "8", "load_end": "60786", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 13:42:12.675978 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "8", "load_end": "60786", "conviva_video_events_name": "c3.video.attempt"}
 {"timestamp": "2023-10-07 13:42:14.875994 UTC", "event_name": "conviva_screen_view", "event_category": "ec0", "platform": "mob", "screen_id": "nav-id-3", "app_startup_start": "551", "app_startup_end": "7"}
 {"timestamp": "2023-10-07 13:43:50.076012 UTC", "event_name": "conviva_screen_view", "event_category": "ec0", "platform": "mob", "app_startup_start": "167", "app_startup_end": "18"}
 {"timestamp": "2023-10-07 13:45:08.376028 UTC", "event_name": "random_event_3", "event_category": "ec1", "platform": "mob", "load_start": "5", "load_end": "193"}
@@ -997,4 +997,4 @@
 {"timestamp": "2023-10-07 14:11:54.876457 UTC", "event_name": "conviva_screen_view", "event_category": "ec0", "platform": "mob", "screen_id": "nav-id-3", "app_startup_start": "7", "app_startup_end": "954", "app_startup_previous_exist": "previous-name"}
 {"timestamp": "2023-10-07 14:12:05.076474 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "load_start": "0", "load_end": "563"}
 {"timestamp": "2023-10-07 14:13:36.576489 UTC", "event_name": "random_event_7", "event_category": "ec2", "platform": "mob"}
-{"timestamp": "2023-10-07 14:14:24.776500 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "8", "load_end": "577", "conviva_video_events_name": "\"c3.video.attempt\""}
+{"timestamp": "2023-10-07 14:14:24.776500 UTC", "event_name": "conviva_video_events", "event_category": "ec2", "platform": "mob", "load_start": "8", "load_end": "577", "conviva_video_events_name": "c3.video.attempt"}
