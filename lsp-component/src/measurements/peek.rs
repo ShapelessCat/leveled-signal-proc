@@ -2,7 +2,7 @@ use lsp_runtime::{measurement::Measurement, UpdateContext};
 
 use super::combinator::ScopedMeasurement;
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct Peek<T>(T);
 
 impl<'a, T: Clone + 'a, I: Iterator> Measurement<'a, I> for Peek<T> {

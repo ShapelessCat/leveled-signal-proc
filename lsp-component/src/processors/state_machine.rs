@@ -1,4 +1,4 @@
-use std::marker::PhantomData;
+use std::{marker::PhantomData, fmt::Debug};
 
 use lsp_runtime::{signal::SignalProcessor, UpdateContext};
 
@@ -11,6 +11,16 @@ pub struct StateMachine<Input, State: Clone, TransitionFunc, Trigger> {
     transition: TransitionFunc,
     last_trigger_value: Trigger,
     _phantom: PhantomData<Input>,
+}
+
+impl <I, S: Debug + Clone, F, T: Debug> Debug for StateMachine<I, S, F, T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("StateMachine")
+            .field("state", &self.state)
+            .field("last_trigger_value", &self.last_trigger_value)
+            .field("_phantom", &self._phantom)
+            .finish()
+    }
 }
 
 impl<I, S: Clone, F, T: Default> StateMachine<I, S, F, T> {

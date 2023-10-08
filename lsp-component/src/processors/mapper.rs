@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use std::marker::PhantomData;
 
 use lsp_runtime::signal::SignalProcessor;
@@ -7,6 +8,13 @@ use lsp_runtime::UpdateContext;
 pub struct SignalMapper<ParamType, OutputType, ClosureType> {
     how: ClosureType,
     _phantom_data: PhantomData<(ParamType, OutputType)>,
+}
+
+impl <P, O, C> Debug for SignalMapper<P, O, C> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("SignalMapper")
+            .finish()
+    }
 }
 
 impl<T, U, F> SignalMapper<T, U, F>

@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use std::marker::PhantomData;
 
 use lsp_runtime::signal::SignalProcessor;
@@ -13,6 +14,17 @@ pub struct LivenessChecker<IsLivenessEventFunc, Clock, Event> {
     last_event_timestamp: Timestamp,
     is_liveness_event: IsLivenessEventFunc,
     phantom: PhantomData<Event>,
+}
+
+impl <F, C: Debug, E: Debug> Debug for LivenessChecker<F, C, E> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("LivenessChecker")
+            .field("expiration_period", &self.expiration_period)
+            .field("last_event_timestamp", &self.last_event_timestamp)
+            .field("last_event_clock", &self.last_event_clock)
+            .field("phantom", &self.phantom)
+            .finish()
+    }
 }
 
 impl<F, C: Default, E> LivenessChecker<F, C, E> {

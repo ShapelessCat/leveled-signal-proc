@@ -1,44 +1,35 @@
 use std::ops::Sub;
 
-use lsp_runtime::{measurement::Measurement, UpdateContext, Timestamp};
+use lsp_runtime::{measurement::Measurement, UpdateContext};
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct ScopedMeasurement<ScopeType, Measurement, MeasurementOutput> {
     current_control_level: ScopeType,
-    current_level_timestamp: Timestamp,
     inner: Measurement,
     current_base: MeasurementOutput,
-    last_measurement: MeasurementOutput,
-    prev_base: Option<(Timestamp, MeasurementOutput)>,
 }
 
 impl <'a, EventIterator, ScopeType, MeasurementType, Output> Measurement<'a, EventIterator> for ScopedMeasurement<ScopeType, MeasurementType, Output>
 where
     MeasurementType: Measurement<'a, EventIterator, Output = Output>,
-    Output: Clone + Sub<Output = Output>,
-    ScopeType: Clone + Eq + 'a,
+    Output: Clone + Sub<Output = Output> + std::fmt::Display,
+    ScopeType: Clone + Eq + 'a + std::fmt::Debug,
     EventIterator: Iterator,
 {
     type Input = (&'a ScopeType, MeasurementType::Input);
     type Output = Output;
 
     fn update(&mut self, ctx: &mut UpdateContext<EventIterator>, (level, data): Self::Input) {
-        self.inner.update(ctx, data);
-        
-        self.last_measurement = self.inner.measure(ctx);
         if &self.current_control_level != level {
+            self.current_base = self.inner.measure(ctx);
             self.current_control_level = level.clone();
-            self.current_level_timestamp = ctx.frontier();
-            self.prev_base = Some((ctx.frontier(), self.current_base.clone()));
-            self.current_base = self.last_measurement.clone();
         }
+
+        self.inner.update(ctx, data);
     }
 
     fn measure(&self, ctx: &mut UpdateContext<EventIterator>) -> Self::Output {
-        let base = match &self.prev_base {
-            Some((prev_ts, prev_base)) if *prev_ts == ctx.frontier() => prev_base.clone(),
-            _ => self.current_base.clone(),
-        };
+        let base = self.current_base.clone();
         self.inner.measure(ctx) - base
     }
 }
@@ -51,11 +42,8 @@ where
     {
         ScopedMeasurement {
             current_control_level: initial_level,
-            current_level_timestamp: Default::default(),
-            last_measurement: Default::default(),
             inner: self,
             current_base: Default::default(),
-            prev_base: None,
         }
     }
 }

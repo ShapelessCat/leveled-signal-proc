@@ -28,38 +28,42 @@ impl<'a, I: Iterator> Measurement<'a, I> for DurationSinceBecomeTrue {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct DurationTrue {
-    last_input: bool,
-    last_input_timestamp: Timestamp,
-    cur_input: bool,
-    cur_input_timestamp: Timestamp,
+    current_state: bool,
     accumulated_duration: Timestamp,
+    last_true_starts: Timestamp,
 }
 
 impl<'a, I: Iterator> Measurement<'a, I> for DurationTrue {
     type Input = &'a bool;
     type Output = Timestamp;
 
-    fn update(&mut self, ctx: &mut UpdateContext<I>, input: &bool) {
-        if self.last_input {
-            self.accumulated_duration += self.cur_input_timestamp - self.last_input_timestamp;
-        }
-        self.last_input = self.cur_input;
-        self.last_input_timestamp = self.cur_input_timestamp;
-        self.cur_input = *input;
-        self.cur_input_timestamp = ctx.frontier();
+    fn update(&mut self, ctx: &mut UpdateContext<I>, &input: &bool) {
+        match (self.current_state, input) {
+            (false, true) => {
+                self.last_true_starts = ctx.frontier();
+            }
+            (true, false) => {
+                self.accumulated_duration += ctx.frontier() - self.last_true_starts;
+            }
+            _ => ()
+        };
+        self.current_state = input;
     }
 
     fn measure(&self, ctx: &mut UpdateContext<I>) -> Self::Output {
         let timestamp = ctx.frontier();
-        //assert!(self.last_input_timestamp <= timestamp && timestamp <= self.cur_input_timestamp);
-        self.accumulated_duration
-            + if self.last_input {
-                timestamp - self.last_input_timestamp
-            } else {
-                0
-            }
+
+        let current_state_duration = if self.current_state {
+            timestamp - self.last_true_starts
+        } else {
+            0
+        };
+
+        let ret = self.accumulated_duration + current_state_duration;
+
+        ret
     }
 }
 

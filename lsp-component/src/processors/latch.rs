@@ -8,7 +8,7 @@ pub trait Rentention<T> {
 }
 
 /// The retention policy for latches that keep the value forever
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct KeepForever;
 
 impl<T> Rentention<T> for KeepForever {
@@ -22,6 +22,7 @@ impl<T> Rentention<T> for KeepForever {
 }
 
 /// The retention policy for latches that keep the value for a period of time
+#[derive(Debug)]
 pub struct TimeToLive<T> {
     default_value: T,
     value_forgotten_timestamp: Timestamp,
@@ -48,13 +49,13 @@ impl<T: Clone> Rentention<T> for TimeToLive<T> {
 /// When the control input becomes true, the latch changes its internal state to the data input.
 /// This concept borrowed from the hardware component which shares the same name. And it's widely used
 /// as one bit memory in digital circuits.
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct Latch<DataType: Clone, RetentionPolicy: Rentention<DataType> = KeepForever> {
     data: DataType,
     retention: RetentionPolicy,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct EdgeTriggeredLatch<Control, Data, RetentionPolicy: Rentention<Data> = KeepForever> {
     last_control_level: Control,
     data: Data,
