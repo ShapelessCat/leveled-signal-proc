@@ -24,7 +24,7 @@ _previous_end = _end.prior_value(_valid_load_duration_clock)
 _load_time = If(
     _is_mob,
     _end - _start,
-    If((_start > _previous_start) & (_end > _previous_end), _start - _end, Const(-1))
+    If((_start > _previous_start) & (_end > _previous_end), _end - _start, Const(-1))
 )
 
 _load_time_clock = SignalFilterBuilder(_load_time > 0, _valid_load_duration_clock)\
@@ -59,22 +59,3 @@ def register_load_time_metrics(scope_signal, scope_name: ScopeName):
 
 register_load_time_metrics(session_id, ScopeName.Session)
 register_load_time_metrics(navigation_id, ScopeName.Navigation)
-
-
-
-# _start_end = If(_is_valid_load_duration,
-#                 make_tuple(_start, _end),
-#                 Const((-1, -1), Tuple(Integer(), Integer())))
-
-# _load_time =\
-#     make_tuple(_is_mob, _start_end.prior_value(), _start_end)\
-#         .map(
-#             '(is_mob: bool, (ps: i32, pe: i32), (s: i32, e: i32))',
-#             '''
-#             if is_mob {
-#                 if s > 0 {e - s} else {-1}
-#             } else {
-#                 if s > ps && e > pe {e - s} else {-1}
-#             }
-#             '''
-#         )
