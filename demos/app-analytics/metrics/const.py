@@ -1,3 +1,5 @@
+"""Constants for building metrics."""
+
 # Critical events:
 # Events that can keep an application session alive in the next 90 seconds.
 

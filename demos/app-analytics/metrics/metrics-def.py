@@ -20,7 +20,7 @@ import user_active_time
 
 # First Video Attempt
 
-#TODO: Measurement Policy
+# TODO: Measurement Policy for 1 min
 measurement_config().enable_measure_for_event()
 
 print_ir_to_stdout()

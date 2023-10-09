@@ -42,7 +42,7 @@ For LDSL examples, check `ldsl/examples/` directory. All the Python source code 
 
 #### Trying out examples written in LSDL
 
-Currently we are able to run the LSDL written data logic reading from and writing to files on disk. 
+Currently we are able to run the LSDL written data logic reading from and writing to files on disk.
 To try out that,
 
 ```shell
