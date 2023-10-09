@@ -10,4 +10,3 @@ class PeekValue(BuiltinComponentBase):
             upstreams = [input]
         )
         self.annotate_type(input.get_rust_type_name())
-

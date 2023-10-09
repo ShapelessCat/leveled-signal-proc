@@ -1,6 +1,3 @@
-from os import environ
-
-
 class _MeasurementConfiguration(object):
     """
         The configuration for measurement policy. 

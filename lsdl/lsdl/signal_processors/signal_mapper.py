@@ -1,5 +1,4 @@
 from lsdl.componet_base import BuiltinComponentBase
-from lsdl.signal import LeveledSignalBase
 
 class SignalMapper(BuiltinComponentBase):
     def __init__(self, bind_var: str, lambda_src: str, upstream):

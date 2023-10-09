@@ -1,7 +1,7 @@
 import json
-from typing import Any
 
 from lsdl.config import measurement_config
+
 
 def get_json_ir(pretty_print = False) -> str:
     from lsdl.componet_base import get_components
@@ -12,6 +12,7 @@ def get_json_ir(pretty_print = False) -> str:
         "measurement_policy": measurement_config().to_dict(),
     }
     return json.dumps(ret_obj, indent = 4 if pretty_print else None)
+
 
 def print_ir_to_stdout():
     print(get_json_ir(True))

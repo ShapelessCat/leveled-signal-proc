@@ -1,5 +1,4 @@
 from lsdl.componet_base import BuiltinComponentBase
-from lsdl.signal import LeveledSignalBase
 
 
 #    let a = SignalGenerator::square_wave(60_000_000_000, 0);

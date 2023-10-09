@@ -1,5 +1,6 @@
-from inspect import stack, getframeinfo, getmodulename
+from inspect import stack, getframeinfo
 from pathlib import Path
+
 class DebugInfo(object):
     def __init__(self):
         package_root = Path(__file__)
@@ -16,9 +17,10 @@ class DebugInfo(object):
                 is_in_package = file_path.parent == package_root
                 file_path = file_path.parent
             if not is_in_package:
-                    self._file = f.filename
-                    self._line = f.lineno
-                    break
+                self._file = f.filename
+                self._line = f.lineno
+                break
+
     def to_dict(self):
         return {
             "file": self._file,

@@ -4,7 +4,7 @@ from setuptools.command.sdist import sdist as SdistCommand
 
 setup(
     name="lsdl",
-    version= "0.0.1",
+    version="0.0.1",
     classifiers=[
         "Intended Audience :: Developers",
         "Operating System :: POSIX",

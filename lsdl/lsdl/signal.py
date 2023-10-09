@@ -21,7 +21,7 @@ class LeveledSignalBase(object):
         """
             Is this a signal or measurement ?
         """
-        raise NotImplemented
+        raise NotImplementedError()
     def has_been_true(self, duration = -1) -> 'LeveledSignalBase':
         """
             Shortcut for has_been_true module. 
@@ -59,7 +59,7 @@ class LeveledSignalBase(object):
         if scope is not None:
             builder.scoped(scope)
         return builder.build().annotate_type(f"({ty}, {ty})").map(
-            bind_var = f'(ret, _)',
+            bind_var = '(ret, _)',
             lambda_src = 'ret.clone()'
         ).annotate_type(self.get_rust_type_name())
     
@@ -111,7 +111,7 @@ class LeveledSignalBase(object):
         if isinstance(other, LeveledSignalBase):
             ret = SignalMapper(
                 bind_var="(lhs, rhs)",
-                lambda_src="*lhs {op} *rhs".format(op = op),
+                lambda_src=f"*lhs {op} *rhs",
                 upstream=[self, other]
             )
         else:
@@ -151,9 +151,7 @@ class LeveledSignalBase(object):
         return self._bin_op(other, "/", self.get_rust_type_name())
 
 class If(LeveledSignalBase):
-    """
-        The if expression for a leveled signal.
-    """
+    """The `if...then...else` expression for a leveled signal."""
     def __init__(self, cond_expr: LeveledSignalBase, then_expr: LeveledSignalBase, else_expr: LeveledSignalBase):
         from lsdl.signal_processors import SignalMapper
         super().__init__()
@@ -171,8 +169,8 @@ class If(LeveledSignalBase):
             then_type = else_type
         elif else_type == "_":
             else_type = then_type
-        if self._then.get_rust_type_name() == self._else.get_rust_type_name():
-            self._inner.annotate_type(self._then.get_rust_type_name())
+        if then_type == else_type:
+            self._inner.annotate_type(then_type)
     def get_id(self):
         return self._inner.get_id()
     def get_rust_type_name(self) -> str:
