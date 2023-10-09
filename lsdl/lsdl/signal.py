@@ -1,8 +1,9 @@
 from lsdl.debug_info import DebugInfo
 
+
 class LeveledSignalBase:
     """
-        A leveled signal. 
+        A leveled signal.
         See LSP documentation for details about leveled signal definition.
     """
     def __init__(self):
@@ -24,7 +25,7 @@ class LeveledSignalBase:
         raise NotImplementedError()
     def has_been_true(self, duration = -1) -> 'LeveledSignalBase':
         """
-            Shortcut for has_been_true module. 
+            Shortcut for has_been_true module.
             Checks if the boolean signal has ever becomes true and returns the result as a leveled signal.
             When `duration` is given, it checks if the signal has been true within `duration` amount of time.
         """
@@ -32,7 +33,7 @@ class LeveledSignalBase:
         return has_been_true(self, duration)
     def has_changed(self, duration = -1) -> 'LeveledSignalBase':
         """
-            Shortcut for has_changed module. 
+            Shortcut for has_changed module.
             Checks if the signal has ever changed and returns the result as a leveled signal.
             When `duration` is given, it checks if the signal has changed within `duration` amount of time.
         """
@@ -45,7 +46,7 @@ class LeveledSignalBase:
         """
         from lsdl.signal_processors import SignalMapper
         return SignalMapper(bind_var, lambda_src, self)
-    
+
     def prior_different_value(self, scope: 'LeveledSignalBase' = None) -> 'LeveledSignalBase':
         return self.prior_value(self, scope)
 
@@ -62,19 +63,19 @@ class LeveledSignalBase:
             bind_var = '(ret, _)',
             lambda_src = 'ret.clone()'
         ).annotate_type(self.get_rust_type_name())
-    
+
     def count_changes(self) -> 'LeveledSignalBase':
         """
             Creates a new signal that counts the number of changes for current signal.
             The result is a leveled signal.
             Note: this is actually a shortcut for particular usage of accumulator signal processor.
         """
-        from lsdl.signal_processors import Accumulator 
+        from lsdl.signal_processors import Accumulator
         from lsdl.const import Const
         return Accumulator(self, Const(1))
     def measure_duration_true(self, scope_signal = None) -> 'LeveledSignalBase':
         """
-            Measures the total duration whenever this boolean signal is true. 
+            Measures the total duration whenever this boolean signal is true.
             It returns a measurement.
             When `scope_signal` is given, it resets the duration to 0 when the `scope_signal` becomes a different level.
         """
@@ -82,7 +83,7 @@ class LeveledSignalBase:
         return DurationTrue(self, scope_signal = scope_signal)
     def measure_duration_since_true(self) -> 'LeveledSignalBase':
         """
-            Measures the duration when this boolean signal has been true most recently. 
+            Measures the duration when this boolean signal has been true most recently.
             When the boolean signal is false, the output of the measurement is constantly 0.
         """
         from lsdl.measurements import DurationSinceBecomeTrue
@@ -150,6 +151,7 @@ class LeveledSignalBase:
     def __div__(self, other) -> 'LeveledSignalBase':
         return self._bin_op(other, "/", self.get_rust_type_name())
 
+
 class If(LeveledSignalBase):
     """The `if...then...else` expression for a leveled signal."""
     def __init__(self, cond_expr: LeveledSignalBase, then_expr: LeveledSignalBase, else_expr: LeveledSignalBase):
@@ -177,3 +179,35 @@ class If(LeveledSignalBase):
         return self._inner.get_rust_type_name()
     def is_signal(self) -> bool:
         return True
+
+
+class Cond:
+    """The scheme `cond` style expression for a leveled signal."""
+    def __init__(self, *branches: (LeveledSignalBase, LeveledSignalBase)):
+        self._branches = list(branches)
+        self._inner = None
+
+    def build_with_fallback(self, v: LeveledSignalBase) -> LeveledSignalBase:
+        from lsdl.signal_processors import SignalMapper
+        inner = None
+        self._branches.append(v)
+        while len(self._branches) >= 2:
+            else_branch = self._branches.pop()
+            (cond, then_branch) = self._branches.pop()
+            inner = SignalMapper(
+                bind_var = "(cond, then_expr, else_expr)",
+                lambda_src = """if *cond { then_expr.clone() } else { else_expr.clone() }""",
+                upstream = [cond, then_branch, else_branch]
+            )
+            else_type = else_branch.get_rust_type_name()
+            then_type = then_branch.get_rust_type_name()
+            if then_type == "_":
+                then_type = else_type
+            elif else_type == "_":
+                else_type = then_type
+            if then_type == else_type:
+                inner.annotate_type(then_type)
+            self._branches.append(inner)
+
+        self._inner = self._branches.pop()
+        return self._inner
