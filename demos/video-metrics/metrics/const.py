@@ -1,3 +1,5 @@
+"""Constants for building metrics."""
+
 # String constants
 PS_PLAYING = "playing"
 PS_BUFFERING = "buffering"

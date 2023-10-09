@@ -1,7 +1,8 @@
 from lsdl.componet_base import BuiltinComponentBase
 from lsdl.signal import LeveledSignalBase
 
-class StateMachineBuilder(object):
+
+class StateMachineBuilder:
     def __init__(self, clock: LeveledSignalBase, data: LeveledSignalBase):
         self._clock = clock
         self._data = data
@@ -46,6 +47,7 @@ class StateMachineBuilder(object):
                 init_state = f"(Default::default(), Default::default(), {self._init_state})",
             )
             return state_machine.map(bind_var = "&(_, _, s)", lambda_src = "s")
+
 
 class StateMachine(BuiltinComponentBase):
     def __init__(self, clock:LeveledSignalBase, data:LeveledSignalBase, **kwargs):

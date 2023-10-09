@@ -1,7 +1,7 @@
 from lsdl.prelude import *
 
 
-class Input(SessionizedInputSchemaBase):
+class InputSignal(SessionizedInputSchemaBase):
     _timestamp_key = "timestamp"
     session_id     = named("sessionId",   String())
     player_state   = named("PlayerState", String())
@@ -16,3 +16,6 @@ class Input(SessionizedInputSchemaBase):
 
     def create_session_signal(self):
         return self.session_id.count_changes()
+
+
+input_signal = InputSignal()

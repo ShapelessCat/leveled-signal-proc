@@ -1,14 +1,13 @@
-from lsdl.schema import *
-from lsdl.modules import *
-from lsdl import print_ir_to_stdout
+from lsdl.prelude import *
 
-class Input(InputSchemaBase):
+
+class InputSignal(InputSchemaBase):
     user_action = named("userAction", String())
     page        = String()
 
-input = Input()
+input_signal = InputSignal()
 
-SignalFilterBuilder(input.user_action)\
+SignalFilterBuilder(input_signal.user_action)\
     .filter_values("P")\
     .build_clock_filter()\
     .count_changes()\

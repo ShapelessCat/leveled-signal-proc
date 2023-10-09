@@ -1,7 +1,7 @@
 from inspect import stack, getframeinfo
 from pathlib import Path
 
-class DebugInfo(object):
+class DebugInfo:
     def __init__(self):
         package_root = Path(__file__)
         while package_root.name != __package__:

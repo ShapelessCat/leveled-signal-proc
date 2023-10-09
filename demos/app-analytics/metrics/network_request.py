@@ -1,19 +1,19 @@
 from enum import Enum
-from lsdl.prelude import *
 
-from const import CONVIVA_NETWORK_REQUEST
-from schema import input
+import const
+from lsdl.prelude import DiffSinceCurrentLevel, SignalFilterBuilder, time_domain_fold
+from schema import input_signal
 from scope import ScopeName, session_id, navigation_id
 
 ResponseStatus = Enum('ResponseStatus', ['Success', 'Failure'])
 
-network_request_duration = input.network_request_duration.parse("i32")
+network_request_duration = input_signal.network_request_duration.parse("i32")
 
 _network_request_filter_partial_builder =\
-    SignalFilterBuilder(input.event_name)\
-    .filter_values(CONVIVA_NETWORK_REQUEST)\
+    SignalFilterBuilder(input_signal.event_name)\
+    .filter_values(const.CONVIVA_NETWORK_REQUEST)\
     .then_filter(network_request_duration > 0)
-_request_succeeded = input.response_code.starts_with("2")
+_request_succeeded = input_signal.response_code.starts_with("2")
 
 
 def create_network_request_metrics_for(scope_singal, scope_name: ScopeName, status: ResponseStatus):
