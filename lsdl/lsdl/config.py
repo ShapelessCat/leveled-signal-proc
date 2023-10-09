@@ -1,4 +1,4 @@
-class _MeasurementConfiguration(object):
+class _MeasurementConfiguration:
     """
         The configuration for measurement policy. 
         In LSP, there are two method to trigger a measurement: 

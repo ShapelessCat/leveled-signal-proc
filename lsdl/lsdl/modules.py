@@ -30,7 +30,7 @@ def _normalize_duration(duration) -> int:
     return duration
 
 
-def has_been_true(input: LeveledSignalBase, duration: int | str = -1) -> LeveledSignalBase:
+def has_been_true(input_signal: LeveledSignalBase, duration: int | str = -1) -> LeveledSignalBase:
     """
         Checks if the boolean signal has ever becomes true and returns the result as a leveled signal.
         When `duration` is given, it checks if the signal has been true within `duration` amount of time.
@@ -38,19 +38,19 @@ def has_been_true(input: LeveledSignalBase, duration: int | str = -1) -> Leveled
     """
     return Latch(
             data = Const(True),
-            control = input,
+            control = input_signal,
             forget_duration = _normalize_duration(duration)
         )
 
 
-def has_changed(input: LeveledSignalBase, duration = -1) -> LeveledSignalBase:
+def has_changed(input_signal: LeveledSignalBase, duration = -1) -> LeveledSignalBase:
     """
         Checks if the signal has ever changed and returns the result as a leveled signal.
         When `duration` is given, it checks if the signal has changed within `duration` amount of time.
         Note: `duration` can be either a integer as number of nanosecs or a string of "<value><unit>". For example, "100ms", "2h", etc...
     """
     return EdgeTriggeredLatch(
-        control = input,
+        control = input_signal,
         data = Const(True),
         forget_duration = _normalize_duration(duration) 
     )
@@ -68,7 +68,7 @@ def make_tuple(*args : LeveledSignalBase) -> LeveledSignalBase:
     ).annotate_type(f'({",".join([arg.get_rust_type_name() for arg in args])})')
 
 
-class SignalFilterBuilder(object):
+class SignalFilterBuilder:
     """
         The builder class to build a signal filter. 
         A signal filter is a filter that filters either the clock or value signal.
@@ -125,9 +125,9 @@ class SignalFilterBuilder(object):
             data = self._filter_signal,
             control = self._filter_node
         )
-    
 
-class ScopeContext(object):
+
+class ScopeContext:
     def __init__(self, scope_level: LeveledSignalBase, epoch: LeveledSignalBase):
         self._scope = scope_level
         self._epoch = epoch

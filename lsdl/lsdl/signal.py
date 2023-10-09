@@ -1,6 +1,6 @@
 from lsdl.debug_info import DebugInfo
 
-class LeveledSignalBase(object):
+class LeveledSignalBase:
     """
         A leveled signal. 
         See LSP documentation for details about leveled signal definition.

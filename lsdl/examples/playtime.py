@@ -1,16 +1,18 @@
-from lsdl.schema import *
-from lsdl import print_ir_to_stdout
+from lsdl.prelude import *
 
-class Input(InputSchemaBase):
+
+class InputSignal(InputSchemaBase):
     _timestamp_key = "dateTime"
     player_state = named("newPlayerState", String())
     network      = named("newNetwork",     String())
     cdn          = named("newCdn",         String())
     user_action  = named("newUserAction",  String())
 
-input = Input()
+input_signal = InputSignal()
 
-((input.player_state == "play") & (input.cdn == "cdn1") & (input.network == "WIFI"))\
+((input_signal.player_state == "play") &
+ (input_signal.cdn == "cdn1") &
+ (input_signal.network == "WIFI"))\
     .measure_duration_true() \
     .add_metric("playtime")
 
