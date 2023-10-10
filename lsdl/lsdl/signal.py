@@ -152,62 +152,63 @@ class LeveledSignalBase:
         return self._bin_op(other, "/", self.get_rust_type_name())
 
 
+def _build_signal_mapper(cond: LeveledSignalBase,
+                         then_branch: LeveledSignalBase,
+                         else_branch: LeveledSignalBase) -> LeveledSignalBase:
+    from lsdl.signal_processors import SignalMapper
+    inner = SignalMapper(
+        bind_var = "(cond, then_expr, else_expr)",
+        lambda_src = """if *cond { then_expr.clone() } else { else_expr.clone() }""",
+        upstream = [cond, then_branch, else_branch]
+    )
+    else_type = else_branch.get_rust_type_name()
+    then_type = then_branch.get_rust_type_name()
+    if then_type == "_":
+        then_type = else_type
+    elif else_type == "_":
+        else_type = then_type
+
+    if then_type == else_type:
+        inner.annotate_type(then_type)
+    return inner
+
+
 class If(LeveledSignalBase):
     """The `if...then...else` expression for a leveled signal."""
-    def __init__(self, cond_expr: LeveledSignalBase, then_expr: LeveledSignalBase, else_expr: LeveledSignalBase):
-        from lsdl.signal_processors import SignalMapper
+    def __init__(self,
+                 cond_expr: LeveledSignalBase,
+                 then_expr: LeveledSignalBase,
+                 else_expr: LeveledSignalBase):
         super().__init__()
-        self._cond = cond_expr
-        self._then = then_expr
-        self._else = else_expr
-        self._inner = SignalMapper(
-            bind_var = "(cond, then_expr, else_expr)",
-            lambda_src = """if *cond { then_expr.clone() } else { else_expr.clone() }""",
-            upstream = [self._cond, self._then, self._else]
-        )
-        then_type = self._then.get_rust_type_name()
-        else_type = self._else.get_rust_type_name()
-        if then_type == "_":
-            then_type = else_type
-        elif else_type == "_":
-            else_type = then_type
-        if then_type == else_type:
-            self._inner.annotate_type(then_type)
+        self._inner = _build_signal_mapper(cond_expr, then_expr, else_expr)
+
     def get_id(self):
         return self._inner.get_id()
+
     def get_rust_type_name(self) -> str:
         return self._inner.get_rust_type_name()
+
     def is_signal(self) -> bool:
         return True
 
 
-class Cond:
+class Cond(LeveledSignalBase):
     """The scheme `cond` style expression for a leveled signal."""
-    def __init__(self, *branches: (LeveledSignalBase, LeveledSignalBase)):
-        self._branches = list(branches)
-        self._inner = None
+    def __init__(self,
+                 first_branch: (LeveledSignalBase, LeveledSignalBase),
+                 middle_branches: [(LeveledSignalBase, LeveledSignalBase)],
+                 fallback_value: LeveledSignalBase):
+        super().__init__()
+        self._inner = _build_signal_mapper(*first_branch, fallback_value)
+        while middle_branches:
+            (cond, then_branch) = middle_branches.pop()
+            self._inner = _build_signal_mapper(cond, then_branch, self._inner)
 
-    def build_with_fallback(self, v: LeveledSignalBase) -> LeveledSignalBase:
-        from lsdl.signal_processors import SignalMapper
-        inner = None
-        self._branches.append(v)
-        while len(self._branches) >= 2:
-            else_branch = self._branches.pop()
-            (cond, then_branch) = self._branches.pop()
-            inner = SignalMapper(
-                bind_var = "(cond, then_expr, else_expr)",
-                lambda_src = """if *cond { then_expr.clone() } else { else_expr.clone() }""",
-                upstream = [cond, then_branch, else_branch]
-            )
-            else_type = else_branch.get_rust_type_name()
-            then_type = then_branch.get_rust_type_name()
-            if then_type == "_":
-                then_type = else_type
-            elif else_type == "_":
-                else_type = then_type
-            if then_type == else_type:
-                inner.annotate_type(then_type)
-            self._branches.append(inner)
+    def get_id(self):
+        return self._inner.get_id()
 
-        self._inner = self._branches.pop()
-        return self._inner
+    def get_rust_type_name(self) -> str:
+        return self._inner.get_rust_type_name()
+
+    def is_signal(self) -> bool:
+        return True

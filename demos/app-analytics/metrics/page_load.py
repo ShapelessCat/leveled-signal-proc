@@ -23,8 +23,9 @@ _previous_end = _end.prior_value(_valid_load_duration_clock)
 
 _load_time = Cond(
     (_is_mob, _end - _start),
-    ((_start > _previous_start) & (_end > _previous_end), _end - _start)
-).build_with_fallback(Const(-1))
+    [((_start > _previous_start) & (_end > _previous_end), _end - _start)],
+    Const(-1)
+)
 
 _load_time_clock = SignalFilterBuilder(_load_time > 0, _valid_load_duration_clock)\
     .filter_true()\
