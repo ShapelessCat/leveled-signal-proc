@@ -15,7 +15,7 @@ is_buffering\
     .measure_duration_true(scope_signal = input_signal.session_signal)\
     .add_metric("bufferingTime")
 
-## Initial buffering time
+# - Initial buffering time
 has_been_playing = StateMachineBuilder(input_signal.session_id.clock(), input_signal.player_state)\
     .transition_fn(f"|&res: &bool, state: &String| res || state == \"{const.PS_PLAYING}\"")\
     .scoped(input_signal.session_signal)\
@@ -25,7 +25,7 @@ has_been_playing = StateMachineBuilder(input_signal.session_id.clock(), input_si
     .measure_duration_true(scope_signal = input_signal.session_signal)\
     .add_metric("initialBufferingTime")
 
-## Re-buffering time
+# - Re-buffering time
 (has_been_playing & is_buffering)\
     .measure_duration_true(scope_signal = input_signal.session_signal)\
     .add_metric("rebufferingTime")
@@ -35,5 +35,5 @@ has_been_playing = StateMachineBuilder(input_signal.session_id.clock(), input_si
     .measure_duration_true(scope_signal = input_signal.session_signal)\
     .add_metric("seekTime")
 
-# Dump IR from metric defnitions
+# Dump IR from metric definitions
 print_ir_to_stdout()

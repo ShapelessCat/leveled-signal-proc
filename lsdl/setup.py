@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from setuptools import setup
-from setuptools.command.sdist import sdist as SdistCommand
+from setuptools.command.sdist import sdist as sdist_command
 
 setup(
     name="lsdl",
@@ -14,5 +14,5 @@ setup(
     packages=["lsdl", "lsdl.signal_processors", "lsdl.measurements"],
     include_package_data=True,
     zip_safe=False,
-    cmdclass={"sdist": SdistCommand},
+    cmdclass={"sdist": sdist_command},
 )

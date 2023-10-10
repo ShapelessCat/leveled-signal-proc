@@ -1,8 +1,11 @@
-from lsdl.componet_base import BuiltinComponentBase
-from lsdl.signal import LeveledSignalBase
+from ..componet_base import BuiltinComponentBase
+from ..signal import LeveledSignalBase
+
 
 class Latch(BuiltinComponentBase):
-    def __init__(self, control: LeveledSignalBase, data: LeveledSignalBase, forget_duration = -1, **kwargs):
+    def __init__(self, control: LeveledSignalBase, data: LeveledSignalBase, forget_duration: int | str = -1, **kwargs):
+        from ..modules import normalize_duration
+        forget_duration = normalize_duration(forget_duration)
         if forget_duration < 0:
             node_decl = "Latch::<{type_name}>::default()".format(type_name = data.get_rust_type_name())
         else:
@@ -21,10 +24,11 @@ class Latch(BuiltinComponentBase):
         else:
             self.annotate_type(data.get_rust_type_name())
 
+
 class EdgeTriggeredLatch(BuiltinComponentBase):
-    def __init__(self, control: LeveledSignalBase, data: LeveledSignalBase, forget_duration = -1, **kwargs):
-        from lsdl.modules import _normalize_duration
-        forget_duration = _normalize_duration(forget_duration)
+    def __init__(self, control: LeveledSignalBase, data: LeveledSignalBase, forget_duration: int | str = -1, **kwargs):
+        from ..modules import normalize_duration
+        forget_duration = normalize_duration(forget_duration)
         if forget_duration < 0:
             node_decl = "EdgeTriggeredLatch::<{control_type_name}, {data_type_name}>::default()".format(control_type_name = control.get_rust_type_name(), data_type_name = data.get_rust_type_name())
         else:

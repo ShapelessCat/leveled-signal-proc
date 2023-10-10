@@ -1,11 +1,11 @@
 import json
 
-from lsdl.config import measurement_config
+from .config import measurement_config
 
 
-def get_json_ir(pretty_print = False) -> str:
-    from lsdl.componet_base import get_components
-    from lsdl.schema import get_schema
+def _get_json_ir(pretty_print = False) -> str:
+    from .componet_base import get_components
+    from .schema import get_schema
     ret_obj = {
         "schema": get_schema().to_dict(),
         "nodes": [c.to_dict() for c in get_components()],
@@ -15,4 +15,4 @@ def get_json_ir(pretty_print = False) -> str:
 
 
 def print_ir_to_stdout():
-    print(get_json_ir(True))
+    print(_get_json_ir(True))
