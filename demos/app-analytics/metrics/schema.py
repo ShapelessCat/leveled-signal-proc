@@ -1,5 +1,6 @@
 from lsdl.prelude import *
 
+
 class InputSignal(InputSchemaBase):
     _timestamp_key             = 'timestamp'
 
@@ -22,5 +23,6 @@ class InputSignal(InputSchemaBase):
     app_startup_start          = volatile(String())
     app_startup_end            = volatile(String())
     app_startup_previous_exist = volatile(String())
+
 
 input_signal = InputSignal()

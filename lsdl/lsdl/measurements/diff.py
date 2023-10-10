@@ -1,5 +1,6 @@
-from lsdl.componet_base import BuiltinComponentBase
-from lsdl.signal import LeveledSignalBase
+from ..componet_base import BuiltinComponentBase
+from ..signal import LeveledSignalBase
+
 
 class DiffSinceCurrentLevel(BuiltinComponentBase):
     def __init__(self, control: LeveledSignalBase, data: LeveledSignalBase):

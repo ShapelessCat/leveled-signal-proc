@@ -1,5 +1,5 @@
-from lsdl.componet_base import BuiltinComponentBase
-from lsdl.signal import LeveledSignalBase
+from ..componet_base import BuiltinComponentBase
+from ..signal import LeveledSignalBase
 
 
 class DurationTrue(BuiltinComponentBase):
@@ -19,6 +19,7 @@ class DurationTrue(BuiltinComponentBase):
                 upstreams = [scope_signal, input_signal]
             )
         self.annotate_type("u64")
+
 
 class DurationSinceBecomeTrue(BuiltinComponentBase):
     def __init__(self, input_signal: LeveledSignalBase):

@@ -1,5 +1,5 @@
-from lsdl.schema import Bool, Float, Integer, String, TypeBase
-from lsdl.signal import LeveledSignalBase
+from .schema import Bool, Float, Integer, String, TypeBase
+from .signal import LeveledSignalBase
 
 
 class Const(LeveledSignalBase):

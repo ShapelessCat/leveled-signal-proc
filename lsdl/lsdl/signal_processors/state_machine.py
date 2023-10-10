@@ -1,5 +1,5 @@
-from lsdl.componet_base import BuiltinComponentBase
-from lsdl.signal import LeveledSignalBase
+from ..componet_base import BuiltinComponentBase
+from ..signal import LeveledSignalBase
 
 
 class StateMachineBuilder:
@@ -9,15 +9,19 @@ class StateMachineBuilder:
         self._transition_fn = '|_,_|()'
         self._scope_signal = None
         self._init_state = "Default::default()"
+
     def init_state(self, init_state):
         self._init_state = init_state
         return self
+
     def transition_fn(self, fn: str):
         self._transition_fn = fn
         return self
+
     def scoped(self, scope_signal: LeveledSignalBase):
         self._scope_signal = scope_signal
         return self
+
     def build(self): 
         if self._scope_signal is None:
             return StateMachine(
@@ -50,7 +54,7 @@ class StateMachineBuilder:
 
 
 class StateMachine(BuiltinComponentBase):
-    def __init__(self, clock:LeveledSignalBase, data:LeveledSignalBase, **kwargs):
+    def __init__(self, clock: LeveledSignalBase, data: LeveledSignalBase, **kwargs):
         if 'transition_fn' in kwargs: 
             transition_fn = kwargs['transition_fn']
         else:

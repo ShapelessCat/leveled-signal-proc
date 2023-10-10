@@ -1,8 +1,9 @@
-from lsdl.componet_base import BuiltinComponentBase
-from lsdl.signal import LeveledSignalBase
+from ..componet_base import BuiltinComponentBase
+from ..signal import LeveledSignalBase
+
 
 class LivenessChecker(BuiltinComponentBase):
-    def __init__(self, liveness_clock: LeveledSignalBase, ef_bind_var:str, ef_src: str, timeout = 90_000_000_000):
+    def __init__(self, liveness_clock: LeveledSignalBase, ef_bind_var: str, ef_src: str, timeout = 90_000_000_000):
         node_decl = """LivenessChecker::new(
             |{var}: &InputSignalBagPatch| {code},
             {timeout},
