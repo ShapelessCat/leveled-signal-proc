@@ -17,14 +17,14 @@ _conditional =\
     .filter_values(*const.CRITICAL_CONVIVA_VIDEO_EVENTS_NAMES)\
     .build_clock_filter()
 
-_is_session_alive = make_tuple(_unconditional, _conditional).has_changed("90s")
+_is_session_alive = make_tuple(_unconditional, _conditional).has_changed('90s')
 
-session_id = _is_session_alive.count_changes().add_metric("sessionId")
+session_id = _is_session_alive.count_changes().add_metric('sessionId')
 
 _page_id = input_signal.page_id.count_changes()
 _screen_id = input_signal.screen_id.count_changes()
 _unsessionized_navigation_id = make_tuple(_page_id, _screen_id)
 
-navigation_id = make_tuple(session_id, _unsessionized_navigation_id).count_changes()
+navigation_id = make_tuple(session_id, _unsessionized_navigation_id).count_changes().add_metric('navigationId')
 
 ScopeName = Enum('ScopeName', ['Session', 'Navigation'])
