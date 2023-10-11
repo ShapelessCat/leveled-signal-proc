@@ -23,8 +23,10 @@ session_id = _is_session_alive.count_changes().add_metric('sessionId')
 
 _page_id = input_signal.page_id.count_changes()
 _screen_id = input_signal.screen_id.count_changes()
-_unsessionized_navigation_id = make_tuple(_page_id, _screen_id)
 
-navigation_id = make_tuple(session_id, _unsessionized_navigation_id).count_changes().add_metric('navigationId')
+navigation_id =\
+    make_tuple(session_id, _page_id, _screen_id)\
+        .count_changes()\
+        .add_metric('navigationId')
 
 ScopeName = Enum('ScopeName', ['Session', 'Navigation'])
