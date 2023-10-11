@@ -22,17 +22,25 @@ class StateMachineBuilder:
         self._scope_signal = scope_signal
         return self
 
-    def build(self): 
+    def build(self):
         if self._scope_signal is None:
             return StateMachine(
-                clock = self._clock, 
-                data = self._data, 
+                clock = self._clock,
+                data = self._data,
                 transition_fn = self._transition_fn
             )
         else:
+            # When a type in `self._transition_fn` can't be inferred, it seems
+            # sometime the compiler doesn't know the exact reason, and it panics
+            # with the error code [E0521] "borrowed data escapes outside of
+            # closure", combined with a message "`inner_fn` declared here,
+            # outside of the closure body`. When this happen, don't try to move
+            # the `inner_fn` here, and we should add more type annotations to
+            # this `self._transition_fn`.
             actual_transition_fn = f"""{{
                 let inner_fn = {self._transition_fn};
-                move |&(last_scope, last_clock, mut last_state), &(this_scope, this_clock, ref this_input)|{{
+                move |&(last_scope, last_clock, mut last_state),
+                      &(this_scope, this_clock, ref this_input)|{{
                     if last_scope != this_scope {{
                         last_state = {self._init_state};
                     }}
@@ -55,7 +63,7 @@ class StateMachineBuilder:
 
 class StateMachine(BuiltinComponentBase):
     def __init__(self, clock: LeveledSignalBase, data: LeveledSignalBase, **kwargs):
-        if 'transition_fn' in kwargs: 
+        if 'transition_fn' in kwargs:
             transition_fn = kwargs['transition_fn']
         else:
             raise "Currently only support transition_fn"
@@ -63,7 +71,7 @@ class StateMachine(BuiltinComponentBase):
         node_decl = f"StateMachine::new({init_state}, {transition_fn})"
         super().__init__(
             name = "StateMachine",
-            is_measurement = False, 
-            node_decl = node_decl, 
+            is_measurement = False,
+            node_decl = node_decl,
             upstreams = [clock, data]
         )

@@ -29,13 +29,14 @@ class _MeasurementConfiguration:
 
     def disable_measure_for_event(self):
         """Prevent measurement on any input event."""
-        self._measure_at_event_lambda = "|_| false" 
+        self._measure_at_event_lambda = "|_| false"
         return self
 
     def set_trigger_signal(self, signal):
         """Set the measurement control signal.
 
-        This signal will trigger a measurement when the value of the signal gets changed."""
+        This signal will trigger a measurement when the value of the signal gets changed.
+        """
         self._measure_on_edge = signal
         return self
 
