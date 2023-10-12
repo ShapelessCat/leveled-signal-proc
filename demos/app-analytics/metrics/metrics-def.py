@@ -1,4 +1,4 @@
-# extra-src: app_startup.py const.py first_video_attempt.py network_request.py page_load.py schema.py scope.py user_active_time.py
+# extra-src: app_startup.py const.py first_video_attempt.py network_request.py page_load.py schema.py scope.py start.py user_active_time.py
 from lsdl.prelude import *
 
 import schema
@@ -14,8 +14,10 @@ import network_request
 # Page Load
 import page_load
 
-# Session Start Status
-# Session End Status
+# Start Status
+import start
+
+# End Status
 
 # User Active Time
 import user_active_time
