@@ -1,4 +1,5 @@
 from json import dumps as dump_json_str
+from typing import overload, override
 
 from .schema import create_type_model_from_rust_type_name
 from .signal import LeveledSignalBase
@@ -55,16 +56,10 @@ class LspComponentBase(LeveledSignalBase):
             "id": self._id,
         }
 
-    def is_measurement(self) -> bool:
-        return self._is_measurement
-
-    def is_signal(self) -> bool:
-        return not self.is_measurement()
-
     def to_dict(self) -> dict[str, object]:
         upstreams = []
         for p in self._upstreams:
-            if type(p) == list:
+            if isinstance(p, list):
                 upstreams.append({
                     "type": "Tuple",
                     "values": [e.get_id() for e in p]
@@ -73,7 +68,7 @@ class LspComponentBase(LeveledSignalBase):
                 upstreams.append(p.get_id())
         return {
             "id": self._id,
-            "is_measurement": self.is_measurement(),
+            "is_measurement": isinstance(self, LspMeasurement),  # self.is_measurement(),
             "node_decl": self._node_decl,
             "upstreams": upstreams,
             "package": self._package,
@@ -82,20 +77,52 @@ class LspComponentBase(LeveledSignalBase):
         }
 
 
+class LspProcessor:
+    pass
+
+
+class LspMeasurement:
+    pass
+
+
 class BuiltinComponentBase(LspComponentBase):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._package = "lsp-component"
 
-class BuiltinProcessorComponentBase(BuiltinComponentBase):
+    def add_metric(self, key, typename = "_") -> 'LeveledSignalBase':
+        """Register the leveled signal as a metric.
+
+        The registered metric results will present in the output data structure.
+
+        Note: to register the type, the leveled signal should have a known type, otherwise, it's an error.
+        """
+        raise NotImplementedError()
+
+
+class BuiltinProcessorComponentBase(BuiltinComponentBase, LspProcessor):
     def __init__(self, name, **kwargs):
         super().__init__(**kwargs)
         self._namespace = f"lsp_component::processors::{name}"
 
-class BuiltinMeasurementComponentBase(BuiltinComponentBase):
+    @override
+    def add_metric(self, key, typename = "_") -> LspComponentBase:
+        from . import measurement_config
+        from .measurements import PeekValue
+        measurement_config().add_metric(key, PeekValue(self), typename)
+        return self
+
+
+class BuiltinMeasurementComponentBase(BuiltinComponentBase,LspMeasurement):
     def __init__(self, name, **kwargs):
         super().__init__(**kwargs)
         self._namespace = f"lsp_component::measurements::{name}"
+
+    @override
+    def add_metric(self, key, typename = "_") -> LspComponentBase:
+        from . import measurement_config
+        measurement_config().add_metric(key, self, typename)
+        return self
 
 
 def get_components() -> list[LspComponentBase]:
@@ -104,7 +131,4 @@ def get_components() -> list[LspComponentBase]:
 
 def serialize_defined_components(pretty_print = False) -> str:
     obj = [c.to_dict() for c in get_components()]
-    if pretty_print:
-        return dump_json_str(obj, indent=4)
-    else:
-        return dump_json_str(obj)
+    return dump_json_str(obj, indent=4 if pretty_print else None)

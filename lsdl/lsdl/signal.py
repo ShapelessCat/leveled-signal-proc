@@ -99,21 +99,6 @@ class LeveledSignalBase:
         from .measurements import PeekValue
         return PeekValue(self)
 
-    def add_metric(self, key, typename = "_") -> 'LeveledSignalBase':
-        """Register the leveled signal as a metric.
-
-        The registered metric results will present in the output data structure.
-
-        Note: to register the type, the leveled signal should have a known type, otherwise, it's an error.
-        """
-        from . import measurement_config
-        from .measurements import PeekValue
-        if self.is_signal():
-            measurement_config().add_metric(key, PeekValue(self), typename)
-        else:
-            measurement_config().add_metric(key, self, typename)
-        return self
-
     def _bin_op(self, other, op, typename = None) -> 'LeveledSignalBase':
         from .signal_processors import SignalMapper
         from .const import Const
