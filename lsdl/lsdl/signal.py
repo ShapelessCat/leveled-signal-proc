@@ -18,24 +18,6 @@ class LeveledSignalBase:
         """Get the rust declaration for the type of this signal."""
         raise NotImplementedError()
 
-    def has_been_true(self, duration = -1) -> Self:
-        """Shortcut for `has_been_true` module.
-
-        Checks if the boolean signal has ever becomes true, and the result is a leveled signal.
-        When `duration` is given, it checks if the signal has been true within `duration` amount of time.
-        """
-        from .modules import has_been_true
-        return has_been_true(self, duration)
-
-    def has_changed(self, duration = -1) -> Self:
-        """Shortcut for `has_changed` module.
-
-        Checks if the signal has ever changed, and the result is a leveled signal.
-        When `duration` is given, it checks if the signal has changed within `duration` amount of time.
-        """
-        from .modules import has_changed
-        return has_changed(self, duration)
-
     def map(self, bind_var: str, lambda_src: str) -> Self:
         """Shortcut to apply a signal mapper on current signal.
 
@@ -44,23 +26,6 @@ class LeveledSignalBase:
         """
         from.signal_processors import SignalMapper
         return SignalMapper(bind_var, lambda_src, self)
-
-    def prior_different_value(self, scope: 'LeveledSignalBase' = None) -> Self:
-        return self.prior_value(self, scope)
-
-    def prior_value(self, clock: 'LeveledSignalBase' = None, scope: 'LeveledSignalBase' = None) -> Self:
-        from .signal_processors import StateMachineBuilder
-        if clock is None:
-            clock = self.clock()
-        ty = self.get_rust_type_name()
-        builder = StateMachineBuilder(data = self, clock = clock)\
-            .transition_fn(f'|(_, current): &({ty}, {ty}), data : &{ty}| (current.clone(), data.clone())')
-        if scope is not None:
-            builder.scoped(scope)
-        return builder.build().annotate_type(f"({ty}, {ty})").map(
-            bind_var = '(ret, _)',
-            lambda_src = 'ret.clone()'
-        ).annotate_type(self.get_rust_type_name())
 
     def count_changes(self) -> Self:
         """Creates a new signal that counts the number of changes for current signal.
@@ -71,29 +36,6 @@ class LeveledSignalBase:
         from .signal_processors import Accumulator
         from .const import Const
         return Accumulator(self, Const(1))
-
-    def measure_duration_true(self, scope_signal = None) -> Self:
-        """Measures the total duration whenever this boolean signal is true.
-
-        It returns a measurement.
-        When `scope_signal` is given, it resets the duration to 0 when the `scope_signal` becomes a different level.
-        """
-        from .measurements import DurationTrue
-        return DurationTrue(self, scope_signal = scope_signal)
-
-    def measure_duration_since_true(self) -> 'LeveledSignalBase':
-        """Measures the duration when this boolean signal has been true most recently.
-
-        When the boolean signal is false, the output of the measurement is constantly 0.
-        """
-        from .measurements import DurationSinceBecomeTrue
-        return DurationSinceBecomeTrue(self)
-
-    def peek(self) -> 'LeveledSignalBase':
-        """Returns the measurement that peek the latest value for the given signal.
-        """
-        from .measurements import PeekValue
-        return PeekValue(self)
 
     def _bin_op(self, other, op, typename = None) -> 'LeveledSignalBase':
         from .signal_processors import SignalMapper
@@ -107,7 +49,7 @@ class LeveledSignalBase:
         else:
             ret = SignalMapper(
                 bind_var="lhs",
-                lambda_src="*lhs {op} {other}".format(other=Const(other).get_rust_instant_value(), op = op),
+                lambda_src=f"*lhs {op} {Const(other).get_rust_instant_value()}",
                 upstream = self
             )
         if typename is not None:

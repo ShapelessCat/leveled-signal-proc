@@ -107,6 +107,64 @@ class BuiltinProcessorComponentBase(BuiltinComponentBase, LspProcessor):
         measurement_config().add_metric(key, PeekValue(self), typename)
         return self
 
+    def has_been_true(self, duration = -1) -> 'BuiltinProcessorComponentBase':
+        """Shortcut for `has_been_true` module.
+
+        Checks if the boolean signal has ever becomes true, and the result is a leveled signal.
+        When `duration` is given, it checks if the signal has been true within `duration` amount of time.
+        """
+        from .modules import has_been_true
+        return has_been_true(self, duration)
+
+    def has_changed(self, duration = -1) -> 'BuiltinProcessorComponentBase':
+        """Shortcut for `has_changed` module.
+
+        Checks if the signal has ever changed, and the result is a leveled signal.
+        When `duration` is given, it checks if the signal has changed within `duration` amount of time.
+        """
+        from .modules import has_changed
+        return has_changed(self, duration)
+
+    def prior_different_value(self, scope: 'LeveledSignalBase' = None) -> 'BuiltinProcessorComponentBase':
+        return self.prior_value(self, scope)
+
+    def prior_value(self, clock: 'LeveledSignalBase' = None, scope: 'LeveledSignalBase' = None) -> 'BuiltinProcessorComponentBase':
+        from .signal_processors import StateMachineBuilder
+        if clock is None:
+            clock = self.clock()
+        ty = self.get_rust_type_name()
+        builder = StateMachineBuilder(data = self, clock = clock)\
+            .transition_fn(f'|(_, current): &({ty}, {ty}), data : &{ty}| (current.clone(), data.clone())')
+        if scope is not None:
+            builder.scoped(scope)
+        return builder.build().annotate_type(f"({ty}, {ty})").map(
+            bind_var = '(ret, _)',
+            lambda_src = 'ret.clone()'
+        ).annotate_type(self.get_rust_type_name())
+
+    def measure_duration_true(self, scope_signal = None) -> 'BuiltinMeasurementComponentBase':
+        """Measures the total duration whenever this boolean signal is true.
+
+        It returns a measurement.
+        When `scope_signal` is given, it resets the duration to 0 when the `scope_signal` becomes a different level.
+        """
+        from .measurements import DurationTrue
+        return DurationTrue(self, scope_signal = scope_signal)
+
+    def measure_duration_since_true(self) -> 'BuiltinMeasurementComponentBase':
+        """Measures the duration when this boolean signal has been true most recently.
+
+        When the boolean signal is false, the output of the measurement is constantly 0.
+        """
+        from .measurements import DurationSinceBecomeTrue
+        return DurationSinceBecomeTrue(self)
+
+    def peek(self) -> 'BuiltinMeasurementComponentBase':
+        """Returns the measurement that peek the latest value for the given signal.
+        """
+        from .measurements import PeekValue
+        return PeekValue(self)
+
 
 class BuiltinMeasurementComponentBase(BuiltinComponentBase,LspMeasurement):
     def __init__(self, name, **kwargs):
