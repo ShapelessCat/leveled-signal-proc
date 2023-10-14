@@ -1,8 +1,8 @@
-from ..componet_base import BuiltinComponentBase
+from ..componet_base import BuiltinProcessorComponentBase
 from ..signal import LeveledSignalBase
 
 
-class Latch(BuiltinComponentBase):
+class Latch(BuiltinProcessorComponentBase):
     def __init__(self, control: LeveledSignalBase, data: LeveledSignalBase, forget_duration: int | str = -1, **kwargs):
         from ..modules import normalize_duration
         forget_duration = normalize_duration(forget_duration)
@@ -15,8 +15,8 @@ class Latch(BuiltinComponentBase):
             )
         super().__init__(
             name = "Latch",
-            is_measurement = False, 
-            node_decl = node_decl, 
+            is_measurement = False,
+            node_decl = node_decl,
             upstreams = [control, data]
         )
         if "output_type" in kwargs:
@@ -25,7 +25,7 @@ class Latch(BuiltinComponentBase):
             self.annotate_type(data.get_rust_type_name())
 
 
-class EdgeTriggeredLatch(BuiltinComponentBase):
+class EdgeTriggeredLatch(BuiltinProcessorComponentBase):
     def __init__(self, control: LeveledSignalBase, data: LeveledSignalBase, forget_duration: int | str = -1, **kwargs):
         from ..modules import normalize_duration
         forget_duration = normalize_duration(forget_duration)
@@ -38,8 +38,8 @@ class EdgeTriggeredLatch(BuiltinComponentBase):
             )
         super().__init__(
             name = "EdgeTriggeredLatch",
-            is_measurement = False, 
-            node_decl = node_decl, 
+            is_measurement = False,
+            node_decl = node_decl,
             upstreams = [control, data]
         )
         if "output_type" in kwargs:

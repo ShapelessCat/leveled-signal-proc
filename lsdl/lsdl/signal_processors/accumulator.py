@@ -1,8 +1,8 @@
-from ..componet_base import BuiltinComponentBase
+from ..componet_base import BuiltinProcessorComponentBase
 from ..signal import LeveledSignalBase
 
 
-class Accumulator(BuiltinComponentBase):
+class Accumulator(BuiltinProcessorComponentBase):
     def __init__(self,
                  control: LeveledSignalBase, data: LeveledSignalBase,
                  init_val = None,

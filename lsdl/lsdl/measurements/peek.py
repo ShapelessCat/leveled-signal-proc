@@ -1,8 +1,8 @@
-from ..componet_base import BuiltinComponentBase
+from ..componet_base import BuiltinMeasurementComponentBase
 from ..signal import LeveledSignalBase
 
 
-class PeekValue(BuiltinComponentBase):
+class PeekValue(BuiltinMeasurementComponentBase):
     def __init__(self, input_signal: LeveledSignalBase):
         super().__init__(
             name = "Peek",

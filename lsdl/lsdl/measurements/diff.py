@@ -1,8 +1,8 @@
-from ..componet_base import BuiltinComponentBase
+from ..componet_base import BuiltinMeasurementComponentBase
 from ..signal import LeveledSignalBase
 
 
-class DiffSinceCurrentLevel(BuiltinComponentBase):
+class DiffSinceCurrentLevel(BuiltinMeasurementComponentBase):
     def __init__(self, control: LeveledSignalBase, data: LeveledSignalBase):
         super().__init__(
             name = "DiffSinceCurrentLevel",

@@ -1,10 +1,10 @@
-from ..componet_base import BuiltinComponentBase
+from ..componet_base import BuiltinMeasurementComponentBase
 from ..signal import LeveledSignalBase
 
 
-class DurationTrue(BuiltinComponentBase):
+class DurationTrue(BuiltinMeasurementComponentBase):
     def __init__(self, input_signal: LeveledSignalBase, scope_signal = None):
-        if scope_signal is None: 
+        if scope_signal is None:
             super().__init__(
                 name = "DurationTrue",
                 is_measurement = True,
@@ -21,7 +21,7 @@ class DurationTrue(BuiltinComponentBase):
         self.annotate_type("u64")
 
 
-class DurationSinceBecomeTrue(BuiltinComponentBase):
+class DurationSinceBecomeTrue(BuiltinMeasurementComponentBase):
     def __init__(self, input_signal: LeveledSignalBase):
         super().__init__(
             name = "DurationSinceBecomeTrue",

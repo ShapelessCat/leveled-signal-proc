@@ -1,4 +1,4 @@
-from ..componet_base import BuiltinComponentBase
+from ..componet_base import BuiltinProcessorComponentBase
 from ..signal import LeveledSignalBase
 
 
@@ -61,7 +61,7 @@ class StateMachineBuilder:
             return state_machine.map(bind_var = "&(_, _, s)", lambda_src = "s")
 
 
-class StateMachine(BuiltinComponentBase):
+class StateMachine(BuiltinProcessorComponentBase):
     def __init__(self, clock: LeveledSignalBase, data: LeveledSignalBase, **kwargs):
         if 'transition_fn' in kwargs:
             transition_fn = kwargs['transition_fn']

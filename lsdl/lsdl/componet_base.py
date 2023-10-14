@@ -83,13 +83,19 @@ class LspComponentBase(LeveledSignalBase):
 
 
 class BuiltinComponentBase(LspComponentBase):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._package = "lsp-component"
+
+class BuiltinProcessorComponentBase(BuiltinComponentBase):
     def __init__(self, name, **kwargs):
         super().__init__(**kwargs)
-        self._namespace = "lsp_component::{kind}::{name}".format(
-            kind = "measurements" if self.is_measurement() else "processors",
-            name = name
-        )
-        self._package = "lsp-component"
+        self._namespace = f"lsp_component::processors::{name}"
+
+class BuiltinMeasurementComponentBase(BuiltinComponentBase):
+    def __init__(self, name, **kwargs):
+        super().__init__(**kwargs)
+        self._namespace = f"lsp_component::measurements::{name}"
 
 
 def get_components() -> list[LspComponentBase]:
