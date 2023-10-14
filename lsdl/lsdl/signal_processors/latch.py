@@ -15,7 +15,6 @@ class Latch(BuiltinProcessorComponentBase):
             )
         super().__init__(
             name = "Latch",
-            is_measurement = False,
             node_decl = node_decl,
             upstreams = [control, data]
         )
@@ -38,7 +37,6 @@ class EdgeTriggeredLatch(BuiltinProcessorComponentBase):
             )
         super().__init__(
             name = "EdgeTriggeredLatch",
-            is_measurement = False,
             node_decl = node_decl,
             upstreams = [control, data]
         )

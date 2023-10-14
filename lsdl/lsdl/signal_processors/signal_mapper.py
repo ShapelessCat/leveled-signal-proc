@@ -15,7 +15,6 @@ class SignalMapper(BuiltinProcessorComponentBase):
         )
         super().__init__(
             name = "SignalMapper",
-            is_measurement = False,
             node_decl = node_decl,
             upstreams = [upstream]
         )

@@ -6,7 +6,6 @@ class PeekValue(BuiltinMeasurementComponentBase):
     def __init__(self, input_signal: LeveledSignalBase):
         super().__init__(
             name = "Peek",
-            is_measurement = True,
             node_decl = "Peek::default()",
             upstreams = [input_signal]
         )

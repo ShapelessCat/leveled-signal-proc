@@ -8,7 +8,6 @@ class SquareWave(BuiltinProcessorComponentBase):
         period = normalize_duration(period)
         super().__init__(
             name = "SignalGenerator",
-            is_measurement = False,
             node_decl = f"SignalGenerator::square_wave({period}, {phase})",
             upstreams = []
         )
@@ -22,7 +21,6 @@ class MonotonicSteps(BuiltinProcessorComponentBase):
         period = normalize_duration(period)
         super().__init__(
             name = "SignalGenerator",
-            is_measurement = False,
             node_decl = f"SignalGenerator::raising_level({start}, {step}, {period}, {phase})",
             upstreams = []
         )
@@ -34,7 +32,6 @@ class SignalGenerator(BuiltinProcessorComponentBase):
     def __init__(self, lambda_src, bind_var = "timestamp"):
         super().__init__(
             name = "SignalGenerator",
-            is_measurement = False,
             node_decl = f"SignalGenerator::new(|{bind_var}|{lambda_src})",
             upstreams = []
         )

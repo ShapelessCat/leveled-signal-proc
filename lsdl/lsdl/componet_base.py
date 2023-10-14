@@ -1,5 +1,6 @@
+from abc import ABC
 from json import dumps as dump_json_str
-from typing import overload, override
+from typing import override
 
 from .schema import create_type_model_from_rust_type_name
 from .signal import LeveledSignalBase
@@ -21,9 +22,8 @@ _components = []
 
 
 class LspComponentBase(LeveledSignalBase):
-    def __init__(self, is_measurement: bool, node_decl: str, upstreams: list):
+    def __init__(self, node_decl: str, upstreams: list):
         super().__init__()
-        self._is_measurement = is_measurement
         self._node_decl = node_decl
         self._upstreams = upstreams
         self._namespace = ""
@@ -68,7 +68,7 @@ class LspComponentBase(LeveledSignalBase):
                 upstreams.append(p.get_id())
         return {
             "id": self._id,
-            "is_measurement": isinstance(self, LspMeasurement),  # self.is_measurement(),
+            "is_measurement": isinstance(self, LspMeasurement),
             "node_decl": self._node_decl,
             "upstreams": upstreams,
             "package": self._package,
@@ -77,13 +77,8 @@ class LspComponentBase(LeveledSignalBase):
         }
 
 
-class LspProcessor:
-    pass
-
-
-class LspMeasurement:
-    pass
-
+class LspProcessor(ABC): pass
+class LspMeasurement(ABC): pass
 
 class BuiltinComponentBase(LspComponentBase):
     def __init__(self, **kwargs):

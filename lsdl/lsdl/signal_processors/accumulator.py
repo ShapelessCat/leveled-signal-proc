@@ -19,7 +19,6 @@ class Accumulator(BuiltinProcessorComponentBase):
         )
         super().__init__(
             name = "Accumulator",
-            is_measurement = False,
             node_decl = node_decl,
             upstreams = [control, data]
         )

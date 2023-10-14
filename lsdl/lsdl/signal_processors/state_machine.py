@@ -71,7 +71,6 @@ class StateMachine(BuiltinProcessorComponentBase):
         node_decl = f"StateMachine::new({init_state}, {transition_fn})"
         super().__init__(
             name = "StateMachine",
-            is_measurement = False,
             node_decl = node_decl,
             upstreams = [clock, data]
         )

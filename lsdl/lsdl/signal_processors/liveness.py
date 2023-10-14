@@ -14,7 +14,6 @@ class LivenessChecker(BuiltinProcessorComponentBase):
         )
         super().__init__(
             name = "LivenessChecker",
-            is_measurement = False,
             node_decl = node_decl,
             upstreams = [liveness_clock],
         )
