@@ -17,9 +17,6 @@ class TypeBase(LeveledSignalBase):
     def render_rust_const(self, val) -> str:
         raise NotImplementedError()
 
-    def is_signal(self) -> bool:
-        return True
-
     def get_id(self):
         try:
             return super().get_id()
@@ -59,7 +56,7 @@ class String(TypeBase):
     def parse(self, type_name, default_value = "Default::default()") -> LeveledSignalBase:
         return self\
             .map(
-                bind_var = "s", 
+                bind_var = "s",
                 lambda_src = f"s.parse::<{type_name}>().unwrap_or({default_value})"
             ).annotate_type(type_name)
 
@@ -70,7 +67,7 @@ class String(TypeBase):
             other = Const(other)
         return make_tuple(self, other)\
             .map(
-                bind_var = "(s, p)", 
+                bind_var = "(s, p)",
                 lambda_src = "s.starts_with(p)"
             ).annotate_type("bool")
 
@@ -265,7 +262,7 @@ def create_type_model_from_rust_type_name(rust_type_name: str) -> Optional[TypeB
         return Integer(signed, width)
     if rust_type_name[0] == 'f':
         width = int(rust_type_name[1:])
-        return Float(width) 
+        return Float(width)
     if rust_type_name[0] == 'bool':
         return Bool()
     return None

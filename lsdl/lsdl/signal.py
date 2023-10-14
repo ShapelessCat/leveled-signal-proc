@@ -18,10 +18,6 @@ class LeveledSignalBase:
         """Get the rust declaration for the type of this signal."""
         raise NotImplementedError()
 
-    def is_signal(self) -> bool:
-        """Check if this is a signal (not measurement)."""
-        raise NotImplementedError()
-
     def has_been_true(self, duration = -1) -> Self:
         """Shortcut for `has_been_true` module.
 
@@ -194,9 +190,6 @@ class If(LeveledSignalBase):
     def get_rust_type_name(self) -> str:
         return self._inner.get_rust_type_name()
 
-    def is_signal(self) -> bool:
-        return True
-
 
 class Cond(LeveledSignalBase):
     """The scheme `cond` style expression for a leveled signal."""
@@ -215,6 +208,3 @@ class Cond(LeveledSignalBase):
 
     def get_rust_type_name(self) -> str:
         return self._inner.get_rust_type_name()
-
-    def is_signal(self) -> bool:
-        return True

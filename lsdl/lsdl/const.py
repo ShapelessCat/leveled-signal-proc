@@ -19,9 +19,6 @@ class Const(LeveledSignalBase):
         self._type = val_type
         self._rs_value = val_type.render_rust_const(value)
 
-    def is_signal(self) -> bool:
-        return True
-
     def get_rust_type_name(self) -> str:
         return self._type.get_rust_type_name()
 
