@@ -102,9 +102,8 @@ class Vector(TypeBase):
         self._inner = inner
 
     def render_rust_const(self, val) -> str:
-        return "vec![{inner}]".format(
-            inner = ",".join([self._inner.render_rust_const(v) for v in val])
-        )
+        typed_const_elements = ",".join([self._inner.render_rust_const(v) for v in val])
+        return f"vec![{typed_const_elements}]"
 
 
 class InputMemberType(TypeBase):
@@ -181,7 +180,7 @@ class InputSchemaBase(TypeBase):
             "members": {}
         }
         for member in self._members:
-            member_type = self.__getattribute__(member)
+            member_type = getattr(self, member)
             ret["members"][member] = {
                 "type": member_type.get_rust_type_name(),
                 "clock_companion": member_type.clock().get_name(),
