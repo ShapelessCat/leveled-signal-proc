@@ -1,9 +1,9 @@
 from ..componet_base import BuiltinMeasurementComponentBase
-from ..signal import LeveledSignalBase
+from ..signal import LeveledSignalProcessingModelComponentBase
 
 
 class PeekValue(BuiltinMeasurementComponentBase):
-    def __init__(self, input_signal: LeveledSignalBase):
+    def __init__(self, input_signal: LeveledSignalProcessingModelComponentBase):
         super().__init__(
             name = "Peek",
             node_decl = "Peek::default()",

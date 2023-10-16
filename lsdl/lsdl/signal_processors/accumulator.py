@@ -1,10 +1,10 @@
 from ..componet_base import BuiltinProcessorComponentBase
-from ..signal import LeveledSignalBase
+from ..signal import LeveledSignalProcessingModelComponentBase
 
 
 class Accumulator(BuiltinProcessorComponentBase):
     def __init__(self,
-                 control: LeveledSignalBase, data: LeveledSignalBase,
+                 control: LeveledSignalProcessingModelComponentBase, data: LeveledSignalProcessingModelComponentBase,
                  init_val = None,
                  filter_lambda = None, type_name = "i32"):
         if filter_lambda is None:

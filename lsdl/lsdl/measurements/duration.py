@@ -1,9 +1,9 @@
 from ..componet_base import BuiltinMeasurementComponentBase
-from ..signal import LeveledSignalBase
+from ..signal import LeveledSignalProcessingModelComponentBase
 
 
 class DurationTrue(BuiltinMeasurementComponentBase):
-    def __init__(self, input_signal: LeveledSignalBase, scope_signal = None):
+    def __init__(self, input_signal: LeveledSignalProcessingModelComponentBase, scope_signal = None):
         if scope_signal is None:
             super().__init__(
                 name = "DurationTrue",
@@ -20,7 +20,7 @@ class DurationTrue(BuiltinMeasurementComponentBase):
 
 
 class DurationSinceBecomeTrue(BuiltinMeasurementComponentBase):
-    def __init__(self, input_signal: LeveledSignalBase):
+    def __init__(self, input_signal: LeveledSignalProcessingModelComponentBase):
         super().__init__(
             name = "DurationSinceBecomeTrue",
             node_decl = "DurationSinceBecomeTrue::default()",

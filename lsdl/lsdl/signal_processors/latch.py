@@ -1,9 +1,9 @@
 from ..componet_base import BuiltinProcessorComponentBase
-from ..signal import LeveledSignalBase
+from ..signal import LeveledSignalProcessingModelComponentBase
 
 
 class Latch(BuiltinProcessorComponentBase):
-    def __init__(self, control: LeveledSignalBase, data: LeveledSignalBase, forget_duration: int | str = -1, **kwargs):
+    def __init__(self, control: LeveledSignalProcessingModelComponentBase, data: LeveledSignalProcessingModelComponentBase, forget_duration: int | str = -1, **kwargs):
         from ..modules import normalize_duration
         forget_duration = normalize_duration(forget_duration)
         if forget_duration < 0:
@@ -25,7 +25,7 @@ class Latch(BuiltinProcessorComponentBase):
 
 
 class EdgeTriggeredLatch(BuiltinProcessorComponentBase):
-    def __init__(self, control: LeveledSignalBase, data: LeveledSignalBase, forget_duration: int | str = -1, **kwargs):
+    def __init__(self, control: LeveledSignalProcessingModelComponentBase, data: LeveledSignalProcessingModelComponentBase, forget_duration: int | str = -1, **kwargs):
         from ..modules import normalize_duration
         forget_duration = normalize_duration(forget_duration)
         if forget_duration < 0:

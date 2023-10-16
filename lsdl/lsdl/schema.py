@@ -1,10 +1,10 @@
 import json
 from typing import Any, Optional
 
-from .signal import LeveledSignalBase
+from .signal import LeveledSignalProcessingModelComponentBase
 
 
-class TypeBase(LeveledSignalBase):
+class TypeBase(LeveledSignalProcessingModelComponentBase):
     def __init__(self, rs_type: str):
         super().__init__()
         self._rust_type = rs_type
@@ -53,17 +53,17 @@ class String(TypeBase):
     def render_rust_const(self, val) -> str:
         return f"{json.dumps(val)}.to_string()"
 
-    def parse(self, type_name, default_value = "Default::default()") -> LeveledSignalBase:
+    def parse(self, type_name, default_value = "Default::default()") -> LeveledSignalProcessingModelComponentBase:
         return self\
             .map(
                 bind_var = "s",
                 lambda_src = f"s.parse::<{type_name}>().unwrap_or({default_value})"
             ).annotate_type(type_name)
 
-    def starts_with(self, other) -> LeveledSignalBase:
+    def starts_with(self, other) -> LeveledSignalProcessingModelComponentBase:
         from .const import Const
         from .modules import make_tuple
-        if not isinstance(other, LeveledSignalBase):
+        if not isinstance(other, LeveledSignalProcessingModelComponentBase):
             other = Const(other)
         return make_tuple(self, other)\
             .map(
@@ -201,13 +201,13 @@ class InputSchemaBase(TypeBase):
 
 
 class SessionizedInputSchemaBase(InputSchemaBase):
-    def create_session_signal(self) -> LeveledSignalBase:
+    def create_session_signal(self) -> LeveledSignalProcessingModelComponentBase:
         raise NotImplemented()
 
-    def create_epoch_signal(self) -> LeveledSignalBase:
+    def create_epoch_signal(self) -> LeveledSignalProcessingModelComponentBase:
         raise NotImplemented()
 
-    def _make_sessionized_input(self, key) -> LeveledSignalBase:
+    def _make_sessionized_input(self, key) -> LeveledSignalProcessingModelComponentBase:
         if key not in self._sessionized_signals:
             raw_signal = super().__getattribute__(key)
             raw_signal_clock = raw_signal.clock()

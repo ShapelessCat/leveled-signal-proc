@@ -1,9 +1,9 @@
 from ..componet_base import BuiltinMeasurementComponentBase
-from ..signal import LeveledSignalBase
+from ..signal import LeveledSignalProcessingModelComponentBase
 
 
 class DiffSinceCurrentLevel(BuiltinMeasurementComponentBase):
-    def __init__(self, control: LeveledSignalBase, data: LeveledSignalBase):
+    def __init__(self, control: LeveledSignalProcessingModelComponentBase, data: LeveledSignalProcessingModelComponentBase):
         super().__init__(
             name = "DiffSinceCurrentLevel",
             node_decl = "DiffSinceCurrentLevel::default()",

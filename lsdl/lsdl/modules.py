@@ -2,7 +2,7 @@ import re
 
 from .const import Const
 from .schema import MappedInputType
-from .signal import LeveledSignalBase
+from .signal import LeveledSignalProcessingModelComponentBase
 from .signal_processors import SignalMapper, Latch
 from .signal_processors.latch import EdgeTriggeredLatch
 
@@ -12,7 +12,7 @@ def normalize_duration(duration: int | str) -> int:
         value_str = re.search(r"\d+", duration).group(0)
         value_unit = duration[len(value_str):]
         value = int(value_str)
-        match value_unit: 
+        match value_unit:
             case 's':
                 duration = value * 1_000_000_000
             case 'ms':
@@ -30,7 +30,7 @@ def normalize_duration(duration: int | str) -> int:
     return duration
 
 
-def has_been_true(input_signal: LeveledSignalBase, duration: int | str = -1) -> LeveledSignalBase:
+def has_been_true(input_signal: LeveledSignalProcessingModelComponentBase, duration: int | str = -1) -> LeveledSignalProcessingModelComponentBase:
     """
         Checks if the boolean signal has ever becomes true and returns the result as a leveled signal.
         When `duration` is given, it checks if the signal has been true within `duration` amount of time.
@@ -44,7 +44,7 @@ def has_been_true(input_signal: LeveledSignalBase, duration: int | str = -1) -> 
         )
 
 
-def has_changed(input_signal: LeveledSignalBase, duration: int | str = -1) -> LeveledSignalBase:
+def has_changed(input_signal: LeveledSignalProcessingModelComponentBase, duration: int | str = -1) -> LeveledSignalProcessingModelComponentBase:
     """Checks if the signal has ever changed.
 
     Return a leveled signal.
@@ -61,7 +61,7 @@ def has_changed(input_signal: LeveledSignalBase, duration: int | str = -1) -> Le
     )
 
 
-def make_tuple(*args: LeveledSignalBase) -> LeveledSignalBase:
+def make_tuple(*args: LeveledSignalProcessingModelComponentBase) -> LeveledSignalProcessingModelComponentBase:
     """
         Make a tuple from multiple input signals.
         The result is also a leveled signal.
@@ -75,11 +75,11 @@ def make_tuple(*args: LeveledSignalBase) -> LeveledSignalBase:
 
 class SignalFilterBuilder:
     """
-        The builder class to build a signal filter. 
+        The builder class to build a signal filter.
         A signal filter is a filter that filters either the clock or value signal.
         It can filter with a Rust lambda function or a list of values.
     """
-    def __init__(self, filter_signal: LeveledSignalBase, clock_signal: LeveledSignalBase = None):
+    def __init__(self, filter_signal: LeveledSignalProcessingModelComponentBase, clock_signal: LeveledSignalProcessingModelComponentBase = None):
         self._filter_signal = filter_signal
         self._clock_signal = clock_signal
         if isinstance(filter_signal, MappedInputType) and clock_signal is None:
@@ -93,7 +93,7 @@ class SignalFilterBuilder:
         self._filter_node = SignalMapper(
             bind_var = bind_var,
             upstream = self._filter_signal,
-            lambda_src = lambda_body, 
+            lambda_src = lambda_body,
         )
         return self
 
@@ -114,7 +114,7 @@ class SignalFilterBuilder:
         self._filter_node = self._filter_signal
         return self
 
-    def then_filter(self, filter_signal: LeveledSignalBase) -> 'SignalFilterBuilder':
+    def then_filter(self, filter_signal: LeveledSignalProcessingModelComponentBase) -> 'SignalFilterBuilder':
         """
             Builds the clock signal filter and then create a builder that performing cascade filtering
         """
@@ -124,13 +124,13 @@ class SignalFilterBuilder:
             ret.filter_true()
         return ret
 
-    def build_clock_filter(self) -> LeveledSignalBase:
+    def build_clock_filter(self) -> LeveledSignalProcessingModelComponentBase:
         return Latch(
             data = self._clock_signal,
             control = self._filter_node
         )
 
-    def build_value_filter(self) -> LeveledSignalBase:
+    def build_value_filter(self) -> LeveledSignalProcessingModelComponentBase:
         return Latch(
             data = self._filter_signal,
             control = self._filter_node
@@ -138,24 +138,24 @@ class SignalFilterBuilder:
 
 
 class ScopeContext:
-    def __init__(self, scope_level: LeveledSignalBase, epoch: LeveledSignalBase):
+    def __init__(self, scope_level: LeveledSignalProcessingModelComponentBase, epoch: LeveledSignalProcessingModelComponentBase):
         self._scope = scope_level
         self._epoch = epoch
 
-    def scoped(self, data: LeveledSignalBase, clock: LeveledSignalBase, default = None) -> LeveledSignalBase:
+    def scoped(self, data: LeveledSignalProcessingModelComponentBase, clock: LeveledSignalProcessingModelComponentBase, default = None) -> LeveledSignalProcessingModelComponentBase:
         from .signal_processors import EdgeTriggeredLatch, SignalMapper
         scope_starts = EdgeTriggeredLatch(control = self._scope, data = self._epoch)
         event_starts = EdgeTriggeredLatch(control = clock, data = self._epoch)
         return SignalMapper(
-            bind_var = "(sep, eep, signal)", 
-            lambda_src = f"""if *sep <= *eep {{ signal.clone() }} else {{ 
+            bind_var = "(sep, eep, signal)",
+            lambda_src = f"""if *sep <= *eep {{ signal.clone() }} else {{
                 { "Default::default()" if default is None else str(default) }
-            }}""", 
+            }}""",
             upstream = [scope_starts, event_starts, data]
         ).annotate_type(data.get_rust_type_name())
 
 
-def time_domain_fold(data: LeveledSignalBase, clock = None, scope = None, fold_method = "sum", init_state = None):
+def time_domain_fold(data: LeveledSignalProcessingModelComponentBase, clock = None, scope = None, fold_method = "sum", init_state = None):
     if clock is None:
         clock = data
     from .signal_processors.state_machine import StateMachineBuilder

@@ -1,9 +1,9 @@
 from ..componet_base import BuiltinProcessorComponentBase
-from ..signal import LeveledSignalBase
+from ..signal import LeveledSignalProcessingModelComponentBase
 
 
 class StateMachineBuilder:
-    def __init__(self, clock: LeveledSignalBase, data: LeveledSignalBase):
+    def __init__(self, clock: LeveledSignalProcessingModelComponentBase, data: LeveledSignalProcessingModelComponentBase):
         self._clock = clock
         self._data = data
         self._transition_fn = '|_,_|()'
@@ -18,7 +18,7 @@ class StateMachineBuilder:
         self._transition_fn = fn
         return self
 
-    def scoped(self, scope_signal: LeveledSignalBase):
+    def scoped(self, scope_signal: LeveledSignalProcessingModelComponentBase):
         self._scope_signal = scope_signal
         return self
 
@@ -62,7 +62,7 @@ class StateMachineBuilder:
 
 
 class StateMachine(BuiltinProcessorComponentBase):
-    def __init__(self, clock: LeveledSignalBase, data: LeveledSignalBase, **kwargs):
+    def __init__(self, clock: LeveledSignalProcessingModelComponentBase, data: LeveledSignalProcessingModelComponentBase, **kwargs):
         if 'transition_fn' in kwargs:
             transition_fn = kwargs['transition_fn']
         else:

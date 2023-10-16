@@ -3,7 +3,7 @@ from json import dumps as dump_json_str
 from typing import override
 
 from .schema import create_type_model_from_rust_type_name
-from .signal import LeveledSignalBase
+from .signal import LeveledSignalProcessingModelComponentBase
 
 
 def _make_assign_fresh_component_closure():
@@ -21,7 +21,7 @@ _assign_fresh_component_id = _make_assign_fresh_component_closure()
 _components = []
 
 
-class LspComponentBase(LeveledSignalBase):
+class LspComponentBase(LeveledSignalProcessingModelComponentBase):
     def __init__(self, node_decl: str, upstreams: list):
         super().__init__()
         self._node_decl = node_decl
@@ -85,7 +85,7 @@ class BuiltinComponentBase(LspComponentBase):
         super().__init__(**kwargs)
         self._package = "lsp-component"
 
-    def add_metric(self, key, typename = "_") -> 'LeveledSignalBase':
+    def add_metric(self, key, typename = "_") -> 'LeveledSignalProcessingModelComponentBase':
         """Register the leveled signal as a metric.
 
         The registered metric results will present in the output data structure.
@@ -125,10 +125,10 @@ class BuiltinProcessorComponentBase(BuiltinComponentBase, LspProcessor):
         from .modules import has_changed
         return has_changed(self, duration)
 
-    def prior_different_value(self, scope: 'LeveledSignalBase' = None) -> 'BuiltinProcessorComponentBase':
+    def prior_different_value(self, scope: 'LeveledSignalProcessingModelComponentBase' = None) -> 'BuiltinProcessorComponentBase':
         return self.prior_value(self, scope)
 
-    def prior_value(self, clock: 'LeveledSignalBase' = None, scope: 'LeveledSignalBase' = None) -> 'BuiltinProcessorComponentBase':
+    def prior_value(self, clock: 'LeveledSignalProcessingModelComponentBase' = None, scope: 'LeveledSignalProcessingModelComponentBase' = None) -> 'BuiltinProcessorComponentBase':
         from .signal_processors import StateMachineBuilder
         if clock is None:
             clock = self.clock()

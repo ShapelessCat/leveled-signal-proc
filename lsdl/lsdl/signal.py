@@ -2,8 +2,8 @@ from typing import Self
 from .debug_info import DebugInfo
 
 
-class LeveledSignalBase:
-    """A leveled signal.
+class LeveledSignalProcessingModelComponentBase:
+    """A leveled signal processing model component base class.
 
     See LSP documentation for details about leveled signal definition.
     """
@@ -37,10 +37,10 @@ class LeveledSignalBase:
         from .const import Const
         return Accumulator(self, Const(1))
 
-    def _bin_op(self, other, op, typename = None) -> 'LeveledSignalBase':
+    def _bin_op(self, other, op, typename = None) -> 'LeveledSignalProcessingModelComponentBase':
         from .signal_processors import SignalMapper
         from .const import Const
-        if isinstance(other, LeveledSignalBase):
+        if isinstance(other, LeveledSignalProcessingModelComponentBase):
             ret = SignalMapper(
                 bind_var="(lhs, rhs)",
                 lambda_src=f"*lhs {op} *rhs",
@@ -56,49 +56,49 @@ class LeveledSignalBase:
             ret.annotate_type(typename)
         return ret
 
-    def __eq__(self, other) -> 'LeveledSignalBase':
+    def __eq__(self, other) -> 'LeveledSignalProcessingModelComponentBase':
         return self._bin_op(other, "==", "bool")
 
-    def __and__(self, other) -> 'LeveledSignalBase':
+    def __and__(self, other) -> 'LeveledSignalProcessingModelComponentBase':
         return self._bin_op(other, "&&", "bool")
 
-    def __or__(self, other) -> 'LeveledSignalBase':
+    def __or__(self, other) -> 'LeveledSignalProcessingModelComponentBase':
         return self._bin_op(other, "||", "bool")
 
-    def __xor__(self, other) -> 'LeveledSignalBase':
+    def __xor__(self, other) -> 'LeveledSignalProcessingModelComponentBase':
         return self._bin_op(other, "^", "bool")
 
-    def __invert__(self) -> 'LeveledSignalBase':
+    def __invert__(self) -> 'LeveledSignalProcessingModelComponentBase':
         return self._bin_op(True, "^", "bool")
 
-    def __lt__(self, other) -> 'LeveledSignalBase':
+    def __lt__(self, other) -> 'LeveledSignalProcessingModelComponentBase':
         return self._bin_op(other, "<", "bool")
 
-    def __gt__(self, other) -> 'LeveledSignalBase':
+    def __gt__(self, other) -> 'LeveledSignalProcessingModelComponentBase':
         return self._bin_op(other, ">", "bool")
 
-    def __le__(self, other) -> 'LeveledSignalBase':
+    def __le__(self, other) -> 'LeveledSignalProcessingModelComponentBase':
         return self._bin_op(other, "<=", "bool")
 
-    def __ge__(self, other) -> 'LeveledSignalBase':
+    def __ge__(self, other) -> 'LeveledSignalProcessingModelComponentBase':
         return self._bin_op(other, ">=", "bool")
 
-    def __add__(self, other) -> 'LeveledSignalBase':
+    def __add__(self, other) -> 'LeveledSignalProcessingModelComponentBase':
         return self._bin_op(other, "+", self.get_rust_type_name())
 
-    def __sub__(self, other) -> 'LeveledSignalBase':
+    def __sub__(self, other) -> 'LeveledSignalProcessingModelComponentBase':
         return self._bin_op(other, "-", self.get_rust_type_name())
 
-    def __mul__(self, other) -> 'LeveledSignalBase':
+    def __mul__(self, other) -> 'LeveledSignalProcessingModelComponentBase':
         return self._bin_op(other, "*", self.get_rust_type_name())
 
-    def __div__(self, other) -> 'LeveledSignalBase':
+    def __div__(self, other) -> 'LeveledSignalProcessingModelComponentBase':
         return self._bin_op(other, "/", self.get_rust_type_name())
 
 
-def _build_signal_mapper(cond: LeveledSignalBase,
-                         then_branch: LeveledSignalBase,
-                         else_branch: LeveledSignalBase) -> LeveledSignalBase:
+def _build_signal_mapper(cond: LeveledSignalProcessingModelComponentBase,
+                         then_branch: LeveledSignalProcessingModelComponentBase,
+                         else_branch: LeveledSignalProcessingModelComponentBase) -> LeveledSignalProcessingModelComponentBase:
     from .signal_processors import SignalMapper
     inner = SignalMapper(
         bind_var = "(cond, then_expr, else_expr)",
@@ -117,12 +117,12 @@ def _build_signal_mapper(cond: LeveledSignalBase,
     return inner
 
 
-class If(LeveledSignalBase):
+class If(LeveledSignalProcessingModelComponentBase):
     """The `if...then...else` expression for a leveled signal."""
     def __init__(self,
-                 cond_expr: LeveledSignalBase,
-                 then_expr: LeveledSignalBase,
-                 else_expr: LeveledSignalBase):
+                 cond_expr: LeveledSignalProcessingModelComponentBase,
+                 then_expr: LeveledSignalProcessingModelComponentBase,
+                 else_expr: LeveledSignalProcessingModelComponentBase):
         super().__init__()
         self._inner = _build_signal_mapper(cond_expr, then_expr, else_expr)
 
@@ -133,12 +133,12 @@ class If(LeveledSignalBase):
         return self._inner.get_rust_type_name()
 
 
-class Cond(LeveledSignalBase):
+class Cond(LeveledSignalProcessingModelComponentBase):
     """The scheme `cond` style expression for a leveled signal."""
     def __init__(self,
-                 first_branch: (LeveledSignalBase, LeveledSignalBase),
-                 middle_branches: [(LeveledSignalBase, LeveledSignalBase)],
-                 fallback_value: LeveledSignalBase):
+                 first_branch: (LeveledSignalProcessingModelComponentBase, LeveledSignalProcessingModelComponentBase),
+                 middle_branches: [(LeveledSignalProcessingModelComponentBase, LeveledSignalProcessingModelComponentBase)],
+                 fallback_value: LeveledSignalProcessingModelComponentBase):
         super().__init__()
         self._inner = _build_signal_mapper(*first_branch, fallback_value)
         while middle_branches:
