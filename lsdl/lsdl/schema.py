@@ -1,10 +1,11 @@
 import json
-from typing import Any, Optional
+from typing import Any, Optional, Type, override
+from abc import ABC, abstractmethod
 
 from .signal import LeveledSignalProcessingModelComponentBase
 
 
-class TypeBase(LeveledSignalProcessingModelComponentBase):
+class TypeBase(LeveledSignalProcessingModelComponentBase, ABC):
     def __init__(self, rs_type: str):
         super().__init__()
         self._rust_type = rs_type
@@ -14,9 +15,6 @@ class TypeBase(LeveledSignalProcessingModelComponentBase):
     def get_rust_type_name(self) -> str:
         return self._rust_type
 
-    def render_rust_const(self, val) -> str:
-        raise NotImplementedError()
-
     def get_id(self):
         try:
             return super().get_id()
@@ -24,6 +22,12 @@ class TypeBase(LeveledSignalProcessingModelComponentBase):
             if self._parent is not None:
                 return self._parent.get_id()
             raise e
+
+
+class TypeWithLiteralValue(TypeBase, ABC):
+    @abstractmethod
+    def render_rust_const(self, val) -> str:
+        raise NotImplementedError()
 
 
 class CompilerInferredType(TypeBase):
@@ -35,9 +39,6 @@ class DateTime(TypeBase):
     def __init__(self, timezone: str = "Utc"):
         super().__init__("chrono::DateTime<chrono::" + timezone + ">")
 
-    def render_rust_const(self, val) -> str:
-        raise "Date time const value is not supported"
-
     def timestamp(self):
         return self\
             .map(
@@ -46,10 +47,11 @@ class DateTime(TypeBase):
             ).annotate_type("i64")
 
 
-class String(TypeBase):
+class String(TypeWithLiteralValue):
     def __init__(self):
         super().__init__("String")
 
+    @override
     def render_rust_const(self, val) -> str:
         return f"{json.dumps(val)}.to_string()"
 
@@ -72,57 +74,69 @@ class String(TypeBase):
             ).annotate_type("bool")
 
 
-class Bool(TypeBase):
+class Bool(TypeWithLiteralValue):
     def __init__(self):
         super().__init__("bool")
 
+    @override
     def render_rust_const(self, val) -> str:
         return "true" if val else "false"
 
 
-class Integer(TypeBase):
+class Integer(TypeWithLiteralValue):
     def __init__(self, signed = True, width = 32):
         super().__init__("i" + str(width) if signed else "u" + str(width))
 
+    @override
     def render_rust_const(self, val) -> str:
         return str(val) + self.get_rust_type_name()
 
 
-class Float(TypeBase):
+class Float(TypeWithLiteralValue):
     def __init__(self, width = 64):
         super().__init__("f" + str(width))
 
+    @override
     def render_rust_const(self, val) -> str:
         return str(val) + self.get_rust_type_name()
 
 
-class Vector(TypeBase):
+class Vector(TypeWithLiteralValue):
     def __init__(self, inner: TypeBase):
         super().__init__("Vec<" + inner.get_rust_type_name() + ">")
         self._inner = inner
 
+    @override
     def render_rust_const(self, val) -> str:
         typed_const_elements = ",".join([self._inner.render_rust_const(v) for v in val])
         return f"vec![{typed_const_elements}]"
 
 
-class InputMemberType(TypeBase):
+class InputMemberType(LeveledSignalProcessingModelComponentBase, ABC):
     def __init__(self, inner: TypeBase):
-        super().__init__(rs_type = inner.get_rust_type_name())
+        super().__init__()
+        self._rust_type = inner.get_rust_type_name()
+        self._reset_expr = None
+        self._parent = None
         self._inner = inner
         inner._parent = self
         self._name = ""
 
-    def set_name(self, name: str):
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @name.setter
+    def name(self, name: str):
         self._name = name
 
-    def get_name(self) -> str:
-        return self._name
+    def get_rust_type_name(self) -> str:
+        return self._rust_type
 
     def get_id(self):
         return {
             "type": "InputSignal",
-            "id": self.get_name(),
+            "id": self.name,
         }
 
 
@@ -149,29 +163,33 @@ class MappedInputType(InputMemberType):
 
     def clock(self) -> ClockCompanion:
         ret = ClockCompanion()
-        ret.set_name(self.get_name() + "_clock")
+        ret.name = self.name + "_clock"
         return ret
 
 
 _defined_schema = None
 
 
-class InputSchemaBase(TypeBase):
+class InputSchemaBase(LeveledSignalProcessingModelComponentBase):
     def __init__(self, name = "InputSignalBag"):
         global _defined_schema
-        super().__init__(name)
+        super().__init__()
+        self._rust_type = name
         self._members = []
         if "_timestamp_key" not in self.__dir__():
             self._timestamp_key = "timestamp"
         for item_name in self.__dir__():
             item = self.__getattribute__(item_name)
-            if isinstance(item, TypeBase):
+            if isinstance(item, (TypeBase, InputMemberType)):
                 if not isinstance(item, InputMemberType):
                     item = MappedInputType(input_key = item_name, inner = item)
-                item.set_name(item_name)
+                item.name = item_name
                 self.__setattr__(item_name, item)
                 self._members.append(item_name)
         _defined_schema = self
+
+    def get_rust_type_name(self) -> str:
+        return self._rust_type
 
     def to_dict(self) -> dict:
         ret = {
@@ -183,7 +201,7 @@ class InputSchemaBase(TypeBase):
             member_type = getattr(self, member)
             ret["members"][member] = {
                 "type": member_type.get_rust_type_name(),
-                "clock_companion": member_type.clock().get_name(),
+                "clock_companion": member_type.clock().name,
                 "input_key": member_type.get_input_key(),
                 "debug_info": member_type._debug_info.to_dict(),
             }

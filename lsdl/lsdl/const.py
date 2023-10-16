@@ -1,10 +1,10 @@
-from .schema import Bool, Float, Integer, String, TypeBase
+from .schema import Bool, Float, TypeWithLiteralValue, Integer, String
 from .signal import LeveledSignalProcessingModelComponentBase
 
 
 class Const(LeveledSignalProcessingModelComponentBase):
     """Constant value signal."""
-    def __init__(self, value, val_type: TypeBase = None):
+    def __init__(self, value, val_type: TypeWithLiteralValue = None):
         super().__init__()
         if val_type is None:
             tpe = type(value)
