@@ -1,7 +1,7 @@
 from typing import Any, Optional
 from abc import ABC
 
-from .column_type import Integer, String, TypeBase
+from .column_type import Bool, Integer, Float, String, TypeBase
 
 from .signal import LeveledSignalProcessingModelComponentBase
 
