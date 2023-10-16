@@ -1,8 +1,9 @@
 from typing import Self
 from .debug_info import DebugInfo
+from abc import ABC
 
 
-class LeveledSignalProcessingModelComponentBase:
+class LeveledSignalProcessingModelComponentBase(ABC):
     """A leveled signal processing model component base class.
 
     See LSP documentation for details about leveled signal definition.
