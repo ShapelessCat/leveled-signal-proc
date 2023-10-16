@@ -1,4 +1,4 @@
-from .schema import Bool, Float, TypeWithLiteralValue, Integer, String
+from .column_type import Bool, Float, Integer, String, TypeWithLiteralValue
 from .signal import LeveledSignalProcessingModelComponentBase
 
 
