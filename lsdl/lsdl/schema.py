@@ -39,13 +39,6 @@ class DateTime(TypeBase):
     def __init__(self, timezone: str = "Utc"):
         super().__init__("chrono::DateTime<chrono::" + timezone + ">")
 
-    def timestamp(self):
-        return self\
-            .map(
-                bind_var = "t",
-                lambda_src = "t.timestamp()"
-            ).annotate_type("i64")
-
 
 class String(TypeWithLiteralValue):
     def __init__(self):
@@ -54,6 +47,7 @@ class String(TypeWithLiteralValue):
     @override
     def render_rust_const(self, val) -> str:
         return f"{json.dumps(val)}.to_string()"
+
 
 class Bool(TypeWithLiteralValue):
     def __init__(self):
@@ -147,6 +141,7 @@ class MappedInputType(InputMemberType):
         ret.name = self.name + "_clock"
         return ret
 
+    # TODO: move this outside of this class or convert them to static methods!!!
     def parse(self, type_name, default_value = "Default::default()") -> LeveledSignalProcessingModelComponentBase:
         return self\
             .map(

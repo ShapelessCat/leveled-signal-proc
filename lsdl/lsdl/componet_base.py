@@ -1,6 +1,5 @@
 from abc import ABC
 from json import dumps as dump_json_str
-from typing import override
 
 from .schema import create_type_model_from_rust_type_name
 from .signal import LeveledSignalProcessingModelComponentBase, SignalBase
@@ -21,7 +20,7 @@ _assign_fresh_component_id = _make_assign_fresh_component_closure()
 _components = []
 
 
-class LspComponentBase(SignalBase):
+class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
     def __init__(self, node_decl: str, upstreams: list):
         super().__init__()
         self._node_decl = node_decl
@@ -56,6 +55,21 @@ class LspComponentBase(SignalBase):
             "id": self._id,
         }
 
+    def add_metric(self, key, typename = "_") -> 'LspComponentBase':
+        """Register the leveled signal as a metric.
+
+        The registered metric results will present in the output data structure.
+
+        Note: to register the type, the leveled signal should have a known type, otherwise, it's an error.
+        """
+        from . import measurement_config
+        from .measurements import PeekValue
+        if isinstance(self, SignalBase):
+            measurement_config().add_metric(key, PeekValue(self), typename)
+        else:
+            measurement_config().add_metric(key, self, typename)
+        return self
+
     def to_dict(self) -> dict[str, object]:
         upstreams = []
         for p in self._upstreams:
@@ -68,7 +82,7 @@ class LspComponentBase(SignalBase):
                 upstreams.append(p.get_id())
         return {
             "id": self._id,
-            "is_measurement": isinstance(self, LspMeasurement),
+            "is_measurement": not isinstance(self, SignalBase),
             "node_decl": self._node_decl,
             "upstreams": upstreams,
             "package": self._package,
@@ -77,35 +91,16 @@ class LspComponentBase(SignalBase):
         }
 
 
-class LspProcessor(ABC): pass
-class LspMeasurement(ABC): pass
-
-class BuiltinComponentBase(LspComponentBase):
+class BuiltinComponentBase(LspComponentBase, ABC):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._package = "lsp-component"
 
-    def add_metric(self, key, typename = "_") -> 'LeveledSignalProcessingModelComponentBase':
-        """Register the leveled signal as a metric.
 
-        The registered metric results will present in the output data structure.
-
-        Note: to register the type, the leveled signal should have a known type, otherwise, it's an error.
-        """
-        raise NotImplementedError()
-
-
-class BuiltinProcessorComponentBase(BuiltinComponentBase, LspProcessor):
+class BuiltinProcessorComponentBase(BuiltinComponentBase, SignalBase, ABC):
     def __init__(self, name, **kwargs):
         super().__init__(**kwargs)
         self._namespace = f"lsp_component::processors::{name}"
-
-    @override
-    def add_metric(self, key, typename = "_") -> LspComponentBase:
-        from . import measurement_config
-        from .measurements import PeekValue
-        measurement_config().add_metric(key, PeekValue(self), typename)
-        return self
 
     def has_been_true(self, duration = -1) -> 'BuiltinProcessorComponentBase':
         """Shortcut for `has_been_true` module.
@@ -166,16 +161,10 @@ class BuiltinProcessorComponentBase(BuiltinComponentBase, LspProcessor):
         return PeekValue(self)
 
 
-class BuiltinMeasurementComponentBase(BuiltinComponentBase,LspMeasurement):
+class BuiltinMeasurementComponentBase(BuiltinComponentBase, ABC):
     def __init__(self, name, **kwargs):
         super().__init__(**kwargs)
         self._namespace = f"lsp_component::measurements::{name}"
-
-    @override
-    def add_metric(self, key, typename = "_") -> LspComponentBase:
-        from . import measurement_config
-        measurement_config().add_metric(key, self, typename)
-        return self
 
 
 def get_components() -> list[LspComponentBase]:
