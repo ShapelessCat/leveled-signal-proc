@@ -62,9 +62,17 @@ dag:
     op: durationTrue
     in: $target
     slidingWindow: +inf
+  countEvent:
+    op: count
+    in: $target
+  makeOutput:
+    op: makeStruct
+    fields:
+      count: $countEvent
+      totalTime: $totalTime
   evaluatedInRealtime:
     op: evaluateAt
-    in: $totalTime
+    in: $makeOutput
     evaluationPoints: $rawEvents
 outputs:
   playTimeOutput:
