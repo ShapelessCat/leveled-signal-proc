@@ -1,0 +1,92 @@
+import functools
+from lsdl.const import Const
+
+
+class Operator(object):
+    op = None
+
+
+class NullaryOperator(Operator):
+    pass
+
+
+class UnaryOperator(Operator):
+    
+    def __init__(self, input):
+        self.input = input
+
+
+class BinaryOperator(Operator):
+    
+    def __init__(self, left, right):
+        self.left = left
+        self.right = right
+
+
+class KaryOperator(Operator):
+    
+    def __init__(self, args: list):
+        self.args = args
+
+
+class And(KaryOperator):
+    op = "and"
+
+    def process(self):
+        return functools.reduce(lambda a, b: a & b, self.args)
+
+
+class Or(KaryOperator):
+    op = "or"
+
+    def process(self):
+        return functools.reduce(lambda a, b: a | b, self.args)
+
+
+class Constant(NullaryOperator):
+    op = "constant"
+
+    def process(self, value):
+        return Const(value)
+
+
+class Count(UnaryOperator):
+    op = "count"
+
+    def process(self):
+        return self.input.count_changes()
+    
+
+class DurationTrueT(UnaryOperator):
+    op = "duration_true"
+
+    def process(self):
+        return self.input.measure_duration_true()
+    
+
+class Equals(BinaryOperator):
+    op = "equals"
+
+    def process(self):
+        return (self.left == self.right)
+    
+
+class Get(UnaryOperator):
+    op = "get"
+
+    def process(self, path):
+        return getattr(self.input, path)
+
+
+class Not(UnaryOperator):
+    op = "not"
+
+    def process(self):
+        return ~self.input
+    
+
+class MakeStruct(KaryOperator):
+    op = "make_struct"
+
+    def process(self):
+        return self.args

@@ -177,6 +177,9 @@ class InputSchemaBase(TypeBase):
                 self._members.append(item_name)
         _defined_schema = self
 
+    def rebuild(self, name = "InputSignalBag"):
+        self.__init__(name)
+
     def to_dict(self) -> dict:
         ret = {
             "type_name": self.get_rust_type_name(),
