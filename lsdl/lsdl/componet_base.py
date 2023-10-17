@@ -3,7 +3,7 @@ from json import dumps as dump_json_str
 from typing import override
 
 from .schema import create_type_model_from_rust_type_name
-from .signal import LeveledSignalProcessingModelComponentBase
+from .signal import LeveledSignalProcessingModelComponentBase, SignalBase
 
 
 def _make_assign_fresh_component_closure():
@@ -21,7 +21,7 @@ _assign_fresh_component_id = _make_assign_fresh_component_closure()
 _components = []
 
 
-class LspComponentBase(LeveledSignalProcessingModelComponentBase):
+class LspComponentBase(SignalBase):
     def __init__(self, node_decl: str, upstreams: list):
         super().__init__()
         self._node_decl = node_decl

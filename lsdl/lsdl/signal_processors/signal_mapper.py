@@ -1,4 +1,4 @@
-from lsdl.signal import LeveledSignalProcessingModelComponentBase
+from lsdl.signal import LeveledSignalProcessingModelComponentBase, SignalBase
 from ..componet_base import BuiltinProcessorComponentBase
 
 
@@ -41,7 +41,7 @@ def _build_signal_mapper(
     return inner
 
 
-class If(LeveledSignalProcessingModelComponentBase):
+class If(SignalBase):
     """The `if...then...else` expression for a leveled signal."""
     def __init__(self,
                  cond_expr: LeveledSignalProcessingModelComponentBase,
@@ -57,7 +57,7 @@ class If(LeveledSignalProcessingModelComponentBase):
         return self._inner.get_rust_type_name()
 
 
-class Cond(LeveledSignalProcessingModelComponentBase):
+class Cond(SignalBase):
     """The scheme `cond` style expression for a leveled signal."""
     def __init__(self,
                  first_branch: (LeveledSignalProcessingModelComponentBase, LeveledSignalProcessingModelComponentBase),

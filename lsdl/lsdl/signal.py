@@ -19,6 +19,8 @@ class LeveledSignalProcessingModelComponentBase(ABC):
         """Get the rust declaration for the type of this signal."""
         raise NotImplementedError()
 
+
+class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
     def map(self, bind_var: str, lambda_src: str) -> Self:
         """Shortcut to apply a signal mapper on current signal.
 
