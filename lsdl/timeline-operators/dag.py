@@ -62,7 +62,7 @@ class Dag(object):
             output_timeline = DataSource(data_source_config).get_input()
         elif op_name == "count":
             timeline = self._parse_block(timeline_config["in"])
-            output_timeline = Count(timeline).process()
+            output_timeline = Count(timeline).process().peek().add_metric(timeline_name)
         elif op_name == "constant":
             output_timeline = Constant().process(timeline_config["value"])
         elif op_name == "get":
@@ -73,7 +73,7 @@ class Dag(object):
             output_timeline = Not(timeline).process()
         elif op_name == "durationTrue":
             timeline = self._parse_block(timeline_config["in"])
-            output_timeline = DurationTrueT(timeline).process()
+            output_timeline = DurationTrueT(timeline).process().add_metric(timeline_name)
         elif op_name == "and":
             args = []
             for config in timeline_config["args"]:
@@ -93,24 +93,12 @@ class Dag(object):
                 args.append(timeline)
             output_timeline = Equals(args[0], args[1]).process()
         elif op_name == "latestEventToState":
-            timeline = self._parse_block(timeline_config["in"])
-            output_timeline = timeline
+            output_timeline = self._parse_block(timeline_config["in"])
         elif op_name == "evaluateAt":
-            timeline = self._parse_block(timeline_config["in"])
-            if self.dag_config["dag"][timeline_config["in"].strip("$")]["op"] == "makeStruct":
-                output_timeline = timeline
-            else:
-                if timeline.is_signal():
-                    output_timeline = timeline.peek().add_metric(timeline_name)
-                else:
-                    output_timeline = timeline.add_metric(timeline_name)
+            output_timeline = self._parse_block(timeline_config["in"])
         elif op_name == "makeStruct":
-            for c_name, config in timeline_config["fields"].items():
+            for _, config in timeline_config["fields"].items():
                 timeline = self._parse_block(config)
-                if timeline.is_signal():
-                    timeline = timeline.peek().add_metric(c_name)
-                else:
-                    timeline = timeline.add_metric(c_name)
             output_timeline = timeline
         self.processed_node[timeline_name] = output_timeline
         return output_timeline
