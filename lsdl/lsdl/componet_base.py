@@ -1,5 +1,6 @@
 from abc import ABC
 from json import dumps as dump_json_str
+from typing import Optional
 
 from .schema import create_type_model_from_rust_type_name
 from .signal import LeveledSignalProcessingModelComponentBase, SignalBase
@@ -63,9 +64,9 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
         Note: to register the type, the leveled signal should have a known type, otherwise, it's an error.
         """
         from . import measurement_config
-        from .measurements import PeekValue
+        from .measurements import Peek
         if isinstance(self, SignalBase):
-            measurement_config().add_metric(key, PeekValue(self), typename)
+            measurement_config().add_metric(key, Peek(self), typename)
         else:
             measurement_config().add_metric(key, self, typename)
         return self
@@ -87,7 +88,7 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
             "upstreams": upstreams,
             "package": self._package,
             "namespace": self._namespace,
-            "debug_info": self._debug_info.to_dict(),
+            "debug_info": self.debug_info.to_dict(),
         }
 
 
@@ -95,6 +96,7 @@ class BuiltinComponentBase(LspComponentBase, ABC):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._package = "lsp-component"
+        self._rust_component_name = self.__class__.__name__
 
 
 class BuiltinProcessorComponentBase(BuiltinComponentBase, SignalBase, ABC):
@@ -102,7 +104,7 @@ class BuiltinProcessorComponentBase(BuiltinComponentBase, SignalBase, ABC):
         super().__init__(**kwargs)
         self._namespace = f"lsp_component::processors::{name}"
 
-    def has_been_true(self, duration = -1) -> 'BuiltinProcessorComponentBase':
+    def has_been_true(self, duration = -1) -> SignalBase:
         """Shortcut for `has_been_true` module.
 
         Checks if the boolean signal has ever becomes true, and the result is a leveled signal.
@@ -111,7 +113,7 @@ class BuiltinProcessorComponentBase(BuiltinComponentBase, SignalBase, ABC):
         from .modules import has_been_true
         return has_been_true(self, duration)
 
-    def has_changed(self, duration = -1) -> 'BuiltinProcessorComponentBase':
+    def has_changed(self, duration = -1) -> SignalBase:
         """Shortcut for `has_changed` module.
 
         Checks if the signal has ever changed, and the result is a leveled signal.
@@ -120,10 +122,10 @@ class BuiltinProcessorComponentBase(BuiltinComponentBase, SignalBase, ABC):
         from .modules import has_changed
         return has_changed(self, duration)
 
-    def prior_different_value(self, scope: 'LeveledSignalProcessingModelComponentBase' = None) -> 'BuiltinProcessorComponentBase':
+    def prior_different_value(self, scope: Optional[SignalBase] = None) -> SignalBase:
         return self.prior_value(self, scope)
 
-    def prior_value(self, clock: 'LeveledSignalProcessingModelComponentBase' = None, scope: 'LeveledSignalProcessingModelComponentBase' = None) -> 'BuiltinProcessorComponentBase':
+    def prior_value(self, clock: Optional[SignalBase] = None, scope: Optional[SignalBase] = None) -> SignalBase:
         from .signal_processors import StateMachineBuilder
         if clock is None:
             clock = self.clock()
@@ -137,7 +139,7 @@ class BuiltinProcessorComponentBase(BuiltinComponentBase, SignalBase, ABC):
             lambda_src = 'ret.clone()'
         ).annotate_type(self.get_rust_type_name())
 
-    def measure_duration_true(self, scope_signal = None) -> 'BuiltinMeasurementComponentBase':
+    def measure_duration_true(self, scope_signal: Optional[SignalBase] = None) -> 'BuiltinMeasurementComponentBase':
         """Measures the total duration whenever this boolean signal is true.
 
         It returns a measurement.
@@ -157,8 +159,8 @@ class BuiltinProcessorComponentBase(BuiltinComponentBase, SignalBase, ABC):
     def peek(self) -> 'BuiltinMeasurementComponentBase':
         """Returns the measurement that peek the latest value for the given signal.
         """
-        from .measurements import PeekValue
-        return PeekValue(self)
+        from .measurements import Peek
+        return Peek(self)
 
 
 class BuiltinMeasurementComponentBase(BuiltinComponentBase, ABC):
@@ -171,6 +173,6 @@ def get_components() -> list[LspComponentBase]:
     return _components
 
 
-def serialize_defined_components(pretty_print = False) -> str:
+def serialize_defined_components(pretty_print=False) -> str:
     obj = [c.to_dict() for c in get_components()]
     return dump_json_str(obj, indent=4 if pretty_print else None)

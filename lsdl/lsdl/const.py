@@ -1,8 +1,8 @@
 from .schema import Bool, Float, Integer, String, TypeWithLiteralValue
-from .signal import LeveledSignalProcessingModelComponentBase
+from .signal import SignalBase
 
 
-class Const(LeveledSignalProcessingModelComponentBase):
+class Const(SignalBase):
     """Constant value signal."""
     def __init__(self, value, val_type: TypeWithLiteralValue = None):
         super().__init__()

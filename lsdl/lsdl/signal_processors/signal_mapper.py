@@ -1,33 +1,30 @@
-from lsdl.signal import LeveledSignalProcessingModelComponentBase, SignalBase
+from lsdl.signal import SignalBase
 from ..componet_base import BuiltinProcessorComponentBase
 
 
 class SignalMapper(BuiltinProcessorComponentBase):
-    def __init__(self, bind_var: str, lambda_src: str, upstream):
-        lambda_decl = "|{bind_var}:&{bind_type}| {lambda_src}".format(
-            bind_var = bind_var,
-            bind_type = (upstream.get_rust_type_name()
-                         if not isinstance(upstream, list)
-                         else "(" + ",".join([e.get_rust_type_name() for e in upstream]) + ")"),
-            lambda_src = lambda_src,
-        )
-        node_decl = f"SignalMapper::new({lambda_decl})"
+    def __init__(self, bind_var: str, lambda_src: str, upstream: SignalBase | list[SignalBase]):
+        bind_type = (upstream.get_rust_type_name()
+                     if not isinstance(upstream, list)
+                     else "(" + ",".join([e.get_rust_type_name() for e in upstream]) + ")")
+        lambda_decl = f"|{bind_var}:&{bind_type}| {lambda_src}"
+        rust_processor_name = self.__class__.__name__
         super().__init__(
-            name = "SignalMapper",
-            node_decl = node_decl,
-            upstreams = [upstream]
+            name=rust_processor_name,
+            node_decl=f"{rust_processor_name}::new({lambda_decl})",
+            upstreams=[upstream]
         )
 
 
 def _build_signal_mapper(
-    cond: LeveledSignalProcessingModelComponentBase,
-    then_branch: LeveledSignalProcessingModelComponentBase,
-    else_branch: LeveledSignalProcessingModelComponentBase
-) -> LeveledSignalProcessingModelComponentBase:
+    cond: SignalBase,
+    then_branch: SignalBase,
+    else_branch: SignalBase
+) -> SignalBase:
     inner = SignalMapper(
-        bind_var = "(cond, then_expr, else_expr)",
-        lambda_src = "if *cond { then_expr.clone() } else { else_expr.clone() }",
-        upstream = [cond, then_branch, else_branch]
+        bind_var="(cond, then_expr, else_expr)",
+        lambda_src="if *cond { then_expr.clone() } else { else_expr.clone() }",
+        upstream=[cond, then_branch, else_branch]
     )
     else_type = else_branch.get_rust_type_name()
     then_type = then_branch.get_rust_type_name()
@@ -44,9 +41,9 @@ def _build_signal_mapper(
 class If(SignalBase):
     """The `if...then...else` expression for a leveled signal."""
     def __init__(self,
-                 cond_expr: LeveledSignalProcessingModelComponentBase,
-                 then_expr: LeveledSignalProcessingModelComponentBase,
-                 else_expr: LeveledSignalProcessingModelComponentBase):
+                 cond_expr: SignalBase,
+                 then_expr: SignalBase,
+                 else_expr: SignalBase):
         super().__init__()
         self._inner = _build_signal_mapper(cond_expr, then_expr, else_expr)
 
@@ -60,9 +57,9 @@ class If(SignalBase):
 class Cond(SignalBase):
     """The scheme `cond` style expression for a leveled signal."""
     def __init__(self,
-                 first_branch: (LeveledSignalProcessingModelComponentBase, LeveledSignalProcessingModelComponentBase),
-                 middle_branches: [(LeveledSignalProcessingModelComponentBase, LeveledSignalProcessingModelComponentBase)],
-                 fallback_value: LeveledSignalProcessingModelComponentBase):
+                 first_branch: (SignalBase, SignalBase),
+                 middle_branches: [(SignalBase, SignalBase)],
+                 fallback_value: SignalBase):
         super().__init__()
         self._inner = _build_signal_mapper(*first_branch, fallback_value)
         while middle_branches:
