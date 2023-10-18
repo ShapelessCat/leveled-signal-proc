@@ -110,3 +110,31 @@ class Inequality(BinaryOperator):
             return (self.left < self.right)
         elif op == "lessThanOrEqualTo":
             return (self.left <= self.right)
+
+
+class Add(KaryOperator):
+    op = "add"
+
+    def process(self):
+        return functools.reduce(lambda a, b: a + b, self.args)
+
+
+class Multiply(KaryOperator):
+    op = "multiply"
+
+    def process(self):
+        return functools.reduce(lambda a, b: a * b, self.args)
+
+
+class Substract(BinaryOperator):
+    op = "substract"
+
+    def process(self):
+        return (self.left - self.right)
+    
+
+class Divide(BinaryOperator):
+    op = "divide"
+
+    def process(self):
+        return (self.left / self.right)

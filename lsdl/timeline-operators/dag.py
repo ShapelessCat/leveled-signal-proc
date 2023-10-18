@@ -50,6 +50,18 @@ class Dag(object):
         else:
             timeline = block_config
         return timeline
+    
+    def _parse_kary_args(self, timeline_config):
+        args = []
+        for config in timeline_config["args"]:
+            timeline = self._parse_block(config)
+            args.append(timeline)
+        return args
+
+    def _parse_binary_args(self, timeline_config):
+        left_timeline = self._parse_block(timeline_config["left"])
+        right_timeline = self._parse_block(timeline_config["right"])
+        return left_timeline, right_timeline
 
     def _parse_operator(self, timeline_config, timeline_name = None):
         if timeline_name in self.processed_node:
@@ -75,23 +87,14 @@ class Dag(object):
             timeline = self._parse_block(timeline_config["in"])
             output_timeline = DurationTrueT(timeline).process().add_metric(timeline_name)
         elif op_name == "and":
-            args = []
-            for config in timeline_config["args"]:
-                timeline = self._parse_block(config)
-                args.append(timeline)
+            args = self._parse_kary_args(timeline_config)
             output_timeline = And(args).process()
-        elif op_name == "or":
-            args = []
-            for config in timeline_config["args"]:
-                timeline = self._parse_block(config)
-                args.append(timeline)
+        elif op_name in ("or", "mergeEvents"):
+            args = self._parse_kary_args(timeline_config)
             output_timeline = Or(args).process()
         elif op_name == "equals":
-            args = []
-            for config in (timeline_config["left"], timeline_config["right"]):
-                timeline = self._parse_block(config)
-                args.append(timeline)
-            output_timeline = Equals(args[0], args[1]).process()
+            left, right = self._parse_binary_args(timeline_config)
+            output_timeline = Equals(left, right).process()
         elif op_name == "latestEventToState":
             output_timeline = self._parse_block(timeline_config["in"])
         elif op_name == "evaluateAt":
@@ -104,11 +107,20 @@ class Dag(object):
             timeline = self._parse_block(timeline_config["in"])
             output_timeline = FilterByValue(timeline).process(timeline_config["values"])
         elif op_name in ("greaterThan", "greaterThanOrEqualTo", "lessThan", "lessThanOrEqualTo"):
-            args = []
-            for config in (timeline_config["left"], timeline_config["right"]):
-                timeline = self._parse_block(config)
-                args.append(timeline)
-            output_timeline = Inequality(args[0], args[1]).process(op_name)
+            left, right = self._parse_binary_args(timeline_config)
+            output_timeline = Inequality(left, right).process(op_name)
+        elif op_name == "add":
+            args = self._parse_kary_args(timeline_config)
+            output_timeline = Add(args).process()
+        elif op_name == "multiply":
+            args = self._parse_kary_args(timeline_config)
+            output_timeline = Multiply(args).process()
+        elif op_name == "substract":
+            left, right = self._parse_binary_args(timeline_config)
+            output_timeline = Substract(left, right).process()
+        elif op_name == "divide":
+            left, right = self._parse_binary_args(timeline_config)
+            output_timeline = Divide(left, right).process()
 
         self.processed_node[timeline_name] = output_timeline
         return output_timeline
