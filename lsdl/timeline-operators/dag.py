@@ -100,6 +100,16 @@ class Dag(object):
             for _, config in timeline_config["fields"].items():
                 timeline = self._parse_block(config)
             output_timeline = timeline
+        elif op_name == "filterByValue":
+            timeline = self._parse_block(timeline_config["in"])
+            output_timeline = FilterByValue(timeline).process(timeline_config["values"])
+        elif op_name in ("greaterThan", "greaterThanOrEqualTo", "lessThan", "lessThanOrEqualTo"):
+            args = []
+            for config in (timeline_config["left"], timeline_config["right"]):
+                timeline = self._parse_block(config)
+                args.append(timeline)
+            output_timeline = Inequality(args[0], args[1]).process(op_name)
+
         self.processed_node[timeline_name] = output_timeline
         return output_timeline
 

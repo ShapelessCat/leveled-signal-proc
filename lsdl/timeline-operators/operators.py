@@ -83,10 +83,30 @@ class Not(UnaryOperator):
 
     def process(self):
         return ~self.input
-    
 
-class MakeStruct(KaryOperator):
-    op = "make_struct"
 
-    def process(self):
-        return self.args
+class FilterByValue(UnaryOperator):
+    op = "filter_by_value"
+
+    def process(self, values):
+        t = None
+        for v in values:
+            if not t:
+                t = (self.input == v)
+                continue
+            t = t | (self.input == v)
+        return t
+
+
+class Inequality(BinaryOperator):
+    op = None
+
+    def process(self, op):
+        if op == "greaterThan":
+            return (self.left > self.right)
+        elif op == "greaterThanOrEqualTo":
+            return (self.left >= self.right)
+        elif op == "lessThan":
+            return (self.left < self.right)
+        elif op == "lessThanOrEqualTo":
+            return (self.left <= self.right)
