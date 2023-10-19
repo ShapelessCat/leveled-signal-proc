@@ -1,13 +1,13 @@
-from ..componet_base import BuiltinComponentBase
-from ..signal import LeveledSignalBase
+from ..componet_base import BuiltinMeasurementComponentBase
+from ..signal import SignalBase
 
 
-class PeekValue(BuiltinComponentBase):
-    def __init__(self, input_signal: LeveledSignalBase):
+class Peek(BuiltinMeasurementComponentBase):
+    def __init__(self, input_signal: SignalBase):
+        rule_component_name = self.__class__.__name__
         super().__init__(
-            name = "Peek",
-            is_measurement = True,
-            node_decl = "Peek::default()",
-            upstreams = [input_signal]
+            name=rule_component_name,
+            node_decl=f"{rule_component_name}::default()",
+            upstreams=[input_signal]
         )
         self.annotate_type(input_signal.get_rust_type_name())
