@@ -58,7 +58,7 @@ class _MeasurementConfiguration:
         self._metrics_drain = fmt
         return self
 
-    def add_metric(self, key, measurement, typename = "_"):
+    def add_metric(self, key, measurement, typename="_"):
         """Declare a metric for output."""
         if typename == "_":
             typename = measurement.get_rust_type_name()

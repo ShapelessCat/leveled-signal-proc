@@ -1,3 +1,3 @@
 from .diff import DiffSinceCurrentLevel
 from .duration import DurationTrue, DurationSinceBecomeTrue
-from .peek import PeekValue
+from .peek import Peek

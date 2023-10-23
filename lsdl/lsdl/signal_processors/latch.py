@@ -1,48 +1,49 @@
-from ..componet_base import BuiltinComponentBase
-from ..signal import LeveledSignalBase
+from ..componet_base import BuiltinProcessorComponentBase
+from ..signal import SignalBase
 
 
-class Latch(BuiltinComponentBase):
-    def __init__(self, control: LeveledSignalBase, data: LeveledSignalBase, forget_duration: int | str = -1, **kwargs):
+class Latch(BuiltinProcessorComponentBase):
+    def __init__(self, control: SignalBase, data: SignalBase, forget_duration: int | str = -1, **kwargs):
+        rust_processor_name = self.__class__.__name__
         from ..modules import normalize_duration
         forget_duration = normalize_duration(forget_duration)
+        dt = data.get_rust_type_name()
         if forget_duration < 0:
-            node_decl = "Latch::<{type_name}>::default()".format(type_name = data.get_rust_type_name())
+            node_decl = f"{rust_processor_name}::<{dt}>::default()"
         else:
-            node_decl = "Latch::with_forget_behavior(<{type_name} as Default>::default(), <{type_name} as Default>::default(), {forget_duration})".format(
-                type_name = data.get_rust_type_name(),
-                forget_duration = forget_duration
-            )
+            default = f"<{dt} as Default>::default()"
+            node_decl = f"{rust_processor_name}::with_forget_behavior({default}, {default}, {forget_duration})"
         super().__init__(
-            name = "Latch",
-            is_measurement = False, 
-            node_decl = node_decl, 
-            upstreams = [control, data]
+            name=rust_processor_name,
+            node_decl=node_decl,
+            upstreams=[control, data]
         )
-        if "output_type" in kwargs:
-            self.annotate_type(kwargs["output_type"])
+        key4type = "output_type"
+        if key4type in kwargs:
+            self.annotate_type(kwargs[key4type])
         else:
             self.annotate_type(data.get_rust_type_name())
 
 
-class EdgeTriggeredLatch(BuiltinComponentBase):
-    def __init__(self, control: LeveledSignalBase, data: LeveledSignalBase, forget_duration: int | str = -1, **kwargs):
+class EdgeTriggeredLatch(BuiltinProcessorComponentBase):
+    def __init__(self, control: SignalBase, data: SignalBase, forget_duration: int | str = -1, **kwargs):
+        rust_processor_name = self.__class__.__name__
         from ..modules import normalize_duration
         forget_duration = normalize_duration(forget_duration)
+        dt = data.get_rust_type_name()
         if forget_duration < 0:
-            node_decl = "EdgeTriggeredLatch::<{control_type_name}, {data_type_name}>::default()".format(control_type_name = control.get_rust_type_name(), data_type_name = data.get_rust_type_name())
+            ct = control.get_rust_type_name()
+            node_decl = f"{rust_processor_name}::<{ct}, {dt}>::default()"
         else:
-            node_decl = "EdgeTriggeredLatch::with_forget_behavior(<{type_name} as Default>::default(), <{type_name} as Default>::default(), {forget_duration})".format(
-                type_name = data.get_rust_type_name(),
-                forget_duration = forget_duration
-            )
+            default = f"<{dt} as Default>::default()"
+            node_decl = f"{rust_processor_name}::with_forget_behavior({default}, {default}, {forget_duration})"
         super().__init__(
-            name = "EdgeTriggeredLatch",
-            is_measurement = False, 
-            node_decl = node_decl, 
-            upstreams = [control, data]
+            name=rust_processor_name,
+            node_decl=node_decl,
+            upstreams=[control, data]
         )
-        if "output_type" in kwargs:
-            self.annotate_type(kwargs["output_type"])
+        key4type = "output_type"
+        if key4type in kwargs:
+            self.annotate_type(kwargs[key4type])
         else:
             self.annotate_type(data.get_rust_type_name())

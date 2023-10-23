@@ -1,10 +1,10 @@
-from .schema import Bool, Float, Integer, String, TypeBase
-from .signal import LeveledSignalBase
+from .schema import Bool, Float, Integer, String, TypeWithLiteralValue
+from .signal import SignalBase
 
 
-class Const(LeveledSignalBase):
+class Const(SignalBase):
     """Constant value signal."""
-    def __init__(self, value, val_type: TypeBase = None):
+    def __init__(self, value, val_type: TypeWithLiteralValue = None):
         super().__init__()
         if val_type is None:
             tpe = type(value)
@@ -18,9 +18,6 @@ class Const(LeveledSignalBase):
                 val_type = Bool()
         self._type = val_type
         self._rs_value = val_type.render_rust_const(value)
-
-    def is_signal(self) -> bool:
-        return True
 
     def get_rust_type_name(self) -> str:
         return self._type.get_rust_type_name()
