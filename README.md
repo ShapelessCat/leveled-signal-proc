@@ -10,8 +10,8 @@ The experimental time-state analytics platform written in Rust.
   - If you use _pyenv_, you can:
 
     ```shell
-    pyenv install -v 3.11.6
-    pyenv virtualenv 3.11.6 lsp-py
+    pyenv install -v 3.12.0
+    pyenv virtualenv 3.11.0 lsp-py
     ```
 
     and then activate `lsp-py` after opening this project.
