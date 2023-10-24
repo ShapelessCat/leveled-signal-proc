@@ -12,7 +12,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Type
 
-from gen_utils import random_bool, timestamp
+from gen_utils import random_bool, timestamp_gen
 
 logging.basicConfig(level=logging.INFO)
 
@@ -138,7 +138,7 @@ class ConvivaApplicationError(Event):
 
 
 class ConvivaVideoEvents(Event):
-    _names = (['c3.sdk.custom_event', 'c3.video.custom_event'] + # can keep session alive in next 90s
+    _names = (['c3.sdk.custom_event', 'c3.video.custom_event'] +  # can keep session alive in next 90s
               ['c3.video.attempt'] +
               [f"cannot-keep-session-alive-{i}" for i in range(2)])
 
@@ -171,7 +171,7 @@ def all_kinds_of_events() -> list[Type[Event]]:
     result = []
 
     def traverse(clazz) -> None:
-        for subclass in [sc for sc in clazz.__subclasses__()]:
+        for subclass in list(clazz.__subclasses__()):
             if not inspect.isabstract(subclass):
                 result.append(subclass)
             else:
@@ -184,34 +184,52 @@ def all_kinds_of_events() -> list[Type[Event]]:
 def collect_event_generators_for(platform: Platform) -> list[Event]:
     platform_event_type = MobileOnlyEvent if platform is Platform.MOB else WebOnlyEvent
     to_be_excluded_event_type = MobileOnlyEvent if platform_event_type is not MobileOnlyEvent else WebOnlyEvent
-    generators = {
+    result = {
         eg() if issubclass(eg, platform_event_type) else eg(platform)
         for eg in all_kinds_of_events()
         if not issubclass(eg, to_be_excluded_event_type)
     }
-    return list(generators | {RandomNameEvent(selected_platform) for _ in range(4)})
+    # For now both platforms have 6 distinct event types, except the random
+    # placeholder events.
+    assert len(result) == 6 if platform is Platform.WEB else 7,\
+           "Please fix event data generator: some events don't show up in generated result!"
+    return list(result | {RandomNameEvent(selected_platform) for _ in range(4)})
+
+
+RATE_OF_KEEPING_LAST_TIMESTAMP = 0.01
 
 
 def generate_all_timestamps(count: int):
+    timestamp_of = timestamp_gen()
     time_delta = timedelta(seconds=0)
     for _ in range(count):
-        time_delta += timedelta(seconds=random.randint(10, 1000) / 10.0)
-        yield timestamp(time_delta)
+        is_simultaneous = random.random() <= RATE_OF_KEEPING_LAST_TIMESTAMP
+        if not is_simultaneous:
+            time_delta += timedelta(seconds=random.randint(10, 1000) / 10.0)
+
+        t = timestamp_of(time_delta)
+        if is_simultaneous:
+            logging.info('No timestamp change for %s', t)
+        yield t
 
 
 if __name__ == '__main__':
     output_file = sys.stdout
     if len(sys.argv) < 2 or not sys.argv[1].isdigit():
-        logging.error('This script only accept one integer argument, which represent the required number of entries.')
+        logging.error(
+            'Only accept one integer argument that specifies the required number of entries.'
+        )
         sys.exit(1)
     else:
         required_count = int(sys.argv[1])
-        default_output_path = Path(__file__).parent.parent / 'data' / 'app-analytics-metrics-demo-input.jsonl'
+        sample_data_home = Path(__file__).parent.parent / 'data'
+        default_output_path = sample_data_home / 'app-analytics-metrics-demo-input.jsonl'
         output_path = sys.argv[2] if len(sys.argv) >= 3 else default_output_path
         if output_path != "-":
-            output_file = open(output_path, "w")
+            output_file = open(output_path, 'w', encoding='utf-8')
     selected_platform = random.choice([Platform.MOB, Platform.WEB])
-    logging.info(f"Generate data for the {selected_platform} platform.")
+    logging.info("Generate data for the %s platform.", selected_platform)
     event_generators = collect_event_generators_for(selected_platform)
     for ts in generate_all_timestamps(required_count):
-        print(json.dumps({"timestamp": f"{ts}"} | random.choice(event_generators).generate()), file = output_file)
+        event = {"timestamp": f"{ts}"} | random.choice(event_generators).generate()
+        print(json.dumps(event), file=output_file)
