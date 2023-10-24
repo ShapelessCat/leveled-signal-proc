@@ -121,6 +121,9 @@ class Dag(object):
         elif op_name == "divide":
             left, right = self._parse_binary_args(timeline_config)
             output_timeline = Divide(left, right).process()
+        elif op_name == "any":
+            timeline = self._parse_block(timeline_config["in"])
+            output_timeline = Any(timeline).process()
 
         self.processed_node[timeline_name] = output_timeline
         return output_timeline

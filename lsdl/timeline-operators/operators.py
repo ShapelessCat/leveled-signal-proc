@@ -138,3 +138,10 @@ class Divide(BinaryOperator):
 
     def process(self):
         return (self.left / self.right)
+
+
+class Any(UnaryOperator):
+    op = "any"
+
+    def process(self):
+        return self.input.has_been_true()
