@@ -61,8 +61,10 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
 
         The registered metric results will present in the output data structure.
 
-        Note: to register the type, the leveled signal should have a known type, otherwise, it's an error.
+        Note:
+        to register the type, the leveled signal should have a known type, otherwise, it's an error.
         """
+        # TODO: Check if the `key` is a valid Rust identifier!
         from . import measurement_config
         from .measurements import Peek
         if isinstance(self, SignalBase):
