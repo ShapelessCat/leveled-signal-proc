@@ -69,7 +69,7 @@ impl InputSignalBag for StateBag {
 
 #[allow(unused_assignments)]
 fn main() {
-    let fin = File::open("data/aa-sample.json").unwrap();
+    let fin = File::open("assets/data/aa-sample.jsonl").unwrap();
     let reader = BufReader::new(fin);
     let mut ctx = LspContext::<_, StateBag>::new(
         Deserializer::from_reader(reader)
