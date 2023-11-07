@@ -1,0 +1,81 @@
+inputs:
+  videoHeartbeats:
+    format:
+      name: json # optional
+      schema: #{ fields: {newPlayerState: String, newNetwork: String, newCdn: String, userAction: String}}
+        fields:
+          newPlayerState: String
+          newNetwork: String
+          newCdn: String
+          userAction: String
+    source: input.json
+    sessionIdPath: "sessionId"
+    timePath: "dateTime"
+    sequenceNumberPath: "seqnum"
+dag:
+  rawEvents:
+    op: eventSourceTimeline
+    source: $videoHeartbeats
+  userAction:
+    op: latestEventToState
+    in:
+      op: get
+      in: $rawEvents
+      path: "userAction"
+  playerState:
+    op: latestEventToState
+    in:
+      op: get
+      in: $rawEvents
+      path: "newPlayerState"
+  network:
+    op: latestEventToState
+    in:
+      op: get
+      in: $rawEvents
+      path: "newNetwork"
+  cdn:
+    op: latestEventToState
+    in:
+      op: get
+      in: $rawEvents
+      path: "newCdn"
+  isPlay:
+    op: equals
+    left: $playerState
+    right: "play"
+  isWifi:
+    op: equals
+    left: $network
+    right: "WIFI"
+  isCDN1:
+    op: equals
+    left: $cdn
+    right: "cdn1"
+  target:
+    op: and
+    args:
+      - $isPlay
+      - $isWifi
+      - $isCDN1
+  totalTime:
+    op: durationTrue
+    in: $target
+    slidingWindow: +inf
+  countEvent:
+    op: count
+    in: $target
+  makeOutput:
+    op: makeStruct
+    fields:
+      count: $countEvent
+      totalTime: $totalTime
+  evaluatedInRealtime:
+    op: evaluateAt
+    in: $makeOutput
+    evaluationPoints: $rawEvents
+outputs:
+  playTimeOutput:
+    timeline: $evaluatedInRealtime
+    format: eventJson
+    destination: /dev/null
