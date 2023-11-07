@@ -113,7 +113,7 @@ fn state_transit(state: u32, input: &String) -> u32 {
 }
 
 fn main() {
-    let fin = File::open("data/state-machine.json").unwrap();
+    let fin = File::open("assets/data/state-machine.jsonl").unwrap();
     let reader = BufReader::new(fin);
     let mut ctx = LspContext::<_, StateBag>::new(
         Deserializer::from_reader(reader)
