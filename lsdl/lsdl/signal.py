@@ -46,9 +46,17 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         return self.prior_value(self, scope)
 
     def prior_value(self, clock: Optional['SignalBase'] = None, scope: Optional['SignalBase'] = None) -> 'SignalBase':
+        from .schema import MappedInputMember
         from .signal_processors import StateMachineBuilder
         if clock is None:
-            clock = self.clock()
+            if isinstance(self, MappedInputMember):
+                clock = self.clock()
+            else:
+                raise ValueError(
+                    """Please
+                       1. either provide a signal as the required clock
+                       2. or make sure the `self` is a `MappedInputMember` instance, which has the `clock()` method"""
+                )
         ty = self.get_rust_type_name()
         builder = StateMachineBuilder(data=self, clock=clock)\
             .transition_fn(f'|(_, current): &({ty}, {ty}), data : &{ty}| (current.clone(), data.clone())')
