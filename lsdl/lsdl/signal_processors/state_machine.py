@@ -1,4 +1,5 @@
 from ..componet_base import BuiltinProcessorComponentBase
+from ..rust_code import RustCode
 from ..signal import SignalBase
 
 
@@ -16,7 +17,7 @@ class StateMachineBuilder:
         self._init_state = init_state
         return self
 
-    def transition_fn(self, fn: str):
+    def transition_fn(self, fn: RustCode):
         self._transition_fn = fn
         return self
 

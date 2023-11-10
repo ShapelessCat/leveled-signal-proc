@@ -1,6 +1,7 @@
 from abc import ABC
 from json import dumps as dump_json_str
 
+from .rust_code import RustCode
 from .schema import create_type_model_from_rust_type_name
 from .signal import LeveledSignalProcessingModelComponentBase, SignalBase
 
@@ -42,11 +43,11 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
             else:
                 raise e
 
-    def annotate_type(self, typename: str):
+    def annotate_type(self, typename: RustCode):
         self._output_type = typename
         return self
 
-    def get_rust_type_name(self) -> str:
+    def get_rust_type_name(self) -> RustCode:
         return self._output_type
 
     def get_id(self):

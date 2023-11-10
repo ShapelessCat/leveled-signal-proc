@@ -1,5 +1,7 @@
 import logging
 
+from .rust_code import RustCode
+
 logging.basicConfig(encoding='utf-8', level=logging.INFO)
 
 
@@ -17,7 +19,7 @@ class _MeasurementConfiguration:
         self._metrics_drain = "json"
         self._output_schema = {}
 
-    def set_measure_at_filter(self, lambda_src: str):
+    def set_measure_at_filter(self, lambda_src: RustCode):
         """Set the rule for event triggered measurement."""
         self._measure_at_event_lambda = lambda_src
         return self
@@ -58,7 +60,7 @@ class _MeasurementConfiguration:
         self._metrics_drain = fmt
         return self
 
-    def add_metric(self, key, measurement, typename="_"):
+    def add_metric(self, key, measurement, typename: RustCode = "_"):
         """Declare a metric for output."""
         if typename == "_":
             typename = measurement.get_rust_type_name()

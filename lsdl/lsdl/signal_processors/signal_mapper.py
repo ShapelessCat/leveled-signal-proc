@@ -1,4 +1,5 @@
 from ..componet_base import BuiltinProcessorComponentBase
+from ..rust_code import RustCode
 from ..signal import SignalBase
 
 
@@ -50,7 +51,7 @@ class If(SignalBase):
     def get_id(self):
         return self._inner.get_id()
 
-    def get_rust_type_name(self) -> str:
+    def get_rust_type_name(self) -> RustCode:
         return self._inner.get_rust_type_name()
 
 
@@ -69,5 +70,5 @@ class Cond(SignalBase):
     def get_id(self):
         return self._inner.get_id()
 
-    def get_rust_type_name(self) -> str:
+    def get_rust_type_name(self) -> RustCode:
         return self._inner.get_rust_type_name()

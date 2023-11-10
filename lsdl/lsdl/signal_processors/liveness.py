@@ -7,7 +7,7 @@ class LivenessChecker(BuiltinProcessorComponentBase):
         rust_processor_name = self.__class__.__name__
         super().__init__(
             name=rust_processor_name,
-            node_decl=f"""{rust_processor_name}::new(|{ef_bind_var}: &InputSignalBagPatch| {ef_src}, {timeout})""",
+            node_decl=f"{rust_processor_name}::new(|{ef_bind_var}: &InputSignalBagPatch| {ef_src}, {timeout})",
             upstreams=[liveness_clock],
         )
         self.annotate_type("bool")

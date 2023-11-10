@@ -2,11 +2,12 @@ import json
 from abc import ABC, abstractmethod
 from typing import Any, Optional
 
+from .rust_code import RustCode, input_signal_bag, rust_default_value
 from .signal import LeveledSignalProcessingModelComponentBase, SignalBase
 
 
 class TypeBase(LeveledSignalProcessingModelComponentBase, ABC):
-    def __init__(self, rs_type: str):
+    def __init__(self, rs_type: RustCode):
         super().__init__()
         self._rust_type = rs_type
         self._reset_expr = None
@@ -16,7 +17,7 @@ class TypeBase(LeveledSignalProcessingModelComponentBase, ABC):
     def reset_expr(self):
         return self._reset_expr
 
-    def get_rust_type_name(self) -> str:
+    def get_rust_type_name(self) -> RustCode:
         return self._rust_type
 
     def get_id(self):
@@ -40,8 +41,8 @@ class CompilerInferredType(TypeBase):
 
 
 class DateTime(TypeBase):
-    def __init__(self, timezone: str = "Utc"):
-        super().__init__("chrono::DateTime<chrono::" + timezone + ">")
+    def __init__(self, timezone: RustCode = "Utc"):
+        super().__init__(f"chrono::DateTime<chrono::{timezone}>")
 
 
 class String(TypeWithLiteralValue):
@@ -64,7 +65,8 @@ class Bool(TypeWithLiteralValue):
 
 class Integer(TypeWithLiteralValue):
     def __init__(self, signed=True, width=32):
-        super().__init__("i" + str(width) if signed else "u" + str(width))
+        type_prefix = "i" if signed else "u"
+        super().__init__(f"{type_prefix}{width}")
 
     # @override
     def render_rust_const(self, val) -> str:
@@ -73,7 +75,7 @@ class Integer(TypeWithLiteralValue):
 
 class Float(TypeWithLiteralValue):
     def __init__(self, width=64):
-        super().__init__("f" + str(width))
+        super().__init__(f"f{width}")
 
     # @override
     def render_rust_const(self, val) -> str:
@@ -82,7 +84,7 @@ class Float(TypeWithLiteralValue):
 
 class Vector(TypeWithLiteralValue):
     def __init__(self, element_type: TypeBase):
-        super().__init__("Vec<" + element_type.get_rust_type_name() + ">")
+        super().__init__(f"Vec<{element_type.get_rust_type_name()}>")
         self._element_type = element_type
 
     # @override
@@ -140,16 +142,15 @@ class MappedInputMember(InputMember):
 
     def clock(self) -> ClockCompanion:
         ret = ClockCompanion()
-        ret.name = self.name + "_clock"
+        ret.name = f"{self.name}_clock"
         return ret
 
     # TODO: move this outside of this class or convert them to static methods!!!
-    def parse(self, type_name, default_value="Default::default()") -> SignalBase:
-        return self \
-            .map(
-                bind_var="s",
-                lambda_src=f"s.parse::<{type_name}>().unwrap_or({default_value})"
-            ).annotate_type(type_name)
+    def parse(self, type_name, default_value: RustCode = rust_default_value) -> SignalBase:
+        return self.map(
+            bind_var="s",
+            lambda_src=f"s.parse::<{type_name}>().unwrap_or({default_value})"
+        ).annotate_type(type_name)
 
     def starts_with(self, other) -> SignalBase:
         from .const import Const
@@ -172,7 +173,7 @@ _defined_schema: Optional['InputSchemaBase'] = None
 
 
 class InputSchemaBase(LeveledSignalProcessingModelComponentBase):
-    def __init__(self, name="InputSignalBag"):
+    def __init__(self, name: RustCode = input_signal_bag):
         global _defined_schema
         super().__init__()
         self._rust_type = name
@@ -189,7 +190,7 @@ class InputSchemaBase(LeveledSignalProcessingModelComponentBase):
                 self._members.append(item_name)
         _defined_schema = self
 
-    def rebuild(self, name="InputSignalBag"):
+    def rebuild(self, name: RustCode = input_signal_bag):
         self.__init__(name)
 
     def get_rust_type_name(self) -> str:
@@ -242,7 +243,7 @@ class SessionizedInputSchemaBase(InputSchemaBase):
             signal_clock = signal.clock()
         return self._scope_ctx.scoped(data=signal, clock=signal_clock, default=default_value)
 
-    def __init__(self, name="InputSignalBag"):
+    def __init__(self, name: RustCode = input_signal_bag):
         from .modules import ScopeContext
         super().__init__(name)
         self.session_signal = self.create_session_signal()
@@ -263,10 +264,8 @@ def named(name: str, inner: TypeBase = String()) -> MappedInputMember:
     return MappedInputMember(name, inner)
 
 
-def volatile(inner: TypeBase, default=None) -> TypeBase:
-    if default is None:
-        default = "Default::default()"
-    inner._reset_expr = default
+def volatile(inner: TypeBase, default_value: RustCode = rust_default_value) -> TypeBase:
+    inner._reset_expr = default_value
     return inner
 
 
@@ -274,7 +273,7 @@ def get_schema():
     return _defined_schema
 
 
-def create_type_model_from_rust_type_name(rust_type_name: str) -> Optional[TypeBase]:
+def create_type_model_from_rust_type_name(rust_type_name: RustCode) -> Optional[TypeBase]:
     if rust_type_name == "String":
         return String()
     if rust_type_name[0] in ['i', 'u']:
