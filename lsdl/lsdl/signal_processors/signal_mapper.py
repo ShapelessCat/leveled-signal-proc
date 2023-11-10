@@ -1,5 +1,5 @@
-from lsdl.signal import SignalBase
 from ..componet_base import BuiltinProcessorComponentBase
+from ..signal import SignalBase
 
 
 class SignalMapper(BuiltinProcessorComponentBase):

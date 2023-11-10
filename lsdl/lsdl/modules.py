@@ -32,11 +32,13 @@ def normalize_duration(duration: int | str) -> int:
 
 
 def has_been_true(input_signal: SignalBase, duration: int | str = -1) -> SignalBase:
-    """
-        Checks if the boolean signal has ever becomes true and returns the result as a leveled signal.
-        When `duration` is given, it checks if the signal has been true within `duration` amount of time.
-        Note: `duration` can be either an integer as number of nanoseconds or a string of "<value><unit>".
-        For example, "100ms", "2h", etc...
+    """Checks if the boolean signal has ever becomes true.
+
+    When `duration` is given, it checks if the signal has been true within `duration` amount of time.
+
+    Note:
+    `duration` can be either an integer as number of nanoseconds or a string of "<value><unit>".
+    For example, "100ms", "2h", etc...
     """
     return Latch(
         data=Const(True),
@@ -63,10 +65,7 @@ def has_changed(input_signal: SignalBase, duration: int | str = -1) -> SignalBas
 
 
 def make_tuple(*args: SignalBase) -> SignalBase:
-    """
-        Make a tuple from multiple input signals.
-        The result is also a leveled signal.
-    """
+    """Make a tuple from multiple input signals."""
     return SignalMapper(
         bind_var="s",
         lambda_src="s.clone()",
@@ -89,9 +88,7 @@ class SignalFilterBuilder:
         self._filter_lambda = None
 
     def filter_fn(self, bind_var: str, lambda_body: str) -> Self:
-        """
-            Set the Rust lambda function that filters the signal
-        """
+        """Set the Rust lambda function that filters the signal."""
         self._filter_node = SignalMapper(
             bind_var=bind_var,
             upstream=self._filter_signal,
@@ -100,9 +97,7 @@ class SignalFilterBuilder:
         return self
 
     def filter_values(self, *args) -> Self:
-        """
-            Set the list of values that to filter
-        """
+        """Set the list of values that to filter."""
         values = args
         self._filter_node = (self._filter_signal == values[0])
         for value in values[1:]:
@@ -110,16 +105,12 @@ class SignalFilterBuilder:
         return self
 
     def filter_true(self) -> Self:
-        """
-            Filters the boolean signal when its values is true
-        """
+        """Filters the boolean signal when its values is true."""
         self._filter_node = self._filter_signal
         return self
 
     def then_filter(self, filter_signal: SignalBase) -> Self:
-        """
-            Builds the clock signal filter and then create a builder that performing cascade filtering
-        """
+        """Builds the clock signal filter and then create a builder that performing cascade filtering."""
         signal_clock = self.build_clock_filter()
         ret = SignalFilterBuilder(filter_signal, signal_clock)
         if filter_signal.get_rust_type_name() == "bool":

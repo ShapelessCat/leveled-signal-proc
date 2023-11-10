@@ -189,7 +189,7 @@ class InputSchemaBase(LeveledSignalProcessingModelComponentBase):
                 self._members.append(item_name)
         _defined_schema = self
 
-    def rebuild(self, name = "InputSignalBag"):
+    def rebuild(self, name="InputSignalBag"):
         self.__init__(name)
 
     def get_rust_type_name(self) -> str:
