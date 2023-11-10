@@ -91,7 +91,7 @@ class Vector(TypeWithLiteralValue):
         return f"vec![{typed_const_elements}]"
 
 
-class InputMemberType(SignalBase, ABC):
+class InputMember(SignalBase, ABC):
     def __init__(self, tpe: TypeBase):
         super().__init__()
         self._rust_type = tpe.get_rust_type_name()
@@ -119,12 +119,12 @@ class InputMemberType(SignalBase, ABC):
         }
 
 
-class ClockCompanion(InputMemberType):
+class ClockCompanion(InputMember):
     def __init__(self):
         super().__init__(Integer(signed=False, width=64))
 
 
-class MappedInputType(InputMemberType):
+class MappedInputMember(InputMember):
     def __init__(self, input_key: str, tpe: TypeBase):
         super().__init__(tpe)
         self._input_key = input_key
@@ -181,9 +181,9 @@ class InputSchemaBase(LeveledSignalProcessingModelComponentBase):
             self._timestamp_key = "timestamp"
         for item_name in self.__dir__():
             item = self.__getattribute__(item_name)
-            if isinstance(item, (TypeBase, InputMemberType)):
-                if not isinstance(item, InputMemberType):
-                    item = MappedInputType(input_key=item_name, tpe=item)
+            if isinstance(item, (TypeBase, InputMember)):
+                if isinstance(item, TypeBase):
+                    item = MappedInputMember(input_key=item_name, tpe=item)
                 item.name = item_name
                 self.__setattr__(item_name, item)
                 self._members.append(item_name)
@@ -259,8 +259,8 @@ class SessionizedInputSchemaBase(InputSchemaBase):
             return super().__getattribute__(name)
 
 
-def named(name: str, inner: TypeBase = String()) -> MappedInputType:
-    return MappedInputType(name, inner)
+def named(name: str, inner: TypeBase = String()) -> MappedInputMember:
+    return MappedInputMember(name, inner)
 
 
 def volatile(inner: TypeBase, default=None) -> TypeBase:

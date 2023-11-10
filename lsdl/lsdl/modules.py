@@ -2,7 +2,7 @@ import re
 from typing import Self, Optional
 
 from .const import Const
-from .schema import MappedInputType
+from .schema import MappedInputMember
 from .signal import SignalBase
 from .signal_processors import SignalMapper, Latch
 from .signal_processors.latch import EdgeTriggeredLatch
@@ -83,7 +83,7 @@ class SignalFilterBuilder:
         self._filter_signal = filter_signal
         self._clock_signal = clock_signal
         self._filter_node = None
-        if isinstance(filter_signal, MappedInputType) and clock_signal is None:
+        if isinstance(filter_signal, MappedInputMember) and clock_signal is None:
             self._clock_signal = filter_signal.clock()
         self._filter_lambda = None
 
