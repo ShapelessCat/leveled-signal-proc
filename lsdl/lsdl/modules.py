@@ -79,7 +79,7 @@ class SignalFilterBuilder:
     A signal filter is a filter that filters either the clock or value signal.
     It can filter with a Rust lambda function or a list of values.
     """
-    def __init__(self, filter_signal: SignalBase, clock_signal: SignalBase = None):
+    def __init__(self, filter_signal: SignalBase, clock_signal: Optional[SignalBase] = None):
         self._filter_signal = filter_signal
         self._clock_signal = clock_signal
         self._filter_node = None

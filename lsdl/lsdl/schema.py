@@ -94,14 +94,13 @@ class Vector(TypeWithLiteralValue):
 
 
 class InputMember(SignalBase, ABC):
-    def __init__(self, tpe: TypeBase):
+    def __init__(self, tpe: TypeBase, name=""):
         super().__init__()
-        self._rust_type = tpe.get_rust_type_name()
+        tpe._parent = self
+        self._inner = tpe
+        self._name = name
         self._reset_expr = None
         self._parent = None
-        self._inner = tpe
-        tpe._parent = self
-        self._name = ""
 
     @property
     def name(self) -> str:
@@ -112,7 +111,7 @@ class InputMember(SignalBase, ABC):
         self._name = name
 
     def get_rust_type_name(self) -> str:
-        return self._rust_type
+        return self._inner.get_rust_type_name()
 
     def get_id(self):
         return {
@@ -122,15 +121,14 @@ class InputMember(SignalBase, ABC):
 
 
 class ClockCompanion(InputMember):
-    def __init__(self):
-        super().__init__(Integer(signed=False, width=64))
+    def __init__(self, name):
+        super().__init__(Integer(signed=False, width=64), name)
 
 
 class MappedInputMember(InputMember):
     def __init__(self, input_key: str, tpe: TypeBase):
         super().__init__(tpe)
         self._input_key = input_key
-        self._inner = tpe
         self._reset_expr = self._inner.reset_expr
 
     @property
@@ -141,9 +139,8 @@ class MappedInputMember(InputMember):
         return self._input_key
 
     def clock(self) -> ClockCompanion:
-        ret = ClockCompanion()
-        ret.name = f"{self.name}_clock"
-        return ret
+        # This `self.name` will be given when initializing the `InputSchemaBase` through reflection.
+        return ClockCompanion(f"{self.name}_clock")
 
     # TODO: move this outside of this class or convert them to static methods!!!
     def parse(self, type_name, default_value: RustCode = rust_default_value) -> SignalBase:
@@ -182,9 +179,11 @@ class InputSchemaBase(LeveledSignalProcessingModelComponentBase):
             self._timestamp_key = "timestamp"
         for item_name in self.__dir__():
             item = self.__getattribute__(item_name)
-            if isinstance(item, (TypeBase, InputMember)):
-                if isinstance(item, TypeBase):
-                    item = MappedInputMember(input_key=item_name, tpe=item)
+            # There won't be members as `ClockCompanion`s in the source code of
+            # an `InputSchemaBase` instance, therefore we don't try to handle it here.
+            if isinstance(item, TypeBase):
+                item = MappedInputMember(input_key=item_name, tpe=item)
+            if isinstance(item, MappedInputMember):
                 item.name = item_name
                 self.__setattr__(item_name, item)
                 self._members.append(item_name)
