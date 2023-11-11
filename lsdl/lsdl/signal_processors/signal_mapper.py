@@ -1,5 +1,5 @@
 from ..componet_base import BuiltinProcessorComponentBase
-from ..rust_code import RustCode
+from ..rust_code import COMPILER_INFERABLE_TYPE, RustCode
 from ..signal import SignalBase
 
 
@@ -29,9 +29,9 @@ def _build_signal_mapper(
     )
     else_type = else_branch.get_rust_type_name()
     then_type = then_branch.get_rust_type_name()
-    if then_type == "_":
+    if then_type == COMPILER_INFERABLE_TYPE:
         then_type = else_type
-    elif else_type == "_":
+    elif else_type == COMPILER_INFERABLE_TYPE:
         else_type = then_type
 
     if then_type == else_type:

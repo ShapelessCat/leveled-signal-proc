@@ -3,7 +3,7 @@ import json
 from .config import measurement_config
 
 
-def _get_json_ir(pretty_print = False) -> str:
+def _get_json_ir(pretty_print=False) -> str:
     from .componet_base import get_components
     from .schema import get_schema
     ret_obj = {
@@ -11,7 +11,7 @@ def _get_json_ir(pretty_print = False) -> str:
         "nodes": [c.to_dict() for c in get_components()],
         "measurement_policy": measurement_config().to_dict(),
     }
-    return json.dumps(ret_obj, indent = 4 if pretty_print else None)
+    return json.dumps(ret_obj, indent=4 if pretty_print else None)
 
 
 def print_ir_to_stdout():

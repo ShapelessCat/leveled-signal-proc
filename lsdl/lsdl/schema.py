@@ -2,7 +2,7 @@ import json
 from abc import ABC, abstractmethod
 from typing import Any, Optional
 
-from .rust_code import RustCode, input_signal_bag, rust_default_value
+from .rust_code import COMPILER_INFERABLE_TYPE, INPUT_SIGNAL_BAG, RUST_DEFAULT_VALUE, RustCode
 from .signal import LeveledSignalProcessingModelComponentBase, SignalBase
 
 
@@ -37,7 +37,7 @@ class TypeWithLiteralValue(TypeBase, ABC):
 
 class CompilerInferredType(TypeBase):
     def __init__(self):
-        super().__init__("_")
+        super().__init__(COMPILER_INFERABLE_TYPE)
 
 
 class DateTime(TypeBase):
@@ -143,7 +143,7 @@ class MappedInputMember(InputMember):
         return ClockCompanion(f"{self.name}_clock")
 
     # TODO: move this outside of this class or convert them to static methods!!!
-    def parse(self, type_name, default_value: RustCode = rust_default_value) -> SignalBase:
+    def parse(self, type_name, default_value: RustCode = RUST_DEFAULT_VALUE) -> SignalBase:
         return self.map(
             bind_var="s",
             lambda_src=f"s.parse::<{type_name}>().unwrap_or({default_value})"
@@ -170,7 +170,7 @@ _defined_schema: Optional['InputSchemaBase'] = None
 
 
 class InputSchemaBase(LeveledSignalProcessingModelComponentBase):
-    def __init__(self, name: RustCode = input_signal_bag):
+    def __init__(self, name: RustCode = INPUT_SIGNAL_BAG):
         global _defined_schema
         super().__init__()
         self._rust_type = name
@@ -189,7 +189,7 @@ class InputSchemaBase(LeveledSignalProcessingModelComponentBase):
                 self._members.append(item_name)
         _defined_schema = self
 
-    def rebuild(self, name: RustCode = input_signal_bag):
+    def rebuild(self, name: RustCode = INPUT_SIGNAL_BAG):
         self.__init__(name)
 
     def get_rust_type_name(self) -> str:
@@ -242,7 +242,7 @@ class SessionizedInputSchemaBase(InputSchemaBase):
             signal_clock = signal.clock()
         return self._scope_ctx.scoped(data=signal, clock=signal_clock, default=default_value)
 
-    def __init__(self, name: RustCode = input_signal_bag):
+    def __init__(self, name: RustCode = INPUT_SIGNAL_BAG):
         from .modules import ScopeContext
         super().__init__(name)
         self.session_signal = self.create_session_signal()
@@ -263,7 +263,7 @@ def named(name: str, inner: TypeBase = String()) -> MappedInputMember:
     return MappedInputMember(name, inner)
 
 
-def volatile(inner: TypeBase, default_value: RustCode = rust_default_value) -> TypeBase:
+def volatile(inner: TypeBase, default_value: RustCode = RUST_DEFAULT_VALUE) -> TypeBase:
     inner._reset_expr = default_value
     return inner
 

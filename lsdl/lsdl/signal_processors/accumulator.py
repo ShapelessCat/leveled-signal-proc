@@ -1,5 +1,5 @@
 from ..componet_base import BuiltinProcessorComponentBase
-from ..rust_code import RustCode, rust_default_value
+from ..rust_code import RustCode, RUST_DEFAULT_VALUE
 from ..signal import SignalBase
 
 
@@ -7,7 +7,7 @@ class Accumulator(BuiltinProcessorComponentBase):
     def __init__(self,
                  control: SignalBase,
                  data: SignalBase,
-                 init_val: RustCode = rust_default_value,
+                 init_val: RustCode = RUST_DEFAULT_VALUE,
                  filter_lambda: RustCode = "|_| true",
                  type_name: RustCode = "i32"):
         rust_processor_name = self.__class__.__name__

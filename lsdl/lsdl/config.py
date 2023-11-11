@@ -1,6 +1,6 @@
 import logging
 
-from .rust_code import RustCode
+from .rust_code import COMPILER_INFERABLE_TYPE, RustCode
 
 logging.basicConfig(encoding='utf-8', level=logging.INFO)
 
@@ -60,11 +60,11 @@ class _MeasurementConfiguration:
         self._metrics_drain = fmt
         return self
 
-    def add_metric(self, key, measurement, typename: RustCode = "_"):
+    def add_metric(self, key, measurement, typename: RustCode = COMPILER_INFERABLE_TYPE):
         """Declare a metric for output."""
-        if typename == "_":
+        if typename == COMPILER_INFERABLE_TYPE:  # if this type is unknown and inferable
             typename = measurement.get_rust_type_name()
-        if typename == "_":
+        if typename == COMPILER_INFERABLE_TYPE:  # if this type can't be inferred
             logging.error("Please provide the type name for this metric.")
             logging.info("Consider call `.annotate_type(<type-name>)` to manually annotate signal's type.")
             raise Exception(f"Missing type name for the metric {key}.")

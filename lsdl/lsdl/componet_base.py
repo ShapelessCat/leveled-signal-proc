@@ -1,6 +1,6 @@
 from abc import ABC
 
-from .rust_code import RustCode
+from .rust_code import COMPILER_INFERABLE_TYPE, RustCode
 from .schema import create_type_model_from_rust_type_name
 from .signal import LeveledSignalProcessingModelComponentBase, SignalBase
 
@@ -21,14 +21,14 @@ _components = []
 
 
 class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
-    def __init__(self, node_decl: str, upstreams: list):
+    def __init__(self, node_decl: RustCode, upstreams: list):
         super().__init__()
         self._node_decl = node_decl
         self._upstreams = upstreams
         self._namespace = ""
         self._package = ""
         self._id = _assign_fresh_component_id()
-        self._output_type = "_"
+        self._output_type = COMPILER_INFERABLE_TYPE
         _components.append(self)
 
     def __getattribute__(self, __name: str):
@@ -55,7 +55,7 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
             "id": self._id,
         }
 
-    def add_metric(self, key, typename = "_") -> 'LspComponentBase':
+    def add_metric(self, key, typename: RustCode = COMPILER_INFERABLE_TYPE) -> 'LspComponentBase':
         """Register the leveled signal as a metric.
 
         The registered metric results will present in the output data structure.
@@ -97,19 +97,20 @@ class BuiltinComponentBase(LspComponentBase, ABC):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._package = "lsp-component"
+        self._package_in_code = self._package.replace('-', '_')
         self._rust_component_name = self.__class__.__name__
 
 
 class BuiltinProcessorComponentBase(BuiltinComponentBase, SignalBase, ABC):
     def __init__(self, name, **kwargs):
         super().__init__(**kwargs)
-        self._namespace = f"lsp_component::processors::{name}"
+        self._namespace = f"{self._package_in_code}::processors::{name}"
 
 
 class BuiltinMeasurementComponentBase(BuiltinComponentBase, ABC):
     def __init__(self, name, **kwargs):
         super().__init__(**kwargs)
-        self._namespace = f"lsp_component::measurements::{name}"
+        self._namespace = f"{self._package_in_code}::measurements::{name}"
 
 
 def get_components() -> list[LspComponentBase]:
