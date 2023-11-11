@@ -21,12 +21,12 @@ _components = []
 
 
 class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
-    def __init__(self, node_decl: RustCode, upstreams: list):
+    def __init__(self, package: str, namespace: RustCode, node_decl: RustCode, upstreams: list):
         super().__init__()
+        self._package = package
+        self._namespace = namespace
         self._node_decl = node_decl
         self._upstreams = upstreams
-        self._namespace = ""
-        self._package = ""
         self._id = _assign_fresh_component_id()
         self._output_type = COMPILER_INFERABLE_TYPE
         _components.append(self)
@@ -94,23 +94,20 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
 
 
 class BuiltinComponentBase(LspComponentBase, ABC):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self._package = "lsp-component"
-        self._package_in_code = self._package.replace('-', '_')
-        self._rust_component_name = self.__class__.__name__
+    def __init__(self, component_package: RustCode, component_name: RustCode, **kwargs):
+        package = "lsp-component"
+        namespace = f"{package.replace('-', '_')}::{component_package}::{component_name}"
+        super().__init__(package, namespace, **kwargs)
 
 
 class BuiltinProcessorComponentBase(BuiltinComponentBase, SignalBase, ABC):
-    def __init__(self, name, **kwargs):
-        super().__init__(**kwargs)
-        self._namespace = f"{self._package_in_code}::processors::{name}"
+    def __init__(self, name: RustCode, **kwargs):
+        super().__init__(component_package="processors", component_name=name, **kwargs)
 
 
 class BuiltinMeasurementComponentBase(BuiltinComponentBase, ABC):
-    def __init__(self, name, **kwargs):
-        super().__init__(**kwargs)
-        self._namespace = f"{self._package_in_code}::measurements::{name}"
+    def __init__(self, name: RustCode, **kwargs):
+        super().__init__(component_package="measurements", component_name=name, **kwargs)
 
 
 def get_components() -> list[LspComponentBase]:
