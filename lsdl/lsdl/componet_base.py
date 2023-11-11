@@ -1,8 +1,15 @@
+import configparser
+import os
 from abc import ABC
 
 from .rust_code import COMPILER_INFERABLE_TYPE, RustCode
 from .schema import create_type_model_from_rust_type_name
 from .signal import LeveledSignalProcessingModelComponentBase, SignalBase
+
+__config = configparser.ConfigParser()
+__current_file_path = os.path.dirname(os.path.abspath(__file__))
+__config.read(f"{__current_file_path}/rust_keywords.ini")
+_strict_and_reserved_rust_keywords = {*__config['strict'].values(), *__config['reserved'].values()}
 
 
 def _make_assign_fresh_component_closure():
@@ -63,7 +70,7 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
         Note:
         to register the type, the leveled signal should have a known type, otherwise, it's an error.
         """
-        # TODO: Check if the `key` is a valid Rust identifier!
+        LspComponentBase.validate_rust_identifier(key)
         from . import measurement_config
         from .measurements import Peek
         if isinstance(self, SignalBase):
@@ -71,6 +78,21 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
         else:
             measurement_config().add_metric(key, self, typename)
         return self
+
+    # TODO: We should allow all legal Rust identifiers.
+    @classmethod
+    def validate_rust_identifier(cls, identifier: str) -> None:
+        """Check if an identifier is a legal Rust identifier.
+
+        For implementation simplicity, only a C-style identifier that is not a Rust strict/reserved keyword is allowed.
+
+        CAUTION:
+        Current check is easy to implement, but it is also too strict. We should allow all legal Rust identifier.
+        """
+        import re
+        regex = '^[A-Za-z_][A-Za-z0-9_]*$'
+        if not re.match(regex, identifier) or identifier in _strict_and_reserved_rust_keywords:
+            raise Exception(f"{identifier} is not a simple and legal Rust identifier!")
 
     def to_dict(self) -> dict[str, object]:
         upstreams = []
