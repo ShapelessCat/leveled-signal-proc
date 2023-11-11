@@ -1,5 +1,4 @@
 from abc import ABC
-from json import dumps as dump_json_str
 
 from .rust_code import RustCode
 from .schema import create_type_model_from_rust_type_name
@@ -115,8 +114,3 @@ class BuiltinMeasurementComponentBase(BuiltinComponentBase, ABC):
 
 def get_components() -> list[LspComponentBase]:
     return _components
-
-
-def serialize_defined_components(pretty_print=False) -> str:
-    obj = [c.to_dict() for c in get_components()]
-    return dump_json_str(obj, indent=4 if pretty_print else None)
