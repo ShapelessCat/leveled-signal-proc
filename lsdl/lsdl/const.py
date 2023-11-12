@@ -1,3 +1,4 @@
+from .rust_code import RustCode
 from .schema import Bool, Float, Integer, String, TypeWithLiteralValue
 from .signal import SignalBase
 
@@ -19,10 +20,10 @@ class Const(SignalBase):
         self._type = val_type
         self._rs_value = val_type.render_rust_const(value)
 
-    def get_rust_type_name(self) -> str:
+    def get_rust_type_name(self) -> RustCode:
         return self._type.get_rust_type_name()
 
-    def get_rust_instant_value(self) -> str:
+    def get_rust_instant_value(self) -> RustCode:
         return self._rs_value
 
     def get_id(self):

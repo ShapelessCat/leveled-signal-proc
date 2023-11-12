@@ -1,6 +1,7 @@
 from ..componet_base import BuiltinProcessorComponentBase
+from ..rust_code import RustCode
 
-_rust_component_name = "SignalGenerator"
+_rust_component_name: RustCode = "SignalGenerator"
 
 
 #    let a = SignalGenerator::square_wave(60_000_000_000, 0);
