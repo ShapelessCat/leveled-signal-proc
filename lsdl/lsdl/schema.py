@@ -31,7 +31,7 @@ class TypeBase(LeveledSignalProcessingModelComponentBase, ABC):
 
 class TypeWithLiteralValue(TypeBase, ABC):
     @abstractmethod
-    def render_rust_const(self, val) -> str:
+    def render_rust_const(self, val) -> RustCode:
         raise NotImplementedError()
 
 
@@ -50,7 +50,7 @@ class String(TypeWithLiteralValue):
         super().__init__("String")
 
     # @override
-    def render_rust_const(self, val) -> str:
+    def render_rust_const(self, val) -> RustCode:
         return f"{json.dumps(val)}.to_string()"
 
 
@@ -59,7 +59,7 @@ class Bool(TypeWithLiteralValue):
         super().__init__("bool")
 
     # @override
-    def render_rust_const(self, val) -> str:
+    def render_rust_const(self, val) -> RustCode:
         return "true" if val else "false"
 
 
@@ -69,7 +69,7 @@ class Integer(TypeWithLiteralValue):
         super().__init__(f"{type_prefix}{width}")
 
     # @override
-    def render_rust_const(self, val) -> str:
+    def render_rust_const(self, val) -> RustCode:
         return str(val) + self.get_rust_type_name()
 
 
@@ -78,7 +78,7 @@ class Float(TypeWithLiteralValue):
         super().__init__(f"f{width}")
 
     # @override
-    def render_rust_const(self, val) -> str:
+    def render_rust_const(self, val) -> RustCode:
         return str(val) + self.get_rust_type_name()
 
 
@@ -88,9 +88,12 @@ class Vector(TypeWithLiteralValue):
         self._element_type = element_type
 
     # @override
-    def render_rust_const(self, val) -> str:
-        typed_const_elements = ",".join([self._element_type.render_rust_const(v) for v in val])
-        return f"vec![{typed_const_elements}]"
+    def render_rust_const(self, val) -> RustCode:
+        if isinstance(self._element_type, TypeWithLiteralValue):
+            typed_const_elements = ",".join([self._element_type.render_rust_const(v) for v in val])
+            return f"vec![{typed_const_elements}]"
+        else:
+            raise Exception("Not a vector literal!")
 
 
 class InputMember(SignalBase, ABC):
