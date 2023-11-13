@@ -46,7 +46,7 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
     def prior_different_value(self, scope: Optional['SignalBase'] = None) -> 'SignalBase':
         return self.prior_value(self, scope)
 
-    def prior_value(self, clock: Optional['SignalBase'] = None, scope: Optional['SignalBase'] = None, window=1) -> 'SignalBase':
+    def prior_value(self, clock: Optional['SignalBase'] = None, scope: Optional['SignalBase'] = None, window=1, initial_value=None) -> 'SignalBase':
         from .schema import MappedInputMember
         from .signal_processors import StateMachineBuilder
         if clock is None:
@@ -59,11 +59,12 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
                        2. or make sure the `self` is a `MappedInputMember` instance, which has the `clock()` method"""
                 )
         ty = self.get_rust_type_name()
+        initial_value = initial_value or f"Default::default()"
         builder = StateMachineBuilder(data = self, clock = clock)\
             .init_state(f'(std::collections::VecDeque::with_capacity({window}), Default:default())')\
             .transition_fn(f"""
                 |(q, _): &(std::collections::VecDeque<{ty}>, {ty}), data: &{ty}| {{
-                    let mut to_output = Default::default();
+                    let mut to_output = {initial_value};
                     let mut q_cloned = q.clone();
                     if q_cloned.len() == {window} {{
                         to_output = q_cloned.pop_front().unwrap();

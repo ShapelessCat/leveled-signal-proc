@@ -124,7 +124,7 @@ class Dag(object):
             output_timeline = Any(timeline).process()
         elif op_name == "prior_event":
             timeline = self._parse_block(timeline_config["in"])
-            output_timeline = PriorEvent(timeline).process(timeline_config.get('windowSize', 1))
+            output_timeline = PriorEvent(timeline).process(window=timeline_config.get('windowSize', 1), initial_value=timeline_config.get("initialValue"))
 
 
         self.processed_node[timeline_name] = output_timeline
