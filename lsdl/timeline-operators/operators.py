@@ -78,6 +78,13 @@ class Get(UnaryOperator):
         return getattr(self.input, path)
 
 
+class EpochSeconds(UnaryOperator):
+    op = "epoch_seconds"
+     
+    def process(self):
+        return getattr(self.input, "_timestamp_key")
+
+
 class Not(UnaryOperator):
     op = "not"
 
@@ -145,3 +152,10 @@ class Any(UnaryOperator):
 
     def process(self):
         return self.input.has_been_true()
+    
+
+class PriorEvent(UnaryOperator):
+    op = "prior_event"
+
+    def process(self, window=1):
+        return self.input.prior_value(window=window)

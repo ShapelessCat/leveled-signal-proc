@@ -95,9 +95,7 @@ class Dag(object):
         elif op_name == "equals":
             left, right = self._parse_binary_args(timeline_config)
             output_timeline = Equals(left, right).process()
-        elif op_name == "latestEventToState":
-            output_timeline = self._parse_block(timeline_config["in"])
-        elif op_name == "evaluateAt":
+        elif op_name in ("latestEventToState", "evaluateAt", "stateChangeEvents"):
             output_timeline = self._parse_block(timeline_config["in"])
         elif op_name == "makeStruct":
             for _, config in timeline_config["fields"].items():
@@ -124,6 +122,10 @@ class Dag(object):
         elif op_name == "any":
             timeline = self._parse_block(timeline_config["in"])
             output_timeline = Any(timeline).process()
+        elif op_name == "prior_event":
+            timeline = self._parse_block(timeline_config["in"])
+            output_timeline = PriorEvent(timeline).process(timeline_config.get('windowSize', 1))
+
 
         self.processed_node[timeline_name] = output_timeline
         return output_timeline

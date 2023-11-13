@@ -127,17 +127,28 @@ class BuiltinProcessorComponentBase(BuiltinComponentBase, SignalBase, ABC):
     def prior_different_value(self, scope: Optional[SignalBase] = None) -> SignalBase:
         return self.prior_value(self, scope)
 
-    def prior_value(self, clock: Optional[SignalBase] = None, scope: Optional[SignalBase] = None) -> SignalBase:
+    def prior_value(self, clock: Optional[SignalBase] = None, scope: Optional[SignalBase] = None, window=1) -> SignalBase:
         from .signal_processors import StateMachineBuilder
         if clock is None:
             clock = self.clock()
         ty = self.get_rust_type_name()
         builder = StateMachineBuilder(data = self, clock = clock)\
-            .transition_fn(f'|(_, current): &({ty}, {ty}), data : &{ty}| (current.clone(), data.clone())')
+            .init_state(f'(std::collections::VecDeque::with_capacity({window}), Default:default())')\
+            .transition_fn(f"""
+                |(q, _): &(std::collections::VecDeque<{ty}>, {ty}), data: &{ty}| {{
+                    let mut to_output = Default::default();
+                    let mut q_cloned = q.clone();
+                    if q_cloned.len() == {window} {{
+                        to_output = q_cloned.pop_front().unwrap();
+                    }}
+                    q_cloned.push_back(data.clone());
+                    (q_cloned, to_output.clone())
+                }}
+            """)
         if scope is not None:
             builder.scoped(scope)
-        return builder.build().annotate_type(f"({ty}, {ty})").map(
-            bind_var = '(ret, _)',
+        return builder.build().annotate_type(f"(std::collections::VecDeque<{ty}>, {ty})").map(
+            bind_var = '(_, ret)',
             lambda_src = 'ret.clone()'
         ).annotate_type(self.get_rust_type_name())
 
