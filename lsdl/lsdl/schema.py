@@ -7,18 +7,14 @@ from .signal import LeveledSignalProcessingModelComponentBase, SignalBase
 
 
 class TypeBase(LeveledSignalProcessingModelComponentBase, ABC):
-    def __init__(self, rs_type: RustCode):
-        super().__init__()
-        self._rust_type = rs_type
+    def __init__(self, rust_type: RustCode):
+        super().__init__(rust_type)
         self._reset_expr = None
         self._parent = None
 
     @property
     def reset_expr(self):
         return self._reset_expr
-
-    def get_rust_type_name(self) -> RustCode:
-        return self._rust_type
 
     def get_id(self):
         try:
@@ -31,7 +27,7 @@ class TypeBase(LeveledSignalProcessingModelComponentBase, ABC):
 
 class TypeWithLiteralValue(TypeBase, ABC):
     @abstractmethod
-    def render_rust_const(self, val) -> str:
+    def render_rust_const(self, val) -> RustCode:
         raise NotImplementedError()
 
 
@@ -50,7 +46,7 @@ class String(TypeWithLiteralValue):
         super().__init__("String")
 
     # @override
-    def render_rust_const(self, val) -> str:
+    def render_rust_const(self, val) -> RustCode:
         return f"{json.dumps(val)}.to_string()"
 
 
@@ -59,7 +55,7 @@ class Bool(TypeWithLiteralValue):
         super().__init__("bool")
 
     # @override
-    def render_rust_const(self, val) -> str:
+    def render_rust_const(self, val) -> RustCode:
         return "true" if val else "false"
 
 
@@ -69,7 +65,7 @@ class Integer(TypeWithLiteralValue):
         super().__init__(f"{type_prefix}{width}")
 
     # @override
-    def render_rust_const(self, val) -> str:
+    def render_rust_const(self, val) -> RustCode:
         return str(val) + self.get_rust_type_name()
 
 
@@ -78,7 +74,7 @@ class Float(TypeWithLiteralValue):
         super().__init__(f"f{width}")
 
     # @override
-    def render_rust_const(self, val) -> str:
+    def render_rust_const(self, val) -> RustCode:
         return str(val) + self.get_rust_type_name()
 
 
@@ -88,14 +84,17 @@ class Vector(TypeWithLiteralValue):
         self._element_type = element_type
 
     # @override
-    def render_rust_const(self, val) -> str:
-        typed_const_elements = ",".join([self._element_type.render_rust_const(v) for v in val])
-        return f"vec![{typed_const_elements}]"
+    def render_rust_const(self, val) -> RustCode:
+        if isinstance(self._element_type, TypeWithLiteralValue):
+            typed_const_elements = ",".join([self._element_type.render_rust_const(v) for v in val])
+            return f"vec![{typed_const_elements}]"
+        else:
+            raise Exception("Not a vector literal!")
 
 
 class InputMember(SignalBase, ABC):
     def __init__(self, tpe: TypeBase, name=""):
-        super().__init__()
+        super().__init__(tpe.get_rust_type_name())
         tpe._parent = self
         self._inner = tpe
         self._name = name
@@ -109,9 +108,6 @@ class InputMember(SignalBase, ABC):
     @name.setter
     def name(self, name: str):
         self._name = name
-
-    def get_rust_type_name(self) -> str:
-        return self._inner.get_rust_type_name()
 
     def get_id(self):
         return {
@@ -170,10 +166,9 @@ _defined_schema: Optional['InputSchemaBase'] = None
 
 
 class InputSchemaBase(LeveledSignalProcessingModelComponentBase):
-    def __init__(self, name: RustCode = INPUT_SIGNAL_BAG):
+    def __init__(self, rust_type: RustCode = INPUT_SIGNAL_BAG):
         global _defined_schema
-        super().__init__()
-        self._rust_type = name
+        super().__init__(rust_type)
         self._members = []
         if "_timestamp_key" not in self.__dir__():
             self._timestamp_key = "timestamp"
@@ -189,11 +184,8 @@ class InputSchemaBase(LeveledSignalProcessingModelComponentBase):
                 self._members.append(item_name)
         _defined_schema = self
 
-    def rebuild(self, name: RustCode = INPUT_SIGNAL_BAG):
-        self.__init__(name)
-
-    def get_rust_type_name(self) -> str:
-        return self._rust_type
+    def rebuild(self, rust_type: RustCode = INPUT_SIGNAL_BAG):
+        self.__init__(rust_type)
 
     def to_dict(self) -> dict:
         ret = {
@@ -242,9 +234,9 @@ class SessionizedInputSchemaBase(InputSchemaBase):
             signal_clock = signal.clock()
         return self._scope_ctx.scoped(data=signal, clock=signal_clock, default=default_value)
 
-    def __init__(self, name: RustCode = INPUT_SIGNAL_BAG):
+    def __init__(self, rust_type: RustCode = INPUT_SIGNAL_BAG):
         from .modules import ScopeContext
-        super().__init__(name)
+        super().__init__(rust_type)
         self.session_signal = self.create_session_signal()
         self.epoch_signal = self.create_epoch_signal()
         self._sessionized_signals = dict()
@@ -272,16 +264,17 @@ def get_schema():
     return _defined_schema
 
 
-def create_type_model_from_rust_type_name(rust_type_name: RustCode) -> Optional[TypeBase]:
-    if rust_type_name == "String":
+def create_type_model_from_rust_type_name(rust_type: RustCode) -> Optional[TypeBase]:
+    if rust_type == "String":
         return String()
-    if rust_type_name[0] in ['i', 'u']:
-        width = int(rust_type_name[1:])
-        signed = rust_type_name[0] == 'i'
+    elif rust_type[0] in ['i', 'u']:
+        width = int(rust_type[1:])
+        signed = rust_type[0] == 'i'
         return Integer(signed, width)
-    if rust_type_name[0] == 'f':
-        width = int(rust_type_name[1:])
+    elif rust_type[0] == 'f':
+        width = int(rust_type[1:])
         return Float(width)
-    if rust_type_name[0] == 'bool':
+    elif rust_type[0] == 'bool':
         return Bool()
-    return None
+    else:
+        return None

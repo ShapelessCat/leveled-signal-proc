@@ -2,6 +2,7 @@ from abc import ABC
 from typing import Optional
 
 from .lsp_model_component import LeveledSignalProcessingModelComponentBase
+from .measurement import MeasurementBase
 
 
 class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
@@ -79,7 +80,7 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         else:
             ret = SignalMapper(
                 bind_var="lhs",
-                lambda_src=f"*lhs {op} {Const(other).get_rust_instant_value()}",
+                lambda_src=f"*lhs {op} {Const(other).rust_constant_value}",
                 upstream=self
             )
         if typename is not None:
@@ -125,7 +126,7 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
     def __div__(self, other) -> 'SignalBase':
         return self._bin_op(other, "/", self.get_rust_type_name())
 
-    def measure_duration_true(self, scope_signal: Optional['SignalBase'] = None) -> 'BuiltinMeasurementComponentBase':
+    def measure_duration_true(self, scope_signal: Optional['SignalBase'] = None) -> 'MeasurementBase':
         """Measures the total duration whenever this boolean signal is true.
 
         It returns a measurement.
@@ -134,7 +135,7 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         from .measurements import DurationTrue
         return DurationTrue(self, scope_signal=scope_signal)
 
-    def measure_duration_since_true(self) -> 'BuiltinMeasurementComponentBase':
+    def measure_duration_since_true(self) -> 'MeasurementBase':
         """Measures the duration when this boolean signal has been true most recently.
 
         When the boolean signal is false, the output of the measurement is constantly 0.
@@ -142,7 +143,7 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         from .measurements import DurationSinceBecomeTrue
         return DurationSinceBecomeTrue(self)
 
-    def peek(self) -> 'BuiltinMeasurementComponentBase':
+    def peek(self) -> 'MeasurementBase':
         """Returns the measurement that peek the latest value for the given signal."""
         from .measurements import Peek
         return Peek(self)

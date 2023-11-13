@@ -2,9 +2,11 @@ import configparser
 import os
 from abc import ABC
 
+from .lsp_model_component import LeveledSignalProcessingModelComponentBase
+from .measurement import MeasurementBase
 from .rust_code import COMPILER_INFERABLE_TYPE, RustCode
 from .schema import create_type_model_from_rust_type_name
-from .signal import LeveledSignalProcessingModelComponentBase, SignalBase
+from .signal import SignalBase
 
 __config = configparser.ConfigParser()
 __current_file_path = os.path.dirname(os.path.abspath(__file__))
@@ -29,32 +31,24 @@ _components = []
 
 class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
     def __init__(self, package: str, namespace: RustCode, node_decl: RustCode, upstreams: list):
-        super().__init__()
+        super().__init__(COMPILER_INFERABLE_TYPE)
         self._package = package
         self._namespace = namespace
         self._node_decl = node_decl
         self._upstreams = upstreams
         self._id = _assign_fresh_component_id()
-        self._output_type = COMPILER_INFERABLE_TYPE
         _components.append(self)
 
     def __getattribute__(self, __name: str):
         try:
             return super().__getattribute__(__name)
         except AttributeError as e:
-            type_model = create_type_model_from_rust_type_name(self._output_type)
+            type_model = create_type_model_from_rust_type_name(self.get_rust_type_name())
             type_model._parent = self
             if type_model is not None:
                 return getattr(type_model, __name)
             else:
                 raise e
-
-    def annotate_type(self, typename: RustCode):
-        self._output_type = typename
-        return self
-
-    def get_rust_type_name(self) -> RustCode:
-        return self._output_type
 
     def get_id(self):
         return {
@@ -127,7 +121,7 @@ class BuiltinProcessorComponentBase(BuiltinComponentBase, SignalBase, ABC):
         super().__init__(component_package="processors", component_name=name, **kwargs)
 
 
-class BuiltinMeasurementComponentBase(BuiltinComponentBase, ABC):
+class BuiltinMeasurementComponentBase(BuiltinComponentBase, MeasurementBase, ABC):
     def __init__(self, name: RustCode, **kwargs):
         super().__init__(component_package="measurements", component_name=name, **kwargs)
 

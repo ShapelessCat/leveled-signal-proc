@@ -1,5 +1,5 @@
 from ..componet_base import BuiltinProcessorComponentBase
-from ..rust_code import COMPILER_INFERABLE_TYPE, RustCode
+from ..rust_code import COMPILER_INFERABLE_TYPE
 from ..signal import SignalBase
 
 
@@ -45,14 +45,12 @@ class If(SignalBase):
                  cond_expr: SignalBase,
                  then_expr: SignalBase,
                  else_expr: SignalBase):
-        super().__init__()
-        self._inner = _build_signal_mapper(cond_expr, then_expr, else_expr)
+        inner = _build_signal_mapper(cond_expr, then_expr, else_expr)
+        super().__init__(inner.get_rust_type_name())
+        self._id = inner.get_id()
 
     def get_id(self):
-        return self._inner.get_id()
-
-    def get_rust_type_name(self) -> RustCode:
-        return self._inner.get_rust_type_name()
+        return self._id
 
 
 class Cond(SignalBase):
@@ -61,14 +59,12 @@ class Cond(SignalBase):
                  first_branch: (SignalBase, SignalBase),
                  middle_branches: [(SignalBase, SignalBase)],
                  fallback_value: SignalBase):
-        super().__init__()
-        self._inner = _build_signal_mapper(*first_branch, fallback_value)
+        inner = _build_signal_mapper(*first_branch, fallback_value)
         while middle_branches:
             (cond, then_branch) = middle_branches.pop()
-            self._inner = _build_signal_mapper(cond, then_branch, self._inner)
+            inner = _build_signal_mapper(cond, then_branch, inner)
+        super().__init__(inner.get_rust_type_name())
+        self._id = inner.get_id()
 
     def get_id(self):
-        return self._inner.get_id()
-
-    def get_rust_type_name(self) -> RustCode:
-        return self._inner.get_rust_type_name()
+        return self._id
