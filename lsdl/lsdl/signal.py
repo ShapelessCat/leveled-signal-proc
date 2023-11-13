@@ -80,7 +80,7 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         else:
             ret = SignalMapper(
                 bind_var="lhs",
-                lambda_src=f"*lhs {op} {Const(other).get_rust_instant_value()}",
+                lambda_src=f"*lhs {op} {Const(other).rust_constant_value}",
                 upstream=self
             )
         if typename is not None:
