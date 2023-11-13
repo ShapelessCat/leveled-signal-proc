@@ -214,10 +214,12 @@ class InputSchemaBase(LeveledSignalProcessingModelComponentBase):
         }
 
 
-class SessionizedInputSchemaBase(InputSchemaBase):
+class SessionizedInputSchemaBase(InputSchemaBase, ABC):
+    @abstractmethod
     def create_session_signal(self) -> SignalBase:
         raise NotImplemented()
 
+    @abstractmethod
     def create_epoch_signal(self) -> SignalBase:
         raise NotImplemented()
 

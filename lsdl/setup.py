@@ -13,6 +13,10 @@ setup(
     ],
     packages=["lsdl", "lsdl.signal_processors", "lsdl.measurements"],
     include_package_data=True,
+    package_data={
+        # If any package contains *.ini files, include them
+        "": [".ini"],
+    },
     zip_safe=False,
     cmdclass={"sdist": sdist_command},
 )
