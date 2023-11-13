@@ -1,9 +1,17 @@
+import configparser
+import os
 from abc import ABC
-from json import dumps as dump_json_str
-from typing import Optional
 
+from .lsp_model_component import LeveledSignalProcessingModelComponentBase
+from .measurement import MeasurementBase
+from .rust_code import COMPILER_INFERABLE_TYPE, RustCode
 from .schema import create_type_model_from_rust_type_name
-from .signal import LeveledSignalProcessingModelComponentBase, SignalBase
+from .signal import SignalBase
+
+__config = configparser.ConfigParser()
+__current_file_path = os.path.dirname(os.path.abspath(__file__))
+__config.read(f"{__current_file_path}/rust_keywords.ini")
+_strict_and_reserved_rust_keywords = {*__config['strict'].values(), *__config['reserved'].values()}
 
 
 def _make_assign_fresh_component_closure():
@@ -22,33 +30,25 @@ _components = []
 
 
 class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
-    def __init__(self, node_decl: str, upstreams: list):
-        super().__init__()
+    def __init__(self, package: str, namespace: RustCode, node_decl: RustCode, upstreams: list):
+        super().__init__(COMPILER_INFERABLE_TYPE)
+        self._package = package
+        self._namespace = namespace
         self._node_decl = node_decl
         self._upstreams = upstreams
-        self._namespace = ""
-        self._package = ""
         self._id = _assign_fresh_component_id()
-        self._output_type = "_"
         _components.append(self)
 
     def __getattribute__(self, __name: str):
         try:
             return super().__getattribute__(__name)
         except AttributeError as e:
-            type_model = create_type_model_from_rust_type_name(self._output_type)
+            type_model = create_type_model_from_rust_type_name(self.get_rust_type_name())
             type_model._parent = self
             if type_model is not None:
                 return getattr(type_model, __name)
             else:
                 raise e
-
-    def annotate_type(self, typename: str):
-        self._output_type = typename
-        return self
-
-    def get_rust_type_name(self) -> str:
-        return self._output_type
 
     def get_id(self):
         return {
@@ -56,7 +56,7 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
             "id": self._id,
         }
 
-    def add_metric(self, key, typename = "_") -> 'LspComponentBase':
+    def add_metric(self, key, typename: RustCode = COMPILER_INFERABLE_TYPE) -> 'LspComponentBase':
         """Register the leveled signal as a metric.
 
         The registered metric results will present in the output data structure.
@@ -64,7 +64,7 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
         Note:
         to register the type, the leveled signal should have a known type, otherwise, it's an error.
         """
-        # TODO: Check if the `key` is a valid Rust identifier!
+        LspComponentBase.validate_rust_identifier(key)
         from . import measurement_config
         from .measurements import Peek
         if isinstance(self, SignalBase):
@@ -72,6 +72,21 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
         else:
             measurement_config().add_metric(key, self, typename)
         return self
+
+    # TODO: We should allow all legal Rust identifiers.
+    @classmethod
+    def validate_rust_identifier(cls, identifier: str) -> None:
+        """Check if an identifier is a legal Rust identifier.
+
+        For implementation simplicity, only a C-style identifier that is not a Rust strict/reserved keyword is allowed.
+
+        CAUTION:
+        Current check is easy to implement, but it is also too strict. We should allow all legal Rust identifier.
+        """
+        import re
+        regex = '^[A-Za-z_][A-Za-z0-9_]*$'
+        if not re.match(regex, identifier) or identifier in _strict_and_reserved_rust_keywords:
+            raise Exception(f"{identifier} is not a simple and legal Rust identifier!")
 
     def to_dict(self) -> dict[str, object]:
         upstreams = []
@@ -95,97 +110,21 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
 
 
 class BuiltinComponentBase(LspComponentBase, ABC):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self._package = "lsp-component"
-        self._rust_component_name = self.__class__.__name__
+    def __init__(self, component_package: RustCode, component_name: RustCode, **kwargs):
+        package = "lsp-component"
+        namespace = f"{package.replace('-', '_')}::{component_package}::{component_name}"
+        super().__init__(package, namespace, **kwargs)
 
 
 class BuiltinProcessorComponentBase(BuiltinComponentBase, SignalBase, ABC):
-    def __init__(self, name, **kwargs):
-        super().__init__(**kwargs)
-        self._namespace = f"lsp_component::processors::{name}"
-
-    def has_been_true(self, duration = -1) -> SignalBase:
-        """Shortcut for `has_been_true` module.
-
-        Checks if the boolean signal has ever becomes true, and the result is a leveled signal.
-        When `duration` is given, it checks if the signal has been true within `duration` amount of time.
-        """
-        from .modules import has_been_true
-        return has_been_true(self, duration)
-
-    def has_changed(self, duration = -1) -> SignalBase:
-        """Shortcut for `has_changed` module.
-
-        Checks if the signal has ever changed, and the result is a leveled signal.
-        When `duration` is given, it checks if the signal has changed within `duration` amount of time.
-        """
-        from .modules import has_changed
-        return has_changed(self, duration)
-
-    def prior_different_value(self, scope: Optional[SignalBase] = None) -> SignalBase:
-        return self.prior_value(self, scope)
-
-    def prior_value(self, clock: Optional[SignalBase] = None, scope: Optional[SignalBase] = None, window=1) -> SignalBase:
-        from .signal_processors import StateMachineBuilder
-        if clock is None:
-            clock = self.clock()
-        ty = self.get_rust_type_name()
-        builder = StateMachineBuilder(data = self, clock = clock)\
-            .init_state(f'(std::collections::VecDeque::with_capacity({window}), Default:default())')\
-            .transition_fn(f"""
-                |(q, _): &(std::collections::VecDeque<{ty}>, {ty}), data: &{ty}| {{
-                    let mut to_output = Default::default();
-                    let mut q_cloned = q.clone();
-                    if q_cloned.len() == {window} {{
-                        to_output = q_cloned.pop_front().unwrap();
-                    }}
-                    q_cloned.push_back(data.clone());
-                    (q_cloned, to_output.clone())
-                }}
-            """)
-        if scope is not None:
-            builder.scoped(scope)
-        return builder.build().annotate_type(f"(std::collections::VecDeque<{ty}>, {ty})").map(
-            bind_var = '(_, ret)',
-            lambda_src = 'ret.clone()'
-        ).annotate_type(self.get_rust_type_name())
-
-    def measure_duration_true(self, scope_signal: Optional[SignalBase] = None) -> 'BuiltinMeasurementComponentBase':
-        """Measures the total duration whenever this boolean signal is true.
-
-        It returns a measurement.
-        When `scope_signal` is given, it resets the duration to 0 when the `scope_signal` becomes a different level.
-        """
-        from .measurements import DurationTrue
-        return DurationTrue(self, scope_signal = scope_signal)
-
-    def measure_duration_since_true(self) -> 'BuiltinMeasurementComponentBase':
-        """Measures the duration when this boolean signal has been true most recently.
-
-        When the boolean signal is false, the output of the measurement is constantly 0.
-        """
-        from .measurements import DurationSinceBecomeTrue
-        return DurationSinceBecomeTrue(self)
-
-    def peek(self) -> 'BuiltinMeasurementComponentBase':
-        """Returns the measurement that peek the latest value for the given signal.
-        """
-        from .measurements import Peek
-        return Peek(self)
+    def __init__(self, name: RustCode, **kwargs):
+        super().__init__(component_package="processors", component_name=name, **kwargs)
 
 
-class BuiltinMeasurementComponentBase(BuiltinComponentBase, ABC):
-    def __init__(self, name, **kwargs):
-        super().__init__(**kwargs)
-        self._namespace = f"lsp_component::measurements::{name}"
+class BuiltinMeasurementComponentBase(BuiltinComponentBase, MeasurementBase, ABC):
+    def __init__(self, name: RustCode, **kwargs):
+        super().__init__(component_package="measurements", component_name=name, **kwargs)
 
 
 def get_components() -> list[LspComponentBase]:
     return _components
-
-
-def serialize_defined_components(pretty_print=False) -> str:
-    obj = [c.to_dict() for c in get_components()]
-    return dump_json_str(obj, indent=4 if pretty_print else None)

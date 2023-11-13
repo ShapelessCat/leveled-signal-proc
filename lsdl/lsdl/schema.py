@@ -2,22 +2,19 @@ import json
 from abc import ABC, abstractmethod
 from typing import Any, Optional
 
+from .rust_code import COMPILER_INFERABLE_TYPE, INPUT_SIGNAL_BAG, RUST_DEFAULT_VALUE, RustCode
 from .signal import LeveledSignalProcessingModelComponentBase, SignalBase
 
 
 class TypeBase(LeveledSignalProcessingModelComponentBase, ABC):
-    def __init__(self, rs_type: str):
-        super().__init__()
-        self._rust_type = rs_type
+    def __init__(self, rust_type: RustCode):
+        super().__init__(rust_type)
         self._reset_expr = None
         self._parent = None
 
     @property
     def reset_expr(self):
         return self._reset_expr
-
-    def get_rust_type_name(self) -> str:
-        return self._rust_type
 
     def get_id(self):
         try:
@@ -30,18 +27,18 @@ class TypeBase(LeveledSignalProcessingModelComponentBase, ABC):
 
 class TypeWithLiteralValue(TypeBase, ABC):
     @abstractmethod
-    def render_rust_const(self, val) -> str:
+    def render_rust_const(self, val) -> RustCode:
         raise NotImplementedError()
 
 
 class CompilerInferredType(TypeBase):
     def __init__(self):
-        super().__init__("_")
+        super().__init__(COMPILER_INFERABLE_TYPE)
 
 
 class DateTime(TypeBase):
-    def __init__(self, timezone: str = "Utc"):
-        super().__init__("chrono::DateTime<chrono::" + timezone + ">")
+    def __init__(self, timezone: RustCode = "Utc"):
+        super().__init__(f"chrono::DateTime<chrono::{timezone}>")
 
 
 class String(TypeWithLiteralValue):
@@ -49,7 +46,7 @@ class String(TypeWithLiteralValue):
         super().__init__("String")
 
     # @override
-    def render_rust_const(self, val) -> str:
+    def render_rust_const(self, val) -> RustCode:
         return f"{json.dumps(val)}.to_string()"
 
 
@@ -58,48 +55,51 @@ class Bool(TypeWithLiteralValue):
         super().__init__("bool")
 
     # @override
-    def render_rust_const(self, val) -> str:
+    def render_rust_const(self, val) -> RustCode:
         return "true" if val else "false"
 
 
 class Integer(TypeWithLiteralValue):
     def __init__(self, signed=True, width=32):
-        super().__init__("i" + str(width) if signed else "u" + str(width))
+        type_prefix = "i" if signed else "u"
+        super().__init__(f"{type_prefix}{width}")
 
     # @override
-    def render_rust_const(self, val) -> str:
+    def render_rust_const(self, val) -> RustCode:
         return str(val) + self.get_rust_type_name()
 
 
 class Float(TypeWithLiteralValue):
     def __init__(self, width=64):
-        super().__init__("f" + str(width))
+        super().__init__(f"f{width}")
 
     # @override
-    def render_rust_const(self, val) -> str:
+    def render_rust_const(self, val) -> RustCode:
         return str(val) + self.get_rust_type_name()
 
 
 class Vector(TypeWithLiteralValue):
     def __init__(self, element_type: TypeBase):
-        super().__init__("Vec<" + element_type.get_rust_type_name() + ">")
+        super().__init__(f"Vec<{element_type.get_rust_type_name()}>")
         self._element_type = element_type
 
     # @override
-    def render_rust_const(self, val) -> str:
-        typed_const_elements = ",".join([self._element_type.render_rust_const(v) for v in val])
-        return f"vec![{typed_const_elements}]"
+    def render_rust_const(self, val) -> RustCode:
+        if isinstance(self._element_type, TypeWithLiteralValue):
+            typed_const_elements = ",".join([self._element_type.render_rust_const(v) for v in val])
+            return f"vec![{typed_const_elements}]"
+        else:
+            raise Exception("Not a vector literal!")
 
 
-class InputMemberType(SignalBase, ABC):
-    def __init__(self, tpe: TypeBase):
-        super().__init__()
-        self._rust_type = tpe.get_rust_type_name()
+class InputMember(SignalBase, ABC):
+    def __init__(self, tpe: TypeBase, name=""):
+        super().__init__(tpe.get_rust_type_name())
+        tpe._parent = self
+        self._inner = tpe
+        self._name = name
         self._reset_expr = None
         self._parent = None
-        self._inner = tpe
-        tpe._parent = self
-        self._name = ""
 
     @property
     def name(self) -> str:
@@ -109,9 +109,6 @@ class InputMemberType(SignalBase, ABC):
     def name(self, name: str):
         self._name = name
 
-    def get_rust_type_name(self) -> str:
-        return self._rust_type
-
     def get_id(self):
         return {
             "type": "InputSignal",
@@ -119,16 +116,15 @@ class InputMemberType(SignalBase, ABC):
         }
 
 
-class ClockCompanion(InputMemberType):
-    def __init__(self):
-        super().__init__(Integer(signed=False, width=64))
+class ClockCompanion(InputMember):
+    def __init__(self, name):
+        super().__init__(Integer(signed=False, width=64), name)
 
 
-class MappedInputType(InputMemberType):
+class MappedInputMember(InputMember):
     def __init__(self, input_key: str, tpe: TypeBase):
         super().__init__(tpe)
         self._input_key = input_key
-        self._inner = tpe
         self._reset_expr = self._inner.reset_expr
 
     @property
@@ -139,17 +135,15 @@ class MappedInputType(InputMemberType):
         return self._input_key
 
     def clock(self) -> ClockCompanion:
-        ret = ClockCompanion()
-        ret.name = self.name + "_clock"
-        return ret
+        # This `self.name` will be given when initializing the `InputSchemaBase` through reflection.
+        return ClockCompanion(f"{self.name}_clock")
 
     # TODO: move this outside of this class or convert them to static methods!!!
-    def parse(self, type_name, default_value="Default::default()") -> SignalBase:
-        return self \
-            .map(
-                bind_var="s",
-                lambda_src=f"s.parse::<{type_name}>().unwrap_or({default_value})"
-            ).annotate_type(type_name)
+    def parse(self, type_name, default_value: RustCode = RUST_DEFAULT_VALUE) -> SignalBase:
+        return self.map(
+            bind_var="s",
+            lambda_src=f"s.parse::<{type_name}>().unwrap_or({default_value})"
+        ).annotate_type(type_name)
 
     def starts_with(self, other) -> SignalBase:
         from .const import Const
@@ -172,28 +166,26 @@ _defined_schema: Optional['InputSchemaBase'] = None
 
 
 class InputSchemaBase(LeveledSignalProcessingModelComponentBase):
-    def __init__(self, name="InputSignalBag"):
+    def __init__(self, rust_type: RustCode = INPUT_SIGNAL_BAG):
         global _defined_schema
-        super().__init__()
-        self._rust_type = name
+        super().__init__(rust_type)
         self._members = []
         if "_timestamp_key" not in self.__dir__():
             self._timestamp_key = "timestamp"
         for item_name in self.__dir__():
             item = self.__getattribute__(item_name)
-            if isinstance(item, (TypeBase, InputMemberType)):
-                if not isinstance(item, InputMemberType):
-                    item = MappedInputType(input_key=item_name, tpe=item)
+            # There won't be members as `ClockCompanion`s in the source code of
+            # an `InputSchemaBase` instance, therefore we don't try to handle it here.
+            if isinstance(item, TypeBase):
+                item = MappedInputMember(input_key=item_name, tpe=item)
+            if isinstance(item, MappedInputMember):
                 item.name = item_name
                 self.__setattr__(item_name, item)
                 self._members.append(item_name)
         _defined_schema = self
 
-    def rebuild(self, name = "InputSignalBag"):
-        self.__init__(name)
-
-    def get_rust_type_name(self) -> str:
-        return self._rust_type
+    def rebuild(self, rust_type: RustCode = INPUT_SIGNAL_BAG):
+        self.__init__(rust_type)
 
     def to_dict(self) -> dict:
         ret = {
@@ -242,9 +234,9 @@ class SessionizedInputSchemaBase(InputSchemaBase):
             signal_clock = signal.clock()
         return self._scope_ctx.scoped(data=signal, clock=signal_clock, default=default_value)
 
-    def __init__(self, name="InputSignalBag"):
+    def __init__(self, rust_type: RustCode = INPUT_SIGNAL_BAG):
         from .modules import ScopeContext
-        super().__init__(name)
+        super().__init__(rust_type)
         self.session_signal = self.create_session_signal()
         self.epoch_signal = self.create_epoch_signal()
         self._sessionized_signals = dict()
@@ -259,14 +251,12 @@ class SessionizedInputSchemaBase(InputSchemaBase):
             return super().__getattribute__(name)
 
 
-def named(name: str, inner: TypeBase = String()) -> MappedInputType:
-    return MappedInputType(name, inner)
+def named(name: str, inner: TypeBase = String()) -> MappedInputMember:
+    return MappedInputMember(name, inner)
 
 
-def volatile(inner: TypeBase, default=None) -> TypeBase:
-    if default is None:
-        default = "Default::default()"
-    inner._reset_expr = default
+def volatile(inner: TypeBase, default_value: RustCode = RUST_DEFAULT_VALUE) -> TypeBase:
+    inner._reset_expr = default_value
     return inner
 
 
@@ -274,16 +264,17 @@ def get_schema():
     return _defined_schema
 
 
-def create_type_model_from_rust_type_name(rust_type_name: str) -> Optional[TypeBase]:
-    if rust_type_name == "String":
+def create_type_model_from_rust_type_name(rust_type: RustCode) -> Optional[TypeBase]:
+    if rust_type == "String":
         return String()
-    if rust_type_name[0] in ['i', 'u']:
-        width = int(rust_type_name[1:])
-        signed = rust_type_name[0] == 'i'
+    elif rust_type[0] in ['i', 'u']:
+        width = int(rust_type[1:])
+        signed = rust_type[0] == 'i'
         return Integer(signed, width)
-    if rust_type_name[0] == 'f':
-        width = int(rust_type_name[1:])
+    elif rust_type[0] == 'f':
+        width = int(rust_type[1:])
         return Float(width)
-    if rust_type_name[0] == 'bool':
+    elif rust_type[0] == 'bool':
         return Bool()
-    return None
+    else:
+        return None

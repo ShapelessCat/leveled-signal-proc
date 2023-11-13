@@ -1,4 +1,5 @@
 from ..componet_base import BuiltinProcessorComponentBase
+from ..rust_code import RUST_DEFAULT_VALUE, RustCode
 from ..signal import SignalBase
 
 
@@ -10,13 +11,13 @@ class StateMachineBuilder:
         self._data = data
         self._transition_fn = '|_,_| ()'
         self._scope_signal = None
-        self._init_state = "Default::default()"
+        self._init_state = RUST_DEFAULT_VALUE
 
     def init_state(self, init_state):
         self._init_state = init_state
         return self
 
-    def transition_fn(self, fn: str):
+    def transition_fn(self, fn: RustCode):
         self._transition_fn = fn
         return self
 
@@ -58,7 +59,7 @@ class StateMachineBuilder:
                 clock=[self._scope_signal, self._clock],
                 data=[self._scope_signal, self._clock, self._data],
                 transition_fn=actual_transition_fn,
-                init_state=f"(Default::default(), Default::default(), {self._init_state})",
+                init_state=f"({RUST_DEFAULT_VALUE}, {RUST_DEFAULT_VALUE}, {self._init_state})",
             )
             return state_machine.map(bind_var="&(_, _, s)", lambda_src="s")
 
@@ -73,7 +74,7 @@ class StateMachine(BuiltinProcessorComponentBase):
         else:
             raise "Currently only support transition_fn"
         rust_processor_name = self.__class__.__name__
-        init_state = kwargs.get("init_state", "Default::default()")
+        init_state = kwargs.get("init_state", RUST_DEFAULT_VALUE)
         super().__init__(
             name=rust_processor_name,
             node_decl=f"{rust_processor_name}::new({init_state}, {transition_fn})",
