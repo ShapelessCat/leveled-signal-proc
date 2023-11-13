@@ -74,8 +74,8 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
             """)
         if scope is not None:
             builder.scoped(scope)
-        return builder.build().annotate_type(f"({ty}, {ty})").map(
-            bind_var='(ret, _)',
+        return builder.build().annotate_type(f"(std::collections::VecDeque<{ty}>, {ty})").map(
+            bind_var='(_, ret)',
             lambda_src='ret.clone()'
         ).annotate_type(self.get_rust_type_name())
 
