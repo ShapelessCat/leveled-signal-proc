@@ -1,7 +1,10 @@
 import re
-from typing import Self, Optional
+from typing import Self, Optional, TypeVar
 
+from . import validate_rust_identifier
 from .const import Const
+from .measurement import MeasurementBase
+from .rust_code import COMPILER_INFERABLE_TYPE, RustCode
 from .schema import MappedInputMember
 from .signal import SignalBase
 from .signal_processors import SignalMapper, Latch
@@ -71,6 +74,26 @@ def make_tuple(*args: SignalBase) -> SignalBase:
         lambda_src="s.clone()",
         upstream=list(args)
     ).annotate_type(f'({",".join([arg.get_rust_type_name() for arg in args])})')
+
+
+__T = TypeVar('__T', SignalBase, MeasurementBase)
+
+
+def add_metric(component: __T, key: RustCode, typename: RustCode = COMPILER_INFERABLE_TYPE) -> __T:
+    """Register the leveled signal as a metric.
+
+    The registered metric results will present in the output data structure.
+
+    Note:
+    to register the type, the leveled signal should have a known type, otherwise, it's an error.
+    """
+    validate_rust_identifier(key)
+    from . import measurement_config
+    if isinstance(component, SignalBase):
+        measurement_config().add_metric(key, component.peek(), typename)
+    else:
+        measurement_config().add_metric(key, component, typename)
+    return component
 
 
 class SignalFilterBuilder:
