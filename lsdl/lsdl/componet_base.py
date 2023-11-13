@@ -2,9 +2,11 @@ import configparser
 import os
 from abc import ABC
 
+from .lsp_model_component import LeveledSignalProcessingModelComponentBase
+from .measurement import MeasurementBase
 from .rust_code import COMPILER_INFERABLE_TYPE, RustCode
 from .schema import create_type_model_from_rust_type_name
-from .signal import LeveledSignalProcessingModelComponentBase, SignalBase
+from .signal import SignalBase
 
 __config = configparser.ConfigParser()
 __current_file_path = os.path.dirname(os.path.abspath(__file__))
@@ -127,7 +129,7 @@ class BuiltinProcessorComponentBase(BuiltinComponentBase, SignalBase, ABC):
         super().__init__(component_package="processors", component_name=name, **kwargs)
 
 
-class BuiltinMeasurementComponentBase(BuiltinComponentBase, ABC):
+class BuiltinMeasurementComponentBase(BuiltinComponentBase, MeasurementBase, ABC):
     def __init__(self, name: RustCode, **kwargs):
         super().__init__(component_package="measurements", component_name=name, **kwargs)
 
