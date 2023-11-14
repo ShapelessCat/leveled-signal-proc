@@ -159,6 +159,14 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         """
         from .measurements import DurationSinceBecomeTrue
         return DurationSinceBecomeTrue(self)
+    
+    def measure_duration_since_last_level(self) -> MeasurementBase:
+        """Measures the duration since last level change happened.
+
+        When there is no input signal happens, the output of the measurement is constantly 0.
+        """
+        from .measurements import DurationSinceLastLevel
+        return DurationSinceLastLevel(self)
 
     def peek(self) -> MeasurementBase:
         """Returns the measurement that peek the latest value for the given signal."""

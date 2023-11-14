@@ -122,12 +122,15 @@ class Dag(object):
         elif op_name == "any":
             timeline = self._parse_block(timeline_config["in"])
             output_timeline = Any(timeline).process()
-        elif op_name == "prior_event":
+        elif op_name == "priorEvent":
             timeline = self._parse_block(timeline_config["in"])
             output_timeline = PriorEvent(timeline).process(window=timeline_config.get('windowSize', 1), initial_value=timeline_config.get("initialValue"))
-        elif op_name == "if_op":
+        elif op_name == "if":
             args = self._parse_kary_args(timeline_config)
             output_timeline = IfOp(args).process()
+        elif op_name == "durationSinceLastEvent":
+            timeline = self._parse_block(timeline_config["in"])
+            output_timeline = DurationSinceLastEvent(timeline).process().add_metric(timeline_name)
 
         self.processed_node[timeline_name] = output_timeline
         return output_timeline

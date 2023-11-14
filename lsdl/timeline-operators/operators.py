@@ -169,8 +169,8 @@ class IfOp(KaryOperator):
         return If(self.args[0], self.args[1], self.args[2])
 
 
-# class DurationSinceLastEvent(UnaryOperator):
-#     op = "duration_since_last_event"
+class DurationSinceLastEvent(UnaryOperator):
+    op = "duration_since_last_event"
 
-#     def process(self):
-#         return self.input._timestamp_key - self.input._timestamp_key.prior_value()
+    def process(self):
+        return self.input.measure_duration_since_last_level()
