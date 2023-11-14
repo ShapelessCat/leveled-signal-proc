@@ -62,15 +62,3 @@ where
         self.state.clone()
     }
 }
-
-// const M = StateMachine::<i32, (std::collections::VecDeque<i32>, i32), _, i32>::new(Default::default(),
-//     |(q, _): &(std::collections::VecDeque<i32>, i32), data: &i32| {
-//         let mut to_output = Default::default();
-//         let mut q_cloned = q.clone();
-//         if q_cloned.len() == 1 {
-//             to_output = q.pop_front().unwrap();
-//         }
-//         q_cloned.push_back(data.clone());
-//         (q_cloned, to_output.clone())
-//     }
-// );
