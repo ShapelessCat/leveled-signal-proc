@@ -1,5 +1,6 @@
 import functools
 from lsdl.const import Const
+from lsdl.signal_processors import If
 
 
 class Operator(object):
@@ -78,11 +79,11 @@ class Get(UnaryOperator):
         return getattr(self.input, path)
 
 
-class EpochSeconds(UnaryOperator):
-    op = "epoch_seconds"
+# class EpochSeconds(UnaryOperator):
+#     op = "epoch_seconds"
      
-    def process(self):
-        return getattr(self.input, "_timestamp_key")
+#     def process(self):
+#         return getattr(self.input, "_timestamp_key")
 
 
 class Not(UnaryOperator):
@@ -157,5 +158,19 @@ class Any(UnaryOperator):
 class PriorEvent(UnaryOperator):
     op = "prior_event"
 
-    def process(self, window=1):
-        return self.input.prior_value(window=window)
+    def process(self, window=1, initial_value=None):
+        return self.input.prior_value(window=window, initial_value=initial_value)
+
+
+class IfOp(KaryOperator):
+    op = "if_op"
+
+    def process(self):
+        return If(self.args[0], self.args[1], self.args[2])
+
+
+# class DurationSinceLastEvent(UnaryOperator):
+#     op = "duration_since_last_event"
+
+#     def process(self):
+#         return self.input._timestamp_key - self.input._timestamp_key.prior_value()
