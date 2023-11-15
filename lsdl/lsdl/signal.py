@@ -3,7 +3,7 @@ from typing import Optional
 
 from .lsp_model_component import LeveledSignalProcessingModelComponentBase
 from .measurement import MeasurementBase
-from .rust_code import COMPILER_INFERABLE_TYPE, RustCode
+from .rust_code import COMPILER_INFERABLE_TYPE, RustCode, RUST_DEFAULT_VALUE
 
 
 class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
@@ -44,10 +44,35 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         from .modules import has_changed
         return has_changed(self, duration)
 
+    def prior_event(self, window_size=1, init_value=None) -> 'SignalBase':
+        from .signal_processors import SlidingWindow
+        if not init_value:
+            init_value = RUST_DEFAULT_VALUE
+        sw = SlidingWindow(
+            clock=self,
+            data=self,
+            window_size=window_size,
+            init_value=init_value,
+            emit_fn='|_, data| data.clone()'
+        )
+        return sw.annotate_type(self.get_rust_type_name())
+
+    def moving_average(self, window_size=1, init_value=0) -> 'SignalBase':
+        from .signal_processors import SlidingWindow
+        ty = self.get_rust_type_name()
+        sw = SlidingWindow(
+            clock=self,
+            data=self,
+            window_size=window_size,
+            init_value=init_value,
+            emit_fn=f'|(q, _): (&std::collections::VecDeque<{ty}>, &{ty})| q.iter().fold(0, |a, x| a + x) as f64 / q.len() as f64'
+        )
+        return sw.annotate_type('f64')
+
     def prior_different_value(self, scope: Optional['SignalBase'] = None) -> 'SignalBase':
         return self.prior_value(self, scope)
 
-    def prior_value(self, clock: Optional['SignalBase'] = None, scope: Optional['SignalBase'] = None, window=1, initial_value=None) -> 'SignalBase':
+    def prior_value(self, clock: Optional['SignalBase'] = None, scope: Optional['SignalBase'] = None) -> 'SignalBase':
         from .schema import MappedInputMember
         from .signal_processors import StateMachineBuilder
         if clock is None:
@@ -60,24 +85,12 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
                        2. or make sure the `self` is a `MappedInputMember` instance, which has the `clock()` method"""
                 )
         ty = self.get_rust_type_name()
-        initial_value = initial_value or f"Default::default()"
         builder = StateMachineBuilder(data = self, clock = clock)\
-            .init_state(f'(std::collections::VecDeque::with_capacity({window}), Default:default())')\
-            .transition_fn(f"""
-                |(q, _): &(std::collections::VecDeque<{ty}>, {ty}), data: &{ty}| {{
-                    let mut to_output = {initial_value};
-                    let mut q_cloned = q.clone();
-                    if q_cloned.len() == {window} {{
-                        to_output = q_cloned.pop_front().unwrap();
-                    }}
-                    q_cloned.push_back(data.clone());
-                    (q_cloned, to_output.clone())
-                }}
-            """)
+            .transition_fn(f'|(_, current): &({ty}, {ty}), data : &{ty}| (current.clone(), data.clone())')
         if scope is not None:
             builder.scoped(scope)
-        return builder.build().annotate_type(f"(std::collections::VecDeque<{ty}>, {ty})").map(
-            bind_var='(_, ret)',
+        return builder.build().annotate_type(f"({ty}, {ty})").map(
+            bind_var = '(ret, _)',
             lambda_src='ret.clone()'
         ).annotate_type(self.get_rust_type_name())
 

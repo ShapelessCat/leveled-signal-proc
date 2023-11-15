@@ -12,4 +12,4 @@ pub use generator::SignalGenerator;
 pub use latch::{Latch, EdgeTriggeredLatch};
 pub use liveness::LivenessChecker;
 pub use mapper::SignalMapper;
-pub use state_machine::StateMachine;
+pub use state_machine::{StateMachine, SlidingWindow, SlidingTimeWindow};

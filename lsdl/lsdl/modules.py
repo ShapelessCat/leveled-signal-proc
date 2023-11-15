@@ -187,6 +187,12 @@ def time_domain_fold(data: SignalBase, clock: Optional[SignalBase] = None, scope
     elif fold_method == "max":
         fold_method = f"|{lambda_param}| s.clone().max(d.clone())"
         init_state = f"{data_type}::MIN" if init_state is None else init_state
+    elif fold_method == "and":
+        fold_method = f"|{lambda_param}| *s && *d"
+        init_state = f"true" if init_state is None else init_state
+    elif fold_method == "or":
+        fold_method = f"|{lambda_param}| *s || *d"
+        init_state = f"false" if init_state is None else init_state
     builder = StateMachineBuilder(clock=clock, data=data)
 
     if init_state is not None:

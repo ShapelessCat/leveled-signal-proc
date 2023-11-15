@@ -131,6 +131,15 @@ class Dag(object):
         elif op_name == "durationSinceLastEvent":
             timeline = self._parse_block(timeline_config["in"])
             output_timeline = DurationSinceLastEvent(timeline).process().add_metric(timeline_name)
+        elif op_name == "cummulativeSum":
+            timeline = self._parse_block(timeline_config["in"])
+            output_timeline = CummulativeFunc(timeline).process('sum').peek().add_metric(timeline_name)
+        elif op_name == "cummulativeAnd":
+            timeline = self._parse_block(timeline_config["in"])
+            output_timeline = CummulativeFunc(timeline).process('and').peek().add_metric(timeline_name)
+        elif op_name == "cummulativeOr":
+            timeline = self._parse_block(timeline_config["in"])
+            output_timeline = CummulativeFunc(timeline).process('or').peek().add_metric(timeline_name)
 
         self.processed_node[timeline_name] = output_timeline
         return output_timeline
