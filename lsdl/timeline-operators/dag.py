@@ -140,6 +140,9 @@ class Dag(object):
         elif op_name == "cummulativeOr":
             timeline = self._parse_block(timeline_config["in"])
             output_timeline = CummulativeFunc(timeline).process('or').peek().add_metric(timeline_name)
+        elif op_name == "epochSeconds":
+            timeline = self._parse_block(timeline_config["in"])
+            output_timeline = EpochSeconds(timeline).process()
 
         self.processed_node[timeline_name] = output_timeline
         return output_timeline

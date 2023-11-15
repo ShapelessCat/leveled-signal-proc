@@ -80,11 +80,11 @@ class Get(UnaryOperator):
         return getattr(self.input, path)
 
 
-# class EpochSeconds(UnaryOperator):
-#     op = "epoch_seconds"
+class EpochSeconds(UnaryOperator):
+    op = "epoch_seconds"
      
-#     def process(self):
-#         return getattr(self.input, "_timestamp_key")
+    def process(self):
+        return self.input.epoch_seconds()
 
 
 class Not(UnaryOperator):
