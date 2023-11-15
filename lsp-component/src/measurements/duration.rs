@@ -32,7 +32,6 @@ impl<'a, I: Iterator> Measurement<'a, I> for DurationSinceBecomeTrue {
 pub struct DurationSinceLastLevel<T: Clone> {
     last_assignment_timestamp: Timestamp,
     last_level: Option<T>,
-    duration_since_last_level: Timestamp,
 }
 
 impl<'a, T: Clone + 'a, I: Iterator> Measurement<'a, I> for DurationSinceLastLevel<T> {
@@ -41,16 +40,12 @@ impl<'a, T: Clone + 'a, I: Iterator> Measurement<'a, I> for DurationSinceLastLev
 
     fn update(&mut self, ctx: &mut UpdateContext<I>, input: Self::Input) {
         self.last_level = Some(input.clone());
-        self.duration_since_last_level = ctx.frontier() - self.last_assignment_timestamp;
         self.last_assignment_timestamp = ctx.frontier();
     }
 
     fn measure(&self, ctx: &mut UpdateContext<I>) -> Self::Output {
         if self.last_level.is_none() {
             0
-        }
-        else if ctx.frontier() == self.last_assignment_timestamp {
-            self.duration_since_last_level
         } else {
             ctx.frontier() - self.last_assignment_timestamp
         }
