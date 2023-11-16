@@ -72,6 +72,14 @@ impl MacroContext {
         let mut patch_code_impls = Vec::new();
         let type_name = syn::Ident::new(&schema.type_name, span.clone());
         let patch_type_name = syn::Ident::new(&format!("{}Patch", schema.type_name), span.clone());
+
+        // Add a companion clock signal to the input_state_bag itself, rather than to a specific field of the input_state_bag.
+        let input_state_bag_clock = syn::Ident::new("_clock", self.span());
+        let input_state_bag_clock_item = quote! { pub #input_state_bag_clock: u64, }.into();
+        item_impls.push(input_state_bag_clock_item);
+        let input_state_bag_clock_update_item = quote! { self.#input_state_bag_clock += 1; }.into();
+        patch_code_impls.push(input_state_bag_clock_update_item);
+
         for (id, field) in schema.members.iter() {
             item_impls.push(self.expand_input_state_item(id, field)?);
             diff_item_impls.push(self.expand_input_patch_item(id, field)?);
