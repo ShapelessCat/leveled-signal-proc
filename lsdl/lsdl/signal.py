@@ -89,12 +89,12 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
                        2. or make sure the `self` is a `MappedInputMember` instance, which has the `clock()` method"""
                 )
         ty = self.get_rust_type_name()
-        builder = StateMachineBuilder(data = self, clock = clock)\
+        builder = StateMachineBuilder(data=self, clock=clock)\
             .transition_fn(f'|(_, current): &({ty}, {ty}), data : &{ty}| (current.clone(), data.clone())')
         if scope is not None:
             builder.scoped(scope)
         return builder.build().annotate_type(f"({ty}, {ty})").map(
-            bind_var = '(ret, _)',
+            bind_var='(ret, _)',
             lambda_src='ret.clone()'
         ).annotate_type(self.get_rust_type_name())
 
