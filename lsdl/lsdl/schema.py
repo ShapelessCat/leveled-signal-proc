@@ -165,10 +165,15 @@ class MappedInputMember(InputMember):
 _defined_schema: Optional['InputSchemaBase'] = None
 
 
-class InputSchemaBase(LeveledSignalProcessingModelComponentBase):
-    def __init__(self, rust_type: RustCode = INPUT_SIGNAL_BAG):
+class InputSchemaBase(SignalBase):
+    def __init__(self, type_name: RustCode = INPUT_SIGNAL_BAG):
         global _defined_schema
-        super().__init__(rust_type)
+        self.type_name = type_name
+        # If treating `InputSchemaBase` itself as a signal/clock, its type should be `u64`.
+        # Actually, lsp-codegen will always automatically insert a `_clock: u64` field
+        # to the codegen result struct of this class, and the generated struct name should
+        # be the value of `self.type_name`.
+        super().__init__("u64")
         self._members = []
         if "_timestamp_key" not in self.__dir__():
             self._timestamp_key = "timestamp"
@@ -189,7 +194,7 @@ class InputSchemaBase(LeveledSignalProcessingModelComponentBase):
 
     def to_dict(self) -> dict:
         ret = {
-            "type_name": self.get_rust_type_name(),
+            "type_name": self.type_name,
             "patch_timestamp_key": self._timestamp_key,
             "members": {}
         }
@@ -210,7 +215,8 @@ class InputSchemaBase(LeveledSignalProcessingModelComponentBase):
 
     def get_id(self):
         return {
-            "type": "InputBag",
+            "type": "InputSignal",
+            "id": "_clock"
         }
 
 
