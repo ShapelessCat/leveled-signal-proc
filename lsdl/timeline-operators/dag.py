@@ -2,6 +2,7 @@ from operators import *
 from lsdl.schema import *
 from lsdl.prelude import *
 import yaml
+from pytimeparse.timeparse import timeparse
 
 
 class InputSignal(InputSchemaBase):
@@ -121,7 +122,7 @@ class Dag(object):
             output_timeline = Divide(left, right).process()
         elif op_name == "any":
             timeline = self._parse_block(timeline_config["in"])
-            output_timeline = Any(timeline).process()
+            output_timeline = Any(timeline).process(duration=timeparse(timeline_config.get("slidingWindow")) or -1)
         elif op_name == "priorEvent":
             timeline = self._parse_block(timeline_config["in"])
             output_timeline = PriorEvent(timeline).process(window=timeline_config.get('windowSize', 1), initial_value=timeline_config.get("initialValue"))

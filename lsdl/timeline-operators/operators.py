@@ -152,8 +152,8 @@ class Divide(BinaryOperator):
 class Any(UnaryOperator):
     op = "any"
 
-    def process(self):
-        return self.input.has_been_true()
+    def process(self, duration=-1):
+        return self.input.has_been_true(duration=duration)
     
 
 class PriorEvent(UnaryOperator):
