@@ -1,4 +1,4 @@
-use std::{marker::PhantomData, fmt::Debug, process::Output};
+use std::{marker::PhantomData, fmt::Debug, collections::VecDeque};
 
 use lsp_runtime::{signal::SignalProcessor, UpdateContext, Timestamp};
 
@@ -64,7 +64,7 @@ where
 }
 
 pub struct SlidingWindow<Input, EmitFunc, Trigger, Output> {
-    queue: std::collections::VecDeque<Input>,
+    queue: VecDeque<Input>,
     emit_func: EmitFunc,
     last_trigger_value: Trigger,
     last_dequeued_value: Input,
@@ -74,10 +74,10 @@ pub struct SlidingWindow<Input, EmitFunc, Trigger, Output> {
 impl<I: Default, F, T: Default, O> SlidingWindow<I, F, T, O> {
     pub fn new(emit_func: F, window_size: usize, init_value: I) -> Self
     where
-        F: Fn(&std::collections::VecDeque<I>, &I) -> O,
+        F: Fn(&VecDeque<I>, &I) -> O,
     {
         Self {
-            queue: std::collections::VecDeque::with_capacity(window_size),
+            queue: VecDeque::with_capacity(window_size),
             emit_func,
             last_trigger_value: Default::default(),
             last_dequeued_value: init_value,
@@ -86,10 +86,10 @@ impl<I: Default, F, T: Default, O> SlidingWindow<I, F, T, O> {
     }
 }
 
-impl<'a, Input, EmitFunc, Iter, Trigger> SignalProcessor<'a, Iter>
+impl<'a, Input, EmitFunc, Iter, Trigger, Output> SignalProcessor<'a, Iter>
     for SlidingWindow<Input, EmitFunc, Trigger, Output>
 where
-    EmitFunc: Fn(&std::collections::VecDeque<Input>, &Input) -> Output,
+    EmitFunc: Fn(&VecDeque<Input>, &Input) -> Output,
     Iter: Iterator,
     Output: Clone,
     Trigger: Eq + Clone + 'a,
@@ -116,7 +116,7 @@ where
 }
 
 pub struct SlidingTimeWindow<Input, EmitFunc, Trigger, Output> {
-    queue: std::collections::VecDeque<(Input, Timestamp)>,
+    queue: VecDeque<(Input, Timestamp)>,
     time_window_size: Timestamp,
     emit_func: EmitFunc,
     last_trigger_value: Trigger,
@@ -127,10 +127,10 @@ pub struct SlidingTimeWindow<Input, EmitFunc, Trigger, Output> {
 impl<I: Default, F, T: Default, O> SlidingTimeWindow<I, F, T, O> {
     pub fn new(emit_func: F, time_window_size: Timestamp, init_value: I) -> Self
     where
-        F: Fn(&std::collections::VecDeque<(I, Timestamp)>, &I) -> O,
+        F: Fn(&VecDeque<(I, Timestamp)>, &I) -> O,
     {
         Self {
-            queue: std::collections::VecDeque::new(),
+            queue: VecDeque::new(),
             time_window_size,
             emit_func,
             last_trigger_value: Default::default(),
@@ -140,10 +140,10 @@ impl<I: Default, F, T: Default, O> SlidingTimeWindow<I, F, T, O> {
     }
 }
 
-impl<'a, Input, EmitFunc, Iter, Trigger> SignalProcessor<'a, Iter>
+impl<'a, Input, EmitFunc, Iter, Trigger, Output> SignalProcessor<'a, Iter>
     for SlidingTimeWindow<Input, EmitFunc, Trigger, Output>
 where
-    EmitFunc: Fn(&std::collections::VecDeque<(Input, Timestamp)>, &Input) -> Output,
+    EmitFunc: Fn(&VecDeque<(Input, Timestamp)>, &Input) -> Output,
     Iter: Iterator,
     Output: Clone,
     Trigger: Eq + Clone + 'a,
@@ -158,14 +158,15 @@ where
         ctx: &mut UpdateContext<Iter>,
         (trigger, input): Self::Input,
     ) -> Self::Output {
-        if trigger != &self.last_trigger_value {
-            while let Some((_, timestamp)) = self.queue.front() {
-                if ctx.frontier() - timestamp > self.time_window_size {
-                    self.last_dequeued_value = self.queue.pop_front().unwrap().0;
-                } else {
-                    break;
-                }
+        while let Some((_, timestamp)) = self.queue.front() {
+            if ctx.frontier() - timestamp >= self.time_window_size {
+                self.last_dequeued_value = self.queue.pop_front().unwrap().0;
+            } else {
+                break;
             }
+        }
+        ctx.schedule_signal_update(self.time_window_size);
+        if trigger != &self.last_trigger_value {
             self.queue.push_back((input.clone(), ctx.frontier()));
             self.last_trigger_value = trigger.clone();
         }
