@@ -4,6 +4,7 @@ from lsdl.const import Const
 
 class Operator(object):
     op = None
+    is_measurement = False
 
 
 class NullaryOperator(Operator):
@@ -59,6 +60,7 @@ class Count(UnaryOperator):
 
 class DurationTrueT(UnaryOperator):
     op = "duration_true"
+    is_measurement = True
 
     def process(self):
         return self.input.measure_duration_true()
@@ -76,6 +78,13 @@ class Get(UnaryOperator):
 
     def process(self, path):
         return getattr(self.input, path)
+
+
+class EpochSeconds(UnaryOperator):
+    op = "epoch_seconds"
+     
+    def process(self):
+        return self.input.epoch_seconds()
 
 
 class Not(UnaryOperator):
@@ -143,5 +152,39 @@ class Divide(BinaryOperator):
 class Any(UnaryOperator):
     op = "any"
 
+    def process(self, duration=-1):
+        return self.input.has_been_true(duration=duration)
+    
+
+class PriorEvent(UnaryOperator):
+    op = "prior_event"
+
+    def process(self, window=1, initial_value=None):
+        return self.input.prior_event(window_size=window, init_value=initial_value)
+
+
+class IfOp(KaryOperator):
+    op = "if_op"
+
     def process(self):
-        return self.input.has_been_true()
+        from lsdl.signal_processors import If
+        return If(self.args[0], self.args[1], self.args[2])
+
+
+class DurationSinceLastEvent(UnaryOperator):
+    op = "duration_since_last_event"
+    is_measurement = True
+
+    def process(self):
+        return self.input.measure_duration_since_last_level()
+
+
+class CummulativeFunc(UnaryOperator):
+    op = None
+
+    def process(self, op):
+        from lsdl.prelude import time_domain_fold
+        return time_domain_fold(
+            data=self.input,
+            fold_method=op
+        )

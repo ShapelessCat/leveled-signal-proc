@@ -3,7 +3,7 @@ from typing import Optional
 
 from .lsp_model_component import LeveledSignalProcessingModelComponentBase
 from .measurement import MeasurementBase
-from .rust_code import COMPILER_INFERABLE_TYPE, RustCode
+from .rust_code import COMPILER_INFERABLE_TYPE, RustCode, RUST_DEFAULT_VALUE
 
 
 class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
@@ -43,6 +43,35 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         """
         from .modules import has_changed
         return has_changed(self, duration)
+
+    def prior_event(self, window_size=1, init_value=None) -> 'SignalBase':
+        from .signal_processors import SlidingWindow
+        if not init_value:
+            init_value = RUST_DEFAULT_VALUE
+        sw = SlidingWindow(
+            clock=self,
+            data=self,
+            window_size=window_size,
+            init_value=init_value,
+            emit_fn='|_, data| data.clone()'
+        )
+        return sw.annotate_type(self.get_rust_type_name())
+    
+    def epoch_seconds(self) -> 'SignalBase':
+        from .signal_processors import SignalGenerator
+        return SignalGenerator(lambda_src="|t| (t, 0)").annotate_type("u64")
+
+    def moving_average(self, window_size=1, init_value=0) -> 'SignalBase':
+        from .signal_processors import SlidingWindow
+        ty = self.get_rust_type_name()
+        sw = SlidingWindow(
+            clock=self,
+            data=self,
+            window_size=window_size,
+            init_value=init_value,
+            emit_fn=f'|(q, _): (&std::collections::VecDeque<{ty}>, &{ty})| q.iter().fold(0, |a, x| a + x) as f64 / q.len() as f64'
+        )
+        return sw.annotate_type('f64')
 
     def prior_different_value(self, scope: Optional['SignalBase'] = None) -> 'SignalBase':
         return self.prior_value(self, scope)
@@ -147,6 +176,14 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         """
         from .measurements import DurationSinceBecomeTrue
         return DurationSinceBecomeTrue(self)
+    
+    def measure_duration_since_last_level(self) -> MeasurementBase:
+        """Measures the duration since last level change happened.
+
+        When there is no input signal happens, the output of the measurement is constantly 0.
+        """
+        from .measurements import DurationSinceLastLevel
+        return DurationSinceLastLevel(self)
 
     def peek(self) -> MeasurementBase:
         """Returns the measurement that peek the latest value for the given signal."""

@@ -2,6 +2,7 @@ from operators import *
 from lsdl.schema import *
 from lsdl.prelude import *
 import yaml
+from pytimeparse.timeparse import timeparse
 
 
 class InputSignal(InputSchemaBase):
@@ -95,9 +96,7 @@ class Dag(object):
         elif op_name == "equals":
             left, right = self._parse_binary_args(timeline_config)
             output_timeline = Equals(left, right).process()
-        elif op_name == "latestEventToState":
-            output_timeline = self._parse_block(timeline_config["in"])
-        elif op_name == "evaluateAt":
+        elif op_name in ("latestEventToState", "evaluateAt", "stateChangeEvents"):
             output_timeline = self._parse_block(timeline_config["in"])
         elif op_name == "makeStruct":
             for _, config in timeline_config["fields"].items():
@@ -123,7 +122,28 @@ class Dag(object):
             output_timeline = Divide(left, right).process()
         elif op_name == "any":
             timeline = self._parse_block(timeline_config["in"])
-            output_timeline = Any(timeline).process()
+            output_timeline = Any(timeline).process(duration=timeparse(timeline_config.get("slidingWindow")) or -1)
+        elif op_name == "priorEvent":
+            timeline = self._parse_block(timeline_config["in"])
+            output_timeline = PriorEvent(timeline).process(window=timeline_config.get('windowSize', 1), initial_value=timeline_config.get("initialValue"))
+        elif op_name == "if":
+            args = self._parse_kary_args(timeline_config)
+            output_timeline = IfOp(args).process()
+        elif op_name == "durationSinceLastEvent":
+            timeline = self._parse_block(timeline_config["in"])
+            output_timeline = DurationSinceLastEvent(timeline).process().add_metric(timeline_name)
+        elif op_name == "cummulativeSum":
+            timeline = self._parse_block(timeline_config["in"])
+            output_timeline = CummulativeFunc(timeline).process('sum').peek().add_metric(timeline_name)
+        elif op_name == "cummulativeAnd":
+            timeline = self._parse_block(timeline_config["in"])
+            output_timeline = CummulativeFunc(timeline).process('and').peek().add_metric(timeline_name)
+        elif op_name == "cummulativeOr":
+            timeline = self._parse_block(timeline_config["in"])
+            output_timeline = CummulativeFunc(timeline).process('or').peek().add_metric(timeline_name)
+        elif op_name == "epochSeconds":
+            timeline = self._parse_block(timeline_config["in"])
+            output_timeline = EpochSeconds(timeline).process()
 
         self.processed_node[timeline_name] = output_timeline
         return output_timeline

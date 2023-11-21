@@ -58,13 +58,16 @@ dag:
       - $isPlay
       - $isWifi
       - $isCDN1
+  targetEvents:
+    op: stateChangeEvents
+    in: $target
   totalTime:
     op: durationTrue
     in: $target
     slidingWindow: +inf
   countEvent:
     op: count
-    in: $target
+    in: $targetEvents
   makeOutput:
     op: makeStruct
     fields:
