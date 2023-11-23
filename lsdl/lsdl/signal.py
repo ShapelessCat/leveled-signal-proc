@@ -56,7 +56,7 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
             emit_fn='|_, data| data.clone()'
         )
         return sw.annotate_type(self.get_rust_type_name())
-    
+
     def epoch_seconds(self) -> 'SignalBase':
         from .signal_processors import SignalGenerator
         return SignalGenerator(lambda_src="|t| (t, 0)").annotate_type("u64")
@@ -176,7 +176,7 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         """
         from .measurements import DurationSinceBecomeTrue
         return DurationSinceBecomeTrue(self)
-    
+
     def measure_duration_since_last_level(self) -> MeasurementBase:
         """Measures the duration since last level change happened.
 
@@ -189,3 +189,8 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         """Returns the measurement that peek the latest value for the given signal."""
         from .measurements import Peek
         return Peek(self)
+
+    def peek_timestamp(self) -> MeasurementBase:
+        """Returns the current measurement timestamp for the given signal."""
+        from .measurements import PeekTimestamp
+        return PeekTimestamp(self)
