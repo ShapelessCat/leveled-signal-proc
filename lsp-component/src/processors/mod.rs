@@ -1,4 +1,4 @@
-mod accmulator;
+mod accumulator;
 mod duration;
 mod generator;
 mod latch;
@@ -6,7 +6,7 @@ mod liveness;
 mod mapper;
 mod state_machine;
 
-pub use accmulator::Accumulator;
+pub use accumulator::Accumulator;
 pub use duration::DurationOfPreviousLevel;
 pub use generator::SignalGenerator;
 pub use latch::{Latch, EdgeTriggeredLatch};

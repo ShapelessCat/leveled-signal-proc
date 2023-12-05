@@ -1,4 +1,4 @@
-// This example calcuates p to e time / user active time
+// This example calculates p to e time / user active time
 use std::{fs::File, io::BufReader};
 
 use chrono::{DateTime, Utc};

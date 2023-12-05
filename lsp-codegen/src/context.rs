@@ -4,9 +4,10 @@ use std::{
     path::{Path as FilePath, PathBuf},
 };
 
+use proc_macro2::{Ident, Span};
+use syn::{LitStr, parse::Parse, Token};
+
 use lsp_ir::{DebugInfo, LspIr, Node, SchemaField};
-use proc_macro2::{Span, Ident};
-use syn::{parse::Parse, LitStr, Token};
 
 pub(crate) trait LsdlDebugInfo {
     fn debug_info(&self) -> Option<&DebugInfo>;

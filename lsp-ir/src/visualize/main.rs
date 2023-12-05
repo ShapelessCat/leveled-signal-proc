@@ -1,7 +1,8 @@
-use std::{fmt::Write, io::{Read, BufReader, BufRead}, path::Path, collections::HashMap, fs::File};
+use std::{collections::HashMap, fmt::Write, fs::File, io::{BufRead, BufReader, Read}, path::Path};
 
 use anyhow::Error;
-use lsp_ir::{LspIr, NodeInput, DebugInfo};
+
+use lsp_ir::{DebugInfo, LspIr, NodeInput};
 
 fn render_upstream_refs(input: &NodeInput) -> Vec<String> {
     let upstream = match input {
@@ -106,7 +107,7 @@ fn visualize_lsp_ir<R: Read>(reader: R) -> Result<(), Error> {
             println!("\t{} -> output_{};", upstream, metric_name);
         }
     }
-    let mut subgraphs = std::collections::HashMap::<_, (String, i32, Vec<_>)>::new();
+    let mut subgraphs = HashMap::<_, (String, i32, Vec<_>)>::new();
     for node in ir.nodes.iter() {
         if let Some(di) = &node.debug_info {
             let file: &Path = di.file.as_ref();
@@ -147,6 +148,6 @@ fn main() {
     if args.is_empty() {
         visualize_lsp_ir(std::io::stdin()).unwrap();
     } else {
-        visualize_lsp_ir(std::fs::File::open(&args[0]).unwrap()).unwrap();
+        visualize_lsp_ir(File::open(&args[0]).unwrap()).unwrap();
     }
 }

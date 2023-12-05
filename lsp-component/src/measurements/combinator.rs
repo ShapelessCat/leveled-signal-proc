@@ -38,7 +38,10 @@ pub trait ScopedMeasurementExt<'a, I:Iterator> : Measurement <'a, I> + Sized
 where 
     Self::Output: Clone + Sub<Output = Self::Output> + Default,
 {
-    fn scoped<ControlType: Default>(self, initial_level: ControlType) -> ScopedMeasurement<ControlType, Self, Self::Output>
+    fn scoped<ControlType: Default>(
+        self,
+        initial_level: ControlType
+    ) -> ScopedMeasurement<ControlType, Self, Self::Output>
     {
         ScopedMeasurement {
             current_control_level: initial_level,
@@ -52,5 +55,5 @@ impl <'a, I, M> ScopedMeasurementExt<'a, I> for M
 where
     M: Measurement<'a, I> + Sized,
     M::Output: Clone + Sub<Output = M::Output> + Default,
-    I:Iterator,
+    I: Iterator,
 {}

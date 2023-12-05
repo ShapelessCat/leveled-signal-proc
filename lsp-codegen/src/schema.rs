@@ -1,7 +1,9 @@
-use crate::MacroContext;
-use lsp_ir::{SchemaField, SignalBehavior};
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
+
+use lsp_ir::{SchemaField, SignalBehavior};
+
+use crate::MacroContext;
 
 impl MacroContext {
     fn expand_input_state_item(

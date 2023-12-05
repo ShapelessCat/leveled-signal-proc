@@ -2,7 +2,7 @@ use std::ops::AddAssign;
 
 use lsp_runtime::{signal::SignalProcessor, UpdateContext};
 
-/// An accumlator is a signal processor that constantly add input to the internal state.
+/// An accumulator is a signal processor that constantly add input to the internal state.
 /// Normally accumulator doesn't add input to the internal state, until it sees the control signal
 /// has changed.
 #[derive(Debug)]
@@ -52,9 +52,11 @@ where
 
 #[cfg(test)]
 mod test {
-    use super::Accumulator;
-    use crate::test::create_lsp_context_for_test;
     use lsp_runtime::signal::SignalProcessor;
+
+    use crate::test::create_lsp_context_for_test;
+
+    use super::Accumulator;
 
     #[test]
     fn test_basic_logic() {

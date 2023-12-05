@@ -1,6 +1,6 @@
-use std::{marker::PhantomData, fmt::Debug, collections::VecDeque};
+use std::{collections::VecDeque, fmt::Debug, marker::PhantomData};
 
-use lsp_runtime::{signal::SignalProcessor, UpdateContext, Timestamp};
+use lsp_runtime::{signal::SignalProcessor, Timestamp, UpdateContext};
 
 /// A state machine is a signal processor that maintains a state machine internally.
 /// The state transition is defined as a lambda function passed in when construction.
@@ -24,12 +24,12 @@ impl <I, S: Debug + Clone, F, T: Debug> Debug for StateMachine<I, S, F, T> {
 }
 
 impl<I, S: Clone, F, T: Default> StateMachine<I, S, F, T> {
-    pub fn new(inital_state: S, transition: F) -> Self
+    pub fn new(initial_state: S, transition: F) -> Self
     where
         F: Fn(&S, &I) -> S,
     {
         Self {
-            state: inital_state,
+            state: initial_state,
             transition,
             last_trigger_value: Default::default(),
             _phantom: PhantomData,

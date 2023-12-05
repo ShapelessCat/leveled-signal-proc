@@ -1,7 +1,7 @@
 use crate::Timestamp;
 
-/// Moment in LSP system is a point of time when the LSP system may
-/// change its state or the measurement may be taken.
+/// Moment in LSP system is a point of time when the LSP system may change its state or the
+/// measurement may be taken.
 /// This is the type that describes the moment.
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug)]
 pub struct Moment {

@@ -1,4 +1,5 @@
 use std::{env::args, fs::File};
+
 use anyhow::Error;
 
 use lsp_ir::LspIr;

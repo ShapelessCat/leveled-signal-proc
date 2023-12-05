@@ -18,10 +18,11 @@ impl<T: Clone> SignalFunc<T> for ConstSignalFunc<T> {
     }
 }
 
-/// A signal generator is a leveled signal processor that produces leveled signal
-/// based on the timestamp.
-/// The `SignalFunc` is a lambda that is called to determine the current level of the signal
-/// it recieves a timestamp for now and returns a tuple of signal level and the timestamp when current level ends.
+/// A signal generator is a leveled signal processor that produces leveled signal based on
+/// timestamps.
+/// The `SignalFunc` is a lambda that is called to determine the current level of the signal it
+/// receives a timestamp for now and returns a tuple of signal level and the timestamp when current
+/// level ends.
 pub struct SignalGenerator<SignalFunc = ConstSignalFunc<i32>, SignalType = i32> {
     signal_func: SignalFunc,
     last_value: SignalType,

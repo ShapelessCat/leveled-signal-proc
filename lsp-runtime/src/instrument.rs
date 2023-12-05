@@ -2,7 +2,10 @@ use std::{time::Instant, fmt::Display};
 
 pub trait NodeOutputHandler<'a, T> {
     fn new(value: &'a T) -> Self;
-    fn handle_node_output<Instr: LspDataLogicInstrument + ?Sized>(&self, instrument_ctx: &mut Instr);
+    fn handle_node_output<Instr: LspDataLogicInstrument + ?Sized>(
+        &self,
+        instrument_ctx: &mut Instr
+    );
 }
 
 pub trait LspDataLogicInstrument : Display {

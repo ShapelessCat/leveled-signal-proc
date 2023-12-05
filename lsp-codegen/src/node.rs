@@ -1,7 +1,9 @@
-use crate::{MacroContext, context::LsdlDebugInfo};
-use lsp_ir::{Node, NodeInput};
 use proc_macro2::TokenStream as TokenStream2;
 use quote::{quote, ToTokens};
+
+use lsp_ir::{Node, NodeInput};
+
+use crate::{context::LsdlDebugInfo, MacroContext};
 
 impl MacroContext {
     pub(crate) fn get_node_ident(&self, id: usize) -> syn::Ident {

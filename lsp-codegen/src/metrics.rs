@@ -1,6 +1,7 @@
-use crate::MacroContext;
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
+
+use crate::MacroContext;
 
 impl MacroContext {
     pub(crate) fn define_output_schema(&self) -> Result<TokenStream2, syn::Error> {
