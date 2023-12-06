@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Self
+from typing import Any, Self
 
 from .debug_info import DebugInfo
 from .rust_code import RustCode
@@ -23,6 +23,6 @@ class LeveledSignalProcessingModelComponentBase(ABC):
         """Get the rust declaration for the type of this signal."""
         return self._rust_type
 
-    def get_id(self):
+    def get_id(self) -> dict[str, Any]:
         """Get the IR description of the signal."""
         raise NotImplementedError()

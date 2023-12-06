@@ -1,4 +1,8 @@
 import logging
+from typing import Any, Self
+
+from lsdl.measurement import MeasurementBase
+from lsdl.signal import SignalBase
 
 from .rust_code import COMPILER_INFERABLE_TYPE, RustCode
 
@@ -19,22 +23,22 @@ class _MeasurementConfiguration:
         self._metrics_drain = "json"
         self._output_schema = {}
 
-    def set_measure_at_filter(self, lambda_src: RustCode):
+    def set_measure_at_filter(self, lambda_src: RustCode) -> Self:
         """Set the rule for event triggered measurement."""
         self._measure_at_event_lambda = lambda_src
         return self
 
-    def enable_measure_for_event(self):
+    def enable_measure_for_event(self) -> Self:
         """Enable measurement on every input event behavior."""
         self._measure_at_event_lambda = "|_| true"
         return self
 
-    def disable_measure_for_event(self):
+    def disable_measure_for_event(self) -> Self:
         """Prevent measurement on any input event."""
         self._measure_at_event_lambda = "|_| false"
         return self
 
-    def set_trigger_signal(self, signal):
+    def set_trigger_signal(self, signal: SignalBase) -> Self:
         """Set the measurement control signal.
 
         This signal will trigger a measurement when the value of the signal gets changed.
@@ -42,7 +46,7 @@ class _MeasurementConfiguration:
         self._measure_on_edge = signal
         return self
 
-    def set_limit_side_signal(self, signal):
+    def set_limit_side_signal(self, signal: SignalBase) -> Self:
         """Configure which one-sided limit should be used for measurements.
 
         Normally, LSP uses the right limit for measurements.
@@ -52,7 +56,7 @@ class _MeasurementConfiguration:
         self._measure_side_flag = signal
         return self
 
-    def set_metrics_drain(self, fmt: str):
+    def set_metrics_drain(self, fmt: str) -> Self:
         """Configure what format we want the LSP system produce.
 
         Note: Currently JSON is the only valid option.
@@ -60,7 +64,7 @@ class _MeasurementConfiguration:
         self._metrics_drain = fmt
         return self
 
-    def add_metric(self, key, measurement, typename: RustCode = COMPILER_INFERABLE_TYPE):
+    def add_metric(self, key: str, measurement: MeasurementBase, typename: RustCode = COMPILER_INFERABLE_TYPE) -> Self:
         """Declare a metric for output."""
         if typename == COMPILER_INFERABLE_TYPE:  # if this type is unknown and inferable
             typename = measurement.get_rust_type_name()
@@ -74,7 +78,7 @@ class _MeasurementConfiguration:
         }
         return self
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         """Dump the measurement policy into a dictionary that can be JSONified."""
         ret = {
             "measure_at_event_filter": self._measure_at_event_lambda,
