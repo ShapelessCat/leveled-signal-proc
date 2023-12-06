@@ -33,8 +33,7 @@ impl<'a, I: Iterator> Measurement<'a, I> for PeekTimestamp {
 
     /// This method is designed for updating when a leveled signal changes. Since time is not a
     /// leveled signal, this method shouldn't do anything.
-    fn update(&mut self, _: &mut UpdateContext<I>, _: Self::Input) {
-    }
+    fn update(&mut self, _: &mut UpdateContext<I>, _: Self::Input) {}
 
     /// This method can't depend on any recorded value, because time keeps changing and it is not a
     /// leveled signal.

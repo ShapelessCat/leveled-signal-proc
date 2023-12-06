@@ -71,7 +71,7 @@ impl<'a, I: Iterator> Measurement<'a, I> for DurationTrue {
             (true, false) => {
                 self.accumulated_duration += ctx.frontier() - self.last_true_starts;
             }
-            _ => ()
+            _ => (),
         };
         self.current_state = input;
     }
@@ -93,7 +93,7 @@ impl<'a, I: Iterator> Measurement<'a, I> for DurationTrue {
 
 pub type ScopedDurationTrue<T> = ScopedMeasurement<T, DurationTrue, Timestamp>;
 
-/* 
+/*
 #[derive(Default)]
 pub struct ScopedDurationTrue<T: Clone> {
     current_control_level: T,

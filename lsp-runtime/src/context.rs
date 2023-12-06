@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use crate::{InternalEventQueue, Moment, multipeek::MultiPeek, Timestamp};
+use crate::{multipeek::MultiPeek, InternalEventQueue, Moment, Timestamp};
 
 /// Some type with timestamp information.
 /// Typically, an event taken from outside should implements this trait and the context is

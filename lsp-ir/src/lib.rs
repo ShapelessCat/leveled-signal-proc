@@ -12,9 +12,7 @@ pub struct DebugInfo {
 #[serde(tag = "name")]
 pub enum SignalBehavior {
     Persist,
-    Reset{
-        default_expr: String
-    },
+    Reset { default_expr: String },
 }
 
 impl Default for SignalBehavior {
@@ -78,11 +76,17 @@ pub struct MetricSpec {
 }
 
 fn default_measure_trigger_signal() -> NodeInput {
-    NodeInput::Constant { value: "0i32".to_string(), type_name: "i32".to_string() }
+    NodeInput::Constant {
+        value: "0i32".to_string(),
+        type_name: "i32".to_string(),
+    }
 }
 
 fn default_measure_left_side_limit_signal() -> NodeInput {
-    NodeInput::Constant { value: "false".to_string(), type_name: "bool".to_string() }
+    NodeInput::Constant {
+        value: "false".to_string(),
+        type_name: "bool".to_string(),
+    }
 }
 
 #[derive(Deserialize, Serialize, Clone)]

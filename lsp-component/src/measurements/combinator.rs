@@ -9,7 +9,8 @@ pub struct ScopedMeasurement<ScopeType, Measurement, MeasurementOutput> {
     current_base: MeasurementOutput,
 }
 
-impl <'a, EventIterator, ScopeType, MeasurementType, Output> Measurement<'a, EventIterator> for ScopedMeasurement<ScopeType, MeasurementType, Output>
+impl<'a, EventIterator, ScopeType, MeasurementType, Output> Measurement<'a, EventIterator>
+    for ScopedMeasurement<ScopeType, MeasurementType, Output>
 where
     MeasurementType: Measurement<'a, EventIterator, Output = Output>,
     Output: Clone + Sub<Output = Output> + std::fmt::Display,
@@ -34,15 +35,14 @@ where
     }
 }
 
-pub trait ScopedMeasurementExt<'a, I:Iterator> : Measurement <'a, I> + Sized
-where 
+pub trait ScopedMeasurementExt<'a, I: Iterator>: Measurement<'a, I> + Sized
+where
     Self::Output: Clone + Sub<Output = Self::Output> + Default,
 {
     fn scoped<ControlType: Default>(
         self,
-        initial_level: ControlType
-    ) -> ScopedMeasurement<ControlType, Self, Self::Output>
-    {
+        initial_level: ControlType,
+    ) -> ScopedMeasurement<ControlType, Self, Self::Output> {
         ScopedMeasurement {
             current_control_level: initial_level,
             inner: self,
@@ -51,9 +51,10 @@ where
     }
 }
 
-impl <'a, I, M> ScopedMeasurementExt<'a, I> for M 
+impl<'a, I, M> ScopedMeasurementExt<'a, I> for M
 where
     M: Measurement<'a, I> + Sized,
     M::Output: Clone + Sub<Output = M::Output> + Default,
     I: Iterator,
-{}
+{
+}

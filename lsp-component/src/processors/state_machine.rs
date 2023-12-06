@@ -13,7 +13,7 @@ pub struct StateMachine<Input, State: Clone, TransitionFunc, Trigger> {
     _phantom: PhantomData<Input>,
 }
 
-impl <I, S: Debug + Clone, F, T: Debug> Debug for StateMachine<I, S, F, T> {
+impl<I, S: Debug + Clone, F, T: Debug> Debug for StateMachine<I, S, F, T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("StateMachine")
             .field("state", &self.state)

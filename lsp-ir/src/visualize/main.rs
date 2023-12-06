@@ -1,4 +1,10 @@
-use std::{collections::HashMap, fmt::Write, fs::File, io::{BufRead, BufReader, Read}, path::Path};
+use std::{
+    collections::HashMap,
+    fmt::Write,
+    fs::File,
+    io::{BufRead, BufReader, Read},
+    path::Path,
+};
 
 use anyhow::Error;
 
@@ -53,14 +59,14 @@ fn visualize_lsp_ir<R: Read>(reader: R) -> Result<(), Error> {
     let mut source_code_list = HashMap::<_, Vec<_>>::new();
 
     for node in ir.nodes.iter() {
-        if let Some(DebugInfo{ file, .. }) = node.debug_info.as_ref() {
+        if let Some(DebugInfo { file, .. }) = node.debug_info.as_ref() {
             if let Ok(fp) = File::open(file) {
                 let reader = BufReader::new(fp);
-                let file : &Path = file.as_ref();
+                let file: &Path = file.as_ref();
                 if let Some(filename) = file.file_name().map(|s| s.to_string_lossy()) {
-                    source_code_list.entry(filename.to_string()).or_insert_with(|| {
-                        reader.lines().filter_map(|l| l.ok()).collect()
-                    });
+                    source_code_list
+                        .entry(filename.to_string())
+                        .or_insert_with(|| reader.lines().filter_map(|l| l.ok()).collect());
                 }
             }
         }
@@ -111,7 +117,8 @@ fn visualize_lsp_ir<R: Read>(reader: R) -> Result<(), Error> {
     for node in ir.nodes.iter() {
         if let Some(di) = &node.debug_info {
             let file: &Path = di.file.as_ref();
-            let name = file.file_name()
+            let name = file
+                .file_name()
                 .map(|s| s.to_string_lossy().to_string())
                 .unwrap_or("<unknown>".to_string());
             let key = format!("{}:{}", name, di.line);
@@ -130,7 +137,10 @@ fn visualize_lsp_ir<R: Read>(reader: R) -> Result<(), Error> {
             if *line > 0 {
                 let line = *line as usize - 1;
                 if let Some(line) = src_list.get(line) {
-                    println!("\t\ttooltip = {code}", code = serde_json::to_string(line).unwrap());
+                    println!(
+                        "\t\ttooltip = {code}",
+                        code = serde_json::to_string(line).unwrap()
+                    );
                 }
             }
         }

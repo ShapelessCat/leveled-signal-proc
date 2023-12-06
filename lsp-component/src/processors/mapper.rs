@@ -10,10 +10,9 @@ pub struct SignalMapper<ParamType, OutputType, ClosureType> {
     _phantom_data: PhantomData<(ParamType, OutputType)>,
 }
 
-impl <P, O, C> Debug for SignalMapper<P, O, C> {
+impl<P, O, C> Debug for SignalMapper<P, O, C> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("SignalMapper")
-            .finish()
+        f.debug_struct("SignalMapper").finish()
     }
 }
 

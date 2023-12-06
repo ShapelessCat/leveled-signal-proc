@@ -5,7 +5,7 @@ use std::{
 };
 
 use proc_macro2::{Ident, Span};
-use syn::{LitStr, parse::Parse, Token};
+use syn::{parse::Parse, LitStr, Token};
 
 use lsp_ir::{DebugInfo, LspIr, Node, SchemaField};
 
@@ -98,7 +98,7 @@ impl Parse for MacroContext {
     fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
         let path_lit: LitStr = input.parse()?;
         let instrument_var: Option<Ident> = if input.peek(Token![,]) {
-            let _ : Token![,] = input.parse()?;
+            let _: Token![,] = input.parse()?;
             Some(input.parse()?)
         } else {
             None

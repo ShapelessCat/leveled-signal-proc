@@ -1,5 +1,5 @@
-use lsp_runtime::{Timestamp, UpdateContext};
 use lsp_runtime::signal::SignalProcessor;
+use lsp_runtime::{Timestamp, UpdateContext};
 
 /// Abstracts the retention behavior of a latch
 pub trait Retention<T> {
@@ -71,7 +71,7 @@ impl<T: Clone> Latch<T> {
     }
 }
 
-impl <C: Default, D> EdgeTriggeredLatch<C, D>{
+impl<C: Default, D> EdgeTriggeredLatch<C, D> {
     pub fn with_initial_value(data: D) -> Self {
         Self {
             last_control_level: Default::default(),
@@ -79,7 +79,7 @@ impl <C: Default, D> EdgeTriggeredLatch<C, D>{
             retention: KeepForever,
         }
     }
-} 
+}
 
 impl<T: Clone> Latch<T, TimeToLive<T>> {
     pub fn with_forget_behavior(data: T, default: T, time_to_memorize: Timestamp) -> Self {
@@ -125,7 +125,9 @@ impl<'a, T: Clone + 'a, I: Iterator, R: Retention<T>> SignalProcessor<'a, I> for
     }
 }
 
-impl<'a, C: 'a + PartialEq + Clone, D: Clone + 'a, I: Iterator, R: Retention<D>> SignalProcessor<'a, I> for EdgeTriggeredLatch<C, D, R> {
+impl<'a, C: 'a + PartialEq + Clone, D: Clone + 'a, I: Iterator, R: Retention<D>>
+    SignalProcessor<'a, I> for EdgeTriggeredLatch<C, D, R>
+{
     type Input = (&'a C, &'a D);
     type Output = D;
     #[inline(always)]

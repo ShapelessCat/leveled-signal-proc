@@ -1,8 +1,8 @@
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use lsp_runtime::{Timestamp, UpdateContext, WithTimestamp};
 use lsp_runtime::signal::SignalProcessor;
+use lsp_runtime::{Timestamp, UpdateContext, WithTimestamp};
 
 /// This is the signal processor that analyzes the liveness of a session based on heartbeat signals.
 /// The output constantly answering the question: Is current session still alive?
@@ -17,7 +17,7 @@ pub struct LivenessChecker<IsLivenessEventFunc, Clock, Event> {
     phantom: PhantomData<Event>,
 }
 
-impl <F, C: Debug, E: Debug> Debug for LivenessChecker<F, C, E> {
+impl<F, C: Debug, E: Debug> Debug for LivenessChecker<F, C, E> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("LivenessChecker")
             .field("expiration_period", &self.expiration_period)
@@ -60,7 +60,7 @@ where
             self.last_event_clock = input.clone();
             self.last_event_timestamp = ctx.frontier();
         }
-        
+
         let look_ahead_cutoff = self.last_event_timestamp + self.expiration_period;
         let output = ctx.peek_fold(false, |v, e| {
             if *v || e.timestamp() >= look_ahead_cutoff {
