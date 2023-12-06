@@ -21,19 +21,24 @@ impl<'a, T: Clone + 'a, I: Iterator> Measurement<'a, I> for Peek<T> {
 
 pub type DiffSinceCurrentLevel<C, T> = ScopedMeasurement<C, Peek<T>, T>;
 
+/// This is the measurement for timestamp.
+/// Time is not a leveled signal, and we can't use the [Peek] measurement to measure time.
 #[derive(Default, Debug)]
-pub struct PeekTimestamp(Timestamp);
+pub struct PeekTimestamp;
 
 impl<'a, I: Iterator> Measurement<'a, I> for PeekTimestamp {
     type Input = &'a Timestamp;
 
     type Output = u64;
 
-    fn update(&mut self, ctx: &mut UpdateContext<I>, _: Self::Input) {
-        self.0 = ctx.frontier();
+    /// This method is designed for updating when a leveled signal changes. Since time is not a
+    /// leveled signal, this method shouldn't do anything.
+    fn update(&mut self, _: &mut UpdateContext<I>, _: Self::Input) {
     }
 
-    fn measure(&self, _: &mut UpdateContext<I>) -> Self::Output {
-        self.0
+    /// This method can't depend on any recorded value, because time keeps changing and it is not a
+    /// leveled signal.
+    fn measure(&self, ctx: &mut UpdateContext<I>) -> Self::Output {
+        ctx.frontier()
     }
 }
