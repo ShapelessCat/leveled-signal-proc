@@ -4,9 +4,10 @@ use std::{
     path::{Path as FilePath, PathBuf},
 };
 
-use lsp_ir::{DebugInfo, LspIr, Node, SchemaField};
-use proc_macro2::{Span, Ident};
+use proc_macro2::{Ident, Span};
 use syn::{parse::Parse, LitStr, Token};
+
+use lsp_ir::{DebugInfo, LspIr, Node, SchemaField};
 
 pub(crate) trait LsdlDebugInfo {
     fn debug_info(&self) -> Option<&DebugInfo>;
@@ -97,7 +98,7 @@ impl Parse for MacroContext {
     fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
         let path_lit: LitStr = input.parse()?;
         let instrument_var: Option<Ident> = if input.peek(Token![,]) {
-            let _ : Token![,] = input.parse()?;
+            let _: Token![,] = input.parse()?;
             Some(input.parse()?)
         } else {
             None

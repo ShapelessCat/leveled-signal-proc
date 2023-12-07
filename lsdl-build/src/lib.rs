@@ -1,11 +1,11 @@
 use std::{
-    process::Command, 
-    borrow::Cow, 
-    io::{Read, BufReader, BufRead}, 
-    fs::{File, read_dir}, 
-    path::{PathBuf, Path}, 
-    sync::OnceLock, 
-    env
+    borrow::Cow,
+    env,
+    fs::{read_dir, File},
+    io::{BufRead, BufReader, Read},
+    path::{Path, PathBuf},
+    process::Command,
+    sync::OnceLock,
 };
 
 fn test_python_interpreter(command: &str) -> bool {
@@ -43,13 +43,15 @@ fn find_python_interpreter() -> Option<Cow<'static, str>> {
 }
 
 fn get_python_interpreter() -> &'static str {
-    static PYTHON_INTERPRETER : OnceLock<String> = OnceLock::new();
-    PYTHON_INTERPRETER.get_or_init(||{
-        find_python_interpreter().map_or_else(|| "python".to_string(), |x| x.to_string())
-    }).as_str()
+    static PYTHON_INTERPRETER: OnceLock<String> = OnceLock::new();
+    PYTHON_INTERPRETER
+        .get_or_init(|| {
+            find_python_interpreter().map_or_else(|| "python".to_string(), |x| x.to_string())
+        })
+        .as_str()
 }
 
-pub struct LsdlSourceDirectory{
+pub struct LsdlSourceDirectory {
     source_dir: PathBuf,
     ir_dir: PathBuf,
 }
@@ -65,7 +67,10 @@ impl LsdlSourceDirectory {
         self.ir_dir = path.as_ref().to_owned();
         self
     }
-    pub fn for_each_lsdl_source<Handle>(&self, mut source_callback: Handle) -> Result<usize, anyhow::Error> 
+    pub fn for_each_lsdl_source<Handle>(
+        &self,
+        mut source_callback: Handle,
+    ) -> Result<usize, anyhow::Error>
     where
         Handle: FnMut(LsdlSource) -> Result<(), anyhow::Error>,
     {
@@ -77,7 +82,7 @@ impl LsdlSourceDirectory {
         let mut count = 0;
         for source_file in source_iter {
             let source_file_name = source_file.file_name().unwrap();
-            let mut source_obj : LsdlSource = (&source_file).into();
+            let mut source_obj: LsdlSource = (&source_file).into();
             source_obj.out_path = self.ir_dir.to_path_buf();
             source_obj.out_path.push(source_file_name);
             source_obj.out_path.set_extension("json");
@@ -94,7 +99,7 @@ pub struct LsdlSource {
     lsdl_runtime_dir: PathBuf,
 }
 
-impl <'a, T: AsRef<Path> + ?Sized> From<&'a T> for LsdlSource {
+impl<'a, T: AsRef<Path> + ?Sized> From<&'a T> for LsdlSource {
     fn from(value: &'a T) -> Self {
         let source_file_name = value.as_ref().to_owned();
         let mut ir_file_name = source_file_name.clone();
@@ -102,7 +107,7 @@ impl <'a, T: AsRef<Path> + ?Sized> From<&'a T> for LsdlSource {
         Self {
             src_path: source_file_name,
             out_path: ir_file_name,
-            lsdl_runtime_dir: env!("CARGO_MANIFEST_DIR").into()
+            lsdl_runtime_dir: env!("CARGO_MANIFEST_DIR").into(),
         }
     }
 }
@@ -162,10 +167,11 @@ impl LsdlSource {
             lsdl_package_path.push("lsdl");
             lsdl_package_path
         };
-        for entry in read_dir(root)?.filter_map(|e|e.ok()) {
+        for entry in read_dir(root)?.filter_map(|e| e.ok()) {
             if let Ok(metadata) = entry.metadata() {
                 if metadata.is_dir() && !metadata.is_symlink() {
-                    self.trigger_rebuild_for_lsdl_package(Some(entry.path())).ok();
+                    self.trigger_rebuild_for_lsdl_package(Some(entry.path()))
+                        .ok();
                 }
                 if metadata.is_file() && entry.path().extension().map_or(false, |e| e == "py") {
                     println!("cargo:rerun-if-changed={}", entry.path().display());
@@ -177,7 +183,8 @@ impl LsdlSource {
     pub fn lower_to_ir(&self) -> Result<&Path, anyhow::Error> {
         eprintln!("Lowering LSDL to LSPIR: {}", self.src_path.display());
         let mut py_instance = Command::new(get_python_interpreter());
-        py_instance.arg(self.src_path.as_path())
+        py_instance
+            .arg(self.src_path.as_path())
             .stdout(File::create(self.out_path.as_path())?);
         let mut python_path = env::var("PYTHONPATH").unwrap_or_else(|_| "".to_string());
         python_path.push(':');
@@ -191,7 +198,10 @@ impl LsdlSource {
             std::fs::remove_file(self.out_path.as_path())?;
             Err(std::io::Error::new(
                 std::io::ErrorKind::Other,
-                format!("Unable to lower LSDL source to LSPIR. (lsdl_file_name: {})", self.src_path.display())
+                format!(
+                    "Unable to lower LSDL source to LSPIR. (lsdl_file_name: {})",
+                    self.src_path.display()
+                ),
             ))?
         }
         Ok(&self.out_path)

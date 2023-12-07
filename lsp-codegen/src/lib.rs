@@ -84,13 +84,13 @@ impl syn::parse::Parse for MainFnMeta {
 #[proc_macro]
 pub fn include_lsp_ir(input: TokenStream) -> TokenStream {
     let MainFnMeta { id, path } = parse_macro_input!(input as MainFnMeta);
-    let real_ir_path = match context::MacroContext::normalize_ir_path(&path.value()) {
+    let real_ir_path = match MacroContext::normalize_ir_path(&path.value()) {
         Ok(path) => path,
         Err(e) => panic!("{}", e.to_string()),
     };
     let real_ir_path = real_ir_path.to_str();
 
-    if let Err(e) = context::MacroContext::parse_ir_file(&path) {
+    if let Err(e) = MacroContext::parse_ir_file(&path) {
         return e.to_compile_error().into();
     }
 

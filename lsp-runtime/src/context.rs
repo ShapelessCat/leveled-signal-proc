@@ -1,31 +1,31 @@
-use crate::{multipeek::MultiPeek, InternalEventQueue, Moment, Timestamp};
 use std::marker::PhantomData;
 
+use crate::{multipeek::MultiPeek, InternalEventQueue, Moment, Timestamp};
+
 /// Some type with timestamp information.
-/// Typically, an event taken from outside should implements this trait
-/// and the context is responsible assemble the simutanious event into
-/// the global input state.
+/// Typically, an event taken from outside should implements this trait and the context is
+/// responsible assemble the simultaneous event into the global input state.
 pub trait WithTimestamp {
     fn timestamp(&self) -> Timestamp;
 }
 
-/// The global input state which is applying the incoming event as patch
-/// to the state and this is the external input type of the LSP system.
+/// The global input state which applies the incoming events as patches to the state and this is the
+/// external input type of the LSP system.
 pub trait InputSignalBag: Clone + Default {
     type Input;
-    /// Patch a event to the state
+    /// Patch an event to the state
     fn patch(&mut self, patch: Self::Input);
 
-    /// Determine if the input states need to trigger a measurement
+    /// Determine if an input state need to trigger a measurement
     fn should_measure(&mut self) -> bool {
         false
     }
 }
 
-/// The global context of a LSP system. This type is responsible for the follwoing things:
-/// 1. Take the ownership of a event queue which contains all the pending internal event
+/// The global context of a LSP system. This type is responsible for the following things:
+/// 1. Take the ownership of an event queue which contains all the pending internal events
 /// 2. Assemble events into valid global state
-/// 3. Controlls the iteration of the LSP main loop
+/// 3. Control the iteration of the LSP main iteration
 pub struct LspContext<InputIter: Iterator, InputSignalBagType> {
     frontier: Timestamp,
     iter: MultiPeek<InputIter>,
@@ -41,7 +41,7 @@ pub struct UpdateContext<'a, InputIter: Iterator> {
 
 impl<'a, InputIter: Iterator> UpdateContext<'a, InputIter> {
     pub fn set_current_update_group(&mut self, _group_id: u32) {
-        // Dummy impelementation reserved for partial update
+        // Dummy implementation reserved for partial update
     }
     pub fn schedule_measurement(&mut self, time_diff: Timestamp) {
         let scheduled_time = self.frontier.saturating_add(time_diff);
@@ -138,6 +138,7 @@ where
 #[cfg(test)]
 mod test {
     use super::*;
+
     #[derive(Clone, Debug, PartialEq)]
     struct TestInput {
         timestamp: Timestamp,

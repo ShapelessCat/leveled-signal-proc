@@ -1,7 +1,9 @@
-use crate::MacroContext;
-use lsp_ir::{SchemaField, SignalBehavior};
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
+
+use lsp_ir::{SchemaField, SignalBehavior};
+
+use crate::MacroContext;
 
 impl MacroContext {
     fn expand_input_state_item(
@@ -43,14 +45,15 @@ impl MacroContext {
     ) -> Result<TokenStream2, syn::Error> {
         let field_id = syn::Ident::new(id, self.span());
         let clock_companion = syn::Ident::new(&schema.clock_companion, self.span());
-        let else_arm : TokenStream2 = match &schema.signal_behavior {
+        let else_arm: TokenStream2 = match &schema.signal_behavior {
             SignalBehavior::Persist => quote!(()).into(),
             SignalBehavior::Reset { default_expr } => {
-                let default_expr : syn::Expr = syn::parse_str(&default_expr)?;
+                let default_expr: syn::Expr = syn::parse_str(&default_expr)?;
                 quote! {
                     self.#clock_companion += 1;
                     self.#field_id = #default_expr;
-                }.into()
+                }
+                .into()
             }
         };
         let item_impl = quote! {

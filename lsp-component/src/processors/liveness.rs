@@ -6,8 +6,9 @@ use lsp_runtime::{Timestamp, UpdateContext, WithTimestamp};
 
 /// This is the signal processor that analyzes the liveness of a session based on heartbeat signals.
 /// The output constantly answering the question: Is current session still alive?
-/// The liveness defined as we can find a heartbeat event within `expiuration_period` amount of time.
-/// Thus, this operator uses the look ahead mechamism of the LSP system to see if there's a future heartbeat event.
+/// The liveness defined as we can find a heartbeat event within `expiration_period` amount of time.
+/// Thus, this operator uses the look ahead mechanism of the LSP system to see if there's a future
+/// heartbeat event.
 pub struct LivenessChecker<IsLivenessEventFunc, Clock, Event> {
     expiration_period: Timestamp,
     last_event_clock: Clock,
@@ -16,7 +17,7 @@ pub struct LivenessChecker<IsLivenessEventFunc, Clock, Event> {
     phantom: PhantomData<Event>,
 }
 
-impl <F, C: Debug, E: Debug> Debug for LivenessChecker<F, C, E> {
+impl<F, C: Debug, E: Debug> Debug for LivenessChecker<F, C, E> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("LivenessChecker")
             .field("expiration_period", &self.expiration_period)
@@ -59,7 +60,7 @@ where
             self.last_event_clock = input.clone();
             self.last_event_timestamp = ctx.frontier();
         }
-        
+
         let look_ahead_cutoff = self.last_event_timestamp + self.expiration_period;
         let output = ctx.peek_fold(false, |v, e| {
             if *v || e.timestamp() >= look_ahead_cutoff {

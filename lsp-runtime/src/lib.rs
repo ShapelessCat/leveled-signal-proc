@@ -10,6 +10,6 @@ pub use internal_queue::InternalEventQueue;
 pub use moment::Moment;
 pub use multipeek::MultiPeek;
 
+pub mod instrument;
 pub mod measurement;
 pub mod signal;
-pub mod instrument;

@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
-/// This impelements the DAG that is used in TLB2 profiling (See https://conviva.atlassian.net/wiki/spaces/~589178245/pages/1867646607/DAG-level+instrumentation for details)
+/// This implements the DAG that is used in TLB2 profiling (See https://conviva.atlassian.net/wiki/spaces/~589178245/pages/1867646607/DAG-level+instrumentation for details)
 /// Please note that this file will be automatically generate from the LSP DSL in the formal LSP system.
-/// Currently this file is hand written for demostration purposes.
+/// Currently this file is hand written for demonstration purposes.
 ///
 ///     dag:
 ///       rawEvents:
