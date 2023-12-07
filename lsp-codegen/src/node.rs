@@ -7,13 +7,13 @@ use crate::{context::LsdlDebugInfo, MacroContext};
 
 impl MacroContext {
     pub(crate) fn get_node_ident(&self, id: usize) -> syn::Ident {
-        let node_id = syn::Ident::new(&format!("__lsp_node_{}", id), self.span());
-        node_id
+        
+        syn::Ident::new(&format!("__lsp_node_{}", id), self.span())
     }
 
     fn get_output_ident(&self, id: usize) -> syn::Ident {
-        let output_var = syn::Ident::new(&format!("__lsp_output_buffer_{}", id), self.span());
-        output_var
+        
+        syn::Ident::new(&format!("__lsp_output_buffer_{}", id), self.span())
     }
 
     fn generate_lsp_node_declaration(&self, node: &Node) -> Result<TokenStream2, syn::Error> {
@@ -31,7 +31,7 @@ impl MacroContext {
             };
             let mut #output_var;
         };
-        Ok(decl_code.into())
+        Ok(decl_code)
     }
 
     pub(crate) fn define_lsp_nodes(&self) -> Result<TokenStream2, syn::Error> {
@@ -46,8 +46,7 @@ impl MacroContext {
         }
         Ok(quote! {
             #(#decl_codes)*
-        }
-        .into())
+        })
     }
 
     pub(crate) fn generate_downstream_ref<T: LsdlDebugInfo>(
@@ -62,7 +61,6 @@ impl MacroContext {
                 quote! {
                     input_state.#id
                 }
-                .into()
             }
             NodeInput::Constant { value, type_name } => {
                 let type_name: syn::Type =
@@ -74,7 +72,6 @@ impl MacroContext {
                         _temp
                     }
                 }
-                .into()
             }
             NodeInput::Component { id } => self.get_output_ident(*id).into_token_stream(),
             NodeInput::Tuple { values } => {
@@ -87,7 +84,6 @@ impl MacroContext {
                         #(#value_code.clone(),)*
                     )
                 }
-                .into()
             }
         };
         Ok(ret)
@@ -143,8 +139,7 @@ impl MacroContext {
                 #out_ident = #node_ident . update(&mut update_context, #input_expr);
                 #after_node_update
             }
-        }
-        .into())
+        })
     }
 
     pub(super) fn impl_nodes_update(&self) -> Result<TokenStream2, syn::Error> {

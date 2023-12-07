@@ -106,13 +106,9 @@ where
     }
 
     #[inline(always)]
-    pub fn next_event<'a, 'b>(&'a mut self, state_buf: &'b mut SignalBag) -> Option<Moment> {
-        let external_frontier = if let Some(ts) = self.iter.peek().map(WithTimestamp::timestamp) {
-            ts
-        } else {
-            // If there's no more output, we just exit the scanning loop anyway
-            return None;
-        };
+    pub fn next_event(&mut self, state_buf: &mut SignalBag) -> Option<Moment> {
+        // If there's no more output, we just exit the scanning loop anyway
+        let external_frontier = self.iter.peek().map(WithTimestamp::timestamp)?;
         let internal_frontier = self.queue.earliest_scheduled_time();
 
         if external_frontier != Timestamp::MAX && external_frontier <= internal_frontier {

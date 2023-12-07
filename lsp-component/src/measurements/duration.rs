@@ -85,9 +85,9 @@ impl<'a, I: Iterator> Measurement<'a, I> for DurationTrue {
             0
         };
 
-        let ret = self.accumulated_duration + current_state_duration;
+        
 
-        ret
+        self.accumulated_duration + current_state_duration
     }
 }
 

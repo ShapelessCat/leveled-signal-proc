@@ -73,11 +73,9 @@ impl LspDataLogicInstrument for InstrumentDataLogicRunningTime {
 
     #[inline(always)]
     fn data_logic_update_end(&mut self) {
-        self.data_logic_update_start_timestamp
-            .take()
-            .map(|start_ts| {
-                let end_ts = Instant::now();
-                self.data_logic_running_time_secs += end_ts.duration_since(start_ts).as_secs_f64();
-            });
+        if let Some(start_ts) = self.data_logic_update_start_timestamp.take() {
+            let end_ts = Instant::now();
+            self.data_logic_running_time_secs += end_ts.duration_since(start_ts).as_secs_f64();
+        }
     }
 }

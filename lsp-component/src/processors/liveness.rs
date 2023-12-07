@@ -62,14 +62,14 @@ where
         }
 
         let look_ahead_cutoff = self.last_event_timestamp + self.expiration_period;
-        let output = ctx.peek_fold(false, |v, e| {
+        
+
+        ctx.peek_fold(false, |v, e| {
             if *v || e.timestamp() >= look_ahead_cutoff {
                 return None;
             }
             Some((self.is_liveness_event)(e))
-        });
-
-        output
+        })
     }
 }
 

@@ -24,15 +24,13 @@ impl MacroContext {
             pub struct MetricsBag {
                 #(#item_list,)*
             }
-        }
-        .into())
+        })
     }
 
     pub(crate) fn define_signal_trigger_measurement_ctx(&self) -> TokenStream2 {
         quote! {
             let mut __lsp_measurement_trigger_state = Default::default();
         }
-        .into()
     }
 
     pub(crate) fn impl_signal_triggered_measurement(&self) -> TokenStream2 {
@@ -48,7 +46,6 @@ impl MacroContext {
                 ret
             };
         }
-        .into()
     }
 
     pub(crate) fn impl_measurement_limit_side_control(&self) -> TokenStream2 {
@@ -62,7 +59,6 @@ impl MacroContext {
         quote! {
             let __should_measure_left_side_limit : bool = (#signal_ref).clone();
         }
-        .into()
     }
 
     pub(crate) fn impl_metrics_measuring(&self) -> TokenStream2 {
@@ -85,6 +81,5 @@ impl MacroContext {
                 #(#item_list,)*
             };
         }
-        .into()
     }
 }

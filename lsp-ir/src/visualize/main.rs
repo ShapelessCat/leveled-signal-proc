@@ -26,8 +26,7 @@ fn render_upstream_refs(input: &NodeInput) -> Vec<String> {
         }
         NodeInput::Tuple { values } => values
             .iter()
-            .map(|node| render_upstream_refs(node).into_iter())
-            .flatten()
+            .flat_map(|node| render_upstream_refs(node).into_iter())
             .collect(),
     };
     upstream

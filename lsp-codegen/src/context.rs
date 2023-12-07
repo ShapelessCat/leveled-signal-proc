@@ -45,7 +45,7 @@ impl MacroContext {
         &self.ir_data
     }
     pub fn span(&self) -> Span {
-        self.ir_path_span.clone()
+        self.ir_path_span
     }
     pub fn map_lsdl_error<T: LsdlDebugInfo>(
         &self,
@@ -54,7 +54,7 @@ impl MacroContext {
         let debug_info = ir_obj.debug_info().cloned();
         move |err: syn::Error| {
             let message = if let Some(DebugInfo { file, line }) = debug_info {
-                format!("{}\n{}:{}:{}", err.to_string(), file, line, 1)
+                format!("{}\n{}:{}:{}", err, file, line, 1)
             } else {
                 err.to_string()
             };
@@ -76,19 +76,19 @@ impl MacroContext {
     pub(super) fn parse_ir_file(path_lit: &LitStr) -> syn::Result<LspIr> {
         let ir_path_str = path_lit.value();
         let ir_path = Self::normalize_ir_path(&ir_path_str)
-            .map_err(|e| syn::Error::new_spanned(&path_lit, e.to_string()))?;
+            .map_err(|e| syn::Error::new_spanned(path_lit, e.to_string()))?;
 
         let input =
-            File::open(&ir_path).map_err(|e| syn::Error::new_spanned(&path_lit, e.to_string()))?;
+            File::open(ir_path).map_err(|e| syn::Error::new_spanned(path_lit, e.to_string()))?;
         let ir_obj = serde_json::from_reader::<_, LspIr>(input).map_err(|e| {
             let error_message = format!(
                 "IR parsing error: {msg}\nnote: Originate site {file}:{line}:{col}",
-                msg = e.to_string(),
+                msg = e,
                 file = ir_path_str,
                 line = e.line(),
                 col = e.column(),
             );
-            syn::Error::new_spanned(&path_lit, error_message)
+            syn::Error::new_spanned(path_lit, error_message)
         })?;
         Ok(ir_obj)
     }
@@ -105,7 +105,7 @@ impl Parse for MacroContext {
         };
         let ir_obj = Self::parse_ir_file(&path_lit)?;
         Ok(Self {
-            ir_path_span: path_lit.span().clone(),
+            ir_path_span: path_lit.span(),
             ir_data: ir_obj,
             instrument_var,
         })

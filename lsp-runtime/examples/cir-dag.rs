@@ -46,10 +46,10 @@ impl InputSignalBag for InputType {
     type Input = EventDataPatch;
 
     fn patch(&mut self, patch: EventDataPatch) {
-        patch.player_state.map(|s| self.player_state = s);
-        patch.network.map(|s| self.network = s);
-        patch.cdn.map(|s| self.cdn = s);
-        patch.user_action.map(|s| self.user_action = s);
+        if let Some(s) = patch.player_state { self.player_state = s };
+        if let Some(s) = patch.network { self.network = s };
+        if let Some(s) = patch.cdn { self.cdn = s };
+        if let Some(s) = patch.user_action { self.user_action = s };
     }
 
     fn should_measure(&mut self) -> bool {
