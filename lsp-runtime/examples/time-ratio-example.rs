@@ -104,7 +104,7 @@ fn main() {
     let mut pe_dur_accu = Accumulator::with_event_filter(0, |&s| s == 2);
     let mut pe_duration;
 
-    let mut session_id_acc = Accumulator::with_event_filter(0, |&s| s == true);
+    let mut session_id_acc = Accumulator::with_event_filter(0, |&s| s);
     let mut session_id;
 
     let mut user_active_time = DurationSinceBecomeTrue::default();

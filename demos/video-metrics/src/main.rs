@@ -14,7 +14,7 @@ fn main() -> Result<(), Error> {
     let input_stream = serde_json::Deserializer::from_reader(fp)
         .into_iter()
         .filter_map(|r| r.ok());
-    let mut instr_ctx = NoInstrument::default();
+    let mut instr_ctx = NoInstrument;
     let mut output = std::io::BufWriter::new(std::io::stdout());
     lsp_main(
         input_stream,

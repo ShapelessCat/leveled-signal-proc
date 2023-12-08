@@ -139,16 +139,16 @@ impl LsdlSource {
         let fp = BufReader::new(File::open(self.src_path.as_path())?);
         let mut src_prefix = self.src_path.clone();
         src_prefix.pop();
-        for line in fp.lines().filter_map(Result::ok) {
-            if line.starts_with("#") {
-                if let Some(comment_body) = line[1..].strip_prefix(|c| c == ' ' || c == '\t') {
-                    const EXTRA_SRC_LIT: &'static str = "extra-src:";
+        for line in fp.lines().map_while(Result::ok) {
+            if let Some(stripped) = line.strip_prefix('#') {
+                if let Some(comment_body) = stripped.strip_prefix(|c| c == ' ' || c == '\t') {
+                    const EXTRA_SRC_LIT: &str = "extra-src:";
                     if !comment_body.starts_with(EXTRA_SRC_LIT) {
                         continue;
                     }
                     let list = comment_body[EXTRA_SRC_LIT.len()..].split(|c| c == ' ' || c == '\t');
                     for item in list {
-                        if item.len() > 0 {
+                        if !item.is_empty() {
                             src_prefix.push(item);
                             println!("cargo:rerun-if-changed={}", src_prefix.display());
                             src_prefix.pop();
