@@ -104,10 +104,18 @@ impl InputSignalBag for InputType {
     type Input = EventDataPatch;
 
     fn patch(&mut self, patch: EventDataPatch) {
-        if let Some(s) = patch.player_state { self.player_state = s };
-        if let Some(s) = patch.network { self.network = s };
-        if let Some(s) = patch.cdn { self.cdn = s };
-        if let Some(s) = patch.user_action { self.user_action = s };
+        if let Some(s) = patch.player_state {
+            self.player_state = s
+        };
+        if let Some(s) = patch.network {
+            self.network = s
+        };
+        if let Some(s) = patch.cdn {
+            self.cdn = s
+        };
+        if let Some(s) = patch.user_action {
+            self.user_action = s
+        };
     }
 
     fn should_measure(&mut self) -> bool {
@@ -135,7 +143,7 @@ fn main() {
         Deserializer::from_reader(reader)
             .into_iter::<EventDataPatch>()
             .filter_map(Result::ok),
-            true,
+        true,
     );
     let mut input_state = InputType::default();
 

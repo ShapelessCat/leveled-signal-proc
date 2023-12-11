@@ -7,12 +7,10 @@ use crate::{context::LsdlDebugInfo, MacroContext};
 
 impl MacroContext {
     pub(crate) fn get_node_ident(&self, id: usize) -> syn::Ident {
-        
         syn::Ident::new(&format!("__lsp_node_{}", id), self.span())
     }
 
     fn get_output_ident(&self, id: usize) -> syn::Ident {
-        
         syn::Ident::new(&format!("__lsp_output_buffer_{}", id), self.span())
     }
 

@@ -73,7 +73,11 @@ where
         Self::with_queue(iter, InternalEventQueue::new(), merge_simultaneous_moments)
     }
 
-    pub fn with_queue(iter: InputIter, queue: InternalEventQueue, merge_simultaneous_moments: bool) -> Self {
+    pub fn with_queue(
+        iter: InputIter,
+        queue: InternalEventQueue,
+        merge_simultaneous_moments: bool,
+    ) -> Self {
         Self {
             iter: MultiPeek::from_iter(iter),
             queue,
@@ -92,7 +96,7 @@ where
         UpdateContext {
             queue: &mut self.queue,
             frontier: self.frontier,
-            iter: &mut self.iter
+            iter: &mut self.iter,
         }
     }
 
@@ -106,13 +110,10 @@ where
                 let event = self.iter.next().unwrap();
                 state.patch(event);
             }
-        }
-        else {
-            if let Some(ts) = self.iter.peek().map(|p| p.timestamp()) {
-                if ts == timestamp {
-                    let event = self.iter.next().unwrap();
-                    state.patch(event);
-                }
+        } else if let Some(ts) = self.iter.peek().map(|p| p.timestamp()) {
+            if ts == timestamp {
+                let event = self.iter.next().unwrap();
+                state.patch(event);
             }
         }
     }
@@ -169,8 +170,9 @@ mod test {
         }
     }
 
-    fn create_test_context(merge_simultaneous_moments: bool) -> LspContext<<Vec<TestInput> as IntoIterator>::IntoIter, TestSignalBag>
-    {
+    fn create_test_context(
+        merge_simultaneous_moments: bool,
+    ) -> LspContext<<Vec<TestInput> as IntoIterator>::IntoIter, TestSignalBag> {
         LspContext::new(
             vec![
                 TestInput {
