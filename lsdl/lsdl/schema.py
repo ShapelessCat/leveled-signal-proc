@@ -221,6 +221,14 @@ class InputSchemaBase(SignalBase):
 
 
 class SessionizedInputSchemaBase(InputSchemaBase, ABC):
+    def __init__(self, rust_type: RustCode = INPUT_SIGNAL_BAG):
+        from .modules import ScopeContext
+        super().__init__(rust_type)
+        self.session_signal = self.create_session_signal()
+        self.epoch_signal = self.create_epoch_signal()
+        self._sessionized_signals = dict()
+        self._scope_ctx = ScopeContext(scope_level=self.session_signal, epoch=self.epoch_signal)
+
     @abstractmethod
     def create_session_signal(self) -> SignalBase:
         raise NotImplemented()
@@ -242,21 +250,11 @@ class SessionizedInputSchemaBase(InputSchemaBase, ABC):
             signal_clock = signal.clock()
         return self._scope_ctx.scoped(data=signal, clock=signal_clock, default=default_value)
 
-    def __init__(self, rust_type: RustCode = INPUT_SIGNAL_BAG):
-        from .modules import ScopeContext
-        super().__init__(rust_type)
-        self.session_signal = self.create_session_signal()
-        self.epoch_signal = self.create_epoch_signal()
-        self._sessionized_signals = dict()
-        self._scope_ctx = ScopeContext(scope_level=self.session_signal, epoch=self.epoch_signal)
-
-    def __getattribute__(self, name: str) -> Any:
+    def __getattr__(self, name: str) -> Optional[SignalBase]:
         sessionized_prefix = "sessionized_"
         if name.startswith(sessionized_prefix):
             actual_key = name[len(sessionized_prefix):]
             return self._make_sessionized_input(actual_key)
-        else:
-            return super().__getattribute__(name)
 
 
 def named(name: str, inner: TypeBase = String()) -> MappedInputMember:
