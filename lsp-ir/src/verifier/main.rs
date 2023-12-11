@@ -16,7 +16,7 @@ fn main() -> Result<(), Error> {
                     "LSPIR in {} is valid. (# of nodes: {}, # of metrics: {}).",
                     ir_path,
                     ir.nodes.len(),
-                    ir.measurement_policy.output_schema.len()
+                    ir.measurement_policy.output_schema.len(),
                 );
             }
             Err(err) => {

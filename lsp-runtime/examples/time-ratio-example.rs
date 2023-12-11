@@ -70,6 +70,7 @@ fn main() {
         Deserializer::from_reader(reader)
             .into_iter::<Event>()
             .filter_map(Result::ok),
+            true,
     );
 
     let mut state = StateBag::default();

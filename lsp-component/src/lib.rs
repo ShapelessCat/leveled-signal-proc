@@ -42,6 +42,7 @@ pub(crate) mod test {
                 })
                 .collect::<Vec<_>>()
                 .into_iter(),
+                true,
         )
     }
 
@@ -58,6 +59,7 @@ pub(crate) mod test {
                 })
                 .collect::<Vec<_>>()
                 .into_iter(),
+                true,
         )
     }
 }

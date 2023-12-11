@@ -90,6 +90,11 @@ fn default_measure_left_side_limit_signal() -> NodeInput {
 }
 
 #[derive(Deserialize, Serialize, Clone)]
+pub struct ProcessingPolicy {
+    pub merge_simultaneous_moments: bool,
+}
+
+#[derive(Deserialize, Serialize, Clone)]
 pub struct MeasurementPolicy {
     pub measure_at_event_filter: String,
     #[serde(default = "default_measure_trigger_signal")]
@@ -104,5 +109,6 @@ pub struct MeasurementPolicy {
 pub struct LspIr {
     pub schema: Schema,
     pub nodes: Vec<Node>,
+    pub processing_policy: ProcessingPolicy,
     pub measurement_policy: MeasurementPolicy,
 }

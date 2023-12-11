@@ -2,7 +2,7 @@ import configparser
 import json
 import os
 
-from .config import measurement_config
+from .config import measurement_config, processing_config
 
 __config = configparser.ConfigParser()
 __current_file_path = os.path.dirname(os.path.abspath(__file__))
@@ -32,6 +32,7 @@ def _get_json_ir(pretty_print=False) -> str:
         "schema": get_schema().to_dict(),
         "nodes": [c.to_dict() for c in get_components()],
         "measurement_policy": measurement_config().to_dict(),
+        "processing_policy": processing_config().to_dict(),
     }
     return json.dumps(ret_obj, indent=4 if pretty_print else None)
 

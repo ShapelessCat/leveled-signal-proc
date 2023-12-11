@@ -135,6 +135,7 @@ fn main() {
         Deserializer::from_reader(reader)
             .into_iter::<EventDataPatch>()
             .filter_map(Result::ok),
+            true,
     );
     let mut input_state = InputType::default();
 
