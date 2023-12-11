@@ -26,6 +26,5 @@ fn main() -> Result<(), Error> {
         &mut instr_ctx,
     )?;
     eprintln!("{}", instr_ctx);
-    eprintln!("{}", instr_ctx);
     Ok(())
 }
