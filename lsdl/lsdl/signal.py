@@ -160,6 +160,16 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         from .modules import add_metric
         return add_metric(self, key, typename)
 
+    def measure_linear_change(self, scope_signal: Optional['SignalBase'] = None) -> MeasurementBase:
+        """Measures the change of some value, which has a fixed change rate for each level.
+
+        It returns a measurement.
+        The input leveled signal must be a change rate.
+        When `scope_signal` is given, it resets the change to 0 when the `scope_signal` becomes a different level.
+        """
+        from .measurements import LinearChange
+        return LinearChange(self, scope_signal=scope_signal)
+
     def measure_duration_true(self, scope_signal: Optional['SignalBase'] = None) -> MeasurementBase:
         """Measures the total duration whenever this boolean signal is true.
 
