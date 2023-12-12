@@ -14,4 +14,3 @@ class LinearChange(BuiltinMeasurementComponentBase):
             upstreams=upstreams
         )
         self.annotate_type("f64")
-
