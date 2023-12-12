@@ -88,6 +88,7 @@ fn visualize_lsp_ir<R: Read>(reader: R) -> Result<(), Error> {
             decl = node.node_decl.replace('"', "\\\"")
         );
     }
+
     for (metric_name, _) in ir.measurement_policy.output_schema.iter() {
         println!(
             "\t\toutput_{name}[shape=box;style=filled;fillcolor=gray;label=\"{name}\"]",

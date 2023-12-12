@@ -8,6 +8,28 @@ from .rust_code import COMPILER_INFERABLE_TYPE, RustCode
 
 logging.basicConfig(encoding='utf-8', level=logging.INFO)
 
+class _ProcessingConfiguration:
+    """The configuration for processing policy.
+    """
+    def __init__(self):
+        self._merge_simultaneous_moments = True
+
+    def set_merge_simultaneous_moments(self, should_merge: bool) -> Self:
+        """Set the rule for handling simultaneous moments."""
+        self._merge_simultaneous_moments = should_merge
+        return self
+
+    def to_dict(self) -> dict[str, Any]:
+        """Dump the processing policy into a dictionary that can be JSONified."""
+        return { "merge_simultaneous_moments": self._merge_simultaneous_moments }
+
+
+def _make_processing_configuration():
+    config = _ProcessingConfiguration()
+    return lambda: config
+
+processing_config = _make_processing_configuration()
+
 
 class _MeasurementConfiguration:
     """The configuration for measurement policy.

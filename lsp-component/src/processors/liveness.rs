@@ -62,7 +62,6 @@ where
         }
 
         let look_ahead_cutoff = self.last_event_timestamp + self.expiration_period;
-        
 
         ctx.peek_fold(false, |v, e| {
             if *v || e.timestamp() >= look_ahead_cutoff {

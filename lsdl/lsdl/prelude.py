@@ -1,5 +1,5 @@
 from . import print_ir_to_stdout
-from .config import measurement_config
+from .config import measurement_config, processing_config
 from .const import Const
 from .measurements import DiffSinceCurrentLevel, DurationSinceBecomeTrue, DurationTrue, Peek, PeekTimestamp, DurationSinceLastLevel
 from .modules import make_tuple, SignalFilterBuilder, ScopeContext, has_been_true, time_domain_fold, has_changed

@@ -5,7 +5,14 @@ use syn::parse_macro_input;
 mod context;
 mod metrics;
 mod node;
+mod processing;
 mod schema;
+
+#[proc_macro]
+pub fn should_merge_simultaneous_moments(input: TokenStream) -> TokenStream {
+    let ctx = parse_macro_input!(input as MacroContext);
+    ctx.merge_simultaneous_moments().into()
+}
 
 #[proc_macro]
 pub fn define_input_schema(input: TokenStream) -> TokenStream {
@@ -108,7 +115,7 @@ pub fn include_lsp_ir(input: TokenStream) -> TokenStream {
             let mut input_state = Default::default();
             lsp_codegen::define_data_logic_nodes!(#path);
             lsp_codegen::define_measurement_trigger!(#path);
-            let mut ctx = LspContext::<_, InputSignalBag>::new(input_iter);
+            let mut ctx = LspContext::<_, InputSignalBag>::new(input_iter, lsp_codegen::should_merge_simultaneous_moments!(#path));
             while let Some(moment) = ctx.next_event(&mut input_state) {
                 instrument_ctx.data_logic_update_begin();
                 let mut update_context = ctx.borrow_update_context();

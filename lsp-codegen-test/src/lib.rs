@@ -21,8 +21,7 @@ where
 
 #[macro_export]
 macro_rules! create_instrument_ctx {
-    () => {
-        {lsp_runtime::instrument::NoInstrument::default()}
-    }
-    //{lsp_runtime::instrument::InstrumentDataLogicRunningTime::default()}};
+    () => {{
+        lsp_runtime::instrument::NoInstrument::default()
+    }}; //{lsp_runtime::instrument::InstrumentDataLogicRunningTime::default()}};
 }
