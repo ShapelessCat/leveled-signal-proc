@@ -1,4 +1,4 @@
-use std::ops::Sub;
+use std::{ops::Sub, marker::PhantomData};
 
 use lsp_runtime::{measurement::Measurement, UpdateContext};
 
@@ -55,6 +55,78 @@ impl<'a, I, M> ScopedMeasurementExt<'a, I> for M
 where
     M: Measurement<'a, I> + Sized,
     M::Output: Clone + Sub<Output = M::Output> + Default,
+    I: Iterator,
+{
+}
+
+// ------------------------------------------------------------------------------
+
+
+#[derive(Default, Debug)]
+pub struct MappedMeasurement<InnerOutput, OutputType, ClosureType, MeasurementType> {
+    how: ClosureType,
+    inner: MeasurementType,
+    _phantom_data: PhantomData<(InnerOutput, OutputType)>,
+}
+
+impl <InnerOutput, OutputType, ClosureType, MeasurementType> MappedMeasurement<InnerOutput, OutputType, ClosureType, MeasurementType>
+where
+    ClosureType: Fn(&InnerOutput) -> OutputType,
+    MeasurementType: Default,
+{
+    pub fn new(how: ClosureType) -> Self
+    {
+        MappedMeasurement {
+            how,
+            inner: Default::default(),
+            _phantom_data: PhantomData,
+        }
+    }
+}
+
+impl<'a, EventIterator, InnerOutput, OutputType, ClosureType, MeasurementType> Measurement<'a, EventIterator>
+    for MappedMeasurement<InnerOutput, OutputType, ClosureType, MeasurementType>
+where
+    MeasurementType: Measurement<'a, EventIterator, Output = InnerOutput>,
+    InnerOutput: Clone + std::fmt::Display,
+    ClosureType: Fn(&InnerOutput) -> OutputType,
+    EventIterator: Iterator,
+{
+    type Input = MeasurementType::Input;
+    type Output = OutputType;
+
+    fn update(&mut self, ctx: &mut UpdateContext<EventIterator>, input: Self::Input) {
+        self.inner.update(ctx, input)
+    }
+
+    fn measure(&self, ctx: &mut UpdateContext<EventIterator>) -> Self::Output {
+        (self.how)(&self.inner.measure(ctx))
+    }
+}
+
+pub trait MappedMeasurementExt<'a, I: Iterator>: Measurement<'a, I> + Sized
+where
+    Self::Output: Clone,
+{
+    fn mapped<OutputType, ClosureType>(
+        self,
+        how: ClosureType,
+    ) -> MappedMeasurement<Self::Output, OutputType, ClosureType, Self>
+    where
+        ClosureType: Fn(&Self::Output) -> OutputType,
+    {
+        MappedMeasurement {
+            inner: self,
+            how,
+            _phantom_data: PhantomData,
+        }
+    }
+}
+
+impl<'a, I, M> MappedMeasurementExt<'a, I> for M
+where
+    M: Measurement<'a, I> + Sized,
+    M::Output: Clone,
     I: Iterator,
 {
 }
