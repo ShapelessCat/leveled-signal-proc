@@ -88,6 +88,10 @@ impl MacroContext {
             patch_code_impls.push(self.expand_input_patch_code(id, field)?);
         }
         let timestamp_key = &schema.patch_timestamp_key;
+        let measure_at_event_filter: syn::Expr = {
+            let predicate = &self.get_ir_data().measurement_policy.measure_at_event_filter;
+            syn::parse_str(predicate)?
+        };
         let item_impl = quote! {
             #[derive(Clone, Default, Debug)]
             pub struct #type_name {
@@ -110,8 +114,7 @@ impl MacroContext {
                     #(#patch_code_impls)*
                 }
                 fn should_measure(&mut self) -> bool {
-                    //TODO
-                    true
+                    (#measure_at_event_filter)(self)
                 }
             }
         };
