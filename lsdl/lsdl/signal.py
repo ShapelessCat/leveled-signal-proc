@@ -200,7 +200,7 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         from .measurements import Peek
         return Peek(self)
 
-    def peek_timestamp(self) -> MeasurementBase:
+    def peek_timestamp(self, closure: Optional[str] = None) -> MeasurementBase:
         """Returns the current measurement timestamp for the given signal."""
         from .measurements import PeekTimestamp
-        return PeekTimestamp(self)
+        return PeekTimestamp(self, closure)

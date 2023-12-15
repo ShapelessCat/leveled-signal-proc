@@ -16,5 +16,5 @@ class MeasurementBase(LeveledSignalProcessingModelComponentBase, ABC):
         It allows applying Rust lambda on current signal.
         The result is also a leveled signal.
         """
-        from .measurement import MeasureMapper
-        return MeasureMapper(bind_var, lambda_src, self)
+        from .measurements import MappedPeekTimestamp
+        return MappedPeekTimestamp(bind_var, lambda_src, self)
