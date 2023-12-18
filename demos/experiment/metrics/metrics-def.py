@@ -5,6 +5,7 @@ from schema import input_signal
 import schema
 
 input_signal.peek_timestamp().add_metric("ts")
+input_signal.peek_timestamp("|x| x + 1").add_metric("ts_plus1", "u64")
 
 input_signal.encoded_fps.measure_linear_change().add_metric("encoded_frames")
 input_signal.inferred_rendered_fps.measure_linear_change().add_metric("inferred_rendered_frames")
