@@ -1,6 +1,6 @@
 use lsp_runtime::{measurement::Measurement, Timestamp, UpdateContext};
 
-use super::combinator::ScopedMeasurement;
+use super::combinator::scope::ScopedMeasurement;
 
 #[derive(Default)]
 pub struct DurationSinceBecomeTrue {

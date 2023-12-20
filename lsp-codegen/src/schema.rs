@@ -89,7 +89,10 @@ impl MacroContext {
         }
         let timestamp_key = &schema.patch_timestamp_key;
         let measure_at_event_filter: syn::Expr = {
-            let predicate = &self.get_ir_data().measurement_policy.measure_at_event_filter;
+            let predicate = &self
+                .get_ir_data()
+                .measurement_policy
+                .measure_at_event_filter;
             syn::parse_str(predicate)?
         };
         let item_impl = quote! {

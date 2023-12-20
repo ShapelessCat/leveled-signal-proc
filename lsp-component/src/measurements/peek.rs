@@ -1,6 +1,6 @@
 use lsp_runtime::{measurement::Measurement, Timestamp, UpdateContext};
 
-use super::combinator::ScopedMeasurement;
+use super::combinator::{mapper::MappedMeasurement, scope::ScopedMeasurement};
 
 #[derive(Default, Debug)]
 pub struct Peek<T>(T);
@@ -41,3 +41,6 @@ impl<'a, I: Iterator> Measurement<'a, I> for PeekTimestamp {
         ctx.frontier()
     }
 }
+
+pub type MappedPeekTimestamp<ClosureType, OutputType> =
+    MappedMeasurement<u64, OutputType, ClosureType, PeekTimestamp>;

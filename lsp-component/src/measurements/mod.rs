@@ -7,4 +7,4 @@ pub use duration::{
     DurationSinceBecomeTrue, DurationSinceLastLevel, DurationTrue, ScopedDurationTrue,
 };
 pub use linear_change::{LinearChange, ScopedLinearChange};
-pub use peek::{DiffSinceCurrentLevel, Peek, PeekTimestamp};
+pub use peek::{DiffSinceCurrentLevel, MappedPeekTimestamp, Peek, PeekTimestamp};
