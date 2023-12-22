@@ -10,17 +10,12 @@ use std::{cmp::Reverse, collections::BinaryHeap};
 /// triggered by any external event, but scheduled whenever the signal processor needs a recompute.
 ///
 /// Also, we handle the measurement request as a internal event.
+#[derive(Default)]
 pub struct InternalEventQueue {
     queue: BinaryHeap<Reverse<Moment>>,
 }
 
 impl InternalEventQueue {
-    pub fn new() -> Self {
-        InternalEventQueue {
-            queue: BinaryHeap::new(),
-        }
-    }
-
     pub fn schedule_signal_update(&mut self, timestamp: Timestamp) {
         self.queue.push(Reverse(Moment::signal_update(timestamp)));
     }
@@ -57,7 +52,7 @@ mod test {
     use super::*;
     #[test]
     fn test_internal_event_queue() {
-        let mut queue = InternalEventQueue::new();
+        let mut queue = InternalEventQueue::default();
         queue.schedule_signal_update(2);
         queue.schedule_measurement(2);
         queue.schedule_signal_update(1);
