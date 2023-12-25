@@ -1,6 +1,6 @@
 import json
 from abc import ABC, abstractmethod
-from typing import Any, Optional
+from typing import Optional
 
 from .rust_code import COMPILER_INFERABLE_TYPE, INPUT_SIGNAL_BAG, RUST_DEFAULT_VALUE, RustCode
 from .signal import LeveledSignalProcessingModelComponentBase, SignalBase
