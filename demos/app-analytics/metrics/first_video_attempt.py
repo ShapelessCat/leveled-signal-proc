@@ -4,17 +4,17 @@ from schema import input_signal
 from scope import session_id
 
 
-video_attempt_clock =\
-    SignalFilterBuilder(input_signal.conviva_video_events_name)\
-        .filter_values(const.VIDEO_ATTEMPT)\
-        .build_clock_filter()
-
-video_attempt =\
-    StateMachineBuilder(video_attempt_clock, Const(1))\
-        .transition_fn("|&s: &i32, _: &i32| (s+1).min(2)")\
-        .scoped(session_id)\
-        .build()
-
+video_attempt_clock = (
+    SignalFilterBuilder(input_signal.conviva_video_events_name)
+    .filter_values(const.VIDEO_ATTEMPT)
+    .build_clock_filter()
+)
+video_attempt = (
+    StateMachineBuilder(video_attempt_clock, Const(1))
+    .transition_fn("|&s: &i32, _: &i32| (s+1).min(2)")
+    .scoped(session_id)
+    .build()
+)
 video_attempt.add_metric("video_attempt", 'i32')
 
 has_first_video_attempt = video_attempt >= 1
