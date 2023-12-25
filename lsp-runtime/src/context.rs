@@ -70,7 +70,7 @@ where
     InputIter: Iterator<Item = InputType>,
 {
     pub fn new(iter: InputIter, merge_simultaneous_moments: bool) -> Self {
-        Self::with_queue(iter, InternalEventQueue::new(), merge_simultaneous_moments)
+        Self::with_queue(iter, InternalEventQueue::default(), merge_simultaneous_moments)
     }
 
     pub fn with_queue(
