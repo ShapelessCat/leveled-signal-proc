@@ -79,7 +79,7 @@ where
         merge_simultaneous_moments: bool,
     ) -> Self {
         Self {
-            iter: MultiPeek::from_iter(iter),
+            iter: MultiPeek::from(iter),
             queue,
             frontier: 0,
             merge_simultaneous_moments,

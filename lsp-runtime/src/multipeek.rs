@@ -16,13 +16,16 @@ impl<I: Iterator> Iterator for MultiPeek<I> {
     }
 }
 
-impl<I: Iterator> MultiPeek<I> {
-    pub fn from_iter(iter: I) -> Self {
+impl<I: Iterator> From<I> for MultiPeek<I> {
+    fn from(inner: I) -> Self {
         Self {
-            inner: iter,
+            inner,
             peek_buffer: VecDeque::new(),
         }
     }
+}
+
+impl<I: Iterator> MultiPeek<I> {
     #[inline(always)]
     pub fn peek_n(&mut self, n: usize) -> Option<&I::Item> {
         while self.peek_buffer.len() < n {
@@ -69,14 +72,14 @@ mod test {
     #[test]
     fn test_iter_api() {
         let inner: Vec<_> = (0..1000).collect();
-        let mut mp_iter = MultiPeek::from_iter(inner.clone().into_iter());
+        let mut mp_iter = MultiPeek::from(inner.clone().into_iter());
         assert_eq!(mp_iter.peek(), Some(&0));
         assert_eq!(inner.into_iter().sum::<i32>(), mp_iter.sum());
     }
     #[test]
     fn test_peek_out_of_bound() {
         let inner: Vec<_> = (0..1000).collect();
-        let mut mp_iter = MultiPeek::from_iter(inner.clone().into_iter());
+        let mut mp_iter = MultiPeek::from(inner.clone().into_iter());
         assert_eq!(mp_iter.peek_n(1001), None);
         assert_eq!(mp_iter.peek_n(1000), Some(&999));
         assert_eq!(mp_iter.peek_n(1002), None);
@@ -85,7 +88,7 @@ mod test {
     #[test]
     fn test_peek_empty_inner_iter() {
         let inner: Vec<_> = (0..0).collect();
-        let mut mp_iter = MultiPeek::from_iter(inner.clone().into_iter());
+        let mut mp_iter = MultiPeek::from(inner.clone().into_iter());
         assert_eq!(mp_iter.peek_n(0), None);
         assert_eq!(mp_iter.peek_n(1), None);
         assert_eq!(mp_iter.peek_n(1000), None);
@@ -93,7 +96,7 @@ mod test {
     #[test]
     fn test_peek_fold_full() {
         let inner: Vec<_> = (0..1000).collect();
-        let mut mp_iter = MultiPeek::from_iter(inner.clone().into_iter());
+        let mut mp_iter = MultiPeek::from(inner.clone().into_iter());
         assert_eq!(
             mp_iter.peek_fold(0, |a, b| Some(a + b)),
             inner.into_iter().sum::<i32>()
@@ -103,7 +106,7 @@ mod test {
     #[test]
     fn test_peek_fold_early_terminate() {
         let inner: Vec<_> = (0..1000).collect();
-        let mut mp_iter = MultiPeek::from_iter(inner.clone().into_iter());
+        let mut mp_iter = MultiPeek::from(inner.clone().into_iter());
         assert_eq!(
             mp_iter.peek_fold(0, |a, b| if *b < 500 { Some(a + b) } else { None }),
             inner.into_iter().filter(|&x| x < 500).sum::<i32>()
