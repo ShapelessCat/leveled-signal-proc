@@ -1,5 +1,7 @@
 from typing import Optional
+
 from ..componet_base import BuiltinMeasurementComponentBase
+from ..rust_code import RUST_DEFAULT_VALUE
 from ..signal import SignalBase
 
 
@@ -23,7 +25,7 @@ class PeekTimestamp(BuiltinMeasurementComponentBase):
         if is_mapped:
             super().__init__(
                 name=rust_component_name,
-                node_decl=f"{rust_component_name}::new({closure})",
+                node_decl=f"{rust_component_name}::new({closure}, {RUST_DEFAULT_VALUE})",
                 upstreams=[input_signal]
             )
         else:

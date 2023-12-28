@@ -13,12 +13,11 @@ impl<InnerOutput, OutputType, ClosureType, MeasurementType>
     MappedMeasurement<InnerOutput, OutputType, ClosureType, MeasurementType>
 where
     ClosureType: Fn(&InnerOutput) -> OutputType,
-    MeasurementType: Default,
 {
-    pub fn new(how: ClosureType) -> Self {
+    pub fn new(how: ClosureType, inner: MeasurementType) -> Self {
         MappedMeasurement {
             how,
-            inner: Default::default(),
+            inner,
             _phantom_data: PhantomData,
         }
     }
