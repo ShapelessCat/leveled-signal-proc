@@ -1,7 +1,5 @@
 use lsp_runtime::{measurement::Measurement, Timestamp, UpdateContext};
 
-use super::combinator::scope::ScopedMeasurement;
-
 #[derive(Default)]
 pub struct DurationSinceBecomeTrue {
     last_input: bool,
@@ -88,8 +86,6 @@ impl<'a, I: Iterator> Measurement<'a, I> for DurationTrue {
         self.accumulated_duration + current_state_duration
     }
 }
-
-pub type ScopedDurationTrue<T> = ScopedMeasurement<T, DurationTrue, Timestamp>;
 
 /*
 #[derive(Default)]

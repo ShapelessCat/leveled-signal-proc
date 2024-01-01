@@ -2,18 +2,20 @@
 use std::{fs::File, io::BufReader};
 
 use chrono::{DateTime, Utc};
+use serde::Deserialize;
+use serde_json::Deserializer;
+
 use lsp_component::{
-    measurements::{DiffSinceCurrentLevel, DurationSinceBecomeTrue},
+    measurements::{DurationSinceBecomeTrue, PeekTimestamp},
     processors::{
         Accumulator, DurationOfPreviousLevel, Latch, LivenessChecker, SignalMapper, StateMachine,
     },
 };
+use lsp_component::measurements::combinator::ScopedMeasurement;
 use lsp_runtime::{
-    measurement::Measurement, signal::SignalProcessor, InputSignalBag, LspContext, Timestamp,
+    InputSignalBag, LspContext, measurement::Measurement, signal::SignalProcessor, Timestamp,
     WithTimestamp,
 };
-use serde::Deserialize;
-use serde_json::Deserializer;
 
 #[derive(Default, Clone, Debug)]
 struct StateBag {
@@ -110,7 +112,7 @@ fn main() {
 
     let mut user_active_time = DurationSinceBecomeTrue::default();
 
-    let mut p_e_seesion = DiffSinceCurrentLevel::default();
+    let mut p_e_seesion = ScopedMeasurement::new(PeekTimestamp::default());
 
     let mut first_iter = true;
 
