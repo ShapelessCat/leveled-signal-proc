@@ -160,7 +160,7 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         from .modules import add_metric
         return add_metric(self, key, typename)
 
-    def measure_linear_change(self, scope_signal: Optional['SignalBase'] = None) -> MeasurementBase:
+    def measure_linear_change(self) -> MeasurementBase:
         """Measures the change of some value, which has a fixed change rate for each level.
 
         It returns a measurement.
@@ -168,16 +168,16 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         When `scope_signal` is given, it resets the change to 0 when the `scope_signal` becomes a different level.
         """
         from .measurements import LinearChange
-        return LinearChange(self, scope_signal=scope_signal)
+        return LinearChange(self)
 
-    def measure_duration_true(self, scope_signal: Optional['SignalBase'] = None) -> MeasurementBase:
+    def measure_duration_true(self) -> MeasurementBase:
         """Measures the total duration whenever this boolean signal is true.
 
         It returns a measurement.
         When `scope_signal` is given, it resets the duration to 0 when the `scope_signal` becomes a different level.
         """
         from .measurements import DurationTrue
-        return DurationTrue(self, scope_signal=scope_signal)
+        return DurationTrue(self)
 
     def measure_duration_since_true(self) -> MeasurementBase:
         """Measures the duration when this boolean signal has been true most recently.
@@ -200,8 +200,7 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         from .measurements import Peek
         return Peek(self)
 
-    # TODO: Fix this later when adding direct measurement combinator support is done.
-    def peek_timestamp(self, closure: Optional[str] = None) -> MeasurementBase:
+    def peek_timestamp(self) -> MeasurementBase:
         """Returns the current measurement timestamp for the given signal."""
         from .measurements import PeekTimestamp
-        return PeekTimestamp(self, closure)
+        return PeekTimestamp(self)

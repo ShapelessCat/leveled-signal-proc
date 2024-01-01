@@ -90,9 +90,11 @@ class BuiltinMeasurementComponentBase(BuiltinComponentBase, MeasurementBase, ABC
     def to_dict(self) -> dict[str, object]:
         return BuiltinComponentBase.to_dict(self) | {'moved': self.is_moved}
 
+
 class DirectBuiltinMeasurementComponentBase(BuiltinMeasurementComponentBase):
     def __init__(self, name: RustCode, **kwargs):
         super().__init__(name, component_package="measurements", **kwargs)
+
 
 class IndirectBuiltinMeasurementComponentBase(BuiltinMeasurementComponentBase):
     # This is for codegen
@@ -105,11 +107,10 @@ class IndirectBuiltinMeasurementComponentBase(BuiltinMeasurementComponentBase):
 
     @staticmethod
     def get_id_or_literal_value(component: LeveledSignalProcessingModelComponentBase) -> str:
-        match component:
-            case Const():
-                return component.rust_constant_value()
-            case _:
-                return IndirectBuiltinMeasurementComponentBase.REFERENCE_PREFIX + str(component.get_id()['id'])
+        if isinstance(component, Const):
+            return component.rust_constant_value
+        else:
+            return IndirectBuiltinMeasurementComponentBase.REFERENCE_PREFIX + str(component.get_id()['id'])
 
 
 def get_components() -> list[LspComponentBase]:

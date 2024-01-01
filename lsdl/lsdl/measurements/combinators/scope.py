@@ -2,6 +2,7 @@ from ...componet_base import IndirectBuiltinMeasurementComponentBase
 from ...measurement import MeasurementBase
 from ...signal import SignalBase
 
+
 class ScopedMeasurement(IndirectBuiltinMeasurementComponentBase):
     def __init__(self, scope_signal: SignalBase, inner: MeasurementBase):
         rust_component_name = self.__class__.__name__
