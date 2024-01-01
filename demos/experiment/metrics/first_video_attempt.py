@@ -16,9 +16,6 @@ video_attempt = (
     .build()
 )
 duration_before_first_video_attempt = ~(video_attempt == 1).has_been_true()
-# duration_before_first_video_attempt\
-#     .measure_duration_true(session_id)\
-#     .add_metric('life_session_duration_before_first_video_attempt')
 
 duration_before_first_video_attempt\
     .measure_duration_true()\
