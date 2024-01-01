@@ -5,13 +5,22 @@ use lsp_ir::{Node, NodeInput};
 
 use crate::{context::LsdlDebugInfo, MacroContext};
 
+const NODE_ID_PREFIX: &str = "__lsp_node_";
+const NODE_OUTPUT_BUFFER_PREFIX: &str = "__lsp_output_buffer_";
+const ID_UPSTREAM_TEMPLATE: &str = "$";
+
 impl MacroContext {
     pub(crate) fn get_node_ident(&self, id: usize) -> syn::Ident {
-        syn::Ident::new(&format!("__lsp_node_{}", id), self.span())
+        syn::Ident::new(&format!("{}{}", NODE_ID_PREFIX, id), self.span())
     }
 
     fn get_output_ident(&self, id: usize) -> syn::Ident {
-        syn::Ident::new(&format!("__lsp_output_buffer_{}", id), self.span())
+        syn::Ident::new(&format!("{}{}", NODE_OUTPUT_BUFFER_PREFIX, id), self.span())
+    }
+
+    fn get_decl_expr(node: &Node) -> Result<syn::Expr, syn::Error> {
+        let processed_node_decl = node.node_decl.replace(ID_UPSTREAM_TEMPLATE, NODE_ID_PREFIX);
+        syn::parse_str(&processed_node_decl)
     }
 
     fn generate_lsp_node_declaration(&self, node: &Node) -> Result<TokenStream2, syn::Error> {
@@ -19,15 +28,21 @@ impl MacroContext {
         let output_var = self.get_output_ident(node.id);
         let decl_namespace: syn::Path =
             syn::parse_str(&node.namespace).map_err(self.map_lsdl_error(node))?;
-        let decl_expr: syn::Expr = syn::parse_str(&node.node_decl)?;
+        let decl_expr: syn::Expr = MacroContext::get_decl_expr(node)?;
         //let decl = serde_json::to_string_pretty(&node).unwrap();
+        let output_stmt = if node.moved {
+            quote! {}
+        } else {
+            quote! { let mut #output_var; }
+        };
+
         let decl_code = quote! {
             let mut #node_id = {
                 use #decl_namespace;
                 //let code = #decl;
                 #decl_expr
             };
-            let mut #output_var;
+            #output_stmt
         };
         Ok(decl_code)
     }
@@ -144,7 +159,7 @@ impl MacroContext {
         let nodes = &self.get_ir_data().nodes;
 
         let mut update_code_vec = Vec::new();
-        for node in nodes.iter() {
+        for node in nodes.iter().filter(|nd| !nd.moved) {
             update_code_vec.push(self.generate_node_update_code(node)?);
         }
 

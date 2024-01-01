@@ -59,6 +59,8 @@ pub struct Node {
     pub package: String,
     pub namespace: String,
     #[serde(default)]
+    pub moved: bool,
+    #[serde(default)]
     pub debug_info: Option<DebugInfo>,
 }
 
@@ -111,4 +113,42 @@ pub struct LspIr {
     pub nodes: Vec<Node>,
     pub processing_policy: ProcessingPolicy,
     pub measurement_policy: MeasurementPolicy,
+}
+
+impl LspIr {
+    pub fn normalize(&mut self) -> LspIr {
+        // Node ID -> Node
+        let mut lookup = HashMap::new();
+
+        for node in &mut self.nodes {
+            node.upstreams = node
+                .upstreams
+                .iter()
+                .flat_map(|ni| LspIr::traceback(ni, &lookup))
+                .collect();
+            lookup.insert(node.id, node);
+        }
+        self.clone()
+    }
+
+    fn traceback(node_input: &NodeInput, lookup: &HashMap<usize, &Node>) -> Vec<NodeInput> {
+        match node_input {
+            NodeInput::Component { id } => {
+                let from_node = lookup.get(id).unwrap();
+                if from_node.is_measurement {
+                    from_node.upstreams.clone()
+                } else {
+                    vec![node_input.clone()]
+                }
+            }
+            NodeInput::Tuple { values } => {
+                let normalized = values
+                    .iter()
+                    .flat_map(|ni| LspIr::traceback(ni, lookup))
+                    .collect();
+                vec![NodeInput::Tuple { values: normalized }]
+            }
+            _ => vec![node_input.clone()],
+        }
+    }
 }

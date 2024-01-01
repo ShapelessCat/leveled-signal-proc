@@ -9,6 +9,21 @@ pub struct ScopedMeasurement<ScopeType, Measurement, MeasurementOutput> {
     current_base: MeasurementOutput,
 }
 
+impl<ScopeType, Measurement, MeasurementOutput>
+    ScopedMeasurement<ScopeType, Measurement, MeasurementOutput>
+where
+    ScopeType: Default,
+    MeasurementOutput: Default,
+{
+    pub fn new(inner: Measurement) -> Self {
+        ScopedMeasurement {
+            current_control_level: ScopeType::default(),
+            inner,
+            current_base: MeasurementOutput::default(),
+        }
+    }
+}
+
 impl<'a, EventIterator, ScopeType, MeasurementType, Output> Measurement<'a, EventIterator>
     for ScopedMeasurement<ScopeType, MeasurementType, Output>
 where
