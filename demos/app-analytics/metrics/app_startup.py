@@ -1,5 +1,5 @@
 import const
-from lsdl.prelude import Const, DiffSinceCurrentLevel, If, SignalFilterBuilder, time_domain_fold
+from lsdl.prelude import Const, If, SignalFilterBuilder, time_domain_fold
 from schema import input_signal
 from scope import ScopeName, session_id, navigation_id
 
@@ -35,10 +35,10 @@ def fold_app_startup_time(scope, method, init=None):
 
 def create_app_startup_metrics_for(scope_signal, scope_name: ScopeName):
     global total_startup_count
-    DiffSinceCurrentLevel(
-        control=scope_signal,
-        data=total_startup_count
-    ).add_metric(f"life{scope_name.name}StartupCount")
+    total_startup_count\
+        .peek()\
+        .scope(scope_signal)\
+        .add_metric(f"life{scope_name.name}StartupCount")
 
     fold_app_startup_time(
         scope_signal,

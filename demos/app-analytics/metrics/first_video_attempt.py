@@ -21,9 +21,9 @@ has_first_video_attempt = video_attempt >= 1
 has_first_video_attempt.peek().add_metric('lifeSessionHasFirstVideoAttempted')
 
 before_first_video_attempt = ~(video_attempt == 1).has_been_true()
-before_first_video_attempt.add_metric('has_been_true')
 before_first_video_attempt\
-    .measure_duration_true(session_id)\
+    .measure_duration_true()\
+    .scope(session_id)\
     .add_metric('lifeSessionDurationBeforeFirstVideoAttempt')
 
 is_first_video_attempt = video_attempt == 1
