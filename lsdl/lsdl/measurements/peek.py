@@ -1,11 +1,11 @@
 from typing import Optional
 
-from ..componet_base import BuiltinMeasurementComponentBase
+from ..componet_base import DirectBuiltinMeasurementComponentBase
 from ..rust_code import RUST_DEFAULT_VALUE
 from ..signal import SignalBase
 
 
-class Peek(BuiltinMeasurementComponentBase):
+class Peek(DirectBuiltinMeasurementComponentBase):
     def __init__(self, input_signal: SignalBase):
         rule_component_name = self.__class__.__name__
         super().__init__(
@@ -16,7 +16,8 @@ class Peek(BuiltinMeasurementComponentBase):
         self.annotate_type(input_signal.get_rust_type_name())
 
 
-class PeekTimestamp(BuiltinMeasurementComponentBase):
+# TODO: Fix this later when adding direct measurement combinator support is done.
+class PeekTimestamp(DirectBuiltinMeasurementComponentBase):
     def __init__(self, input_signal: SignalBase, closure: Optional[str] = None):
         is_mapped = closure is not None
         prefix = "Mapped" if is_mapped else ""

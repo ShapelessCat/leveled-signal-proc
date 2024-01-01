@@ -1,8 +1,9 @@
-from ..componet_base import BuiltinMeasurementComponentBase
+from ..componet_base import DirectBuiltinMeasurementComponentBase
 from ..signal import SignalBase
 
 
-class DurationTrue(BuiltinMeasurementComponentBase):
+# TODO: Fix this later when adding direct measurement combinator support is done.
+class DurationTrue(DirectBuiltinMeasurementComponentBase):
     def __init__(self, input_signal: SignalBase, scope_signal=None):
         is_scoped = scope_signal is not None
         prefix = "Scoped" if is_scoped else ""
@@ -16,7 +17,7 @@ class DurationTrue(BuiltinMeasurementComponentBase):
         self.annotate_type("u64")
 
 
-class DurationSinceBecomeTrue(BuiltinMeasurementComponentBase):
+class DurationSinceBecomeTrue(DirectBuiltinMeasurementComponentBase):
     def __init__(self, input_signal: SignalBase):
         rust_component_name = self.__class__.__name__
         super().__init__(
@@ -27,7 +28,7 @@ class DurationSinceBecomeTrue(BuiltinMeasurementComponentBase):
         self.annotate_type("u64")
 
 
-class DurationSinceLastLevel(BuiltinMeasurementComponentBase):
+class DurationSinceLastLevel(DirectBuiltinMeasurementComponentBase):
     def __init__(self, input_signal: SignalBase):
         rust_component_name = self.__class__.__name__
         super().__init__(

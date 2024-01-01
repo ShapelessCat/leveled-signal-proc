@@ -1,8 +1,9 @@
-from ..componet_base import BuiltinMeasurementComponentBase
+from ..componet_base import DirectBuiltinMeasurementComponentBase
 from ..signal import SignalBase
 
 
-class LinearChange(BuiltinMeasurementComponentBase):
+# TODO: Fix this later when adding direct measurement combinator support is done.
+class LinearChange(DirectBuiltinMeasurementComponentBase):
     def __init__(self, input_signal: SignalBase, scope_signal=None):
         is_scoped = scope_signal is not None
         prefix = "Scoped" if is_scoped else ""

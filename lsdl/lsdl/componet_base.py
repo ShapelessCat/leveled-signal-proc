@@ -1,5 +1,6 @@
 from abc import ABC
 
+from .const import Const
 from .lsp_model_component import LeveledSignalProcessingModelComponentBase
 from .measurement import MeasurementBase
 from .rust_code import COMPILER_INFERABLE_TYPE, RustCode
@@ -83,8 +84,32 @@ class BuiltinProcessorComponentBase(BuiltinComponentBase, SignalBase, ABC):
 
 
 class BuiltinMeasurementComponentBase(BuiltinComponentBase, MeasurementBase, ABC):
+    def __init__(self, name: RustCode, component_package: RustCode, **kwargs):
+        super().__init__(component_package, component_name=name, **kwargs)
+
+    def to_dict(self) -> dict[str, object]:
+        return BuiltinComponentBase.to_dict(self) | {'moved': self.is_moved}
+
+class DirectBuiltinMeasurementComponentBase(BuiltinMeasurementComponentBase):
     def __init__(self, name: RustCode, **kwargs):
-        super().__init__(component_package="measurements", component_name=name, **kwargs)
+        super().__init__(name, component_package="measurements", **kwargs)
+
+class IndirectBuiltinMeasurementComponentBase(BuiltinMeasurementComponentBase):
+    # This is for codegen
+    REFERENCE_PREFIX = "$"
+
+    def __init__(self, name: RustCode, upstreams: list[MeasurementBase], **kwargs):
+        for u in upstreams:
+            u.is_moved = True
+        super().__init__(name, component_package="measurements::combinator", upstreams=upstreams, **kwargs)
+
+    @staticmethod
+    def get_id_or_literal_value(component: LeveledSignalProcessingModelComponentBase) -> str:
+        match component:
+            case Const():
+                return component.rust_constant_value()
+            case _:
+                return IndirectBuiltinMeasurementComponentBase.REFERENCE_PREFIX + str(component.get_id()['id'])
 
 
 def get_components() -> list[LspComponentBase]:

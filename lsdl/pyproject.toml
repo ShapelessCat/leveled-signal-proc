@@ -28,7 +28,7 @@ dynamic = ["readme"]
 readme = {file = ["README.md"], content-type = "text/markdown"}
 
 [tool.setuptools]
-packages = ["lsdl", "lsdl.signal_processors", "lsdl.measurements"]
+packages = ["lsdl", "lsdl.signal_processors", "lsdl.measurements", "lsdl.measurements.combinators"]
 
 [tool.setuptools.package-data]
 lsdl = ["*.ini"]
