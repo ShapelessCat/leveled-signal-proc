@@ -115,7 +115,7 @@ fn main() {
 
     let mut user_active_time = DurationSinceBecomeTrue::default();
 
-    let mut p_e_seesion = ScopedMeasurement::new(PeekTimestamp::default());
+    let mut p_e_seesion = ScopedMeasurement::new(PeekTimestamp);
 
     let mut first_iter = true;
 

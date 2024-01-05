@@ -18,7 +18,7 @@ class PeekTimestamp(DirectBuiltinMeasurementComponentBase):
         rust_component_name = self.__class__.__name__
         super().__init__(
             name=rust_component_name,
-            node_decl=f"{rust_component_name}::default()",
+            node_decl=f"{rust_component_name}",
             upstreams=[input_signal]
         )
         self.annotate_type("u64")
