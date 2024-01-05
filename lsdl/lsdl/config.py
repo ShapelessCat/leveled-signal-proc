@@ -2,9 +2,8 @@ import logging
 from typing import Any, Self
 
 from .measurement import MeasurementBase
-from .signal import SignalBase
-
 from .rust_code import COMPILER_INFERABLE_TYPE, RustCode
+from .signal import SignalBase
 
 logging.basicConfig(encoding='utf-8', level=logging.INFO)
 

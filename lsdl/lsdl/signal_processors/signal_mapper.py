@@ -7,8 +7,8 @@ class SignalMapper(BuiltinProcessorComponentBase):
     def __init__(self, bind_var: str, lambda_src: str, upstream: SignalBase | list[SignalBase]):
         bind_type = (upstream.get_rust_type_name()
                      if not isinstance(upstream, list)
-                     else "(" + ",".join([e.get_rust_type_name() for e in upstream]) + ")")
-        lambda_decl = f"|{bind_var}:&{bind_type}| {lambda_src}"
+                     else "(" + ", ".join([e.get_rust_type_name() for e in upstream]) + ")")
+        lambda_decl = f"|{bind_var}: &{bind_type}| {lambda_src}"
         rust_processor_name = self.__class__.__name__
         super().__init__(
             name=rust_processor_name,
