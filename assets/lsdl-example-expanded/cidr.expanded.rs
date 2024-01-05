@@ -30,7 +30,10 @@ pub struct InputSignalBagPatch {
 }
 impl lsp_runtime::WithTimestamp for InputSignalBagPatch {
     fn timestamp(&self) -> lsp_runtime::Timestamp {
-        self.timestamp.timestamp_nanos() as u64
+        self.timestamp
+            .timestamp_nanos_opt()
+            .expect("value can not be represented in a timestamp with nanosecond precision.")
+            as lsp_runtime::Timestamp
     }
 }
 impl lsp_runtime::InputSignalBag for InputSignalBag {
