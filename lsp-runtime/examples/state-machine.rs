@@ -46,7 +46,10 @@ struct Event {
 
 impl WithTimestamp for Event {
     fn timestamp(&self) -> Timestamp {
-        self.timestamp.timestamp_nanos() as Timestamp
+        self.timestamp
+            .timestamp_nanos_opt()
+            .expect("value can not be represented in a timestamp with nanosecond precision.")
+            as Timestamp
     }
 }
 

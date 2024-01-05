@@ -95,8 +95,11 @@ struct EventDataPatch {
 }
 
 impl WithTimestamp for EventDataPatch {
-    fn timestamp(&self) -> u64 {
-        self.timestamp.timestamp_nanos() as u64
+    fn timestamp(&self) -> lsp_runtime::Timestamp {
+        self.timestamp
+            .timestamp_nanos_opt()
+            .expect("value can not be represented in a timestamp with nanosecond precision.")
+            as lsp_runtime::Timestamp
     }
 }
 
