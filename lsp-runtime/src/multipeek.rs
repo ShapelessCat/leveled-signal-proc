@@ -69,6 +69,7 @@ impl<I: Iterator> MultiPeek<I> {
 #[cfg(test)]
 mod test {
     use crate::MultiPeek;
+
     #[test]
     fn test_iter_api() {
         let inner: Vec<_> = (0..1000).collect();
