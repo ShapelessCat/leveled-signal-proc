@@ -1,5 +1,5 @@
 import const
-from lsdl.prelude import Cond, Const, DiffSinceCurrentLevel, If, SignalFilterBuilder, time_domain_fold
+from lsdl.prelude import Cond, Const, If, SignalFilterBuilder, time_domain_fold
 from schema import input_signal
 from scope import ScopeName, session_id, navigation_id
 
@@ -52,10 +52,10 @@ def fold_load_time(scope, method, init=None):
 
 def register_load_time_metrics(scope_signal, scope_name: ScopeName):
     """Build and register metrics for load time"""
-    DiffSinceCurrentLevel(
-        control=scope_signal,
-        data=_total_load_count
-    ).add_metric(f"life{scope_name.name}LoadCount")
+    _total_load_count\
+        .peek()\
+        .scope(scope_signal)\
+        .add_metric(f"life{scope_name.name}LoadCount")
     fold_load_time(
         scope_signal,
         "max",

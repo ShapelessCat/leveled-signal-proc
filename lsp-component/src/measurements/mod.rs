@@ -3,8 +3,6 @@ mod duration;
 mod linear_change;
 mod peek;
 
-pub use duration::{
-    DurationSinceBecomeTrue, DurationSinceLastLevel, DurationTrue, ScopedDurationTrue,
-};
-pub use linear_change::{LinearChange, ScopedLinearChange};
-pub use peek::{DiffSinceCurrentLevel, MappedPeekTimestamp, Peek, PeekTimestamp};
+pub use duration::{DurationSinceBecomeTrue, DurationSinceLastLevel, DurationTrue};
+pub use linear_change::LinearChange;
+pub use peek::{Peek, PeekTimestamp};

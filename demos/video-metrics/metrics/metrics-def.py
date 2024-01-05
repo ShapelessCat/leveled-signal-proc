@@ -12,7 +12,8 @@ input_signal.sessionized_bit_rate.add_metric("bitrate")
 # Total buffering time per session
 is_buffering = input_signal.sessionized_player_state == const.PS_BUFFERING
 is_buffering\
-    .measure_duration_true(scope_signal=input_signal.session_signal)\
+    .measure_duration_true()\
+    .scope(input_signal.session_signal)\
     .add_metric("bufferingTime")
 
 # - Initial buffering time
@@ -27,17 +28,20 @@ has_been_playing = (
 )
 
 (~has_been_playing & is_buffering)\
-    .measure_duration_true(scope_signal=input_signal.session_signal)\
+    .measure_duration_true()\
+    .scope(input_signal.session_signal)\
     .add_metric("initialBufferingTime")
 
 # - Re-buffering time
 (has_been_playing & is_buffering)\
-    .measure_duration_true(scope_signal=input_signal.session_signal)\
+    .measure_duration_true()\
+    .scope(input_signal.session_signal)\
     .add_metric("rebufferingTime")
 
 # ev - seek time
 (input_signal.ev == const.EV_SEEK_START)\
-    .measure_duration_true(scope_signal=input_signal.session_signal)\
+    .measure_duration_true()\
+    .scope(input_signal.session_signal)\
     .add_metric("seekTime")
 
 processing_config().set_merge_simultaneous_moments(should_merge=False)

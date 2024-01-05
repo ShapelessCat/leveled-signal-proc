@@ -80,7 +80,7 @@ impl MacroContext {
 
         let input =
             File::open(ir_path).map_err(|e| syn::Error::new_spanned(path_lit, e.to_string()))?;
-        let ir_obj = serde_json::from_reader::<_, LspIr>(input).map_err(|e| {
+        let mut input_ir_obj = serde_json::from_reader::<_, LspIr>(input).map_err(|e| {
             let error_message = format!(
                 "IR parsing error: {msg}\nnote: Originate site {file}:{line}:{col}",
                 msg = e,
@@ -90,7 +90,8 @@ impl MacroContext {
             );
             syn::Error::new_spanned(path_lit, error_message)
         })?;
-        Ok(ir_obj)
+        let normalized_ir_obj = input_ir_obj.normalize();
+        Ok(normalized_ir_obj)
     }
 }
 

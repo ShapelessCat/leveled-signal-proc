@@ -1,7 +1,5 @@
 use lsp_runtime::{measurement::Measurement, Timestamp, UpdateContext};
 
-use super::combinator::scope::ScopedMeasurement;
-
 #[derive(Default, Debug)]
 pub struct LinearChange {
     current_rate: f64,
@@ -28,5 +26,3 @@ impl<'a, I: Iterator> Measurement<'a, I> for LinearChange {
         (self.accumulated_amount + current_level_change) / 1e9
     }
 }
-
-pub type ScopedLinearChange<T> = ScopedMeasurement<T, LinearChange, f64>;

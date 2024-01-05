@@ -1,12 +1,13 @@
 import logging
 from typing import Any, Self
 
-from lsdl.measurement import MeasurementBase
-from lsdl.signal import SignalBase
+from .measurement import MeasurementBase
+from .signal import SignalBase
 
 from .rust_code import COMPILER_INFERABLE_TYPE, RustCode
 
 logging.basicConfig(encoding='utf-8', level=logging.INFO)
+
 
 class _ProcessingConfiguration:
     """The configuration for processing policy.
@@ -21,12 +22,13 @@ class _ProcessingConfiguration:
 
     def to_dict(self) -> dict[str, Any]:
         """Dump the processing policy into a dictionary that can be JSONified."""
-        return { "merge_simultaneous_moments": self._merge_simultaneous_moments }
+        return {"merge_simultaneous_moments": self._merge_simultaneous_moments}
 
 
 def _make_processing_configuration():
     config = _ProcessingConfiguration()
     return lambda: config
+
 
 processing_config = _make_processing_configuration()
 

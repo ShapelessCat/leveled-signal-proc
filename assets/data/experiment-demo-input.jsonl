@@ -1,10 +1,10 @@
-{"timestamp": "2023-10-24 17:44:21.161 UTC", "encoded_fps": 10}
-{"timestamp": "2023-10-24 17:44:54.161 UTC", "inferred_rendered_fps": 8}
-{"timestamp": "2023-10-24 17:44:57.161 UTC", "inferred_rendered_fps": 2}
-{"timestamp": "2023-10-24 17:46:00.161 UTC"}
-{"timestamp": "2023-10-24 17:47:13.161 UTC"}
-{"timestamp": "2023-10-24 17:48:34.161 UTC"}
-{"timestamp": "2023-10-24 17:49:12.161 UTC", "encoded_fps": 5, "inferred_rendered_fps": 3}
-{"timestamp": "2023-10-24 17:49:14.161 UTC"}
-{"timestamp": "2023-10-24 17:50:21.161 UTC", "inferred_rendered_fps": 4}
-{"timestamp": "2023-10-24 17:51:23.161 UTC"}
+{"timestamp": "2023-10-24 17:44:21.161 UTC", "event_name": "conviva_application_error", "event_category": "ec2", "platform": "mob", "screen_id": "nav-id-3", "encoded_fps": 10}
+{"timestamp": "2023-10-24 17:44:54.161 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "inferred_rendered_fps": 8}
+{"timestamp": "2023-10-24 17:44:57.561 UTC", "event_name": "random_event_8", "event_category": "ec2", "platform": "mob", "load_start": "2", "load_end": "891", "inferred_rendered_fps": 2}
+{"timestamp": "2023-10-24 17:46:00.461 UTC", "event_name": "random_event_3", "event_category": "ec2", "platform": "mob"}
+{"timestamp": "2023-10-24 17:47:13.061 UTC", "event_name": "random_event_7", "event_category": "ec2", "platform": "mob"}
+{"timestamp": "2023-10-24 17:48:34.561 UTC", "event_name": "random_event_8", "event_category": "ec2", "platform": "mob", "load_start": "955", "load_end": "2"}
+{"timestamp": "2023-10-24 17:49:12.261 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "encoded_fps": 5, "inferred_rendered_fps": 3}
+{"timestamp": "2023-10-24 17:49:14.261 UTC", "event_name": "random_event_8", "event_category": "ec2", "platform": "mob", "load_start": "957", "load_end": "106"}
+{"timestamp": "2023-10-24 17:50:21.561 UTC", "event_name": "conviva_network_request", "event_category": "ec0", "platform": "mob", "load_start": "1", "load_end": "364", "response_code": "400", "network_request_duration": "891", "inferred_rendered_fps": 4}
+{"timestamp": "2023-10-24 17:51:23.161 UTC", "event_name": "random_event_3", "event_category": "ec0", "platform": "mob"}

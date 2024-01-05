@@ -1,7 +1,7 @@
 from enum import Enum
 
 import const
-from lsdl.prelude import DiffSinceCurrentLevel, SignalFilterBuilder, time_domain_fold
+from lsdl.prelude import SignalFilterBuilder, time_domain_fold
 from schema import input_signal
 from scope import ScopeName, session_id, navigation_id
 
@@ -27,10 +27,10 @@ def create_network_request_metrics_for(
         _request_succeeded if status == ResponseStatus.Success else (
             ~_request_succeeded)) .build_clock_filter()
     count_with_given_status = network_request_with_given_status_clock.count_changes()
-    DiffSinceCurrentLevel(
-        control=scope_signal,
-        data=count_with_given_status
-    ).add_metric(f"life{scope_name.name}{status.name}NetworkRequestCount")
+    count_with_given_status\
+        .peek()\
+        .scope(scope_signal)\
+        .add_metric(f"life{scope_name.name}{status.name}NetworkRequestCount")
     time_domain_fold(
         data=network_request_duration,
         clock=network_request_with_given_status_clock,
