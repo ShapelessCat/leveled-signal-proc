@@ -27,7 +27,7 @@ class Const(SignalBase):
     def rust_constant_value(self) -> RustCode:
         return self._rust_constant_value
 
-    def get_id(self):
+    def get_description(self):
         return {
             "type": "Constant",
             "value": self.rust_constant_value,

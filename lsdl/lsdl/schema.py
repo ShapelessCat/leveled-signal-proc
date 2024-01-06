@@ -10,18 +10,18 @@ class TypeBase(LeveledSignalProcessingModelComponentBase, ABC):
     def __init__(self, rust_type: RustCode):
         super().__init__(rust_type)
         self._reset_expr = None
-        self._parent = None
+        self._parent: Optional[InputMember] = None
 
     @property
     def reset_expr(self):
         return self._reset_expr
 
-    def get_id(self):
+    def get_description(self):
         try:
-            return super().get_id()
+            return super().get_description()
         except Exception as e:
             if self._parent is not None:
-                return self._parent.get_id()
+                return self._parent.get_description()
             raise e
 
 
@@ -86,7 +86,7 @@ class Vector(TypeWithLiteralValue):
     # @override
     def render_rust_const(self, val) -> RustCode:
         if isinstance(self._element_type, TypeWithLiteralValue):
-            typed_const_elements = ",".join([self._element_type.render_rust_const(v) for v in val])
+            typed_const_elements = ", ".join([self._element_type.render_rust_const(v) for v in val])
             return f"vec![{typed_const_elements}]"
         else:
             raise Exception("Not a vector literal!")
@@ -99,7 +99,6 @@ class InputMember(SignalBase, ABC):
         self._inner = tpe
         self._name = name
         self._reset_expr = None
-        self._parent = None
 
     @property
     def name(self) -> str:
@@ -109,7 +108,7 @@ class InputMember(SignalBase, ABC):
     def name(self, name: str):
         self._name = name
 
-    def get_id(self):
+    def get_description(self):
         return {
             "type": "InputSignal",
             "id": self.name,
@@ -213,7 +212,7 @@ class InputSchemaBase(SignalBase):
                 }
         return ret
 
-    def get_id(self):
+    def get_description(self):
         return {
             "type": "InputSignal",
             "id": "_clock"

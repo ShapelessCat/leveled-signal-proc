@@ -47,10 +47,10 @@ class If(SignalBase):
                  else_expr: SignalBase):
         inner = _build_signal_mapper(cond_expr, then_expr, else_expr)
         super().__init__(inner.get_rust_type_name())
-        self._id = inner.get_id()
+        self._description = inner.get_description()
 
-    def get_id(self):
-        return self._id
+    def get_description(self):
+        return self._description
 
 
 class Cond(SignalBase):
@@ -64,7 +64,7 @@ class Cond(SignalBase):
             (cond, then_branch) = middle_branches.pop()
             inner = _build_signal_mapper(cond, then_branch, inner)
         super().__init__(inner.get_rust_type_name())
-        self._id = inner.get_id()
+        self._description = inner.get_description()
 
-    def get_id(self):
-        return self._id
+    def get_description(self):
+        return self._description
