@@ -1,6 +1,6 @@
 use lsp_runtime::{measurement::Measurement, Timestamp, UpdateContext};
 
-#[derive(Default, Debug)]
+#[derive(Clone, Default, Debug)]
 pub struct LinearChange {
     current_rate: f64,
     current_rate_start: Timestamp,

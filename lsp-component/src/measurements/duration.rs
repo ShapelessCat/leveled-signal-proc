@@ -1,6 +1,6 @@
 use lsp_runtime::{measurement::Measurement, Timestamp, UpdateContext};
 
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct DurationSinceBecomeTrue {
     last_input: bool,
     last_assignment_timestamp: Timestamp,
@@ -26,7 +26,7 @@ impl<'a, I: Iterator> Measurement<'a, I> for DurationSinceBecomeTrue {
     }
 }
 
-#[derive(Default, Debug)]
+#[derive(Clone, Default, Debug)]
 pub struct DurationSinceLastLevel<T: Clone> {
     last_assignment_timestamp: Timestamp,
     last_level: Option<T>,
@@ -50,7 +50,7 @@ impl<'a, T: Clone + 'a, I: Iterator> Measurement<'a, I> for DurationSinceLastLev
     }
 }
 
-#[derive(Default, Debug)]
+#[derive(Clone, Default, Debug)]
 pub struct DurationTrue {
     current_state: bool,
     accumulated_duration: Timestamp,
