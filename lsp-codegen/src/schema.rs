@@ -45,22 +45,24 @@ impl MacroContext {
     ) -> Result<TokenStream2, syn::Error> {
         let field_id = syn::Ident::new(id, self.span());
         let clock_companion = syn::Ident::new(&schema.clock_companion, self.span());
-        let else_arm: TokenStream2 = match &schema.signal_behavior {
-            SignalBehavior::Persist => quote!(()),
-            SignalBehavior::Reset { default_expr } => {
-                let default_expr: syn::Expr = syn::parse_str(default_expr)?;
-                quote! {
-                    self.#clock_companion += 1;
-                    self.#field_id = #default_expr;
-                }
-            }
-        };
-        let item_impl = quote! {
+        let if_arm = quote! {
             if let Some(value) = patch.#field_id {
                 self.#clock_companion += 1;
                 self.#field_id = value;
-            } else {
-                #else_arm
+            }
+        };
+
+        let item_impl: TokenStream2 = match &schema.signal_behavior {
+            SignalBehavior::Persist => if_arm,
+            SignalBehavior::Reset { default_expr } => {
+                let default_expr: syn::Expr = syn::parse_str(default_expr)?;
+                quote! {
+                    #if_arm
+                    else {
+                        self.#clock_companion += 1;
+                        self.#field_id = #default_expr;
+                    }
+                }
             }
         };
         Ok(item_impl)

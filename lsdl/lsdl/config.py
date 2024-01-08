@@ -2,9 +2,8 @@ import logging
 from typing import Any, Self
 
 from .measurement import MeasurementBase
-from .signal import SignalBase
-
 from .rust_code import COMPILER_INFERABLE_TYPE, RustCode
+from .signal import SignalBase
 
 logging.basicConfig(encoding='utf-8', level=logging.INFO)
 
@@ -97,7 +96,7 @@ class _MeasurementConfiguration:
             logging.info("Consider call `.annotate_type(<type-name>)` to manually annotate signal's type.")
             raise Exception(f"Missing type name for the metric {key}.")
         self._output_schema[key] = {
-            "source": measurement.get_id(),
+            "source": measurement.get_description(),
             "type": typename
         }
         return self
@@ -110,9 +109,9 @@ class _MeasurementConfiguration:
             "output_schema": self._output_schema,
         }
         if self._measure_on_edge is not None:
-            ret["measure_trigger_signal"] = self._measure_on_edge.get_id()
+            ret["measure_trigger_signal"] = self._measure_on_edge.get_description()
         if self._measure_side_flag is not None:
-            ret["measure_left_side_limit_signal"] = self._measure_side_flag.get_id()
+            ret["measure_left_side_limit_signal"] = self._measure_side_flag.get_description()
         return ret
 
 

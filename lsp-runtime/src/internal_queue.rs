@@ -1,5 +1,6 @@
-use crate::{Moment, Timestamp};
 use std::{cmp::Reverse, collections::BinaryHeap};
+
+use crate::{Moment, Timestamp};
 
 /// The queue sorting internal events.
 ///
@@ -50,6 +51,7 @@ impl InternalEventQueue {
 #[cfg(test)]
 mod test {
     use super::*;
+
     #[test]
     fn test_internal_event_queue() {
         let mut queue = InternalEventQueue::default();

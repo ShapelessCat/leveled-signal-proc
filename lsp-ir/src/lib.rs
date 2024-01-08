@@ -116,39 +116,39 @@ pub struct LspIr {
 }
 
 impl LspIr {
-    pub fn normalize(&mut self) -> LspIr {
-        // Node ID -> Node
-        let mut lookup = HashMap::new();
-
-        for node in &mut self.nodes {
-            node.upstreams = node
-                .upstreams
+    pub fn normalize(&mut self) {
+        let mut buffer = vec![];
+        for i in 0..self.nodes.len() {
+            let node = &self.nodes[i];
+            node.upstreams
                 .iter()
-                .flat_map(|ni| LspIr::traceback(ni, &lookup))
-                .collect();
-            lookup.insert(node.id, node);
+                .for_each(|ni| Self::traceback(ni, &self.nodes, &mut buffer));
+            self.nodes[i].upstreams = buffer.clone();
+            buffer.clear();
         }
-        self.clone()
     }
 
-    fn traceback(node_input: &NodeInput, lookup: &HashMap<usize, &Node>) -> Vec<NodeInput> {
+    fn traceback(node_input: &NodeInput, lookup: &Vec<Node>, buffer: &mut Vec<NodeInput>) {
         match node_input {
             NodeInput::Component { id } => {
-                let from_node = lookup.get(id).unwrap();
+                let from_node = &lookup[*id];
                 if from_node.is_measurement {
-                    from_node.upstreams.clone()
+                    for node_input in &from_node.upstreams {
+                        buffer.push(node_input.clone())
+                    }
                 } else {
-                    vec![node_input.clone()]
+                    buffer.push(node_input.clone())
                 }
             }
             NodeInput::Tuple { values } => {
-                let normalized = values
+                let len = buffer.len();
+                values
                     .iter()
-                    .flat_map(|ni| LspIr::traceback(ni, lookup))
-                    .collect();
-                vec![NodeInput::Tuple { values: normalized }]
+                    .for_each(|ni| Self::traceback(ni, lookup, buffer));
+                let updated = buffer.split_off(len);
+                buffer.push(NodeInput::Tuple { values: updated })
             }
-            _ => vec![node_input.clone()],
+            _ => buffer.push(node_input.clone()),
         }
     }
 }

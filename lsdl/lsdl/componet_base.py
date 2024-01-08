@@ -44,7 +44,7 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
             else:
                 raise e
 
-    def get_id(self):
+    def get_description(self):
         return {
             "type": "Component",
             "id": self._id,
@@ -56,10 +56,10 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
             if isinstance(p, list):
                 upstreams.append({
                     "type": "Tuple",
-                    "values": [e.get_id() for e in p]
+                    "values": [e.get_description() for e in p]
                 })
             else:
-                upstreams.append(p.get_id())
+                upstreams.append(p.get_description())
         return {
             "id": self._id,
             "is_measurement": not isinstance(self, SignalBase),
@@ -110,7 +110,7 @@ class IndirectBuiltinMeasurementComponentBase(BuiltinMeasurementComponentBase):
         if isinstance(component, Const):
             return component.rust_constant_value
         else:
-            return IndirectBuiltinMeasurementComponentBase.REFERENCE_PREFIX + str(component.get_id()['id'])
+            return IndirectBuiltinMeasurementComponentBase.REFERENCE_PREFIX + str(component.get_description()['id'])
 
 
 def get_components() -> list[LspComponentBase]:

@@ -35,6 +35,6 @@ class SignalGenerator(BuiltinProcessorComponentBase):
     def __init__(self, lambda_src, bind_var="timestamp"):
         super().__init__(
             name=_rust_component_name,
-            node_decl=f"{_rust_component_name}::new(|{bind_var}|{lambda_src})",
+            node_decl=f"{_rust_component_name}::new(|{bind_var}| {lambda_src})",
             upstreams=[]
         )

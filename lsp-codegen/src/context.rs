@@ -90,8 +90,8 @@ impl MacroContext {
             );
             syn::Error::new_spanned(path_lit, error_message)
         })?;
-        let normalized_ir_obj = input_ir_obj.normalize();
-        Ok(normalized_ir_obj)
+        input_ir_obj.normalize();
+        Ok(input_ir_obj)
     }
 }
 

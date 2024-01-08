@@ -7,8 +7,8 @@ class SignalMapper(BuiltinProcessorComponentBase):
     def __init__(self, bind_var: str, lambda_src: str, upstream: SignalBase | list[SignalBase]):
         bind_type = (upstream.get_rust_type_name()
                      if not isinstance(upstream, list)
-                     else "(" + ",".join([e.get_rust_type_name() for e in upstream]) + ")")
-        lambda_decl = f"|{bind_var}:&{bind_type}| {lambda_src}"
+                     else "(" + ", ".join([e.get_rust_type_name() for e in upstream]) + ")")
+        lambda_decl = f"|{bind_var}: &{bind_type}| {lambda_src}"
         rust_processor_name = self.__class__.__name__
         super().__init__(
             name=rust_processor_name,
@@ -47,10 +47,10 @@ class If(SignalBase):
                  else_expr: SignalBase):
         inner = _build_signal_mapper(cond_expr, then_expr, else_expr)
         super().__init__(inner.get_rust_type_name())
-        self._id = inner.get_id()
+        self._description = inner.get_description()
 
-    def get_id(self):
-        return self._id
+    def get_description(self):
+        return self._description
 
 
 class Cond(SignalBase):
@@ -64,7 +64,7 @@ class Cond(SignalBase):
             (cond, then_branch) = middle_branches.pop()
             inner = _build_signal_mapper(cond, then_branch, inner)
         super().__init__(inner.get_rust_type_name())
-        self._id = inner.get_id()
+        self._description = inner.get_description()
 
-    def get_id(self):
-        return self._id
+    def get_description(self):
+        return self._description

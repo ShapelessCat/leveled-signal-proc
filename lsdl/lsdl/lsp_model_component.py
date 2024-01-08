@@ -32,6 +32,6 @@ class LeveledSignalProcessingModelComponentBase(ABC):
         """Get the rust declaration for the type of this signal."""
         return self._rust_type
 
-    def get_id(self) -> dict[str, Any]:
-        """Get the IR description of the signal."""
+    def get_description(self) -> dict[str, Any]:
+        """Get the description of current component."""
         raise NotImplementedError()

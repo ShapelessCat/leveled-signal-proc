@@ -9,7 +9,7 @@ class StateMachineBuilder:
                  data: SignalBase | list[SignalBase]):
         self._clock = clock
         self._data = data
-        self._transition_fn = '|_,_| ()'
+        self._transition_fn = '|_, _| ()'
         self._scope_signal = None
         self._init_state = RUST_DEFAULT_VALUE
 
