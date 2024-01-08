@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use crate::{InternalEventQueue, Moment, multipeek::MultiPeek, Timestamp};
+use crate::{InternalEventQueue, Moment, multipeek::MultiPeek, Duration, Timestamp};
 
 /// Some type with timestamp information.
 /// Typically, an event taken from outside should implements this trait and the context is
@@ -44,11 +44,11 @@ impl<'a, InputIter: Iterator> UpdateContext<'a, InputIter> {
     pub fn set_current_update_group(&mut self, _group_id: u32) {
         // Dummy implementation reserved for partial update
     }
-    pub fn schedule_measurement(&mut self, time_diff: Timestamp) {
+    pub fn schedule_measurement(&mut self, time_diff: Duration) {
         let scheduled_time = self.frontier.saturating_add(time_diff);
         self.queue.schedule_measurement(scheduled_time);
     }
-    pub fn schedule_signal_update(&mut self, time_diff: Timestamp) {
+    pub fn schedule_signal_update(&mut self, time_diff: Duration) {
         let scheduled_time = self.frontier.saturating_add(time_diff);
         self.queue.schedule_signal_update(scheduled_time);
     }

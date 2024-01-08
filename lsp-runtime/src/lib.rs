@@ -1,4 +1,5 @@
 pub type Timestamp = u64;
+pub type Duration = u64;
 
 mod context;
 mod internal_queue;

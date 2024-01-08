@@ -1,4 +1,4 @@
-use lsp_runtime::{signal::SignalProcessor, Timestamp, UpdateContext};
+use lsp_runtime::{signal::SignalProcessor, Duration, Timestamp, UpdateContext};
 
 pub trait SignalFunc<T> {
     fn call(&mut self, ts: Timestamp) -> (T, Timestamp);
@@ -45,7 +45,7 @@ where
 
 impl SignalGenerator {
     pub fn square_wave(
-        period: Timestamp,
+        period: Duration,
         phase: Timestamp,
     ) -> SignalGenerator<impl FnMut(u64) -> (bool, u64), bool> {
         SignalGenerator::new(move |now| {
@@ -59,7 +59,7 @@ impl SignalGenerator {
     pub fn raising_level(
         mut start: i64,
         step: i64,
-        duration: Timestamp,
+        duration: Duration,
         phase: Timestamp,
     ) -> SignalGenerator<impl FnMut(u64) -> (i64, u64), i64> {
         let mut next_level_starts = None;

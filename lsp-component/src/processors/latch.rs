@@ -1,5 +1,5 @@
 use lsp_runtime::signal::SignalProcessor;
-use lsp_runtime::{Timestamp, UpdateContext};
+use lsp_runtime::{Duration, Timestamp, UpdateContext};
 
 /// Abstracts the retention behavior of a latch
 pub trait Retention<T> {
@@ -26,7 +26,7 @@ impl<T> Retention<T> for KeepForever {
 pub struct TimeToLive<T> {
     default_value: T,
     value_forgotten_timestamp: Timestamp,
-    time_to_live: Timestamp,
+    time_to_live: Duration,
 }
 
 impl<T: Clone> Retention<T> for TimeToLive<T> {
@@ -82,7 +82,7 @@ impl<C: Default, D> EdgeTriggeredLatch<C, D> {
 }
 
 impl<T: Clone> Latch<T, TimeToLive<T>> {
-    pub fn with_forget_behavior(data: T, default: T, time_to_memorize: Timestamp) -> Self {
+    pub fn with_forget_behavior(data: T, default: T, time_to_memorize: Duration) -> Self {
         Self {
             data,
             retention: TimeToLive {
@@ -95,7 +95,7 @@ impl<T: Clone> Latch<T, TimeToLive<T>> {
 }
 
 impl<C: Default, D: Clone> EdgeTriggeredLatch<C, D, TimeToLive<D>> {
-    pub fn with_forget_behavior(data: D, default: D, time_to_memorize: Timestamp) -> Self {
+    pub fn with_forget_behavior(data: D, default: D, time_to_memorize: Duration) -> Self {
         Self {
             data,
             last_control_level: Default::default(),

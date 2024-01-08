@@ -1,4 +1,4 @@
-use lsp_runtime::{signal::SignalProcessor, Timestamp, UpdateContext};
+use lsp_runtime::{signal::SignalProcessor, Duration, Timestamp, UpdateContext};
 
 /// Note:
 /// Although the duration of current level cannot be a measurement, as it's a function of time,
@@ -16,7 +16,7 @@ impl<'a, T: PartialEq + Clone + 'a, I: Iterator> SignalProcessor<'a, I>
 {
     type Input = &'a T;
 
-    type Output = Timestamp;
+    type Output = Duration;
 
     #[inline(always)]
     fn update(&mut self, ctx: &mut UpdateContext<I>, input: Self::Input) -> Self::Output {

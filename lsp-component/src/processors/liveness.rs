@@ -2,7 +2,7 @@ use std::fmt::Debug;
 use std::marker::PhantomData;
 
 use lsp_runtime::signal::SignalProcessor;
-use lsp_runtime::{Timestamp, UpdateContext, WithTimestamp};
+use lsp_runtime::{Duration, Timestamp, UpdateContext, WithTimestamp};
 
 /// This is the signal processor that analyzes the liveness of a session based on heartbeat signals.
 /// The output constantly answering the question: Is current session still alive?
@@ -10,7 +10,7 @@ use lsp_runtime::{Timestamp, UpdateContext, WithTimestamp};
 /// Thus, this operator uses the look ahead mechanism of the LSP system to see if there's a future
 /// heartbeat event.
 pub struct LivenessChecker<IsLivenessEventFunc, Clock, Event> {
-    expiration_period: Timestamp,
+    expiration_period: Duration,
     last_event_clock: Clock,
     last_event_timestamp: Timestamp,
     is_liveness_event: IsLivenessEventFunc,
@@ -29,7 +29,7 @@ impl<F, C: Debug, E: Debug> Debug for LivenessChecker<F, C, E> {
 }
 
 impl<F, C: Default, E> LivenessChecker<F, C, E> {
-    pub fn new(is_liveness_event: F, time_window: Timestamp) -> Self
+    pub fn new(is_liveness_event: F, time_window: Duration) -> Self
     where
         F: FnMut(&E) -> bool,
     {
