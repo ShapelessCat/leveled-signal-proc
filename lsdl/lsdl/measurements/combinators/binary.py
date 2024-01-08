@@ -8,7 +8,13 @@ class BinaryCombinedMeasurement(IndirectBuiltinMeasurementComponentBase):
         super().__init__(
             name=rust_component_name,
             upstreams=[inner0, inner1],
-            node_decl=f"{rust_component_name}::new(|{bind_var0}, {bind_var1}| {lambda_src}, {self.get_id_or_literal_value(inner0)}.clone(), {self.get_id_or_literal_value(inner1)}.clone())",
+            node_decl=f"""
+                {rust_component_name}::new(
+                    |{bind_var0}, {bind_var1}| {lambda_src},
+                    {self.get_id_or_literal_value(inner0)}.clone(),
+                    {self.get_id_or_literal_value(inner1)}.clone()
+                )
+            """,
         )
         # self.annotate_type(input_signal.get_rust_type_name())
 

@@ -12,14 +12,21 @@ class MeasurementBase(LeveledSignalProcessingModelComponentBase, ABC):
     def map(self, bind_var: str, lambda_src: str) -> 'MeasurementBase':
         """Shortcut to apply a measurement mapper on current measurement.
         It allows applying Rust lambda on current measurement result.
-        The result is also a measurement.
+        The result is still a measurement.
         """
         from .measurements.combinators.mapper import MappedMeasurement
         return MappedMeasurement(bind_var, lambda_src, self)
 
     def scope(self, scope_signal: 'SignalBase') -> 'MeasurementBase':
         """Shortcut to reset a measurement based on a given signal.
-        The result is also a measurement.
+        The result is still a measurement.
         """
         from .measurements.combinators.scope import ScopedMeasurement
         return ScopedMeasurement(scope_signal, self)
+
+    def combine(self, bind_var0: str, bind_var1: str, lambda_src: str, other: 'MeasurementBase') -> 'MeasurementBase':
+        """Shortcut to combine two measurements by provided lambda.
+        The result is still a measurement.
+        """
+        from .measurements.combinators.binary import BinaryCombinedMeasurement
+        return BinaryCombinedMeasurement(bind_var0, bind_var1, lambda_src, self, other)
