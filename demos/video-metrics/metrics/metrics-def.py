@@ -1,8 +1,8 @@
 # extra-src: const.py schema.py
-import const
 from lsdl.prelude import print_ir_to_stdout, processing_config, StateMachineBuilder
-from schema import input_signal
 
+import const
+from schema import input_signal
 
 # Sessionized states
 input_signal.sessionized_player_state.add_metric("player_state")

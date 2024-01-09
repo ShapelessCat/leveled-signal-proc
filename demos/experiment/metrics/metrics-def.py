@@ -1,5 +1,4 @@
 # extra-src: const.py schema.py scope.py first_video_attempt.py
-from lsdl.measurements.combinators.binary import BinaryCombinedMeasurement
 from lsdl.prelude import *
 from schema import input_signal
 

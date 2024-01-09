@@ -1,8 +1,8 @@
-import const
 from lsdl.prelude import Cond, Const, If, SignalFilterBuilder, time_domain_fold
+
+import const
 from schema import input_signal
 from scope import ScopeName, session_id, navigation_id
-
 
 _start = input_signal.load_start.parse('i32')
 _end = input_signal.load_end.parse('i32')

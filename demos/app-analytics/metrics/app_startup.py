@@ -1,5 +1,6 @@
-import const
 from lsdl.prelude import Const, If, SignalFilterBuilder, time_domain_fold
+
+import const
 from schema import input_signal
 from scope import ScopeName, session_id, navigation_id
 

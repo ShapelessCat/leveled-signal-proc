@@ -1,3 +1,3 @@
 # TODO:
-# intvPageEndStatus: Boolean
-# lifeSessionEndStatus: Boolean
+# intv_page_end_status: Boolean
+# life_session_end_status: Boolean

@@ -1,9 +1,9 @@
 from enum import Enum
 
-import const
 from lsdl.prelude import SignalFilterBuilder, make_tuple
-from schema import input_signal
 
+import const
+from schema import input_signal
 
 _unconditional = \
     SignalFilterBuilder(input_signal.event_name) \

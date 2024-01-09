@@ -1,8 +1,8 @@
-import const
 from lsdl.prelude import Const, SignalFilterBuilder, StateMachineBuilder
+
+import const
 from schema import input_signal
 from scope import session_id
-
 
 video_attempt_clock = (
     SignalFilterBuilder(input_signal.conviva_video_events_name)
