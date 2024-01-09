@@ -1,5 +1,8 @@
 """Constants for building metrics."""
 
+PLATFORM_MOBILE = 'mob'
+PLATFORM_WEB = 'web'
+
 # Critical events:
 # Events that can keep an application session alive in the next 90 seconds.
 

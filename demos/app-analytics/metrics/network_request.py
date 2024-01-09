@@ -27,15 +27,16 @@ def create_network_request_metrics_for(
         _request_succeeded if status == ResponseStatus.Success else (
             ~_request_succeeded)) .build_clock_filter()
     count_with_given_status = network_request_with_given_status_clock.count_changes()
+    scope_and_status = f"{scope_name.name.lower()}_{status.name.lower()}"
     count_with_given_status\
         .peek()\
         .scope(scope_signal)\
-        .add_metric(f"life{scope_name.name}{status.name}NetworkRequestCount")
+        .add_metric(f"life_{scope_and_status}_network_request_count")
     time_domain_fold(
         data=network_request_duration,
         clock=network_request_with_given_status_clock,
         scope=scope_signal
-    ).add_metric(f"life{scope_name.name}{status.name}NetworkRequestDuration")
+    ).add_metric(f"life_{scope_and_status}_network_request_duration")
 
 
 create_network_request_metrics_for(

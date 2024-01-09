@@ -14,7 +14,7 @@ def create_user_active_time_metric_for(scope_signal, scope_name: ScopeName):
     is_user_active\
         .measure_duration_true()\
         .scope(scope_signal)\
-        .add_metric(f"life{scope_name.name}UserActiveTime")
+        .add_metric(f"life_{scope_name.name.lower()}_user_active_time")
 
 
 create_user_active_time_metric_for(session_id, ScopeName.Session)

@@ -18,16 +18,17 @@ video_attempt = (
 video_attempt.add_metric("video_attempt", 'i32')
 
 has_first_video_attempt = video_attempt >= 1
-has_first_video_attempt.peek().add_metric('lifeSessionHasFirstVideoAttempted')
+has_first_video_attempt.peek().add_metric('life_session_has_first_video_attempted')
 
 before_first_video_attempt = ~(video_attempt == 1).has_been_true()
 before_first_video_attempt\
     .measure_duration_true()\
     .scope(session_id)\
-    .add_metric('lifeSessionDurationBeforeFirstVideoAttempt')
+    .add_metric('life_session_duration_before_first_video_attempt')
 
+# TODO: support interval metrics
 is_first_video_attempt = video_attempt == 1
-is_first_video_attempt.peek().add_metric('intervalHasFirstVideoAttempted')
+is_first_video_attempt.peek().add_metric('interval_has_first_video_attempted')
 
 # TODO:
 # 1. Introduce measure combinator, and add the functionality to config one-sided measurement.
