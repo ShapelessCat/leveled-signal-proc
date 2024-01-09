@@ -47,35 +47,3 @@ where
         (self.binary_op)(&self.inner0.measure(ctx), &self.inner1.measure(ctx))
     }
 }
-
-pub trait BinaryCombinedMeasurementExt<'a, I: Iterator, MeasurementType1>: Measurement<'a, I> + Sized
-where
-    Self::Output: Clone,
-    MeasurementType1: Measurement<'a, I>,
-{
-    fn combined<InputType1, OutputType1, OutputType, ClosureType>(
-        self,
-        binary_op: ClosureType,
-        other: MeasurementType1,
-    ) -> BinaryCombinedMeasurement<Self::Output, MeasurementType1::Output, OutputType, ClosureType, Self, MeasurementType1>
-    where
-        ClosureType: Fn(&Self::Output, OutputType1) -> OutputType,
-    {
-        BinaryCombinedMeasurement {
-            binary_op,
-            inner0: self,
-            inner1: other,
-            _phantom_data: PhantomData,
-        }
-    }
-}
-
-impl<'a, I, M, M1> BinaryCombinedMeasurementExt<'a, I, M1> for M
-where
-    M: Measurement<'a, I> + Sized,
-    M1: Measurement<'a, I> + Sized,
-    M::Output: Clone,
-    M1::Output: Clone,
-    I: Iterator,
-{
-}
