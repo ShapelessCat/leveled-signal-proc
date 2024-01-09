@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 
 use lsp_runtime::{measurement::Measurement, UpdateContext};
 
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Debug)]
 pub struct MappedMeasurement<InnerOutput, OutputType, ClosureType, MeasurementType> {
     how: ClosureType,
     inner: MeasurementType,

@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 
 use lsp_runtime::{measurement::Measurement, UpdateContext};
 
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Debug)]
 pub struct BinaryCombinedMeasurement<OutputType0, OutputType1, OutputType, ClosureType, MeasurementType0, MeasurementType1> {
     binary_op: ClosureType,
     inner0: MeasurementType0,
