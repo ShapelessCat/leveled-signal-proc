@@ -27,10 +27,10 @@ impl<'a, EventIterator, InnerOutput, OutputType, ClosureType, MeasurementType>
     Measurement<'a, EventIterator>
     for MappedMeasurement<InnerOutput, OutputType, ClosureType, MeasurementType>
 where
-    MeasurementType: Measurement<'a, EventIterator, Output = InnerOutput>,
+    EventIterator: Iterator,
     InnerOutput: Clone + std::fmt::Display,
     ClosureType: Fn(&InnerOutput) -> OutputType,
-    EventIterator: Iterator,
+    MeasurementType: Measurement<'a, EventIterator, Output = InnerOutput>,
 {
     type Input = MeasurementType::Input;
     type Output = OutputType;

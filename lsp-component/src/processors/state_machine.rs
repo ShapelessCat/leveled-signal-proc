@@ -37,11 +37,11 @@ impl<I, S: Clone, F, T: Default> StateMachine<I, S, F, T> {
     }
 }
 
-impl<'a, Input, State, Transition, Iter, Trigger> SignalProcessor<'a, Iter>
+impl<'a, EventIterator, Input, State, Transition, Trigger> SignalProcessor<'a, EventIterator>
     for StateMachine<Input, State, Transition, Trigger>
 where
     Transition: Fn(&State, &Input) -> State,
-    Iter: Iterator,
+    EventIterator: Iterator,
     State: Clone,
     Trigger: Eq + Clone + 'a,
     Input: 'a,
@@ -52,7 +52,7 @@ where
 
     fn update(
         &mut self,
-        _: &mut UpdateContext<Iter>,
+        _: &mut UpdateContext<EventIterator>,
         (trigger, input): Self::Input,
     ) -> Self::Output {
         if trigger != &self.last_trigger_value {

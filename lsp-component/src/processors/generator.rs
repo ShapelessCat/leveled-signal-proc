@@ -76,10 +76,10 @@ impl SignalGenerator {
     }
 }
 
-impl<'a, F, O, I> SignalProcessor<'a, I> for SignalGenerator<F, O>
+impl<'a, I, F, O> SignalProcessor<'a, I> for SignalGenerator<F, O>
 where
-    F: FnMut(Timestamp) -> (O, Timestamp),
     I: Iterator,
+    F: FnMut(Timestamp) -> (O, Timestamp),
     O: Clone,
 {
     type Input = ();

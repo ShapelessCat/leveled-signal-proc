@@ -5,16 +5,16 @@ use lsp_runtime::{signal::SignalProcessor, Duration, Timestamp, UpdateContext};
 /// duration of previous level is a well defined signal -- duration of previous level is a known
 /// value.
 #[derive(Default, Debug)]
-pub struct DurationOfPreviousLevel<T> {
-    current_value: T,
+pub struct DurationOfPreviousLevel<Level> {
+    current_value: Level,
     current_value_since: Timestamp,
     output_buf: Timestamp,
 }
 
-impl<'a, T: PartialEq + Clone + 'a, I: Iterator> SignalProcessor<'a, I>
-    for DurationOfPreviousLevel<T>
+impl<'a, I: Iterator, L: PartialEq + Clone + 'a> SignalProcessor<'a, I>
+    for DurationOfPreviousLevel<L>
 {
-    type Input = &'a T;
+    type Input = &'a L;
 
     type Output = Duration;
 

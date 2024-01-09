@@ -29,11 +29,11 @@ impl<'a, EventIterator, OutputType0, OutputType1, OutputType, ClosureType, Measu
     Measurement<'a, EventIterator>
     for BinaryCombinedMeasurement<OutputType0, OutputType1, OutputType, ClosureType, MeasurementType0, MeasurementType1>
 where
-    MeasurementType0: Measurement<'a, EventIterator, Output = OutputType0>,
-    MeasurementType1: Measurement<'a, EventIterator, Output = OutputType1>,
+    EventIterator: Iterator,
     OutputType: Clone + std::fmt::Display,
     ClosureType: Fn(&OutputType0, &OutputType1) -> OutputType,
-    EventIterator: Iterator,
+    MeasurementType0: Measurement<'a, EventIterator, Output = OutputType0>,
+    MeasurementType1: Measurement<'a, EventIterator, Output = OutputType1>,
 {
     type Input = (MeasurementType0::Input, MeasurementType1::Input);
     type Output = OutputType;

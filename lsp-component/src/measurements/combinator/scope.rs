@@ -3,19 +3,19 @@ use std::ops::Sub;
 use lsp_runtime::{measurement::Measurement, UpdateContext};
 
 #[derive(Clone, Debug)]
-pub struct ScopedMeasurement<ScopeType, Measurement, MeasurementOutput> {
+pub struct ScopedMeasurement<ScopeType, MeasurementType, MeasurementOutput> {
     current_control_level: ScopeType,
-    inner: Measurement,
+    inner: MeasurementType,
     current_base: MeasurementOutput,
 }
 
-impl<ScopeType, Measurement, MeasurementOutput>
-    ScopedMeasurement<ScopeType, Measurement, MeasurementOutput>
+impl<ScopeType, MeasurementType, MeasurementOutput>
+    ScopedMeasurement<ScopeType, MeasurementType, MeasurementOutput>
 where
     ScopeType: Default,
     MeasurementOutput: Default,
 {
-    pub fn new(inner: Measurement) -> Self {
+    pub fn new(inner: MeasurementType) -> Self {
         ScopedMeasurement {
             current_control_level: ScopeType::default(),
             inner,
@@ -27,10 +27,10 @@ where
 impl<'a, EventIterator, ScopeType, MeasurementType, Output> Measurement<'a, EventIterator>
     for ScopedMeasurement<ScopeType, MeasurementType, Output>
 where
-    MeasurementType: Measurement<'a, EventIterator, Output = Output>,
-    Output: Clone + Sub<Output = Output> + std::fmt::Display,
-    ScopeType: Clone + Eq + 'a + std::fmt::Debug,
     EventIterator: Iterator,
+    ScopeType: Clone + Eq + 'a + std::fmt::Debug,
+    Output: Clone + Sub<Output = Output> + std::fmt::Display,
+    MeasurementType: Measurement<'a, EventIterator, Output = Output>,
 {
     type Input = (&'a ScopeType, MeasurementType::Input);
     type Output = Output;

@@ -16,11 +16,11 @@ impl<P, O, C> Debug for SignalMapper<P, O, C> {
     }
 }
 
-impl<T, U, F> SignalMapper<T, U, F>
+impl<P, O, C> SignalMapper<P, O, C>
 where
-    F: FnMut(&T) -> U,
+    C: FnMut(&P) -> O,
 {
-    pub fn new(how: F) -> Self {
+    pub fn new(how: C) -> Self {
         SignalMapper {
             how,
             _phantom_data: PhantomData,
@@ -28,16 +28,16 @@ where
     }
 }
 
-impl<'a, T: 'a, U, F, I: Iterator> SignalProcessor<'a, I> for SignalMapper<T, U, F>
+impl<'a, I: Iterator, P: 'a, O, C> SignalProcessor<'a, I> for SignalMapper<P, O, C>
 where
-    F: FnMut(&T) -> U,
+    C: FnMut(&P) -> O,
 {
-    type Input = &'a T;
+    type Input = &'a P;
 
-    type Output = U;
+    type Output = O;
 
     #[inline(always)]
-    fn update(&mut self, _: &mut UpdateContext<I>, input: &T) -> U {
+    fn update(&mut self, _: &mut UpdateContext<I>, input: &P) -> O {
         (self.how)(input)
     }
 }

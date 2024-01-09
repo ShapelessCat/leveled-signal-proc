@@ -12,13 +12,13 @@ pub struct Accumulator<Data, ControlSignal, Filter> {
     accumulator: Data,
 }
 
-impl<T, C, F> Accumulator<T, C, F>
+impl<D, C, F> Accumulator<D, C, F>
 where
-    T: AddAssign<T> + Clone,
+    D: AddAssign<D> + Clone,
     C: Clone + PartialEq + Default,
     F: Fn(&C) -> bool,
 {
-    pub fn with_event_filter(init_value: T, filter: F) -> Self {
+    pub fn with_event_filter(init_value: D, filter: F) -> Self {
         Self {
             accumulator: init_value,
             prev_control_signal: C::default(),
@@ -27,16 +27,16 @@ where
     }
 }
 
-impl<'a, T, C, I, F> SignalProcessor<'a, I> for Accumulator<T, C, F>
+impl<'a, I, D, C, F> SignalProcessor<'a, I> for Accumulator<D, C, F>
 where
     I: Iterator,
-    T: AddAssign<T> + Clone + 'a,
+    D: AddAssign<D> + Clone + 'a,
     C: Clone + PartialEq + 'a,
     F: Fn(&C) -> bool,
 {
-    type Input = (&'a C, &'a T);
+    type Input = (&'a C, &'a D);
 
-    type Output = T;
+    type Output = D;
 
     #[inline(always)]
     fn update(&mut self, _: &mut UpdateContext<I>, (control, data): Self::Input) -> Self::Output {

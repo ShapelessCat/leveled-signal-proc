@@ -50,8 +50,8 @@ impl<T: Clone> Retention<T> for TimeToLive<T> {
 /// This concept borrowed from the hardware component which shares the same name. And it's widely
 /// used as one bit memory in digital circuits.
 #[derive(Default, Debug)]
-pub struct Latch<DataType: Clone, RetentionPolicy: Retention<DataType> = KeepForever> {
-    data: DataType,
+pub struct Latch<Data: Clone, RetentionPolicy: Retention<Data> = KeepForever> {
+    data: Data,
     retention: RetentionPolicy,
 }
 
@@ -108,7 +108,7 @@ impl<C: Default, D: Clone> EdgeTriggeredLatch<C, D, TimeToLive<D>> {
     }
 }
 
-impl<'a, T: Clone + 'a, I: Iterator, R: Retention<T>> SignalProcessor<'a, I> for Latch<T, R> {
+impl<'a, I: Iterator, T: Clone + 'a, R: Retention<T>> SignalProcessor<'a, I> for Latch<T, R> {
     type Input = (&'a bool, &'a T);
     type Output = T;
     #[inline(always)]
@@ -125,7 +125,7 @@ impl<'a, T: Clone + 'a, I: Iterator, R: Retention<T>> SignalProcessor<'a, I> for
     }
 }
 
-impl<'a, C: 'a + PartialEq + Clone, D: Clone + 'a, I: Iterator, R: Retention<D>>
+impl<'a, I: Iterator, C: 'a + PartialEq + Clone, D: Clone + 'a, R: Retention<D>>
     SignalProcessor<'a, I> for EdgeTriggeredLatch<C, D, R>
 {
     type Input = (&'a C, &'a D);
