@@ -19,7 +19,7 @@ impl<'a, T: Clone + 'a, I: Iterator> Measurement<'a, I> for Peek<T> {
 
 /// This is the measurement for timestamp.
 /// Time is not a leveled signal, and we can't use the [Peek] measurement to measure time.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 pub struct PeekTimestamp;
 
 impl<'a, I: Iterator> Measurement<'a, I> for PeekTimestamp {
