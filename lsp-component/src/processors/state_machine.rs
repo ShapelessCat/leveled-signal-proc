@@ -1,6 +1,6 @@
 use std::{collections::VecDeque, fmt::Debug, marker::PhantomData};
 
-use lsp_runtime::{signal::SignalProcessor, Timestamp, UpdateContext};
+use lsp_runtime::{signal::SignalProcessor, Timestamp, UpdateContext, Duration};
 
 /// A state machine is a signal processor that maintains a state machine internally.
 /// The state transition is defined as a lambda function passed in when construction.
@@ -117,7 +117,7 @@ where
 
 pub struct SlidingTimeWindow<Input, EmitFunc, Trigger, Output> {
     queue: VecDeque<(Input, Timestamp)>,
-    time_window_size: Timestamp,
+    time_window_size: Duration,
     emit_func: EmitFunc,
     last_trigger_value: Trigger,
     last_dequeued_value: Input,
@@ -125,7 +125,7 @@ pub struct SlidingTimeWindow<Input, EmitFunc, Trigger, Output> {
 }
 
 impl<I: Default, F, T: Default, O> SlidingTimeWindow<I, F, T, O> {
-    pub fn new(emit_func: F, time_window_size: Timestamp, init_value: I) -> Self
+    pub fn new(emit_func: F, time_window_size: Duration, init_value: I) -> Self
     where
         F: Fn(&VecDeque<(I, Timestamp)>, &I) -> O,
     {

@@ -2,7 +2,7 @@ use std::ops::Sub;
 
 use lsp_runtime::{measurement::Measurement, UpdateContext};
 
-#[derive(Default, Debug)]
+#[derive(Clone, Default, Debug)]
 pub struct ScopedMeasurement<ScopeType, Measurement, MeasurementOutput> {
     current_control_level: ScopeType,
     inner: Measurement,

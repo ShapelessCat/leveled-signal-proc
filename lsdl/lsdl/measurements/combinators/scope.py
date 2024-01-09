@@ -9,6 +9,10 @@ class ScopedMeasurement(IndirectBuiltinMeasurementComponentBase):
         super().__init__(
             name=rust_component_name,
             upstreams=[scope_signal, inner],
-            node_decl=f"{rust_component_name}::new({self.get_id_or_literal_value(inner)})",
+            node_decl=f"""
+                {rust_component_name}::new(
+                    {self.get_id_or_literal_value(inner)}.clone()
+                )
+            """,
         )
         self.annotate_type(inner.get_rust_type_name())

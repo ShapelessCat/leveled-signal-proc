@@ -1,6 +1,6 @@
-use lsp_runtime::{measurement::Measurement, Timestamp, UpdateContext};
+use lsp_runtime::{measurement::Measurement, Duration, Timestamp, UpdateContext};
 
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct DurationSinceBecomeTrue {
     last_input: bool,
     last_assignment_timestamp: Timestamp,
@@ -8,7 +8,7 @@ pub struct DurationSinceBecomeTrue {
 
 impl<'a, I: Iterator> Measurement<'a, I> for DurationSinceBecomeTrue {
     type Input = &'a bool;
-    type Output = Timestamp;
+    type Output = Duration;
 
     fn update(&mut self, ctx: &mut UpdateContext<I>, input: Self::Input) {
         if *input != self.last_input {
@@ -26,7 +26,7 @@ impl<'a, I: Iterator> Measurement<'a, I> for DurationSinceBecomeTrue {
     }
 }
 
-#[derive(Default, Debug)]
+#[derive(Clone, Default, Debug)]
 pub struct DurationSinceLastLevel<T: Clone> {
     last_assignment_timestamp: Timestamp,
     last_level: Option<T>,
@@ -34,7 +34,7 @@ pub struct DurationSinceLastLevel<T: Clone> {
 
 impl<'a, T: Clone + 'a, I: Iterator> Measurement<'a, I> for DurationSinceLastLevel<T> {
     type Input = &'a T;
-    type Output = Timestamp;
+    type Output = Duration;
 
     fn update(&mut self, ctx: &mut UpdateContext<I>, input: Self::Input) {
         self.last_level = Some(input.clone());
@@ -50,16 +50,16 @@ impl<'a, T: Clone + 'a, I: Iterator> Measurement<'a, I> for DurationSinceLastLev
     }
 }
 
-#[derive(Default, Debug)]
+#[derive(Clone, Default, Debug)]
 pub struct DurationTrue {
     current_state: bool,
-    accumulated_duration: Timestamp,
+    accumulated_duration: Duration,
     last_true_starts: Timestamp,
 }
 
 impl<'a, I: Iterator> Measurement<'a, I> for DurationTrue {
     type Input = &'a bool;
-    type Output = Timestamp;
+    type Output = Duration;
 
     fn update(&mut self, ctx: &mut UpdateContext<I>, &input: &bool) {
         match (self.current_state, input) {
@@ -99,7 +99,7 @@ pub struct ScopedDurationTrue<T: Clone> {
 
 impl<'a, T:Clone + Eq + 'a, I: Iterator> Measurement<'a, I> for ScopedDurationTrue<T> {
     type Input = (&'a T, &'a bool);
-    type Output = Timestamp;
+    type Output = Duration;
 
     fn update(&mut self, ctx: &mut UpdateContext<I>, (level, data): (&T, &bool)) {
         self.inner.update(ctx, data);
