@@ -15,4 +15,3 @@ class MappedMeasurement(IndirectBuiltinMeasurementComponentBase):
                 )
             """,
         )
-        # self.annotate_type(input_signal.get_rust_type_name())
