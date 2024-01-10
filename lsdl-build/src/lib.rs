@@ -28,7 +28,7 @@ fn test_python_interpreter(command: &str) -> bool {
 }
 
 fn find_python_interpreter() -> Option<Cow<'static, str>> {
-    if let Ok(python) = std::env::var("PYTHON") {
+    if let Ok(python) = env::var("PYTHON") {
         if test_python_interpreter(&python) {
             return Some(Cow::Owned(python));
         }
@@ -139,10 +139,10 @@ impl LsdlSource {
         let fp = BufReader::new(File::open(self.src_path.as_path())?);
         let mut src_prefix = self.src_path.clone();
         src_prefix.pop();
+        const EXTRA_SRC_LIT: &str = "extra-src:";
         for line in fp.lines().map_while(Result::ok) {
             if let Some(stripped) = line.strip_prefix('#') {
                 if let Some(comment_body) = stripped.strip_prefix(|c| c == ' ' || c == '\t') {
-                    const EXTRA_SRC_LIT: &str = "extra-src:";
                     if !comment_body.starts_with(EXTRA_SRC_LIT) {
                         continue;
                     }

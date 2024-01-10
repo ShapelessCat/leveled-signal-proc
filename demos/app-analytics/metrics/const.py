@@ -26,7 +26,10 @@ UNCONDITIONAL_CRITICAL_EVENT_NAMES = [
 # - Value of 'event_name' (conditional):
 CONVIVA_VIDEO_EVENTS = 'conviva_video_events'
 #   + Condition: critical values of 'conviva_video_events_name':
-CRITICAL_CONVIVA_VIDEO_EVENTS_NAMES = ['c3.sdk.custom_event', 'c3.video.custom_event']
+CRITICAL_CONVIVA_VIDEO_EVENTS_NAMES = [
+    'c3.sdk.custom_event',
+    'c3.video.custom_event'
+]
 # 'conviva_video_events_name', not critical
 VIDEO_ATTEMPT = 'c3.video.attempt'
 

@@ -11,19 +11,22 @@ video_attempt_clock = (
 )
 video_attempt = (
     StateMachineBuilder(video_attempt_clock, Const(1))
-    .transition_fn("|&s: &i32, _: &i32| (s+1).min(2)")
+    .transition_fn('|&s: &i32, _: &i32| (s+1).min(2)')
     .scoped(session_id)
     .build()
 )
 duration_before_first_video_attempt = ~(video_attempt == 1).has_been_true()
 
-duration_before_first_video_attempt\
-    .measure_duration_true()\
-    .scope(session_id)\
+duration_before_first_video_attempt \
+    .measure_duration_true() \
+    .scope(session_id) \
     .add_metric('life_session_duration_before_first_video_attempt')
 
-duration_before_first_video_attempt\
-    .measure_duration_true()\
-    .scope(session_id)\
-    .map("x", "x + 1")\
-    .add_metric('plus1_life_session_duration_before_first_video_attempt', 'u64')
+duration_before_first_video_attempt \
+    .measure_duration_true() \
+    .scope(session_id) \
+    .map("x", "x + 1") \
+    .add_metric(
+        'plus1_life_session_duration_before_first_video_attempt',
+        'u64'
+    )
