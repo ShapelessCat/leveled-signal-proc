@@ -17,7 +17,7 @@ class MeasurementBase(LeveledSignalProcessingModelComponentBase, ABC):
         from .measurements.combinators.mapper import MappedMeasurement
         return MappedMeasurement(bind_var, lambda_src, self)
 
-    def scope(self, scope_signal: 'SignalBase') -> 'MeasurementBase':
+    def scope(self, scope_signal: 'SignalBase') -> 'MeasurementBase':  # noqa: F821
         """Shortcut to reset a measurement based on a given signal.
         The result is still a measurement.
         """
