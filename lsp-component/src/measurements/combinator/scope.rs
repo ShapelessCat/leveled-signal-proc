@@ -1,8 +1,10 @@
 use std::ops::Sub;
 
+use serde::{Deserialize, Serialize};
+
 use lsp_runtime::{measurement::Measurement, UpdateContext};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ScopedMeasurement<ScopeType, MeasurementType, MeasurementOutput> {
     current_control_level: ScopeType,
     inner: MeasurementType,

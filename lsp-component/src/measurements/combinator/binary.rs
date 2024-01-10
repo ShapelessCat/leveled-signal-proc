@@ -1,8 +1,10 @@
 use std::marker::PhantomData;
 
+use serde::{Deserialize, Serialize};
+
 use lsp_runtime::{measurement::Measurement, UpdateContext};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct BinaryCombinedMeasurement<OutputType0, OutputType1, OutputType, ClosureType, MeasurementType0, MeasurementType1> {
     binary_op: ClosureType,
     inner0: MeasurementType0,
