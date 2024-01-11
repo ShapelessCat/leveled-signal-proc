@@ -10,11 +10,16 @@ The experimental time-state analytics platform written in Rust.
   - If you use _pyenv_, you can:
 
     ```shell
-    pyenv install -v 3.12.0
-    pyenv virtualenv 3.12.0 lsp-py
-    ```
+    pyenv install -v 3.12.1
+    pyenv virtualenv 3.12.1 lsdl
 
-    and then activate `lsp-py` after opening this project.
+    pyenv activate lsdl
+
+    cd <path-to-your-project-folder>
+    cd lsdl
+    pip install -r requirements.txt
+    cd -
+    ```
 
 ## Build
 
@@ -45,6 +50,8 @@ For LDSL examples, check `ldsl/examples/` directory. All the Python source code 
 
 #### Build and Install The Wheel for LDSL
 
+The `<version>` below should be replaced with the `version` value from the `[project]` section of `<project-folder>/lsdl/pyproject.toml`.
+
 ```shell
 cd lsdl/
 
@@ -52,7 +59,7 @@ cd lsdl/
 python -m build --sdist --wheel
 
 # install
-pip install dist/lsdl-0.0.2-py3-none-any.whl
+pip install dist/lsdl-<version>-py3-none-any.whl
 ```
 
 #### Trying out examples written in LSDL
