@@ -1,12 +1,12 @@
-import const
 from lsdl.prelude import Cond, Const, If, SignalFilterBuilder, time_domain_fold
+
+import const
 from schema import input_signal
 from scope import ScopeName, session_id, navigation_id
 
-
 _start = input_signal.load_start.parse('i32')
 _end = input_signal.load_end.parse('i32')
-_is_mob = input_signal.platform == 'mob'
+_is_mob = input_signal.platform == const.PLATFORM_MOBILE
 _threshold = If(_is_mob,
                 Const(const.SCREEN_LOADTIME_THRESHOLD),
                 Const(const.PAGE_LOAD_TIME_THRESHOLD))
@@ -52,19 +52,20 @@ def fold_load_time(scope, method, init=None):
 
 def register_load_time_metrics(scope_signal, scope_name: ScopeName):
     """Build and register metrics for load time"""
+    scope = scope_name.name.lower()
     _total_load_count\
         .peek()\
         .scope(scope_signal)\
-        .add_metric(f"life{scope_name.name}LoadCount")
+        .add_metric(f"life_{scope}_load_count")
     fold_load_time(
         scope_signal,
         "max",
         init=0
-    ).add_metric(f"life{scope_name.name}MaxLoadDuration")
+    ).add_metric(f"life_{scope}_max_load_duration")
     fold_load_time(
         scope_signal,
         "sum"
-    ).add_metric(f"life{scope_name.name}LoadDuration")
+    ).add_metric(f"life_{scope}_load_duration")
 
 
 register_load_time_metrics(session_id, ScopeName.Session)

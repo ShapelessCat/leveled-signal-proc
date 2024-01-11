@@ -1,13 +1,14 @@
-from lsdl.prelude import *
+from lsdl.prelude import named, Integer, SessionizedInputSchemaBase, String
 
 
 class InputSignal(SessionizedInputSchemaBase):
     _timestamp_key = "timestamp"
-    session_id     = named("sessionId",   String())
-    player_state   = named("PlayerState", String())
-    cdn            = named("CDN",         String())
-    bit_rate       = named("BitRate",     Integer())
-    ev             = named("ev",          String())
+
+    session_id   = named("sessionId",   String())   # noqa: E221
+    player_state = named("PlayerState", String())   # noqa: E221
+    cdn          = named("CDN",         String())   # noqa: E221
+    bit_rate     = named("BitRate",     Integer())  # noqa: E221
+    ev           = named("ev",          String())   # noqa: E221
 
     bit_rate_default = -1
 

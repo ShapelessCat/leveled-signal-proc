@@ -230,11 +230,11 @@ class SessionizedInputSchemaBase(InputSchemaBase, ABC):
 
     @abstractmethod
     def create_session_signal(self) -> SignalBase:
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abstractmethod
     def create_epoch_signal(self) -> SignalBase:
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def _make_sessionized_input(self, key) -> SignalBase:
         if key not in self._sessionized_signals:

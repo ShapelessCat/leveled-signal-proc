@@ -110,7 +110,7 @@ class SlidingTimeWindow(BuiltinProcessorComponentBase):
             emit_fn = kwargs['emit_fn']
         else:
             raise "Need to provide a emit_fn"
-        
+
         if 'time_window_size' in kwargs:
             time_window_size = kwargs['time_window_size']
         else:

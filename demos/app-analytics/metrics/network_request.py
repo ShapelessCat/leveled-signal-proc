@@ -1,7 +1,8 @@
 from enum import Enum
 
-import const
 from lsdl.prelude import SignalFilterBuilder, time_domain_fold
+
+import const
 from schema import input_signal
 from scope import ScopeName, session_id, navigation_id
 
@@ -23,19 +24,28 @@ def create_network_request_metrics_for(
         status: ResponseStatus
 ):
     global _network_request_filter_partial_builder, _request_succeeded
-    network_request_with_given_status_clock = _network_request_filter_partial_builder .then_filter(
-        _request_succeeded if status == ResponseStatus.Success else (
-            ~_request_succeeded)) .build_clock_filter()
-    count_with_given_status = network_request_with_given_status_clock.count_changes()
-    count_with_given_status\
-        .peek()\
-        .scope(scope_signal)\
-        .add_metric(f"life{scope_name.name}{status.name}NetworkRequestCount")
+    is_success = status == ResponseStatus.Success
+    network_request_with_given_status_clock = (
+        _network_request_filter_partial_builder
+        .then_filter(
+            _request_succeeded if is_success else (~_request_succeeded)
+        )
+        .build_clock_filter()
+    )
+    count_with_given_status = (
+        network_request_with_given_status_clock
+        .count_changes()
+    )
+    scope_and_status = f"{scope_name.name.lower()}_{status.name.lower()}"
+    count_with_given_status \
+        .peek() \
+        .scope(scope_signal) \
+        .add_metric(f"life_{scope_and_status}_network_request_count")
     time_domain_fold(
         data=network_request_duration,
         clock=network_request_with_given_status_clock,
         scope=scope_signal
-    ).add_metric(f"life{scope_name.name}{status.name}NetworkRequestDuration")
+    ).add_metric(f"life_{scope_and_status}_network_request_duration")
 
 
 create_network_request_metrics_for(

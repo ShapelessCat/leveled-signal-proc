@@ -1,21 +1,23 @@
 use std::ops::Sub;
 
+use serde::{Deserialize, Serialize};
+
 use lsp_runtime::{measurement::Measurement, UpdateContext};
 
-#[derive(Clone, Default, Debug)]
-pub struct ScopedMeasurement<ScopeType, Measurement, MeasurementOutput> {
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct ScopedMeasurement<ScopeType, MeasurementType, MeasurementOutput> {
     current_control_level: ScopeType,
-    inner: Measurement,
+    inner: MeasurementType,
     current_base: MeasurementOutput,
 }
 
-impl<ScopeType, Measurement, MeasurementOutput>
-    ScopedMeasurement<ScopeType, Measurement, MeasurementOutput>
+impl<ScopeType, MeasurementType, MeasurementOutput>
+    ScopedMeasurement<ScopeType, MeasurementType, MeasurementOutput>
 where
     ScopeType: Default,
     MeasurementOutput: Default,
 {
-    pub fn new(inner: Measurement) -> Self {
+    pub fn new(inner: MeasurementType) -> Self {
         ScopedMeasurement {
             current_control_level: ScopeType::default(),
             inner,
@@ -27,10 +29,10 @@ where
 impl<'a, EventIterator, ScopeType, MeasurementType, Output> Measurement<'a, EventIterator>
     for ScopedMeasurement<ScopeType, MeasurementType, Output>
 where
-    MeasurementType: Measurement<'a, EventIterator, Output = Output>,
-    Output: Clone + Sub<Output = Output> + std::fmt::Display,
-    ScopeType: Clone + Eq + 'a + std::fmt::Debug,
     EventIterator: Iterator,
+    ScopeType: Clone + Eq + 'a + std::fmt::Debug,
+    Output: Clone + Sub<Output = Output> + std::fmt::Display,
+    MeasurementType: Measurement<'a, EventIterator, Output = Output>,
 {
     type Input = (&'a ScopeType, MeasurementType::Input);
     type Output = Output;
@@ -48,28 +50,4 @@ where
         let base = self.current_base.clone();
         self.inner.measure(ctx) - base
     }
-}
-
-pub trait ScopedMeasurementExt<'a, I: Iterator>: Measurement<'a, I> + Sized
-where
-    Self::Output: Clone + Sub<Output = Self::Output> + Default,
-{
-    fn scoped<ControlType: Default>(
-        self,
-        initial_level: ControlType,
-    ) -> ScopedMeasurement<ControlType, Self, Self::Output> {
-        ScopedMeasurement {
-            current_control_level: initial_level,
-            inner: self,
-            current_base: Default::default(),
-        }
-    }
-}
-
-impl<'a, I, M> ScopedMeasurementExt<'a, I> for M
-where
-    M: Measurement<'a, I> + Sized,
-    M::Output: Clone + Sub<Output = M::Output> + Default,
-    I: Iterator,
-{
 }

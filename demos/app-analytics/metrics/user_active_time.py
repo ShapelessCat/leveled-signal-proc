@@ -1,7 +1,7 @@
 from lsdl.prelude import LivenessChecker
-from scope import ScopeName, session_id, navigation_id
-from schema import input_signal
 
+from schema import input_signal
+from scope import ScopeName, session_id, navigation_id
 
 is_user_active = LivenessChecker(
     liveness_clock=input_signal.event_name.clock(),
@@ -14,7 +14,7 @@ def create_user_active_time_metric_for(scope_signal, scope_name: ScopeName):
     is_user_active\
         .measure_duration_true()\
         .scope(scope_signal)\
-        .add_metric(f"life{scope_name.name}UserActiveTime")
+        .add_metric(f"life_{scope_name.name.lower()}_user_active_time")
 
 
 create_user_active_time_metric_for(session_id, ScopeName.Session)

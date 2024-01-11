@@ -1,11 +1,14 @@
 use std::{collections::VecDeque, fmt::Debug, marker::PhantomData};
 
-use lsp_runtime::{signal::SignalProcessor, Timestamp, UpdateContext, Duration};
+use serde::{Deserialize, Serialize};
+
+use lsp_runtime::{Duration, signal::SignalProcessor, Timestamp, UpdateContext};
 
 /// A state machine is a signal processor that maintains a state machine internally.
 /// The state transition is defined as a lambda function passed in when construction.
 /// The state transition is triggered when the control input gets changed.
 /// The output is simply the current internal state.
+#[derive(Deserialize, Serialize)]
 pub struct StateMachine<Input, State: Clone, TransitionFunc, Trigger> {
     state: State,
     transition: TransitionFunc,
@@ -37,11 +40,11 @@ impl<I, S: Clone, F, T: Default> StateMachine<I, S, F, T> {
     }
 }
 
-impl<'a, Input, State, Transition, Iter, Trigger> SignalProcessor<'a, Iter>
+impl<'a, EventIterator, Input, State, Transition, Trigger> SignalProcessor<'a, EventIterator>
     for StateMachine<Input, State, Transition, Trigger>
 where
     Transition: Fn(&State, &Input) -> State,
-    Iter: Iterator,
+    EventIterator: Iterator,
     State: Clone,
     Trigger: Eq + Clone + 'a,
     Input: 'a,
@@ -52,7 +55,7 @@ where
 
     fn update(
         &mut self,
-        _: &mut UpdateContext<Iter>,
+        _: &mut UpdateContext<EventIterator>,
         (trigger, input): Self::Input,
     ) -> Self::Output {
         if trigger != &self.last_trigger_value {

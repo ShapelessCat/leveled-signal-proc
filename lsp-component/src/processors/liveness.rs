@@ -1,19 +1,22 @@
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use lsp_runtime::signal::SignalProcessor;
+use serde::{Deserialize, Serialize};
+
 use lsp_runtime::{Duration, Timestamp, UpdateContext, WithTimestamp};
+use lsp_runtime::signal::SignalProcessor;
 
 /// This is the signal processor that analyzes the liveness of a session based on heartbeat signals.
 /// The output constantly answering the question: Is current session still alive?
 /// The liveness defined as we can find a heartbeat event within `expiration_period` amount of time.
 /// Thus, this operator uses the look ahead mechanism of the LSP system to see if there's a future
 /// heartbeat event.
+#[derive(Deserialize, Serialize)]
 pub struct LivenessChecker<IsLivenessEventFunc, Clock, Event> {
+    is_liveness_event: IsLivenessEventFunc,
     expiration_period: Duration,
     last_event_clock: Clock,
     last_event_timestamp: Timestamp,
-    is_liveness_event: IsLivenessEventFunc,
     phantom: PhantomData<Event>,
 }
 
@@ -29,13 +32,13 @@ impl<F, C: Debug, E: Debug> Debug for LivenessChecker<F, C, E> {
 }
 
 impl<F, C: Default, E> LivenessChecker<F, C, E> {
-    pub fn new(is_liveness_event: F, time_window: Duration) -> Self
+    pub fn new(is_liveness_event: F, expiration_period: Duration) -> Self
     where
         F: FnMut(&E) -> bool,
     {
         Self {
-            expiration_period: time_window,
             is_liveness_event,
+            expiration_period,
             last_event_clock: Default::default(),
             last_event_timestamp: Default::default(),
             phantom: PhantomData,
@@ -43,12 +46,12 @@ impl<F, C: Default, E> LivenessChecker<F, C, E> {
     }
 }
 
-impl<'a, F, C, E, I> SignalProcessor<'a, I> for LivenessChecker<F, C, E>
+impl<'a, I, F, C, E> SignalProcessor<'a, I> for LivenessChecker<F, C, E>
 where
     I: Iterator<Item = E>,
     F: FnMut(&E) -> bool,
-    E: WithTimestamp,
     C: Clone + PartialEq + 'a,
+    E: WithTimestamp,
 {
     type Input = &'a C;
 

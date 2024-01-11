@@ -1,8 +1,10 @@
 use std::marker::PhantomData;
 
+use serde::{Deserialize, Serialize};
+
 use lsp_runtime::{measurement::Measurement, UpdateContext};
 
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct BinaryCombinedMeasurement<OutputType0, OutputType1, OutputType, ClosureType, MeasurementType0, MeasurementType1> {
     binary_op: ClosureType,
     inner0: MeasurementType0,
@@ -29,11 +31,11 @@ impl<'a, EventIterator, OutputType0, OutputType1, OutputType, ClosureType, Measu
     Measurement<'a, EventIterator>
     for BinaryCombinedMeasurement<OutputType0, OutputType1, OutputType, ClosureType, MeasurementType0, MeasurementType1>
 where
-    MeasurementType0: Measurement<'a, EventIterator, Output = OutputType0>,
-    MeasurementType1: Measurement<'a, EventIterator, Output = OutputType1>,
+    EventIterator: Iterator,
     OutputType: Clone + std::fmt::Display,
     ClosureType: Fn(&OutputType0, &OutputType1) -> OutputType,
-    EventIterator: Iterator,
+    MeasurementType0: Measurement<'a, EventIterator, Output = OutputType0>,
+    MeasurementType1: Measurement<'a, EventIterator, Output = OutputType1>,
 {
     type Input = (MeasurementType0::Input, MeasurementType1::Input);
     type Output = OutputType;
@@ -46,36 +48,4 @@ where
     fn measure(&self, ctx: &mut UpdateContext<EventIterator>) -> Self::Output {
         (self.binary_op)(&self.inner0.measure(ctx), &self.inner1.measure(ctx))
     }
-}
-
-pub trait BinaryCombinedMeasurementExt<'a, I: Iterator, MeasurementType1>: Measurement<'a, I> + Sized
-where
-    Self::Output: Clone,
-    MeasurementType1: Measurement<'a, I>,
-{
-    fn combined<InputType1, OutputType1, OutputType, ClosureType>(
-        self,
-        binary_op: ClosureType,
-        other: MeasurementType1,
-    ) -> BinaryCombinedMeasurement<Self::Output, MeasurementType1::Output, OutputType, ClosureType, Self, MeasurementType1>
-    where
-        ClosureType: Fn(&Self::Output, OutputType1) -> OutputType,
-    {
-        BinaryCombinedMeasurement {
-            binary_op,
-            inner0: self,
-            inner1: other,
-            _phantom_data: PhantomData,
-        }
-    }
-}
-
-impl<'a, I, M, M1> BinaryCombinedMeasurementExt<'a, I, M1> for M
-where
-    M: Measurement<'a, I> + Sized,
-    M1: Measurement<'a, I> + Sized,
-    M::Output: Clone,
-    M1::Output: Clone,
-    I: Iterator,
-{
 }

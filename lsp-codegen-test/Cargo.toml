@@ -30,7 +30,7 @@ path = "src/playtime.rs"
 
 [[bin]]
 name = "lsdl-example-eventcount"
-path = "src/eventcount.rs"
+path = "src/event_count.rs"
 
 [[bin]]
 name = "lsdl-example-earliest-event-to-state"

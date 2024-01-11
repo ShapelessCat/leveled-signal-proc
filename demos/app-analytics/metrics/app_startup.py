@@ -1,5 +1,6 @@
-import const
 from lsdl.prelude import Const, If, SignalFilterBuilder, time_domain_fold
+
+import const
 from schema import input_signal
 from scope import ScopeName, session_id, navigation_id
 
@@ -35,20 +36,21 @@ def fold_app_startup_time(scope, method, init=None):
 
 def create_app_startup_metrics_for(scope_signal, scope_name: ScopeName):
     global total_startup_count
+    scope = scope_name.name.lower()
     total_startup_count\
         .peek()\
         .scope(scope_signal)\
-        .add_metric(f"life{scope_name.name}StartupCount")
+        .add_metric(f"life_{scope}_startup_count")
 
     fold_app_startup_time(
         scope_signal,
         "max",
         init=0
-    ).add_metric(f"life{scope_name.name}MaxStartupDuration")
+    ).add_metric(f"life_{scope}_max_startup_duration")
 
     fold_app_startup_time(
         scope_signal, "sum"
-    ).add_metric(f"life{scope_name.name}StartupDuration")
+    ).add_metric(f"life_{scope}_startup_duration")
 
 
 create_app_startup_metrics_for(session_id, ScopeName.Session)
