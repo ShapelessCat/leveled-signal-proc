@@ -30,7 +30,7 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         """Shortcut for `has_been_true` module.
 
         Checks if the boolean signal has ever becomes true, and the result is a leveled signal.
-        When `duration` is given, it checks if the signal has been true within `duration` amount of time.
+        When `duration` is given, it checks if the signal has been true within `duration`.
         """
         from .modules import has_been_true
         return has_been_true(self, duration)
@@ -39,7 +39,7 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         """Shortcut for `has_changed` module.
 
         Checks if the signal has ever changed, and the result is a leveled signal.
-        When `duration` is given, it checks if the signal has changed within `duration` amount of time.
+        When `duration` is given, it checks if the signal has changed within `duration`.
         """
         from .modules import has_changed
         return has_changed(self, duration)
@@ -69,14 +69,19 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
             data=self,
             window_size=window_size,
             init_value=init_value,
-            emit_fn=f'|(q, _): (&std::collections::VecDeque<{ty}>, &{ty})| q.iter().fold(0, |a, x| a + x) as f64 / q.len() as f64'
+            emit_fn=f'''
+                |(q, _): (&std::collections::VecDeque<{ty}>, &{ty})|
+                q.iter().fold(0, |a, x| a + x) as f64 / q.len() as f64
+            '''
         )
         return sw.annotate_type('f64')
 
     def prior_different_value(self, scope: Optional['SignalBase'] = None) -> 'SignalBase':
         return self.prior_value(self, scope)
 
-    def prior_value(self, clock: Optional['SignalBase'] = None, scope: Optional['SignalBase'] = None) -> 'SignalBase':
+    def prior_value(self,
+                    clock: Optional['SignalBase'] = None,
+                    scope: Optional['SignalBase'] = None) -> 'SignalBase':
         from .schema import MappedInputMember
         from .signal_processors import StateMachineBuilder
         if clock is None:
@@ -86,11 +91,14 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
                 raise ValueError(
                     """Please
                        1. either provide a signal as the required clock
-                       2. or make sure the `self` is a `MappedInputMember` instance, which has the `clock()` method"""
+                       2. or make sure the `self` is a `MappedInputMember` instance,
+                          which has the `clock()` method"""
                 )
         ty = self.get_rust_type_name()
         builder = StateMachineBuilder(data=self, clock=clock)\
-            .transition_fn(f'|(_, current): &({ty}, {ty}), data : &{ty}| (current.clone(), data.clone())')
+            .transition_fn(
+                f'|(_, current): &({ty}, {ty}), data : &{ty}| (current.clone(), data.clone())'
+            )
         if scope is not None:
             builder.scoped(scope)
         return builder.build().annotate_type(f"({ty}, {ty})").map(
@@ -156,7 +164,9 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
     def __div__(self, other) -> 'SignalBase':
         return self._bin_op(other, "/", self.get_rust_type_name())
 
-    def add_metric(self, key: RustCode, typename: RustCode = COMPILER_INFERABLE_TYPE) -> 'SignalBase':
+    def add_metric(self,
+                   key: RustCode,
+                   typename: RustCode = COMPILER_INFERABLE_TYPE) -> 'SignalBase':
         from .modules import add_metric
         return add_metric(self, key, typename)
 
@@ -165,7 +175,8 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
 
         It returns a measurement.
         The input leveled signal must be a change rate.
-        When `scope_signal` is given, it resets the change to 0 when the `scope_signal` becomes a different level.
+        When `scope_signal` is given, it resets the change to 0 when the `scope_signal` becomes
+        a different level.
         """
         from .measurements import LinearChange
         return LinearChange(self)
@@ -174,7 +185,8 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         """Measures the total duration whenever this boolean signal is true.
 
         It returns a measurement.
-        When `scope_signal` is given, it resets the duration to 0 when the `scope_signal` becomes a different level.
+        When `scope_signal` is given, it resets the duration to 0 when the `scope_signal` becomes
+        a different level.
         """
         from .measurements import DurationTrue
         return DurationTrue(self)

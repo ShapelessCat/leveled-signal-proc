@@ -14,10 +14,12 @@ __strict_and_reserved_rust_keywords = {*__config['strict'].values(), *__config['
 def validate_rust_identifier(identifier: str) -> None:
     """Check if an identifier is a legal Rust identifier.
 
-    For implementation simplicity, only a C-style identifier that is not a Rust strict/reserved keyword is allowed.
+    For implementation simplicity, only a C-style identifier that is not a Rust strict/reserved
+    keyword is allowed.
 
     CAUTION:
-    Current check is easy to implement, but it is also too strict. We should allow all legal Rust identifier.
+    Current check is easy to implement, but it is also too strict. We should allow all legal Rust
+    identifier.
     """
     import re
     regex = '^[A-Za-z_][A-Za-z0-9_]*$'

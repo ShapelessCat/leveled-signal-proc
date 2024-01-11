@@ -241,7 +241,9 @@ class SessionizedInputSchemaBase(InputSchemaBase, ABC):
             raw_signal = super().__getattribute__(key)
             raw_signal_clock = raw_signal.clock()
             default_value = getattr(self, key + "_default", None)
-            self._sessionized_signals[key] = self.sessionized(raw_signal, raw_signal_clock, default_value)
+            self._sessionized_signals[key] = self.sessionized(raw_signal,
+                                                              raw_signal_clock,
+                                                              default_value)
         return self._sessionized_signals[key]
 
     def sessionized(self, signal, signal_clock=None, default_value=None):
