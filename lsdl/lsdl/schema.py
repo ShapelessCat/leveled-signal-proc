@@ -1,6 +1,6 @@
 import json
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, final
 
 from .rust_code import COMPILER_INFERABLE_TYPE, INPUT_SIGNAL_BAG, RUST_DEFAULT_VALUE, RustCode
 from .signal import LeveledSignalProcessingModelComponentBase, SignalBase
@@ -31,16 +31,19 @@ class TypeWithLiteralValue(TypeBase, ABC):
         raise NotImplementedError()
 
 
+@final
 class CompilerInferredType(TypeBase):
     def __init__(self):
         super().__init__(COMPILER_INFERABLE_TYPE)
 
 
+@final
 class DateTime(TypeBase):
     def __init__(self, timezone: RustCode = "Utc"):
         super().__init__(f"chrono::DateTime<chrono::{timezone}>")
 
 
+@final
 class String(TypeWithLiteralValue):
     def __init__(self):
         super().__init__("String")
@@ -50,6 +53,7 @@ class String(TypeWithLiteralValue):
         return f"{json.dumps(val)}.to_string()"
 
 
+@final
 class Bool(TypeWithLiteralValue):
     def __init__(self):
         super().__init__("bool")
@@ -59,6 +63,7 @@ class Bool(TypeWithLiteralValue):
         return "true" if val else "false"
 
 
+@final
 class Integer(TypeWithLiteralValue):
     def __init__(self, signed=True, width=32):
         type_prefix = "i" if signed else "u"
@@ -69,6 +74,7 @@ class Integer(TypeWithLiteralValue):
         return str(val) + self.get_rust_type_name()
 
 
+@final
 class Float(TypeWithLiteralValue):
     def __init__(self, width=64):
         super().__init__(f"f{width}")
@@ -78,6 +84,7 @@ class Float(TypeWithLiteralValue):
         return str(val) + self.get_rust_type_name()
 
 
+@final
 class Vector(TypeWithLiteralValue):
     def __init__(self, element_type: TypeBase):
         super().__init__(f"Vec<{element_type.get_rust_type_name()}>")
@@ -115,11 +122,13 @@ class InputMember(SignalBase, ABC):
         }
 
 
+@final
 class ClockCompanion(InputMember):
     def __init__(self, name):
         super().__init__(Integer(signed=False, width=64), name)
 
 
+@final
 class MappedInputMember(InputMember):
     def __init__(self, input_key: str, tpe: TypeBase):
         super().__init__(tpe)

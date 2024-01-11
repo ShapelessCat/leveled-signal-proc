@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Self
+from typing import Any, Self, final
 
 from .measurement import MeasurementBase
 from .rust_code import COMPILER_INFERABLE_TYPE, RustCode
@@ -8,6 +8,7 @@ from .signal import SignalBase
 logging.basicConfig(encoding='utf-8', level=logging.INFO)
 
 
+@final
 class _ProcessingConfiguration:
     """The configuration for processing policy.
     """
@@ -32,6 +33,7 @@ def _make_processing_configuration():
 processing_config = _make_processing_configuration()
 
 
+@final
 class _MeasurementConfiguration:
     """The configuration for measurement policy.
 

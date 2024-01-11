@@ -1,7 +1,10 @@
+from typing import final
+
 from ..componet_base import BuiltinProcessorComponentBase
 from ..signal import SignalBase
 
 
+@final
 class Latch(BuiltinProcessorComponentBase):
     def __init__(self,
                  control: SignalBase,
@@ -33,6 +36,7 @@ class Latch(BuiltinProcessorComponentBase):
             self.annotate_type(data.get_rust_type_name())
 
 
+@final
 class EdgeTriggeredLatch(BuiltinProcessorComponentBase):
     def __init__(self,
                  control: SignalBase,

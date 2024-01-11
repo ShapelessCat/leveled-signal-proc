@@ -1,8 +1,11 @@
+from typing import final
+
 from ..componet_base import BuiltinProcessorComponentBase
 from ..rust_code import RustCode, RUST_DEFAULT_VALUE
 from ..signal import SignalBase
 
 
+@final
 class Accumulator(BuiltinProcessorComponentBase):
     def __init__(self,
                  control: SignalBase,

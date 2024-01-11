@@ -1,7 +1,10 @@
+from typing import final
+
 from ..componet_base import BuiltinProcessorComponentBase
 from ..signal import SignalBase
 
 
+@final
 class LivenessChecker(BuiltinProcessorComponentBase):
     def __init__(self,
                  liveness_clock: SignalBase,

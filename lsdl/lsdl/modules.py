@@ -1,5 +1,5 @@
 import re
-from typing import Self, Optional, TypeVar
+from typing import Self, Optional, TypeVar, final
 
 from . import validate_rust_identifier
 from .const import Const
@@ -96,6 +96,7 @@ def add_metric(component: __T, key: RustCode, typename: RustCode = COMPILER_INFE
     return component
 
 
+@final
 class SignalFilterBuilder:
     """The builder class to build a signal filter.
 
@@ -156,6 +157,7 @@ class SignalFilterBuilder:
         )
 
 
+@final
 class ScopeContext:
     def __init__(self, scope_level: SignalBase, epoch: SignalBase):
         self._scope = scope_level

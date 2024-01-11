@@ -1,10 +1,11 @@
-from typing import Optional
+from typing import Optional, final
 
 from .rust_code import RustCode
 from .schema import Bool, Float, Integer, String, TypeWithLiteralValue
 from .signal import SignalBase
 
 
+@final
 class Const(SignalBase):
     """Constant value signal."""
     def __init__(self, value, val_type: Optional[TypeWithLiteralValue] = None):
