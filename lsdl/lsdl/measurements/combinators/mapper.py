@@ -1,7 +1,9 @@
+from typing import final
 from ...componet_base import IndirectBuiltinMeasurementComponentBase
 from ...measurement import MeasurementBase
 
 
+@final
 class MappedMeasurement(IndirectBuiltinMeasurementComponentBase):
     def __init__(self, bind_var: str, lambda_src: str, inner: MeasurementBase):
         rust_component_name = self.__class__.__name__

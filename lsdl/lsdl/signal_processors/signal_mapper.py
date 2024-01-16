@@ -1,8 +1,11 @@
+from typing import final
+
 from ..componet_base import BuiltinProcessorComponentBase
 from ..rust_code import COMPILER_INFERABLE_TYPE
 from ..signal import SignalBase
 
 
+@final
 class SignalMapper(BuiltinProcessorComponentBase):
     def __init__(self, bind_var: str, lambda_src: str, upstream: SignalBase | list[SignalBase]):
         bind_type = (upstream.get_rust_type_name()
@@ -39,6 +42,7 @@ def _build_signal_mapper(
     return inner
 
 
+@final
 class If(SignalBase):
     """The `if...then...else` expression for a leveled signal."""
     def __init__(self,
@@ -53,6 +57,7 @@ class If(SignalBase):
         return self._description
 
 
+@final
 class Cond(SignalBase):
     """The scheme `cond` style expression for a leveled signal."""
     def __init__(self,

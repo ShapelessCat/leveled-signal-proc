@@ -1,8 +1,10 @@
+from typing import final
 from ...componet_base import IndirectBuiltinMeasurementComponentBase
 from ...measurement import MeasurementBase
 from ...rust_code import RustCode
 
 
+@final
 class BinaryCombinedMeasurement(IndirectBuiltinMeasurementComponentBase):
     def __init__(self,
                  bind_var0: RustCode, bind_var1: RustCode, lambda_src: RustCode,

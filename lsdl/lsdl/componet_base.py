@@ -103,14 +103,18 @@ class IndirectBuiltinMeasurementComponentBase(BuiltinMeasurementComponentBase):
     def __init__(self, name: RustCode, upstreams: list[MeasurementBase], **kwargs):
         for u in upstreams:
             u.is_moved = True
-        super().__init__(name, component_package="measurements::combinator", upstreams=upstreams, **kwargs)
+        super().__init__(name,
+                         component_package="measurements::combinator",
+                         upstreams=upstreams,
+                         **kwargs)
 
     @staticmethod
     def get_id_or_literal_value(component: LeveledSignalProcessingModelComponentBase) -> str:
         if isinstance(component, Const):
             return component.rust_constant_value
         else:
-            return IndirectBuiltinMeasurementComponentBase.REFERENCE_PREFIX + str(component.get_description()['id'])
+            return (IndirectBuiltinMeasurementComponentBase.REFERENCE_PREFIX +
+                    str(component.get_description()['id']))
 
 
 def get_components() -> list[LspComponentBase]:

@@ -1,7 +1,10 @@
+from typing import final
+
 from ..componet_base import DirectBuiltinMeasurementComponentBase
 from ..signal import SignalBase
 
 
+@final
 class DurationTrue(DirectBuiltinMeasurementComponentBase):
     def __init__(self, input_signal: SignalBase):
         rust_component_name = self.__class__.__name__
@@ -13,6 +16,7 @@ class DurationTrue(DirectBuiltinMeasurementComponentBase):
         self.annotate_type("u64")
 
 
+@final
 class DurationSinceBecomeTrue(DirectBuiltinMeasurementComponentBase):
     def __init__(self, input_signal: SignalBase):
         rust_component_name = self.__class__.__name__
@@ -24,6 +28,7 @@ class DurationSinceBecomeTrue(DirectBuiltinMeasurementComponentBase):
         self.annotate_type("u64")
 
 
+@final
 class DurationSinceLastLevel(DirectBuiltinMeasurementComponentBase):
     def __init__(self, input_signal: SignalBase):
         rust_component_name = self.__class__.__name__

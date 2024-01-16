@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Self
+from typing import Any, Self, final
 
 from .measurement import MeasurementBase
 from .rust_code import COMPILER_INFERABLE_TYPE, RustCode
@@ -8,6 +8,7 @@ from .signal import SignalBase
 logging.basicConfig(encoding='utf-8', level=logging.INFO)
 
 
+@final
 class _ProcessingConfiguration:
     """The configuration for processing policy.
     """
@@ -32,6 +33,7 @@ def _make_processing_configuration():
 processing_config = _make_processing_configuration()
 
 
+@final
 class _MeasurementConfiguration:
     """The configuration for measurement policy.
 
@@ -73,8 +75,9 @@ class _MeasurementConfiguration:
         """Configure which one-sided limit should be used for measurements.
 
         Normally, LSP uses the right limit for measurements.
-        While for some special case, for example, the summary for the end of a session, we should use the left limit
-        semantics. And this is the signal that switches the limit-side semantics during the runtime.
+        While for some special case, for example, the summary for the end of a session, we should
+        use the left limit semantics. And this is the signal that switches the limit-side semantics
+        during the runtime.
         """
         self._measure_side_flag = signal
         return self
@@ -87,13 +90,16 @@ class _MeasurementConfiguration:
         self._metrics_drain = fmt
         return self
 
-    def add_metric(self, key: str, measurement: MeasurementBase, typename: RustCode = COMPILER_INFERABLE_TYPE) -> Self:
+    def add_metric(self, key: str, measurement: MeasurementBase,
+                   typename: RustCode = COMPILER_INFERABLE_TYPE) -> Self:
         """Declare a metric for output."""
         if typename == COMPILER_INFERABLE_TYPE:  # if this type is unknown and inferable
             typename = measurement.get_rust_type_name()
         if typename == COMPILER_INFERABLE_TYPE:  # if this type can't be inferred
             logging.error("Please provide the type name for this metric.")
-            logging.info("Consider call `.annotate_type(<type-name>)` to manually annotate signal's type.")
+            logging.info(
+                "Consider call `.annotate_type(<type-name>)` to manually annotate signal's type."
+            )
             raise Exception(f"Missing type name for the metric {key}.")
         self._output_schema[key] = {
             "source": measurement.get_description(),

@@ -1,7 +1,10 @@
+from typing import final
+
 from ..componet_base import DirectBuiltinMeasurementComponentBase
 from ..signal import SignalBase
 
 
+@final
 class LinearChange(DirectBuiltinMeasurementComponentBase):
     def __init__(self, input_signal: SignalBase):
         rust_component_name = self.__class__.__name__

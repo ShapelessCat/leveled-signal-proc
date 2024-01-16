@@ -1,9 +1,16 @@
+from typing import final
+
 from ..componet_base import BuiltinProcessorComponentBase
 from ..signal import SignalBase
 
 
+@final
 class Latch(BuiltinProcessorComponentBase):
-    def __init__(self, control: SignalBase, data: SignalBase, forget_duration: int | str = -1, **kwargs):
+    def __init__(self,
+                 control: SignalBase,
+                 data: SignalBase,
+                 forget_duration: int | str = -1,
+                 **kwargs):
         rust_processor_name = self.__class__.__name__
         from ..modules import normalize_duration
         forget_duration = normalize_duration(forget_duration)
@@ -12,7 +19,11 @@ class Latch(BuiltinProcessorComponentBase):
             node_decl = f"{rust_processor_name}::<{dt}>::default()"
         else:
             default = f"<{dt} as Default>::default()"
-            node_decl = f"{rust_processor_name}::with_forget_behavior({default}, {default}, {forget_duration})"
+            node_decl = f"""
+                {rust_processor_name}::with_forget_behavior(
+                    {default}, {default}, {forget_duration}
+                )
+            """
         super().__init__(
             name=rust_processor_name,
             node_decl=node_decl,
@@ -25,8 +36,13 @@ class Latch(BuiltinProcessorComponentBase):
             self.annotate_type(data.get_rust_type_name())
 
 
+@final
 class EdgeTriggeredLatch(BuiltinProcessorComponentBase):
-    def __init__(self, control: SignalBase, data: SignalBase, forget_duration: int | str = -1, **kwargs):
+    def __init__(self,
+                 control: SignalBase,
+                 data: SignalBase,
+                 forget_duration: int | str = -1,
+                 **kwargs):
         rust_processor_name = self.__class__.__name__
         from ..modules import normalize_duration
         forget_duration = normalize_duration(forget_duration)
@@ -36,7 +52,11 @@ class EdgeTriggeredLatch(BuiltinProcessorComponentBase):
             node_decl = f"{rust_processor_name}::<{ct}, {dt}>::default()"
         else:
             default = f"<{dt} as Default>::default()"
-            node_decl = f"{rust_processor_name}::with_forget_behavior({default}, {default}, {forget_duration})"
+            node_decl = f"""
+                {rust_processor_name}::with_forget_behavior(
+                    {default}, {default}, {forget_duration}
+                )
+            """
         super().__init__(
             name=rust_processor_name,
             node_decl=node_decl,

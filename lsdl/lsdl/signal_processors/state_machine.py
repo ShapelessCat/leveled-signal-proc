@@ -1,8 +1,11 @@
+from typing import final
+
 from ..componet_base import BuiltinProcessorComponentBase
 from ..rust_code import RUST_DEFAULT_VALUE, RustCode
 from ..signal import SignalBase
 
 
+@final
 class StateMachineBuilder:
     def __init__(self,
                  clock: SignalBase | list[SignalBase],
@@ -64,6 +67,7 @@ class StateMachineBuilder:
             return state_machine.map(bind_var="&(_, _, s)", lambda_src="s")
 
 
+@final
 class StateMachine(BuiltinProcessorComponentBase):
     def __init__(self,
                  clock: SignalBase | list[SignalBase],

@@ -1,5 +1,5 @@
 import re
-from typing import Self, Optional, TypeVar
+from typing import Self, Optional, TypeVar, final
 
 from . import validate_rust_identifier
 from .const import Const
@@ -37,7 +37,7 @@ def normalize_duration(duration: int | str) -> int:
 def has_been_true(input_signal: SignalBase, duration: int | str = -1) -> SignalBase:
     """Checks if the boolean signal has ever becomes true.
 
-    When `duration` is given, it checks if the signal has been true within `duration` amount of time.
+    When `duration` is given, it checks if the signal has been true within `duration`.
 
     Note:
     `duration` can be either an integer as number of nanoseconds or a string of "<value><unit>".
@@ -96,6 +96,7 @@ def add_metric(component: __T, key: RustCode, typename: RustCode = COMPILER_INFE
     return component
 
 
+@final
 class SignalFilterBuilder:
     """The builder class to build a signal filter.
 
@@ -133,7 +134,10 @@ class SignalFilterBuilder:
         return self
 
     def then_filter(self, filter_signal: SignalBase) -> Self:
-        """Builds the clock signal filter and then create a builder that performing cascade filtering."""
+        """Do further filter based on a given signal.
+
+        Builds the clock signal filter, and then create a builder that performs cascade filtering.
+        """
         signal_clock = self.build_clock_filter()
         ret = SignalFilterBuilder(filter_signal, signal_clock)
         if filter_signal.get_rust_type_name() == "bool":
@@ -153,6 +157,7 @@ class SignalFilterBuilder:
         )
 
 
+@final
 class ScopeContext:
     def __init__(self, scope_level: SignalBase, epoch: SignalBase):
         self._scope = scope_level
@@ -171,8 +176,11 @@ class ScopeContext:
         ).annotate_type(data.get_rust_type_name())
 
 
-def time_domain_fold(data: SignalBase, clock: Optional[SignalBase] = None, scope: Optional[SignalBase] = None,
-                     fold_method="sum", init_state=None):
+def time_domain_fold(data: SignalBase,
+                     clock: Optional[SignalBase] = None,
+                     scope: Optional[SignalBase] = None,
+                     fold_method="sum",
+                     init_state=None):
     if clock is None:
         clock = data
     from .signal_processors.state_machine import StateMachineBuilder

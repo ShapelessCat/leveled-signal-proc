@@ -1,3 +1,5 @@
+from typing import final
+
 from ..componet_base import BuiltinProcessorComponentBase
 from ..rust_code import RustCode
 
@@ -5,6 +7,7 @@ _rust_component_name: RustCode = "SignalGenerator"
 
 
 #    let a = SignalGenerator::square_wave(60_000_000_000, 0);
+@final
 class SquareWave(BuiltinProcessorComponentBase):
     def __init__(self, period, phase=0):
         from ..modules import normalize_duration
@@ -18,6 +21,7 @@ class SquareWave(BuiltinProcessorComponentBase):
 
 
 #    let b = SignalGenerator::raising_level(0, 2, 60_000_000_000, 0);
+@final
 class MonotonicSteps(BuiltinProcessorComponentBase):
     def __init__(self, period, start=0, step=1, phase=0):
         from ..modules import normalize_duration
@@ -31,6 +35,7 @@ class MonotonicSteps(BuiltinProcessorComponentBase):
 
 
 #    let c = SignalGenerator::<_, f64>::new(|ts| ((ts as f64).sin(), ts + 10));
+@final
 class SignalGenerator(BuiltinProcessorComponentBase):
     def __init__(self, lambda_src, bind_var="timestamp"):
         super().__init__(
