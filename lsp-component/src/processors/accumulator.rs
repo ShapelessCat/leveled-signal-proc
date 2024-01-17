@@ -32,16 +32,16 @@ where
 impl<'a, I, D, C, F> SignalProcessor<'a, I> for Accumulator<D, C, F>
 where
     I: Iterator,
-    D: AddAssign<D> + Clone + 'a,
-    C: Clone + PartialEq + 'a,
+    D: AddAssign<D> + Clone,
+    C: Clone + PartialEq,
     F: Fn(&C) -> bool,
 {
-    type Input = (&'a C, &'a D);
+    type Input = (C, D);
 
     type Output = D;
 
     #[inline(always)]
-    fn update(&mut self, _: &mut UpdateContext<I>, (control, data): Self::Input) -> Self::Output {
+    fn update(&mut self, _: &mut UpdateContext<I>, (control, data): &'a Self::Input) -> Self::Output {
         if &self.prev_control_signal != control {
             if (self.filter)(control) {
                 self.accumulator += data.clone();
@@ -66,10 +66,10 @@ mod test {
         let mut ctx = create_lsp_context_for_test();
         let mut uc = ctx.borrow_update_context();
 
-        assert_eq!(0, counter.update(&mut uc, (&0, &1)));
-        assert_eq!(1, counter.update(&mut uc, (&1, &1)));
-        assert_eq!(1, counter.update(&mut uc, (&1, &2)));
-        assert_eq!(4, counter.update(&mut uc, (&2, &3)));
+        assert_eq!(0, counter.update(&mut uc, &(0, 1)));
+        assert_eq!(1, counter.update(&mut uc, &(1, 1)));
+        assert_eq!(1, counter.update(&mut uc, &(1, 2)));
+        assert_eq!(4, counter.update(&mut uc, &(2, 3)));
     }
 
     #[test]
@@ -78,10 +78,10 @@ mod test {
         let mut ctx = create_lsp_context_for_test();
         let mut uc = ctx.borrow_update_context();
 
-        assert_eq!(0, counter.update(&mut uc, (&0, &1)));
-        assert_eq!(0, counter.update(&mut uc, (&1, &1)));
-        assert_eq!(2, counter.update(&mut uc, (&2, &2)));
-        assert_eq!(2, counter.update(&mut uc, (&3, &3)));
-        assert_eq!(6, counter.update(&mut uc, (&4, &4)));
+        assert_eq!(0, counter.update(&mut uc, &(0, 1)));
+        assert_eq!(0, counter.update(&mut uc, &(1, 1)));
+        assert_eq!(2, counter.update(&mut uc, &(2, 2)));
+        assert_eq!(2, counter.update(&mut uc, &(3, 3)));
+        assert_eq!(6, counter.update(&mut uc, &(4, 4)));
     }
 }

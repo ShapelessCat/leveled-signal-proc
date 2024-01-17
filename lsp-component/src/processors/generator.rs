@@ -91,7 +91,7 @@ where
     type Output = O;
 
     #[inline(always)]
-    fn update(&mut self, ctx: &mut UpdateContext<I>, (): ()) -> Self::Output {
+    fn update(&mut self, ctx: &mut UpdateContext<I>, (): &'a ()) -> Self::Output {
         if self.until_ts <= ctx.frontier() {
             let (last_value, time_diff) = (self.signal_func)(ctx.frontier());
             self.until_ts = time_diff + ctx.frontier();
@@ -120,7 +120,7 @@ mod test {
 
         while let Some(moment) = ctx.next_event(&mut state) {
             let mut uc = ctx.borrow_update_context();
-            let value = square_wave.update(&mut uc, ());
+            let value = square_wave.update(&mut uc, &());
             assert_eq!(value, (moment.timestamp() / 10) % 2 == 1);
         }
     }
@@ -133,7 +133,7 @@ mod test {
 
         while let Some(moment) = ctx.next_event(&mut state) {
             let mut uc = ctx.borrow_update_context();
-            let value = raising_level.update(&mut uc, ());
+            let value = raising_level.update(&mut uc, &());
             assert_eq!(value, moment.timestamp() as i64 / 10);
         }
     }
@@ -156,7 +156,7 @@ mod test {
 
         while let Some(moment) = ctx.next_event(&mut state) {
             let mut uc = ctx.borrow_update_context();
-            let value = fib_seq.update(&mut uc, ());
+            let value = fib_seq.update(&mut uc, &());
 
             if moment.timestamp() % 100 == 0 {
                 let c = fa + fb;

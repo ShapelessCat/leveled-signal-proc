@@ -5,12 +5,12 @@ use lsp_runtime::{measurement::Measurement, Timestamp, UpdateContext};
 #[derive(Clone, Default, Debug, Deserialize, Serialize)]
 pub struct Peek<T>(T);
 
-impl<'a, I: Iterator, T: Clone + 'a> Measurement<'a, I> for Peek<T> {
-    type Input = &'a T;
+impl<'a, I: Iterator, T: Clone> Measurement<'a, I> for Peek<T> {
+    type Input = T;
 
     type Output = T;
 
-    fn update(&mut self, _: &mut UpdateContext<I>, v: Self::Input) {
+    fn update(&mut self, _: &mut UpdateContext<I>, v: &'a Self::Input) {
         self.0 = v.clone();
     }
 
@@ -25,13 +25,13 @@ impl<'a, I: Iterator, T: Clone + 'a> Measurement<'a, I> for Peek<T> {
 pub struct PeekTimestamp;
 
 impl<'a, I: Iterator> Measurement<'a, I> for PeekTimestamp {
-    type Input = &'a Timestamp;
+    type Input = Timestamp;
 
     type Output = u64;
 
     /// This method is designed for updating when a leveled signal changes. Since time is not a
     /// leveled signal, this method shouldn't do anything.
-    fn update(&mut self, _: &mut UpdateContext<I>, _: Self::Input) {}
+    fn update(&mut self, _: &mut UpdateContext<I>, _: &'a Self::Input) {}
 
     /// This method can't depend on any recorded value, because time keeps changing and it is not a
     /// leveled signal.

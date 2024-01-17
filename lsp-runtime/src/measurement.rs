@@ -5,11 +5,11 @@ use crate::UpdateContext;
 /// function of time.
 /// For example, you can measure the duration since an output is true, etc.
 pub trait Measurement<'a, EventIter: Iterator> {
-    type Input: 'a;
+    type Input;
     type Output;
 
     /// Notify the value change take effect from now
-    fn update(&mut self, ctx: &mut UpdateContext<EventIter>, input: Self::Input);
+    fn update(&mut self, ctx: &mut UpdateContext<EventIter>, input: &'a Self::Input);
 
     /// Measure the observation value now
     fn measure(&self, ctx: &mut UpdateContext<EventIter>) -> Self::Output;

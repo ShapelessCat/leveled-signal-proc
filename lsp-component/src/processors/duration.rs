@@ -13,15 +13,15 @@ pub struct DurationOfPreviousLevel<Level> {
     output_buf: Timestamp,
 }
 
-impl<'a, I: Iterator, L: PartialEq + Clone + 'a> SignalProcessor<'a, I>
+impl<'a, I: Iterator, L: PartialEq + Clone> SignalProcessor<'a, I>
     for DurationOfPreviousLevel<L>
 {
-    type Input = &'a L;
+    type Input = L;
 
     type Output = Duration;
 
     #[inline(always)]
-    fn update(&mut self, ctx: &mut UpdateContext<I>, input: Self::Input) -> Self::Output {
+    fn update(&mut self, ctx: &mut UpdateContext<I>, input: &'a Self::Input) -> Self::Output {
         if &self.current_value != input {
             self.output_buf = ctx.frontier() - self.current_value_since;
             self.current_value = input.clone();

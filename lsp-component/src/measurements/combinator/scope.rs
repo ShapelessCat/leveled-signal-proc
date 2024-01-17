@@ -30,14 +30,14 @@ impl<'a, EventIterator, ScopeType, MeasurementType, Output> Measurement<'a, Even
     for ScopedMeasurement<ScopeType, MeasurementType, Output>
 where
     EventIterator: Iterator,
-    ScopeType: Clone + Eq + 'a + std::fmt::Debug,
+    ScopeType: Clone + Eq + std::fmt::Debug,
     Output: Clone + Sub<Output = Output> + std::fmt::Display,
     MeasurementType: Measurement<'a, EventIterator, Output = Output>,
 {
-    type Input = (&'a ScopeType, MeasurementType::Input);
+    type Input = (ScopeType, MeasurementType::Input);
     type Output = Output;
 
-    fn update(&mut self, ctx: &mut UpdateContext<EventIterator>, (level, data): Self::Input) {
+    fn update(&mut self, ctx: &mut UpdateContext<EventIterator>, (level, data): &'a Self::Input) {
         if &self.current_control_level != level {
             self.current_base = self.inner.measure(ctx);
             self.current_control_level = level.clone();

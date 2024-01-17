@@ -9,10 +9,10 @@ pub struct DurationSinceBecomeTrue {
 }
 
 impl<'a, I: Iterator> Measurement<'a, I> for DurationSinceBecomeTrue {
-    type Input = &'a bool;
+    type Input = bool;
     type Output = Duration;
 
-    fn update(&mut self, ctx: &mut UpdateContext<I>, input: Self::Input) {
+    fn update(&mut self, ctx: &mut UpdateContext<I>, input: &'a Self::Input) {
         if *input != self.last_input {
             self.last_input = *input;
             self.last_assignment_timestamp = ctx.frontier();
@@ -34,11 +34,11 @@ pub struct DurationSinceLastLevel<T: Clone> {
     last_level: Option<T>,
 }
 
-impl<'a, I: Iterator, T: Clone + 'a> Measurement<'a, I> for DurationSinceLastLevel<T> {
-    type Input = &'a T;
+impl<'a, I: Iterator, T: Clone> Measurement<'a, I> for DurationSinceLastLevel<T> {
+    type Input = T;
     type Output = Duration;
 
-    fn update(&mut self, ctx: &mut UpdateContext<I>, input: Self::Input) {
+    fn update(&mut self, ctx: &mut UpdateContext<I>, input: &'a Self::Input) {
         self.last_level = Some(input.clone());
         self.last_assignment_timestamp = ctx.frontier();
     }
@@ -60,10 +60,10 @@ pub struct DurationTrue {
 }
 
 impl<'a, I: Iterator> Measurement<'a, I> for DurationTrue {
-    type Input = &'a bool;
+    type Input = bool;
     type Output = Duration;
 
-    fn update(&mut self, ctx: &mut UpdateContext<I>, &input: &bool) {
+    fn update(&mut self, ctx: &mut UpdateContext<I>, input: &'a Self::Input) {
         match (self.current_state, input) {
             (false, true) => {
                 self.last_true_starts = ctx.frontier();
@@ -73,7 +73,7 @@ impl<'a, I: Iterator> Measurement<'a, I> for DurationTrue {
             }
             _ => (),
         };
-        self.current_state = input;
+        self.current_state = *input;
     }
 
     fn measure(&self, ctx: &mut UpdateContext<I>) -> Self::Output {
