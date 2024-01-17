@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
-use lsp_runtime::{Duration, Timestamp, UpdateContext};
 use lsp_runtime::signal::SignalProcessor;
+use lsp_runtime::{Duration, Timestamp, UpdateContext};
 
 /// Abstracts the retention behavior of a latch
 pub trait Retention<T> {
@@ -127,8 +127,8 @@ impl<'a, I: Iterator, T: Clone, R: Retention<T>> SignalProcessor<'a, I> for Latc
     }
 }
 
-impl<'a, I: Iterator, C: PartialEq + Clone, D: Clone, R: Retention<D>>
-    SignalProcessor<'a, I> for EdgeTriggeredLatch<C, D, R>
+impl<'a, I: Iterator, C: PartialEq + Clone, D: Clone, R: Retention<D>> SignalProcessor<'a, I>
+    for EdgeTriggeredLatch<C, D, R>
 {
     type Input = (C, D);
     type Output = D;
@@ -163,12 +163,12 @@ mod test {
         let mut latch = Latch::with_initial_value(0);
         let mut c = create_lsp_context_for_test();
         let mut ctx = c.borrow_update_context();
-        assert_eq!(latch.update(&mut ctx, &(true,  1)), 1);
+        assert_eq!(latch.update(&mut ctx, &(true, 1)), 1);
         assert_eq!(latch.update(&mut ctx, &(false, 2)), 1);
-        assert_eq!(latch.update(&mut ctx, &(true,  3)), 3);
+        assert_eq!(latch.update(&mut ctx, &(true, 3)), 3);
         assert_eq!(latch.update(&mut ctx, &(false, 4)), 3);
         assert_eq!(latch.update(&mut ctx, &(false, 5)), 3);
-        assert_eq!(latch.update(&mut ctx, &(true,  6)), 6);
+        assert_eq!(latch.update(&mut ctx, &(true, 6)), 6);
         assert_eq!(latch.update(&mut ctx, &(false, 7)), 6);
     }
 

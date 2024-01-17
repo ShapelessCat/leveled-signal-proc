@@ -5,15 +5,15 @@ use chrono::{DateTime, Utc};
 use serde::Deserialize;
 use serde_json::Deserializer;
 
+use lsp_component::measurements::combinator::ScopedMeasurement;
 use lsp_component::{
     measurements::{DurationSinceBecomeTrue, PeekTimestamp},
     processors::{
         Accumulator, DurationOfPreviousLevel, Latch, LivenessChecker, SignalMapper, StateMachine,
     },
 };
-use lsp_component::measurements::combinator::ScopedMeasurement;
 use lsp_runtime::{
-    InputSignalBag, LspContext, measurement::Measurement, signal::SignalProcessor, Timestamp,
+    measurement::Measurement, signal::SignalProcessor, InputSignalBag, LspContext, Timestamp,
     WithTimestamp,
 };
 

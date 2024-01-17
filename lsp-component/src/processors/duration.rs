@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use lsp_runtime::{Duration, signal::SignalProcessor, Timestamp, UpdateContext};
+use lsp_runtime::{signal::SignalProcessor, Duration, Timestamp, UpdateContext};
 
 /// Note:
 /// Although the duration of current level cannot be a measurement, as it's a function of time,
@@ -13,9 +13,7 @@ pub struct DurationOfPreviousLevel<Level> {
     output_buf: Timestamp,
 }
 
-impl<'a, I: Iterator, L: PartialEq + Clone> SignalProcessor<'a, I>
-    for DurationOfPreviousLevel<L>
-{
+impl<'a, I: Iterator, L: PartialEq + Clone> SignalProcessor<'a, I> for DurationOfPreviousLevel<L> {
     type Input = L;
 
     type Output = Duration;

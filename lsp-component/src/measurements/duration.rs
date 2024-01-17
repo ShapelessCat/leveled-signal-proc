@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use lsp_runtime::{Duration, measurement::Measurement, Timestamp, UpdateContext};
+use lsp_runtime::{measurement::Measurement, Duration, Timestamp, UpdateContext};
 
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct DurationSinceBecomeTrue {

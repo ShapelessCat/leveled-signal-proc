@@ -41,7 +41,11 @@ where
     type Output = D;
 
     #[inline(always)]
-    fn update(&mut self, _: &mut UpdateContext<I>, (control, data): &'a Self::Input) -> Self::Output {
+    fn update(
+        &mut self,
+        _: &mut UpdateContext<I>,
+        (control, data): &'a Self::Input,
+    ) -> Self::Output {
         if &self.prev_control_signal != control {
             if (self.filter)(control) {
                 self.accumulator += data.clone();
