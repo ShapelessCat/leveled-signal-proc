@@ -162,9 +162,6 @@ impl LspIr {
                             values: from_node.upstreams.clone(),
                         })
                     }
-                    // for node_input in &from_node.upstreams {
-                    //     buffer.push(node_input.clone())
-                    // }
                 } else {
                     buffer.push(node_input.clone())
                 }
