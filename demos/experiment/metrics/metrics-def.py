@@ -14,7 +14,8 @@ ts_plus1 = (
     input_signal
     .peek_timestamp()
     .map("x", "x + 1")
-    .add_metric("ts_plus1", "u64")
+    .scope(scope.session_id)
+    .add_metric("life_session_ts_plus1", typename="u64", need_interval_metric=True)
 )
 
 ts_plus1_plus2 = (
@@ -25,7 +26,10 @@ ts_plus1_plus2 = (
     .add_metric("ts_plus1_plus2", "u64")
 )
 
-ts_plus1.combine('x', 'y', 'y - x', ts_plus1_plus2).scope(scope.session_id).add_metric("diff", 'u64')
+ts_plus1 \
+    .combine('x', 'y', 'y - x', ts_plus1_plus2) \
+    .scope(scope.session_id) \
+    .add_metric("di", 'u64')
 
 
 input_signal.encoded_fps.measure_linear_change().add_metric("encoded_frames")
@@ -34,6 +38,8 @@ input_signal \
     .measure_linear_change() \
     .add_metric("inferred_rendered_frames")
 
-measurement_config().enable_measure_for_event()
+measurement_config() \
+    .enable_measure_for_event() \
+    .set_complementary_output_reset_switch("session_id")
 
 print_ir_to_stdout()
