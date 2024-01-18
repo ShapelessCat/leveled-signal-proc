@@ -77,6 +77,27 @@ pub struct MetricSpec {
     pub source: NodeInput,
 }
 
+#[derive(Deserialize, Serialize, Clone)]
+pub struct DerivedMetricSpec {
+    #[serde(rename = "type")]
+    pub typename: String,
+    pub source: NodeInput,
+    pub source_metric_name: String,
+}
+
+#[derive(Deserialize, Serialize, Clone)]
+pub struct ResetSwitch {
+    pub metric_name: String,
+    pub source: NodeInput,
+    pub initial_value: String,
+}
+
+#[derive(Deserialize, Serialize, Clone)]
+pub struct ComplementaryOutputConfig {
+    pub schema: HashMap<String, DerivedMetricSpec>,
+    pub reset_switch: Option<ResetSwitch>,
+}
+
 fn default_measure_trigger_signal() -> NodeInput {
     NodeInput::Constant {
         value: "0i32".to_string(),
@@ -105,6 +126,7 @@ pub struct MeasurementPolicy {
     pub measure_left_side_limit_signal: NodeInput,
     pub metrics_drain: MetricsDrainType,
     pub output_schema: HashMap<String, MetricSpec>,
+    pub complementary_output_config: Option<ComplementaryOutputConfig>,
 }
 
 #[derive(Deserialize, Serialize, Clone)]
