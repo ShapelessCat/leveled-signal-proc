@@ -40,13 +40,11 @@ impl MacroContext {
         })
     }
 
-    pub(crate) fn define_previous_metrics_bag(
-        &self,
-    ) -> Result<TokenStream2, syn::Error> {
+    pub(crate) fn define_previous_metrics_bag(&self) -> Result<TokenStream2, syn::Error> {
         let definition = quote! {
             let mut _previous_metrics_bag = MetricsBag::default();
         };
-        let res = if let Some(conf) = &self
+        let result = if let Some(conf) = &self
             .get_ir_data()
             .measurement_policy
             .complementary_output_config
@@ -64,7 +62,7 @@ impl MacroContext {
         } else {
             quote! {()}
         };
-        Ok(res)
+        Ok(result)
     }
 
     pub(crate) fn set_previous_metrics_bag_value(&self) -> Result<TokenStream2, syn::Error> {
