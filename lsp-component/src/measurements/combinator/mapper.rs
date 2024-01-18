@@ -37,7 +37,7 @@ where
     type Input = MeasurementType::Input;
     type Output = OutputType;
 
-    fn update(&mut self, ctx: &mut UpdateContext<EventIterator>, input: Self::Input) {
+    fn update(&mut self, ctx: &mut UpdateContext<EventIterator>, input: &'a Self::Input) {
         self.inner.update(ctx, input)
     }
 

@@ -25,7 +25,7 @@ ts_plus1_plus2 = (
     .add_metric("ts_plus1_plus2", "u64")
 )
 
-ts_plus1.combine('x', 'y', 'y - x', ts_plus1_plus2).add_metric("diff", 'u64')
+ts_plus1.combine('x', 'y', 'y - x', ts_plus1_plus2).scope(scope.session_id).add_metric("diff", 'u64')
 
 
 input_signal.encoded_fps.measure_linear_change().add_metric("encoded_frames")

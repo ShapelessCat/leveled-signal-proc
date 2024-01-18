@@ -119,8 +119,8 @@ impl MacroContext {
             }
         } else {
             quote! {
-                (
-                    #(&#upstream_refs,)*
+                &(
+                    #(#upstream_refs . clone(),)*
                 )
             }
         };

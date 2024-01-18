@@ -5,15 +5,15 @@ use chrono::{DateTime, Utc};
 use serde::Deserialize;
 use serde_json::Deserializer;
 
+use lsp_component::measurements::combinator::ScopedMeasurement;
 use lsp_component::{
     measurements::{DurationSinceBecomeTrue, PeekTimestamp},
     processors::{
         Accumulator, DurationOfPreviousLevel, Latch, LivenessChecker, SignalMapper, StateMachine,
     },
 };
-use lsp_component::measurements::combinator::ScopedMeasurement;
 use lsp_runtime::{
-    InputSignalBag, LspContext, measurement::Measurement, signal::SignalProcessor, Timestamp,
+    measurement::Measurement, signal::SignalProcessor, InputSignalBag, LspContext, Timestamp,
     WithTimestamp,
 };
 
@@ -129,18 +129,18 @@ fn main() {
             is_heart_beat = is_heart_beat_mapper.update(&mut update_ctx, &state);
             filtered_hb_signal = state_watermark_latch.update(
                 &mut update_ctx,
-                (&is_heart_beat, &state.user_action_watermark),
+                &(is_heart_beat, state.user_action_watermark),
             );
             is_user_alive = liveness_signal.update(&mut update_ctx, &filtered_hb_signal);
             p_e_state = p_e_state_machine.update(
                 &mut update_ctx,
-                (&state.user_action_watermark, &state.user_action),
+                &(state.user_action_watermark, state.user_action.clone()),
             );
             p_e_state_duration = duration_last_level.update(&mut update_ctx, &p_e_state);
-            pe_duration = pe_dur_accu.update(&mut update_ctx, (&p_e_state, &p_e_state_duration));
-            session_id = session_id_acc.update(&mut update_ctx, (&is_user_alive, &1));
+            pe_duration = pe_dur_accu.update(&mut update_ctx, &(p_e_state, p_e_state_duration));
+            session_id = session_id_acc.update(&mut update_ctx, &(is_user_alive, 1));
             user_active_time.update(&mut update_ctx, &is_user_alive);
-            p_e_seesion.update(&mut update_ctx, (&session_id, &pe_duration));
+            p_e_seesion.update(&mut update_ctx, &(session_id, pe_duration));
         }
         if moment.should_take_measurements() {
             let user_active_time = user_active_time.measure(&mut update_ctx);

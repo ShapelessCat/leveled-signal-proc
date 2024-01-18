@@ -142,7 +142,7 @@ fn main() {
             is_heart_beat_output = is_heart_beat_mapper.update(&mut update_ctx, &state);
             state_watermark_latch_output = state_watermark_latch.update(
                 &mut update_ctx,
-                (&is_heart_beat_output, &state.user_action_watermark),
+                &(is_heart_beat_output, state.user_action_watermark),
             );
             liveness_signal_output =
                 liveness_signal.update(&mut update_ctx, &state_watermark_latch_output);
@@ -150,16 +150,16 @@ fn main() {
             is_c_mapper_output = is_c_mapper.update(&mut update_ctx, &state);
             c_filter_latch_output = c_filter_latch.update(
                 &mut update_ctx,
-                (&is_c_mapper_output, &state.user_action_watermark),
+                &(is_c_mapper_output, state.user_action_watermark),
             );
-            c_counter_output = c_counter.update(&mut update_ctx, (&c_filter_latch_output, &1));
+            c_counter_output = c_counter.update(&mut update_ctx, &(c_filter_latch_output, 1));
 
             all_counter_output =
-                all_counter.update(&mut update_ctx, (&state.user_action_watermark, &1));
+                all_counter.update(&mut update_ctx, &(state.user_action_watermark, 1));
 
             p_e_state_machine_output = p_e_state_machine.update(
                 &mut update_ctx,
-                (&state.user_action_watermark, &state.user_action),
+                &(state.user_action_watermark, state.user_action.clone()),
             );
 
             p_e_level_duration_output =
@@ -168,11 +168,11 @@ fn main() {
                 p_e_state_filter.update(&mut update_ctx, &p_e_state_machine_output);
             p_e_event_latch_output = p_e_event_latch.update(
                 &mut update_ctx,
-                (&p_e_state_filter_output, &state.user_action_watermark),
+                &(p_e_state_filter_output, state.user_action_watermark),
             );
             p_e_duration_accu_output = p_e_duration_accmulator.update(
                 &mut update_ctx,
-                (&p_e_event_latch_output, &p_e_level_duration_output),
+                &(p_e_event_latch_output, p_e_level_duration_output),
             );
         }
         println!(

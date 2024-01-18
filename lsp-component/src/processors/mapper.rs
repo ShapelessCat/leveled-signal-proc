@@ -31,16 +31,16 @@ where
     }
 }
 
-impl<'a, I: Iterator, P: 'a, O, C> SignalProcessor<'a, I> for SignalMapper<P, O, C>
+impl<'a, I: Iterator, P, O, C> SignalProcessor<'a, I> for SignalMapper<P, O, C>
 where
     C: FnMut(&P) -> O,
 {
-    type Input = &'a P;
+    type Input = P;
 
     type Output = O;
 
     #[inline(always)]
-    fn update(&mut self, _: &mut UpdateContext<I>, input: &P) -> O {
+    fn update(&mut self, _: &mut UpdateContext<I>, input: &'a Self::Input) -> O {
         (self.how)(input)
     }
 }

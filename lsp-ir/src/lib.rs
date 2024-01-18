@@ -133,9 +133,16 @@ impl LspIr {
             NodeInput::Component { id } => {
                 let from_node = &lookup[*id];
                 if from_node.is_measurement {
-                    for node_input in &from_node.upstreams {
-                        buffer.push(node_input.clone())
+                    if from_node.upstreams.len() == 1 {
+                        buffer.push(from_node.upstreams[0].clone())
+                    } else {
+                        buffer.push(NodeInput::Tuple {
+                            values: from_node.upstreams.clone(),
+                        })
                     }
+                    // for node_input in &from_node.upstreams {
+                    //     buffer.push(node_input.clone())
+                    // }
                 } else {
                     buffer.push(node_input.clone())
                 }

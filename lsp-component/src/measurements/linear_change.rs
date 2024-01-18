@@ -10,10 +10,10 @@ pub struct LinearChange {
 }
 
 impl<'a, I: Iterator> Measurement<'a, I> for LinearChange {
-    type Input = &'a f64;
+    type Input = f64;
     type Output = f64;
 
-    fn update(&mut self, ctx: &mut UpdateContext<I>, input: Self::Input) {
+    fn update(&mut self, ctx: &mut UpdateContext<I>, input: &'a Self::Input) {
         if self.current_rate != *input {
             let duration = ctx.frontier() - self.current_rate_start;
             self.accumulated_amount += self.current_rate * duration as f64;

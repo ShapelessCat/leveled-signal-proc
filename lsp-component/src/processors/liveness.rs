@@ -3,8 +3,8 @@ use std::marker::PhantomData;
 
 use serde::{Deserialize, Serialize};
 
-use lsp_runtime::{Duration, Timestamp, UpdateContext, WithTimestamp};
 use lsp_runtime::signal::SignalProcessor;
+use lsp_runtime::{Duration, Timestamp, UpdateContext, WithTimestamp};
 
 /// This is the signal processor that analyzes the liveness of a session based on heartbeat signals.
 /// The output constantly answering the question: Is current session still alive?
@@ -50,15 +50,15 @@ impl<'a, I, F, C, E> SignalProcessor<'a, I> for LivenessChecker<F, C, E>
 where
     I: Iterator<Item = E>,
     F: FnMut(&E) -> bool,
-    C: Clone + PartialEq + 'a,
+    C: Clone + PartialEq,
     E: WithTimestamp,
 {
-    type Input = &'a C;
+    type Input = C;
 
     type Output = bool;
 
     #[inline(always)]
-    fn update(&mut self, ctx: &mut UpdateContext<I>, input: Self::Input) -> Self::Output {
+    fn update(&mut self, ctx: &mut UpdateContext<I>, input: &'a Self::Input) -> Self::Output {
         if &self.last_event_clock != input {
             self.last_event_clock = input.clone();
             self.last_event_timestamp = ctx.frontier();

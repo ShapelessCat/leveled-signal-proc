@@ -2,7 +2,7 @@ use std::{collections::VecDeque, fmt::Debug, marker::PhantomData};
 
 use serde::{Deserialize, Serialize};
 
-use lsp_runtime::{Duration, signal::SignalProcessor, Timestamp, UpdateContext};
+use lsp_runtime::{signal::SignalProcessor, Duration, Timestamp, UpdateContext};
 
 /// A state machine is a signal processor that maintains a state machine internally.
 /// The state transition is defined as a lambda function passed in when construction.
@@ -46,17 +46,16 @@ where
     Transition: Fn(&State, &Input) -> State,
     EventIterator: Iterator,
     State: Clone,
-    Trigger: Eq + Clone + 'a,
-    Input: 'a,
+    Trigger: Eq + Clone,
 {
-    type Input = (&'a Trigger, &'a Input);
+    type Input = (Trigger, Input);
 
     type Output = State;
 
     fn update(
         &mut self,
         _: &mut UpdateContext<EventIterator>,
-        (trigger, input): Self::Input,
+        (trigger, input): &'a Self::Input,
     ) -> Self::Output {
         if trigger != &self.last_trigger_value {
             self.state = (self.transition)(&self.state, input);
@@ -95,17 +94,17 @@ where
     EmitFunc: Fn(&VecDeque<Input>, &Input) -> Output,
     Iter: Iterator,
     Output: Clone,
-    Trigger: Eq + Clone + 'a,
-    Input: 'a + Clone,
+    Trigger: Eq + Clone,
+    Input: Clone,
 {
-    type Input = (&'a Trigger, &'a Input);
+    type Input = (Trigger, Input);
 
     type Output = Output;
 
     fn update(
         &mut self,
         _: &mut UpdateContext<Iter>,
-        (trigger, input): Self::Input,
+        (trigger, input): &'a Self::Input,
     ) -> Self::Output {
         if trigger != &self.last_trigger_value {
             if self.queue.len() == self.queue.capacity() {
@@ -149,17 +148,17 @@ where
     EmitFunc: Fn(&VecDeque<(Input, Timestamp)>, &Input) -> Output,
     Iter: Iterator,
     Output: Clone,
-    Trigger: Eq + Clone + 'a,
-    Input: 'a + Clone,
+    Trigger: Eq + Clone,
+    Input: Clone,
 {
-    type Input = (&'a Trigger, &'a Input);
+    type Input = (Trigger, Input);
 
     type Output = Output;
 
     fn update(
         &mut self,
         ctx: &mut UpdateContext<Iter>,
-        (trigger, input): Self::Input,
+        (trigger, input): &'a Self::Input,
     ) -> Self::Output {
         while let Some((_, timestamp)) = self.queue.front() {
             if ctx.frontier() - timestamp >= self.time_window_size {

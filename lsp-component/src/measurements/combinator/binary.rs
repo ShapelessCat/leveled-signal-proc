@@ -5,7 +5,14 @@ use serde::{Deserialize, Serialize};
 use lsp_runtime::{measurement::Measurement, UpdateContext};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct BinaryCombinedMeasurement<OutputType0, OutputType1, OutputType, ClosureType, MeasurementType0, MeasurementType1> {
+pub struct BinaryCombinedMeasurement<
+    OutputType0,
+    OutputType1,
+    OutputType,
+    ClosureType,
+    MeasurementType0,
+    MeasurementType1,
+> {
     binary_op: ClosureType,
     inner0: MeasurementType0,
     inner1: MeasurementType1,
@@ -13,7 +20,14 @@ pub struct BinaryCombinedMeasurement<OutputType0, OutputType1, OutputType, Closu
 }
 
 impl<OutputType0, OutputType1, OutputType, ClosureType, MeasurementType0, MeasurementType1>
-    BinaryCombinedMeasurement<OutputType0, OutputType1, OutputType, ClosureType, MeasurementType0, MeasurementType1>
+    BinaryCombinedMeasurement<
+        OutputType0,
+        OutputType1,
+        OutputType,
+        ClosureType,
+        MeasurementType0,
+        MeasurementType1,
+    >
 where
     ClosureType: Fn(&OutputType0, &OutputType1) -> OutputType,
 {
@@ -27,9 +41,24 @@ where
     }
 }
 
-impl<'a, EventIterator, OutputType0, OutputType1, OutputType, ClosureType, MeasurementType0, MeasurementType1>
-    Measurement<'a, EventIterator>
-    for BinaryCombinedMeasurement<OutputType0, OutputType1, OutputType, ClosureType, MeasurementType0, MeasurementType1>
+impl<
+        'a,
+        EventIterator,
+        OutputType0,
+        OutputType1,
+        OutputType,
+        ClosureType,
+        MeasurementType0,
+        MeasurementType1,
+    > Measurement<'a, EventIterator>
+    for BinaryCombinedMeasurement<
+        OutputType0,
+        OutputType1,
+        OutputType,
+        ClosureType,
+        MeasurementType0,
+        MeasurementType1,
+    >
 where
     EventIterator: Iterator,
     OutputType: Clone + std::fmt::Display,
@@ -40,7 +69,11 @@ where
     type Input = (MeasurementType0::Input, MeasurementType1::Input);
     type Output = OutputType;
 
-    fn update(&mut self, ctx: &mut UpdateContext<EventIterator>, (input0, input1): Self::Input) {
+    fn update(
+        &mut self,
+        ctx: &mut UpdateContext<EventIterator>,
+        (input0, input1): &'a Self::Input,
+    ) {
         self.inner0.update(ctx, input0);
         self.inner1.update(ctx, input1);
     }
