@@ -1,4 +1,5 @@
-from lsdl.prelude import named, print_ir_to_stdout, InputSchemaBase, String
+from lsdl import print_ir_to_stdout
+from lsdl.lsp_model import named, InputSchemaBase, String
 
 
 class InputSignal(InputSchemaBase):

@@ -1,7 +1,7 @@
 # extra-src: app_startup.py const.py first_video_attempt.py network_request.py
 # extra-src: page_load.py schema.py scope.py start.py user_active_time.py
 
-from lsdl.prelude import measurement_config, print_ir_to_stdout
+from lsdl import measurement_config, print_ir_to_stdout
 
 import schema  # noqa: F401
 

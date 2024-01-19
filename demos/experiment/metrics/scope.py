@@ -1,6 +1,6 @@
 from enum import Enum
 
-from lsdl.prelude import SignalFilterBuilder, make_tuple
+from lsdl.processors import SignalFilterBuilder, make_tuple
 
 import const
 from schema import input_signal

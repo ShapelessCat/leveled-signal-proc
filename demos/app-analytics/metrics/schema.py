@@ -1,4 +1,4 @@
-from lsdl.prelude import InputSchemaBase, String, volatile
+from lsdl.lsp_model import InputSchemaBase, String, volatile
 
 
 class InputSignal(InputSchemaBase):

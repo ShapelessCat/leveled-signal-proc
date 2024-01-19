@@ -1,6 +1,6 @@
 # extra-src: const.py schema.py
-from lsdl.prelude import print_ir_to_stdout, processing_config, \
-    StateMachineBuilder
+from lsdl import print_ir_to_stdout, processing_config
+from lsdl.processors import StateMachineBuilder
 
 import const
 from schema import input_signal

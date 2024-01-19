@@ -1,4 +1,4 @@
-from lsdl.prelude import InputSchemaBase, String, Float
+from lsdl.lsp_model import InputSchemaBase, String, Float
 
 
 class InputSignal(InputSchemaBase):
