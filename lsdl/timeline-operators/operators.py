@@ -1,8 +1,9 @@
 import functools
 from lsdl.const import Const
+from lsdl.signal_processors import SignalGenerator
 
 
-class Operator(object):
+class Operator:
     op = None
     is_measurement = False
 
@@ -12,20 +13,20 @@ class NullaryOperator(Operator):
 
 
 class UnaryOperator(Operator):
-    
+
     def __init__(self, input):
         self.input = input
 
 
 class BinaryOperator(Operator):
-    
+
     def __init__(self, left, right):
         self.left = left
         self.right = right
 
 
 class KaryOperator(Operator):
-    
+
     def __init__(self, args: list):
         self.args = args
 
@@ -56,7 +57,7 @@ class Count(UnaryOperator):
 
     def process(self):
         return self.input.count_changes()
-    
+
 
 class DurationTrueT(UnaryOperator):
     op = "duration_true"
@@ -64,14 +65,14 @@ class DurationTrueT(UnaryOperator):
 
     def process(self):
         return self.input.measure_duration_true()
-    
+
 
 class Equals(BinaryOperator):
     op = "equals"
 
     def process(self):
         return (self.left == self.right)
-    
+
 
 class Get(UnaryOperator):
     op = "get"
@@ -82,9 +83,9 @@ class Get(UnaryOperator):
 
 class EpochSeconds(UnaryOperator):
     op = "epoch_seconds"
-     
+
     def process(self):
-        return self.input.epoch_seconds()
+        return SignalGenerator(lambda_src="(timestamp, 0)").annotate_type("u64") / 1e9
 
 
 class Not(UnaryOperator):
@@ -140,7 +141,7 @@ class Substract(BinaryOperator):
 
     def process(self):
         return (self.left - self.right)
-    
+
 
 class Divide(BinaryOperator):
     op = "divide"
@@ -154,7 +155,7 @@ class Any(UnaryOperator):
 
     def process(self, duration=-1):
         return self.input.has_been_true(duration=duration)
-    
+
 
 class PriorEvent(UnaryOperator):
     op = "prior_event"
