@@ -7,8 +7,7 @@ from .measurement import MeasurementBase
 from .rust_code import COMPILER_INFERABLE_TYPE, RustCode
 from .schema import MappedInputMember
 from .signal import SignalBase
-from .signal_processors import SignalMapper, Latch
-from .signal_processors.latch import EdgeTriggeredLatch
+from .signal_processors import Latch, EdgeTriggeredLatch, SignalMapper
 
 
 def normalize_duration(duration: int | str) -> int:

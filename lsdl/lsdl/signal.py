@@ -62,10 +62,6 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         )
         return sw.annotate_type(self.get_rust_type_name())
 
-    def epoch_seconds(self) -> 'SignalBase':
-        from .signal_processors import SignalGenerator
-        return SignalGenerator(lambda_src="|t| (t, 0)").annotate_type("u64")
-
     def moving_average(self, window_size=1, init_value=0) -> 'SignalBase':
         from .signal_processors import SlidingWindow
         ty = self.get_rust_type_name()
