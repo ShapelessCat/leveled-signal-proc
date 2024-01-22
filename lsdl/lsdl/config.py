@@ -118,8 +118,6 @@ class _MeasurementConfiguration:
             "type": typename
         }
         if need_interval_metric:
-            # TODO: For App Analytics only. Will generalize this by passing a
-            #       `dict` parameter for replacement in the future.
             interval_metric_key = re.sub(r'^life_(page|session)', 'interval', key)
             self._complementary_output_schema[interval_metric_key] = {
                 "type": typename,
