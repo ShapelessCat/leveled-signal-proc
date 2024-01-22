@@ -41,10 +41,10 @@ impl MacroContext {
     }
 
     pub(crate) fn define_previous_metrics_bag(&self) -> Result<TokenStream2, syn::Error> {
-        let definition = quote! {
+        let mut definition = quote! {
             let mut _previous_metrics_bag = MetricsBag::default();
         };
-        let result = if let Some(conf) = &self
+        if let Some(conf) = &self
             .get_ir_data()
             .measurement_policy
             .complementary_output_config
@@ -52,17 +52,14 @@ impl MacroContext {
             if let Some(switch) = &conf.reset_switch {
                 let metric_name = syn::Ident::new(&switch.metric_name, self.span());
                 let initial_value: syn::Expr = syn::parse_str(&switch.initial_value)?;
-                quote! {
-                    #definition
-                    _previous_metrics_bag . #metric_name = #initial_value;
-                }
-            } else {
-                definition
+                definition.extend(
+                    quote! {
+                        _previous_metrics_bag . #metric_name = #initial_value;
+                    }
+                )
             }
-        } else {
-            quote! {()}
-        };
-        Ok(result)
+        }
+        Ok(definition)
     }
 
     pub(crate) fn set_previous_metrics_bag_value(&self) -> Result<TokenStream2, syn::Error> {
