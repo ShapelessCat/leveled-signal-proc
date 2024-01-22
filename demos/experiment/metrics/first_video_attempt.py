@@ -15,18 +15,9 @@ video_attempt = (
     .scoped(session_id)
     .build()
 )
-duration_before_first_video_attempt = ~(video_attempt == 1).has_been_true()
+duration_before_first_video_attempt = ~((video_attempt == 1).has_been_true())
 
 duration_before_first_video_attempt \
     .measure_duration_true() \
     .scope(session_id) \
-    .add_metric('life_session_duration_before_first_video_attempt')
-
-duration_before_first_video_attempt \
-    .measure_duration_true() \
-    .scope(session_id) \
-    .map("x", "x + 1") \
-    .add_metric(
-        'plus1_life_session_duration_before_first_video_attempt',
-        'u64'
-    )
+    .add_metric('life_session_duration_before_first_video_attempt', need_interval_metric=True)

@@ -2,8 +2,8 @@ use std::env::args;
 
 use serde::{Deserialize, Serialize};
 
-pub fn print_metrics_to_stdout<T: Serialize>(metrics: T) -> Result<(), anyhow::Error> {
-    println!("{}", serde_json::to_string(&metrics)?);
+pub fn print_metrics_to_stdout<T: Serialize>(metrics: &T) -> Result<(), anyhow::Error> {
+    println!("{}", serde_json::to_string(metrics)?);
     Ok(())
 }
 

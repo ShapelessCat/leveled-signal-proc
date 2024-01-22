@@ -78,7 +78,10 @@ def make_tuple(*args: SignalBase) -> SignalBase:
 __T = TypeVar('__T', SignalBase, MeasurementBase)
 
 
-def add_metric(component: __T, key: RustCode, typename: RustCode = COMPILER_INFERABLE_TYPE) -> __T:
+def add_metric(component: __T,
+               key: RustCode,
+               typename: RustCode = COMPILER_INFERABLE_TYPE,
+               need_interval_metric: bool = False) -> __T:
     """Register the leveled signal as a metric.
 
     The registered metric results will present in the output data structure.
@@ -88,10 +91,11 @@ def add_metric(component: __T, key: RustCode, typename: RustCode = COMPILER_INFE
     """
     validate_rust_identifier(key)
     from . import measurement_config
-    if isinstance(component, SignalBase):
-        measurement_config().add_metric(key, component.peek(), typename)
-    else:
-        measurement_config().add_metric(key, component, typename)
+    measurement = component.peek() if isinstance(component, SignalBase) else component
+    measurement_config().add_metric(key,
+                                    measurement,
+                                    typename,
+                                    need_interval_metric=need_interval_metric)
     return component
 
 

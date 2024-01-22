@@ -51,6 +51,24 @@ pub fn define_output_schema(input: TokenStream) -> TokenStream {
 }
 
 #[proc_macro]
+pub fn define_previous_metrics_bag(input: TokenStream) -> TokenStream {
+    let ctx = parse_macro_input!(input as MacroContext);
+    match ctx.define_previous_metrics_bag() {
+        Ok(res) => res.into(),
+        Err(err) => err.to_compile_error().into(),
+    }
+}
+
+#[proc_macro]
+pub fn set_previous_metrics_bag_value(input: TokenStream) -> TokenStream {
+    let ctx = parse_macro_input!(input as MacroContext);
+    match ctx.set_previous_metrics_bag_value() {
+        Ok(res) => res.into(),
+        Err(err) => err.to_compile_error().into(),
+    }
+}
+
+#[proc_macro]
 pub fn impl_metrics_measurement(input: TokenStream) -> TokenStream {
     let ctx = parse_macro_input!(input as MacroContext);
     ctx.impl_metrics_measuring().into()
@@ -108,7 +126,7 @@ pub fn include_lsp_ir(input: TokenStream) -> TokenStream {
         pub fn #id<InputIter, OutputHandler, Inst>(input_iter: InputIter, mut out_handle: OutputHandler, instrument_ctx: &mut Inst) -> Result<(), anyhow::Error>
         where
             InputIter: Iterator<Item = InputSignalBagPatch>,
-            OutputHandler: FnMut(MetricsBag) -> Result<(), anyhow::Error>,
+            OutputHandler: FnMut(&MetricsBag) -> Result<(), anyhow::Error>,
             Inst: lsp_runtime::instrument::LspDataLogicInstrument,
         {
             use lsp_runtime::LspContext;
@@ -116,6 +134,7 @@ pub fn include_lsp_ir(input: TokenStream) -> TokenStream {
             lsp_codegen::define_data_logic_nodes!(#path);
             lsp_codegen::define_measurement_trigger!(#path);
             let mut ctx = LspContext::<_, InputSignalBag>::new(input_iter, lsp_codegen::should_merge_simultaneous_moments!(#path));
+            lsp_codegen::define_previous_metrics_bag!(#path);
             while let Some(moment) = ctx.next_event(&mut input_state) {
                 instrument_ctx.data_logic_update_begin();
                 let mut update_context = ctx.borrow_update_context();
@@ -143,7 +162,8 @@ pub fn include_lsp_ir(input: TokenStream) -> TokenStream {
                         _metrics_bag
                     };
                     instrument_ctx.data_logic_update_end();
-                    out_handle(_metrics_bag)?;
+                    out_handle(&_metrics_bag)?;
+                    lsp_codegen::set_previous_metrics_bag_value!(#path);
                 } else {
                     instrument_ctx.data_logic_update_end();
                 }

@@ -9,9 +9,10 @@ class MeasurementBase(LeveledSignalProcessingModelComponentBase, ABC):
     @final
     def add_metric(self,
                    key: RustCode,
-                   typename: RustCode = COMPILER_INFERABLE_TYPE) -> 'MeasurementBase':
+                   typename: RustCode = COMPILER_INFERABLE_TYPE,
+                   need_interval_metric: bool = False) -> 'MeasurementBase':
         from .modules import add_metric
-        return add_metric(self, key, typename)
+        return add_metric(self, key, typename, need_interval_metric)
 
     @final
     def map(self, bind_var: str, lambda_src: str) -> 'MeasurementBase':

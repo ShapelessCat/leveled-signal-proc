@@ -1,8 +1,10 @@
 import logging
-from typing import Any, Self, final
+import re
+from collections import namedtuple
+from typing import Any, Optional, Self, final
 
 from .measurement import MeasurementBase
-from .rust_code import COMPILER_INFERABLE_TYPE, RustCode
+from .rust_code import COMPILER_INFERABLE_TYPE, RUST_DEFAULT_VALUE, RustCode
 from .signal import SignalBase
 
 logging.basicConfig(encoding='utf-8', level=logging.INFO)
@@ -33,6 +35,9 @@ def _make_processing_configuration():
 processing_config = _make_processing_configuration()
 
 
+_ResetSwitch = namedtuple('ResetSwitch', ['metric_name', 'initial_value'])
+
+
 @final
 class _MeasurementConfiguration:
     """The configuration for measurement policy.
@@ -47,6 +52,10 @@ class _MeasurementConfiguration:
         self._measure_side_flag = None
         self._metrics_drain = "json"
         self._output_schema = {}
+        # for interval metrics
+        self._complementary_output_schema = {}
+        # (metric name, initial value)
+        self._complementary_output_reset_switch: Optional[_ResetSwitch] = None
 
     def set_measure_at_filter(self, lambda_src: RustCode) -> Self:
         """Set the rule for event triggered measurement."""
@@ -90,8 +99,11 @@ class _MeasurementConfiguration:
         self._metrics_drain = fmt
         return self
 
-    def add_metric(self, key: str, measurement: MeasurementBase,
-                   typename: RustCode = COMPILER_INFERABLE_TYPE) -> Self:
+    def add_metric(self,
+                   key: str,
+                   measurement: MeasurementBase,
+                   typename: RustCode = COMPILER_INFERABLE_TYPE,
+                   need_interval_metric: bool = False) -> Self:
         """Declare a metric for output."""
         if typename == COMPILER_INFERABLE_TYPE:  # if this type is unknown and inferable
             typename = measurement.get_rust_type_name()
@@ -105,6 +117,25 @@ class _MeasurementConfiguration:
             "source": measurement.get_description(),
             "type": typename
         }
+        if need_interval_metric:
+            interval_metric_key = re.sub(r'^life_(page|session)', 'interval', key)
+            self._complementary_output_schema[interval_metric_key] = {
+                "type": typename,
+                "source": measurement.get_description(),
+                "source_metric_name": key
+            }
+        return self
+
+    def set_complementary_output_reset_switch(self,
+                                              metric_name: RustCode,
+                                              initial_value: RustCode = RUST_DEFAULT_VALUE) -> Self:
+        """Config the reset switch.
+
+        The `initial_value` should be a value that MUSTN'T match the first `metric_name` value.
+        With a well design, the default value is a good choice. However, this is not always true,
+        sometimes pepole need to manually set it, and this is why we provide this API.
+        """
+        self._complementary_output_reset_switch = _ResetSwitch(metric_name, initial_value)
         return self
 
     def to_dict(self) -> dict[str, Any]:
@@ -116,8 +147,30 @@ class _MeasurementConfiguration:
         }
         if self._measure_on_edge is not None:
             ret["measure_trigger_signal"] = self._measure_on_edge.get_description()
+
         if self._measure_side_flag is not None:
             ret["measure_left_side_limit_signal"] = self._measure_side_flag.get_description()
+
+        if self._complementary_output_schema:
+            ret["complementary_output_config"] = {
+                "schema": self._complementary_output_schema
+            }
+            if self._complementary_output_reset_switch is not None:
+                key = self._complementary_output_reset_switch.metric_name
+                ret["complementary_output_config"]["reset_switch"] = {
+                    "metric_name": key,
+                    "source": self._output_schema[key]["source"],
+                    "initial_value": self._complementary_output_reset_switch.initial_value
+                }
+        elif self._complementary_output_reset_switch is not None:
+            # Warning message for developers. This is why we use class internal names, rather than
+            # the names in output IR.
+            message = ' '.join([
+                "Redundant config:",
+                "`self._complementary_output_schema` is empty, no interval metrics,",
+                "but `self._complementary_output_reset_switch` is set."
+            ])
+            logging.warning(message)
         return ret
 
 
