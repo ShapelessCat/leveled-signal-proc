@@ -101,8 +101,9 @@ class _MeasurementConfiguration:
     def add_metric(self,
                    key: str,
                    measurement: MeasurementBase,
-                   typename: RustCode = COMPILER_INFERABLE_TYPE,
-                   need_interval_metric: bool = False) -> Self:
+                   typename: RustCode,
+                   need_interval_metric: bool,
+                   interval_metric_name: Optional[str]) -> Self:
         """Declare a metric for output."""
         if typename == COMPILER_INFERABLE_TYPE:  # if this type is unknown and inferable
             typename = measurement.get_rust_type_name()
@@ -117,8 +118,9 @@ class _MeasurementConfiguration:
             "type": typename
         }
         if need_interval_metric:
-            interval_metric_key = re.sub(r'^life_(page|session)', 'interval', key)
-            self._complementary_output_schema[interval_metric_key] = {
+            metric_name = (interval_metric_name
+                           or re.sub(r'^life_(navigation|session)', 'interval', key))
+            self._complementary_output_schema[metric_name] = {
                 "type": typename,
                 "source": measurement.get_description(),
                 "source_metric_name": key
