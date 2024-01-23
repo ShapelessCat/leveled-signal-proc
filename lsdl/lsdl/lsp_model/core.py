@@ -25,7 +25,11 @@ class LeveledSignalProcessingModelComponentBase(ABC):
     def is_moved(self, value: bool):
         self._is_moved = value
 
-    def add_metric(self, key: RustCode, typename: RustCode = COMPILER_INFERABLE_TYPE) -> Self:
+    def add_metric(self,
+                   key: RustCode,
+                   typename: RustCode = COMPILER_INFERABLE_TYPE,
+                   need_interval_metric: bool = False,
+                   interval_metric_name: Optional[str] = None) -> Self:
         """Register the leveled signal as a metric.
 
         The registered metric results will present in the output data structure.
@@ -264,10 +268,12 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
     def add_metric(self,
                    key: RustCode,
                    typename: RustCode = COMPILER_INFERABLE_TYPE,
-                   need_interval_metric: bool = False) -> 'SignalBase':
+                   need_interval_metric: bool = False,
+                   interval_metric_name: Optional[str] = None) -> 'SignalBase':
         _validate_rust_identifier(key)
         from ..config import measurement_config
-        measurement_config().add_metric(key, self.peek(), typename, need_interval_metric)
+        measurement_config().add_metric(key, self.peek(), typename, need_interval_metric,
+                                        interval_metric_name)
         return self
 
     @final
@@ -329,10 +335,12 @@ class MeasurementBase(LeveledSignalProcessingModelComponentBase, ABC):
     def add_metric(self,
                    key: RustCode,
                    typename: RustCode = COMPILER_INFERABLE_TYPE,
-                   need_interval_metric: bool = False) -> 'MeasurementBase':
+                   need_interval_metric: bool = False,
+                   interval_metric_name: Optional[str] = None) -> 'MeasurementBase':
         _validate_rust_identifier(key)
         from ..config import measurement_config
-        measurement_config().add_metric(key, self, typename, need_interval_metric)
+        measurement_config().add_metric(key, self, typename, need_interval_metric,
+                                        interval_metric_name)
         return self
 
     @final
