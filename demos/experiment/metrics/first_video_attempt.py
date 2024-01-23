@@ -1,4 +1,4 @@
-from lsdl.prelude import Const, SignalFilterBuilder, StateMachineBuilder
+from lsdl.processors import Const, SignalFilterBuilder, StateMachineBuilder
 
 import const
 from schema import input_signal

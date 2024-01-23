@@ -1,11 +1,8 @@
 from abc import ABC
 
-from .const import Const
-from .lsp_model_component import LeveledSignalProcessingModelComponentBase
-from .measurement import MeasurementBase
-from .rust_code import COMPILER_INFERABLE_TYPE, RustCode
+from .core import LeveledSignalProcessingModelComponentBase, MeasurementBase, SignalBase
 from .schema import create_type_model_from_rust_type_name
-from .signal import SignalBase
+from ..rust_code import COMPILER_INFERABLE_TYPE, RustCode
 
 
 def _make_assign_fresh_component_closure():
@@ -110,11 +107,12 @@ class IndirectBuiltinMeasurementComponentBase(BuiltinMeasurementComponentBase):
 
     @staticmethod
     def get_id_or_literal_value(component: LeveledSignalProcessingModelComponentBase) -> str:
+        from ..processors import Const
         if isinstance(component, Const):
             return component.rust_constant_value
         else:
-            return (IndirectBuiltinMeasurementComponentBase.REFERENCE_PREFIX +
-                    str(component.get_description()['id']))
+            return (IndirectBuiltinMeasurementComponentBase.REFERENCE_PREFIX
+                    + str(component.get_description()['id']))
 
 
 def get_components() -> list[LspComponentBase]:

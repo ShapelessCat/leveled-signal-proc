@@ -1,6 +1,7 @@
 from typing import final
-from ...componet_base import IndirectBuiltinMeasurementComponentBase
-from ...measurement import MeasurementBase
+
+from ...lsp_model.componet_base import IndirectBuiltinMeasurementComponentBase
+from ...lsp_model.core import MeasurementBase
 from ...rust_code import RustCode
 
 

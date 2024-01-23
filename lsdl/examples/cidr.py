@@ -1,5 +1,5 @@
-from lsdl.prelude import named, has_been_true, print_ir_to_stdout, \
-    InputSchemaBase, String
+from lsdl import print_ir_to_stdout
+from lsdl.lsp_model import named, InputSchemaBase, String
 
 
 class InputSignal(InputSchemaBase):
@@ -14,8 +14,8 @@ class InputSignal(InputSchemaBase):
 input_signal = InputSignal()
 
 target = (
-    has_been_true(input_signal.user_action == "play") &
-    ~has_been_true(input_signal.user_action == "seek", 5_000_000_000) &
+    (input_signal.user_action == "play").has_been_true() &
+    ~((input_signal.user_action == "seek").has_been_true(5_000_000_000)) &
     (input_signal.player_state == "buffer") &
     (input_signal.cdn == "cdn1")
 )

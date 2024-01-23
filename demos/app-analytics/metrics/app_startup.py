@@ -1,4 +1,4 @@
-from lsdl.prelude import Const, If, SignalFilterBuilder, time_domain_fold
+from lsdl.processors import Const, If, SignalFilterBuilder, time_domain_fold
 
 import const
 from schema import input_signal

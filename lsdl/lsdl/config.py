@@ -3,9 +3,8 @@ import re
 from collections import namedtuple
 from typing import Any, Optional, Self, final
 
-from .measurement import MeasurementBase
+from .lsp_model.core import MeasurementBase, SignalBase
 from .rust_code import COMPILER_INFERABLE_TYPE, RUST_DEFAULT_VALUE, RustCode
-from .signal import SignalBase
 
 logging.basicConfig(encoding='utf-8', level=logging.INFO)
 

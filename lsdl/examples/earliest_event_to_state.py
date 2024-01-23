@@ -1,7 +1,8 @@
 """Implementation for https://conviva.atlassian.net/browse/TSA-473"""
 
-from lsdl.prelude import print_ir_to_stdout, Const, Latch, InputSchemaBase, \
-    StateMachine, String
+from lsdl import print_ir_to_stdout
+from lsdl.lsp_model import InputSchemaBase, String
+from lsdl.processors import Const, Latch, StateMachine
 
 
 class InputSignal(InputSchemaBase):

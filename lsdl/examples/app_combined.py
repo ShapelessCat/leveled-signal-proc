@@ -1,5 +1,6 @@
-from lsdl.prelude import named, has_been_true, print_ir_to_stdout, Const, \
-    InputSchemaBase, SignalFilterBuilder, StateMachine, String
+from lsdl import print_ir_to_stdout
+from lsdl.lsp_model import named, InputSchemaBase, String
+from lsdl.processors import Const, SignalFilterBuilder, StateMachine
 
 
 # First, we need define the input schema
@@ -62,9 +63,10 @@ player_state = (
 seeking = (input_signal.raw_event == RE_SEEK_F) | \
           (input_signal.raw_event == RE_SEEK_B)
 is_buffering = player_state == VE_BUFFER
+is_playing = player_state == VE_PLAY
 (is_buffering &
- has_been_true(player_state == VE_PLAY) &
- has_been_true(seeking, duration="5s")) \
+ is_playing.has_been_true() &
+ seeking.has_been_true(duration="5s")) \
     .measure_duration_since_true() \
     .add_metric("connectionInducedBufferingTime")
 

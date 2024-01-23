@@ -1,7 +1,7 @@
 from typing import final
-from ...componet_base import IndirectBuiltinMeasurementComponentBase
-from ...measurement import MeasurementBase
-from ...signal import SignalBase
+
+from ...lsp_model.componet_base import IndirectBuiltinMeasurementComponentBase
+from ...lsp_model.core import MeasurementBase, SignalBase
 
 
 @final

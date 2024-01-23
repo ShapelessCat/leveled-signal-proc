@@ -1,8 +1,8 @@
 from typing import final
 
-from ..componet_base import BuiltinProcessorComponentBase
+from ..lsp_model.componet_base import BuiltinProcessorComponentBase
+from ..lsp_model.core import SignalBase
 from ..rust_code import RUST_DEFAULT_VALUE, RustCode
-from ..signal import SignalBase
 
 
 @final

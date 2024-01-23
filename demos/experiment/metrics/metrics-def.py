@@ -1,6 +1,5 @@
 # extra-src: const.py schema.py scope.py first_video_attempt.py
-from lsdl.measurement import MeasurementBase
-from lsdl.prelude import measurement_config, print_ir_to_stdout
+from lsdl import measurement_config, print_ir_to_stdout
 from schema import input_signal
 
 import schema  # noqa: F401
@@ -32,7 +31,7 @@ ts_plus1 \
     .combine('x', 'y', 'y - x', ts_plus1_plus2) \
     .add_metric("diff", 'u64')
 
-encoded_frames: MeasurementBase = input_signal \
+encoded_frames = input_signal \
     .encoded_fps \
     .measure_linear_change() \
     .scope(scope.session_id) \
