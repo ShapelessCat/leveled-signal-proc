@@ -92,6 +92,12 @@ pub fn impl_signal_measurement_limit_side_control(input: TokenStream) -> TokenSt
     ctx.impl_measurement_limit_side_control().into()
 }
 
+#[proc_macro]
+pub fn impl_should_output(input: TokenStream) -> TokenStream {
+    let ctx = parse_macro_input!(input as MacroContext);
+    ctx.impl_should_output().into()
+}
+
 struct MainFnMeta {
     id: syn::Ident,
     path: syn::LitStr,
@@ -153,8 +159,8 @@ pub fn include_lsp_ir(input: TokenStream) -> TokenStream {
                     lsp_codegen::impl_signal_measurement_limit_side_control!(#path);
                     should_use_left_limit = __should_measure_left_side_limit;
                 }
-
-                if should_measure {
+                let should_output = lsp_codegen::impl_should_output!(#path); // TODO:
+                if should_measure && should_output {
                     let _metrics_bag = if should_use_left_limit {
                         left_limit_measurements
                     } else {

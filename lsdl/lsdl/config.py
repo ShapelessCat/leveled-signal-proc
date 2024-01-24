@@ -3,6 +3,7 @@ import re
 from collections import namedtuple
 from typing import Any, Optional, Self, final
 
+from .lsp_model.componet_base import LspComponentBase
 from .lsp_model.core import MeasurementBase, SignalBase
 from .rust_code import COMPILER_INFERABLE_TYPE, RUST_DEFAULT_VALUE, RustCode
 
@@ -47,6 +48,7 @@ class _MeasurementConfiguration:
     """
     def __init__(self):
         self._measure_at_event_lambda = "|_| true"
+        self._output_control_measurement_ids: list[str] = []
         self._measure_on_edge = None
         self._measure_side_flag = None
         self._metrics_drain = "json"
@@ -56,7 +58,26 @@ class _MeasurementConfiguration:
         # (metric name, initial value)
         self._complementary_output_reset_switch: Optional[_ResetSwitch] = None
 
-    def set_measure_at_filter(self, lambda_src: RustCode) -> Self:
+    def set_measure_at_measurement_true(self,
+                                        *lsp_components: LspComponentBase) -> Self:
+        """Set the rule for a single measurement triggered full measurement."""
+        measurements = []
+        for c in lsp_components:
+            match c:
+                case MeasurementBase():
+                    measurements.append(c)
+                case SignalBase():
+                    measurements.append(c.peek())
+                case _:
+                    raise Exception("Shouldn't reach here!")
+
+        self._output_control_measurement_ids = [
+            m.get_description()["id"]
+            for m in measurements
+        ]
+        return self
+
+    def set_measure_at_event_filter(self, lambda_src: RustCode) -> Self:
         """Set the rule for event triggered measurement."""
         self._measure_at_event_lambda = lambda_src
         return self
@@ -146,6 +167,9 @@ class _MeasurementConfiguration:
             "metrics_drain": self._metrics_drain,
             "output_schema": self._output_schema,
         }
+        if self._output_control_measurement_ids:
+            ret["output_control_measurement_ids"] = self._output_control_measurement_ids
+
         if self._measure_on_edge is not None:
             ret["measure_trigger_signal"] = self._measure_on_edge.get_description()
 
