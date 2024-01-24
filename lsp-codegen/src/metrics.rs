@@ -52,11 +52,9 @@ impl MacroContext {
             if let Some(switch) = &conf.reset_switch {
                 let metric_name = syn::Ident::new(&switch.metric_name, self.span());
                 let initial_value: syn::Expr = syn::parse_str(&switch.initial_value)?;
-                definition.extend(
-                    quote! {
-                        _previous_metrics_bag . #metric_name = #initial_value;
-                    }
-                )
+                definition.extend(quote! {
+                    _previous_metrics_bag . #metric_name = #initial_value;
+                })
             }
         }
         Ok(definition)
@@ -109,6 +107,35 @@ impl MacroContext {
             .unwrap_or_else(|e| e.into_compile_error());
         quote! {
             let __should_measure_left_side_limit : bool = (#signal_ref).clone();
+        }
+    }
+
+    pub(crate) fn impl_should_output(&self) -> TokenStream2 {
+        let measurement_node_ids = &self
+            .get_ir_data()
+            .measurement_policy
+            .output_control_measurement_ids;
+
+        match &measurement_node_ids[..] {
+            [] => quote! { true },
+            ids => {
+                let conjunction = ids
+                    .iter()
+                    .map(|id| {
+                        let measurement = self.get_node_ident(*id);
+                        quote! { #measurement . measure(&mut update_context) }
+                    })
+                    .reduce(|cond0, cond1| {
+                        quote! { #cond0 && #cond1 }
+                    });
+
+                quote! {
+                    {
+                        use lsp_runtime::measurement::Measurement;
+                        #conjunction
+                    }
+                }
+            }
         }
     }
 

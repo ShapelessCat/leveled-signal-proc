@@ -49,6 +49,7 @@ encoded_frames \
 
 measurement_config() \
     .enable_measure_for_event() \
+    .set_measure_at_measurement_true(scope.is_session_alive) \
     .set_complementary_output_reset_switch("session_id")
 
 print_ir_to_stdout()

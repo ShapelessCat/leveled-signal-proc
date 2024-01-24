@@ -125,6 +125,8 @@ pub struct MeasurementPolicy {
     #[serde(default = "default_measure_left_side_limit_signal")]
     pub measure_left_side_limit_signal: NodeInput,
     pub metrics_drain: MetricsDrainType,
+    #[serde(default)]
+    pub output_control_measurement_ids: Vec<usize>,
     pub output_schema: HashMap<String, MetricSpec>,
     pub complementary_output_config: Option<ComplementaryOutputConfig>,
 }
