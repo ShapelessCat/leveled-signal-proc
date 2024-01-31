@@ -8,7 +8,7 @@ import scope  # noqa: F401
 
 import first_video_attempt  # noqa: F401
 
-input_signal.peek_timestamp().add_metric("ts")
+input_signal.peek_timestamp(apply_builtin_formatter=True).add_metric("ts")
 
 ts_plus1 = (
     input_signal

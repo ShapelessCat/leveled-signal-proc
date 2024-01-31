@@ -324,10 +324,18 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         return Peek(self)
 
     @final
-    def peek_timestamp(self) -> 'MeasurementBase':
+    def peek_timestamp(self, apply_builtin_formatter=False) -> 'MeasurementBase':
         """Returns the current measurement timestamp for the given signal."""
         from ..measurements import PeekTimestamp
-        return PeekTimestamp(self)
+        peek_ts = PeekTimestamp(self)
+        if apply_builtin_formatter:
+            # Assume the input `nano_seconds` is a UTC timestamp
+            (lambda_param, lambda_body) = PeekTimestamp.BUILTIN_DATETIME_FORMATTER
+            mapped_peak_ts = peek_ts.map(lambda_param, lambda_body)
+            mapped_peak_ts.annotate_type('String')
+            return mapped_peak_ts
+        else:
+            return peek_ts
 
 
 class MeasurementBase(LeveledSignalProcessingModelComponentBase, ABC):
