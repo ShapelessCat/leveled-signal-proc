@@ -26,3 +26,15 @@ class PeekTimestamp(DirectBuiltinMeasurementComponentBase):
             upstreams=[input_signal]
         )
         self.annotate_type("u64")
+
+    BUILTIN_DATETIME_FORMATTER = (
+        "nano_seconds",
+        """{
+            use std::time::{UNIX_EPOCH, Duration};
+            use chrono::prelude::{DateTime, Utc};
+
+            let d = UNIX_EPOCH + Duration::from_nanos(*nano_seconds);
+            let datetime = DateTime::<Utc>::from(d);
+            datetime.format("%Y-%m-%d %H:%M:%S.%3f UTC").to_string()
+        }"""
+    )
