@@ -9,8 +9,9 @@ use lsp_runtime::{signal::SignalProcessor, Duration, Timestamp, UpdateContext};
 /// The state transition is triggered when the control input gets changed.
 /// The output is simply the current internal state.
 #[derive(Serialize)]
-pub struct StateMachine<Input, State: Clone, TransitionFunc, Trigger> {
+pub struct StateMachine<Input, State, TransitionFunc, Trigger> {
     state: State,
+    #[serde(skip_serializing)]
     transition: TransitionFunc,
     last_trigger_value: Trigger,
     _phantom: PhantomData<Input>,
@@ -45,8 +46,8 @@ impl<'a, EventIterator, Input, State, Transition, Trigger> SignalProcessor<'a, E
 where
     Transition: Fn(&State, &Input) -> State,
     EventIterator: Iterator,
-    State: Clone,
-    Trigger: Eq + Clone,
+    State: Clone + Serialize,
+    Trigger: Clone + Eq + Serialize,
 {
     type Input = (Trigger, Input);
 
@@ -65,8 +66,10 @@ where
     }
 }
 
+#[derive(Serialize)]
 pub struct SlidingWindow<Input, EmitFunc, Trigger, Output> {
     queue: VecDeque<Input>,
+    #[serde(skip_serializing)]
     emit_func: EmitFunc,
     last_trigger_value: Trigger,
     last_dequeued_value: Input,
@@ -93,9 +96,9 @@ impl<'a, Input, EmitFunc, Iter, Trigger, Output> SignalProcessor<'a, Iter>
 where
     EmitFunc: Fn(&VecDeque<Input>, &Input) -> Output,
     Iter: Iterator,
-    Output: Clone,
-    Trigger: Eq + Clone,
-    Input: Clone,
+    Output: Clone + Serialize,
+    Trigger: Clone + Eq + Serialize,
+    Input: Clone + Serialize,
 {
     type Input = (Trigger, Input);
 
@@ -117,9 +120,11 @@ where
     }
 }
 
+#[derive(Serialize)]
 pub struct SlidingTimeWindow<Input, EmitFunc, Trigger, Output> {
     queue: VecDeque<(Input, Timestamp)>,
     time_window_size: Duration,
+    #[serde(skip_serializing)]
     emit_func: EmitFunc,
     last_trigger_value: Trigger,
     last_dequeued_value: Input,
@@ -147,9 +152,9 @@ impl<'a, Input, EmitFunc, Iter, Trigger, Output> SignalProcessor<'a, Iter>
 where
     EmitFunc: Fn(&VecDeque<(Input, Timestamp)>, &Input) -> Output,
     Iter: Iterator,
-    Output: Clone,
-    Trigger: Eq + Clone,
-    Input: Clone,
+    Output: Clone + Serialize,
+    Trigger: Clone + Eq + Serialize,
+    Input: Clone + Serialize,
 {
     type Input = (Trigger, Input);
 

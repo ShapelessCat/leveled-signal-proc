@@ -5,7 +5,7 @@ use lsp_runtime::{measurement::Measurement, Timestamp, UpdateContext};
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct Peek<T>(T);
 
-impl<'a, I: Iterator, T: Clone> Measurement<'a, I> for Peek<T> {
+impl<'a, I: Iterator, T: Clone + Serialize> Measurement<'a, I> for Peek<T> {
     type Input = T;
 
     type Output = T;

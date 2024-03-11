@@ -10,6 +10,7 @@ use lsp_runtime::{signal::SignalProcessor, UpdateContext};
 #[derive(Debug, Serialize)]
 pub struct Accumulator<Data, ControlSignal, Filter> {
     prev_control_signal: ControlSignal,
+    #[serde(skip_serializing)]
     filter: Filter,
     accumulator: Data,
 }
@@ -32,8 +33,8 @@ where
 impl<'a, I, D, C, F> SignalProcessor<'a, I> for Accumulator<D, C, F>
 where
     I: Iterator,
-    D: AddAssign<D> + Clone,
-    C: Clone + PartialEq,
+    D: AddAssign<D> + Clone + Serialize,
+    C: Clone + PartialEq + Serialize,
     F: Fn(&C) -> bool,
 {
     type Input = (C, D);

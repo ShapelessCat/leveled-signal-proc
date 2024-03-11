@@ -28,6 +28,7 @@ impl<T: Clone> SignalFunc<T> for ConstSignalFunc<T> {
 /// level ends.
 #[derive(Debug, Serialize)]
 pub struct SignalGenerator<SignalFunc = ConstSignalFunc<i32>, SignalType = i32> {
+    #[serde(skip_serializing)]
     signal_func: SignalFunc,
     last_value: SignalType,
     until_ts: Timestamp,
@@ -84,7 +85,7 @@ impl<'a, I, F, O> SignalProcessor<'a, I> for SignalGenerator<F, O>
 where
     I: Iterator,
     F: FnMut(Timestamp) -> (O, Timestamp),
-    O: Clone,
+    O: Clone + Serialize,
 {
     type Input = ();
 

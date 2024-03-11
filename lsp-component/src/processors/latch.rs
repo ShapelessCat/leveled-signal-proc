@@ -4,7 +4,7 @@ use lsp_runtime::signal::SignalProcessor;
 use lsp_runtime::{Duration, Timestamp, UpdateContext};
 
 /// Abstracts the retention behavior of a latch
-pub trait Retention<T> {
+pub trait Retention<T>: Serialize {
     fn drop_timestamp(&mut self, now: Timestamp) -> Option<Timestamp>;
     fn should_drop(&mut self, now: Timestamp) -> Option<T>;
 }
@@ -31,7 +31,7 @@ pub struct TimeToLive<T> {
     time_to_live: Duration,
 }
 
-impl<T: Clone> Retention<T> for TimeToLive<T> {
+impl<T: Clone + Serialize> Retention<T> for TimeToLive<T> {
     fn drop_timestamp(&mut self, now: Timestamp) -> Option<Timestamp> {
         self.value_forgotten_timestamp = now + self.time_to_live;
         Some(self.time_to_live)
@@ -52,7 +52,7 @@ impl<T: Clone> Retention<T> for TimeToLive<T> {
 /// This concept borrowed from the hardware component which shares the same name. And it's widely
 /// used as one bit memory in digital circuits.
 #[derive(Default, Debug, Serialize)]
-pub struct Latch<Data: Clone, RetentionPolicy: Retention<Data> = KeepForever> {
+pub struct Latch<Data, RetentionPolicy: Retention<Data> = KeepForever> {
     data: Data,
     retention: RetentionPolicy,
 }
@@ -83,7 +83,7 @@ impl<C: Default, D> EdgeTriggeredLatch<C, D> {
     }
 }
 
-impl<T: Clone> Latch<T, TimeToLive<T>> {
+impl<T: Clone + Serialize> Latch<T, TimeToLive<T>> {
     pub fn with_forget_behavior(data: T, default: T, time_to_memorize: Duration) -> Self {
         Self {
             data,
@@ -96,7 +96,7 @@ impl<T: Clone> Latch<T, TimeToLive<T>> {
     }
 }
 
-impl<C: Default, D: Clone> EdgeTriggeredLatch<C, D, TimeToLive<D>> {
+impl<C: Default, D: Clone + Serialize> EdgeTriggeredLatch<C, D, TimeToLive<D>> {
     pub fn with_forget_behavior(data: D, default: D, time_to_memorize: Duration) -> Self {
         Self {
             data,
@@ -110,7 +110,7 @@ impl<C: Default, D: Clone> EdgeTriggeredLatch<C, D, TimeToLive<D>> {
     }
 }
 
-impl<'a, I: Iterator, T: Clone, R: Retention<T>> SignalProcessor<'a, I> for Latch<T, R> {
+impl<'a, I: Iterator, T: Clone + Serialize, R: Retention<T>> SignalProcessor<'a, I> for Latch<T, R> {
     type Input = (bool, T);
     type Output = T;
     #[inline(always)]
@@ -127,7 +127,7 @@ impl<'a, I: Iterator, T: Clone, R: Retention<T>> SignalProcessor<'a, I> for Latc
     }
 }
 
-impl<'a, I: Iterator, C: PartialEq + Clone, D: Clone, R: Retention<D>> SignalProcessor<'a, I>
+impl<'a, I: Iterator, C: Clone + PartialEq + Serialize, D: Clone + Serialize, R: Retention<D>> SignalProcessor<'a, I>
     for EdgeTriggeredLatch<C, D, R>
 {
     type Input = (C, D);

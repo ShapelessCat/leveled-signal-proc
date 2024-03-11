@@ -29,12 +29,12 @@ impl<'a, I: Iterator> Measurement<'a, I> for DurationSinceBecomeTrue {
 }
 
 #[derive(Clone, Default, Debug, Serialize)]
-pub struct DurationSinceLastLevel<T: Clone> {
+pub struct DurationSinceLastLevel<T> {
     last_assignment_timestamp: Timestamp,
     last_level: Option<T>,
 }
 
-impl<'a, I: Iterator, T: Clone> Measurement<'a, I> for DurationSinceLastLevel<T> {
+impl<'a, I: Iterator, T: Clone + Serialize> Measurement<'a, I> for DurationSinceLastLevel<T> {
     type Input = T;
     type Output = Duration;
 

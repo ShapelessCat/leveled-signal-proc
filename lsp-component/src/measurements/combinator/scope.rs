@@ -1,3 +1,4 @@
+use std::fmt::{Debug, Display};
 use std::ops::Sub;
 
 use serde::Serialize;
@@ -30,8 +31,8 @@ impl<'a, EventIterator, ScopeType, MeasurementType, Output> Measurement<'a, Even
     for ScopedMeasurement<ScopeType, MeasurementType, Output>
 where
     EventIterator: Iterator,
-    ScopeType: Clone + Eq + std::fmt::Debug,
-    Output: Clone + Sub<Output = Output> + std::fmt::Display,
+    ScopeType: Serialize + Clone + Eq + Debug,
+    Output: Serialize + Clone + Sub<Output = Output> + Display,
     MeasurementType: Measurement<'a, EventIterator, Output = Output>,
 {
     type Input = (ScopeType, MeasurementType::Input);

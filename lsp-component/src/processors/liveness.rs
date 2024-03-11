@@ -13,6 +13,7 @@ use lsp_runtime::{Duration, Timestamp, UpdateContext, WithTimestamp};
 /// heartbeat event.
 #[derive(Serialize)]
 pub struct LivenessChecker<IsLivenessEventFunc, Clock, Event> {
+    #[serde(skip_serializing)]
     is_liveness_event: IsLivenessEventFunc,
     expiration_period: Duration,
     last_event_clock: Clock,
@@ -50,7 +51,7 @@ impl<'a, I, F, C, E> SignalProcessor<'a, I> for LivenessChecker<F, C, E>
 where
     I: Iterator<Item = E>,
     F: FnMut(&E) -> bool,
-    C: Clone + PartialEq,
+    C: Clone + PartialEq + Serialize,
     E: WithTimestamp,
 {
     type Input = C;

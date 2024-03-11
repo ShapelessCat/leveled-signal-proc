@@ -9,6 +9,7 @@ use lsp_runtime::UpdateContext;
 /// Mapping each input signal statelessly to an output signal.
 #[derive(Serialize)]
 pub struct SignalMapper<ParamType, OutputType, ClosureType> {
+    #[serde(skip_serializing)]
     how: ClosureType,
     _phantom_data: PhantomData<(ParamType, OutputType)>,
 }

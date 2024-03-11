@@ -1,3 +1,4 @@
+use std::fmt::Display;
 use std::marker::PhantomData;
 
 use serde::Serialize;
@@ -6,6 +7,7 @@ use lsp_runtime::{measurement::Measurement, UpdateContext};
 
 #[derive(Clone, Debug, Serialize)]
 pub struct MappedMeasurement<InnerOutput, OutputType, ClosureType, MeasurementType> {
+    #[serde(skip_serializing)]
     how: ClosureType,
     inner: MeasurementType,
     _phantom_data: PhantomData<(InnerOutput, OutputType)>,
@@ -30,7 +32,7 @@ impl<'a, EventIterator, InnerOutput, OutputType, ClosureType, MeasurementType>
     for MappedMeasurement<InnerOutput, OutputType, ClosureType, MeasurementType>
 where
     EventIterator: Iterator,
-    InnerOutput: Clone + std::fmt::Display,
+    InnerOutput: Clone + Display,
     ClosureType: Fn(&InnerOutput) -> OutputType,
     MeasurementType: Measurement<'a, EventIterator, Output = InnerOutput>,
 {

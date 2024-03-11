@@ -1,3 +1,4 @@
+use std::fmt::Display;
 use std::marker::PhantomData;
 
 use serde::Serialize;
@@ -13,6 +14,7 @@ pub struct BinaryCombinedMeasurement<
     MeasurementType0,
     MeasurementType1,
 > {
+    #[serde(skip_serializing)]
     binary_op: ClosureType,
     inner0: MeasurementType0,
     inner1: MeasurementType1,
@@ -61,7 +63,7 @@ impl<
     >
 where
     EventIterator: Iterator,
-    OutputType: Clone + std::fmt::Display,
+    OutputType: Clone + Display,
     ClosureType: Fn(&OutputType0, &OutputType1) -> OutputType,
     MeasurementType0: Measurement<'a, EventIterator, Output = OutputType0>,
     MeasurementType1: Measurement<'a, EventIterator, Output = OutputType1>,
