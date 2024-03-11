@@ -96,7 +96,11 @@ impl<T: Clone + Serialize> Latch<T, TimeToLive<T>> {
     }
 }
 
-impl<C: Default, D: Clone + Serialize> EdgeTriggeredLatch<C, D, TimeToLive<D>> {
+impl<C, D> EdgeTriggeredLatch<C, D, TimeToLive<D>>
+where
+    C: Default,
+    D: Clone + Serialize,
+{
     pub fn with_forget_behavior(data: D, default: D, time_to_memorize: Duration) -> Self {
         Self {
             data,
@@ -110,7 +114,12 @@ impl<C: Default, D: Clone + Serialize> EdgeTriggeredLatch<C, D, TimeToLive<D>> {
     }
 }
 
-impl<'a, I: Iterator, T: Clone + Serialize, R: Retention<T>> SignalProcessor<'a, I> for Latch<T, R> {
+impl<'a, I, T, R> SignalProcessor<'a, I> for Latch<T, R>
+where
+    I: Iterator,
+    T: Clone + Serialize,
+    R: Retention<T>,
+{
     type Input = (bool, T);
     type Output = T;
     #[inline(always)]
@@ -127,9 +136,14 @@ impl<'a, I: Iterator, T: Clone + Serialize, R: Retention<T>> SignalProcessor<'a,
     }
 }
 
-impl<'a, I: Iterator, C: Clone + PartialEq + Serialize, D: Clone + Serialize, R: Retention<D>> SignalProcessor<'a, I>
-    for EdgeTriggeredLatch<C, D, R>
+impl<'a, I, C, D, R> SignalProcessor<'a, I> for EdgeTriggeredLatch<C, D, R>
+where
+    I: Iterator,
+    C: Clone + PartialEq + Serialize,
+    D: Clone + Serialize,
+    R: Retention<D>
 {
+
     type Input = (C, D);
     type Output = D;
     #[inline(always)]

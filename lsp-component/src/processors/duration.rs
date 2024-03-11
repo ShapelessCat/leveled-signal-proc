@@ -13,7 +13,11 @@ pub struct DurationOfPreviousLevel<Level> {
     output_buf: Timestamp,
 }
 
-impl<'a, I: Iterator, L: Clone + PartialEq + Serialize> SignalProcessor<'a, I> for DurationOfPreviousLevel<L> {
+impl<'a, I, L> SignalProcessor<'a, I> for DurationOfPreviousLevel<L>
+where
+    I: Iterator,
+    L: Clone + PartialEq + Serialize
+{
     type Input = L;
 
     type Output = Duration;

@@ -34,7 +34,11 @@ pub struct DurationSinceLastLevel<T> {
     last_level: Option<T>,
 }
 
-impl<'a, I: Iterator, T: Clone + Serialize> Measurement<'a, I> for DurationSinceLastLevel<T> {
+impl<'a, I, T> Measurement<'a, I> for DurationSinceLastLevel<T>
+where
+    I: Iterator,
+    T: Clone + Serialize,
+{
     type Input = T;
     type Output = Duration;
 

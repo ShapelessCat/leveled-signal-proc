@@ -6,7 +6,10 @@ pub trait SignalFunc<T> {
     fn call(&mut self, ts: Timestamp) -> (T, Timestamp);
 }
 
-impl<T, F: FnMut(Timestamp) -> (T, Timestamp)> SignalFunc<T> for F {
+impl<T, F> SignalFunc<T> for F
+where
+    F: FnMut(Timestamp) -> (T, Timestamp),
+{
     fn call(&mut self, ts: Timestamp) -> (T, Timestamp) {
         self(ts)
     }

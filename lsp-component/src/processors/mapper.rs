@@ -20,10 +20,7 @@ impl<P, O, C> Debug for SignalMapper<P, O, C> {
     }
 }
 
-impl<P, O, C> SignalMapper<P, O, C>
-where
-    C: FnMut(&P) -> O,
-{
+impl<P, O, C: FnMut(&P) -> O> SignalMapper<P, O, C> {
     pub fn new(how: C) -> Self {
         SignalMapper {
             how,
@@ -32,8 +29,9 @@ where
     }
 }
 
-impl<'a, I: Iterator, P, O, C> SignalProcessor<'a, I> for SignalMapper<P, O, C>
+impl<'a, I, P, O, C> SignalProcessor<'a, I> for SignalMapper<P, O, C>
 where
+    I: Iterator,
     C: FnMut(&P) -> O,
 {
     type Input = P;
