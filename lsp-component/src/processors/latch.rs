@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::signal::SignalProcessor;
 use lsp_runtime::{Duration, Timestamp, UpdateContext};
@@ -10,7 +10,7 @@ pub trait Retention<T> {
 }
 
 /// The retention policy for latches that keep the value forever
-#[derive(Default, Debug, Deserialize, Serialize)]
+#[derive(Default, Debug, Serialize)]
 pub struct KeepForever;
 
 impl<T> Retention<T> for KeepForever {
@@ -24,7 +24,7 @@ impl<T> Retention<T> for KeepForever {
 }
 
 /// The retention policy for latches that keep the value for a period of time
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Serialize)]
 pub struct TimeToLive<T> {
     default_value: T,
     value_forgotten_timestamp: Timestamp,
@@ -51,13 +51,13 @@ impl<T: Clone> Retention<T> for TimeToLive<T> {
 /// When the control input becomes true, the latch changes its internal state to the data input.
 /// This concept borrowed from the hardware component which shares the same name. And it's widely
 /// used as one bit memory in digital circuits.
-#[derive(Default, Debug, Deserialize, Serialize)]
+#[derive(Default, Debug, Serialize)]
 pub struct Latch<Data: Clone, RetentionPolicy: Retention<Data> = KeepForever> {
     data: Data,
     retention: RetentionPolicy,
 }
 
-#[derive(Default, Debug, Deserialize, Serialize)]
+#[derive(Default, Debug, Serialize)]
 pub struct EdgeTriggeredLatch<Control, Data, RetentionPolicy: Retention<Data> = KeepForever> {
     last_control_level: Control,
     data: Data,

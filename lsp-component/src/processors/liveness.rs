@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::signal::SignalProcessor;
 use lsp_runtime::{Duration, Timestamp, UpdateContext, WithTimestamp};
@@ -11,7 +11,7 @@ use lsp_runtime::{Duration, Timestamp, UpdateContext, WithTimestamp};
 /// The liveness defined as we can find a heartbeat event within `expiration_period` amount of time.
 /// Thus, this operator uses the look ahead mechanism of the LSP system to see if there's a future
 /// heartbeat event.
-#[derive(Deserialize, Serialize)]
+#[derive(Serialize)]
 pub struct LivenessChecker<IsLivenessEventFunc, Clock, Event> {
     is_liveness_event: IsLivenessEventFunc,
     expiration_period: Duration,

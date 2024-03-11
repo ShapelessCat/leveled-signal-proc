@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::{signal::SignalProcessor, Duration, Timestamp, UpdateContext};
 
@@ -12,7 +12,7 @@ impl<T, F: FnMut(Timestamp) -> (T, Timestamp)> SignalFunc<T> for F {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Serialize)]
 pub struct ConstSignalFunc<T>(pub T);
 
 impl<T: Clone> SignalFunc<T> for ConstSignalFunc<T> {
@@ -26,7 +26,7 @@ impl<T: Clone> SignalFunc<T> for ConstSignalFunc<T> {
 /// The `SignalFunc` is a lambda that is called to determine the current level of the signal it
 /// receives a timestamp for now and returns a tuple of signal level and the timestamp when current
 /// level ends.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Serialize)]
 pub struct SignalGenerator<SignalFunc = ConstSignalFunc<i32>, SignalType = i32> {
     signal_func: SignalFunc,
     last_value: SignalType,

@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::{signal::SignalProcessor, Duration, Timestamp, UpdateContext};
 
@@ -6,7 +6,7 @@ use lsp_runtime::{signal::SignalProcessor, Duration, Timestamp, UpdateContext};
 /// Although the duration of current level cannot be a measurement, as it's a function of time,
 /// duration of previous level is a well-defined signal -- duration of previous level is a known
 /// value.
-#[derive(Default, Debug, Deserialize, Serialize)]
+#[derive(Default, Debug, Serialize)]
 pub struct DurationOfPreviousLevel<Level> {
     current_value: Level,
     current_value_since: Timestamp,

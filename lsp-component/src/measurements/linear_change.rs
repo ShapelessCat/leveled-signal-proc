@@ -1,8 +1,8 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::{measurement::Measurement, Timestamp, UpdateContext};
 
-#[derive(Clone, Default, Debug, Deserialize, Serialize)]
+#[derive(Clone, Default, Debug, Serialize)]
 pub struct LinearChange {
     current_rate: f64,
     current_rate_start: Timestamp,

@@ -1,6 +1,6 @@
 use std::{collections::VecDeque, fmt::Debug, marker::PhantomData};
 
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::{signal::SignalProcessor, Duration, Timestamp, UpdateContext};
 
@@ -8,7 +8,7 @@ use lsp_runtime::{signal::SignalProcessor, Duration, Timestamp, UpdateContext};
 /// The state transition is defined as a lambda function passed in when construction.
 /// The state transition is triggered when the control input gets changed.
 /// The output is simply the current internal state.
-#[derive(Deserialize, Serialize)]
+#[derive(Serialize)]
 pub struct StateMachine<Input, State: Clone, TransitionFunc, Trigger> {
     state: State,
     transition: TransitionFunc,

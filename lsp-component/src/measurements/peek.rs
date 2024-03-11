@@ -1,8 +1,8 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::{measurement::Measurement, Timestamp, UpdateContext};
 
-#[derive(Clone, Default, Debug, Deserialize, Serialize)]
+#[derive(Clone, Default, Debug, Serialize)]
 pub struct Peek<T>(T);
 
 impl<'a, I: Iterator, T: Clone> Measurement<'a, I> for Peek<T> {
@@ -21,7 +21,7 @@ impl<'a, I: Iterator, T: Clone> Measurement<'a, I> for Peek<T> {
 
 /// This is the measurement for timestamp.
 /// Time is not a leveled signal, and we can't use the [Peek] measurement to measure time.
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct PeekTimestamp;
 
 impl<'a, I: Iterator> Measurement<'a, I> for PeekTimestamp {

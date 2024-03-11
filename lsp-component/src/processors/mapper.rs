@@ -1,13 +1,13 @@
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::signal::SignalProcessor;
 use lsp_runtime::UpdateContext;
 
 /// Mapping each input signal statelessly to an output signal.
-#[derive(Deserialize, Serialize)]
+#[derive(Serialize)]
 pub struct SignalMapper<ParamType, OutputType, ClosureType> {
     how: ClosureType,
     _phantom_data: PhantomData<(ParamType, OutputType)>,

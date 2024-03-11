@@ -1,10 +1,10 @@
 use std::marker::PhantomData;
 
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::{measurement::Measurement, UpdateContext};
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct MappedMeasurement<InnerOutput, OutputType, ClosureType, MeasurementType> {
     how: ClosureType,
     inner: MeasurementType,
