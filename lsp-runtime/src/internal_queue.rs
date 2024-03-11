@@ -10,7 +10,7 @@ use crate::{Moment, Timestamp};
 /// change its value. To handle this case, we introduced the concept of internal event, which isn't
 /// triggered by any external event, but scheduled whenever the signal processor needs a recompute.
 ///
-/// Also, we handle the measurement request as a internal event.
+/// Also, we handle the measurement request as an internal event.
 #[derive(Default)]
 pub struct InternalEventQueue {
     queue: BinaryHeap<Reverse<Moment>>,
@@ -32,19 +32,16 @@ impl InternalEventQueue {
     }
 
     pub fn pop(&mut self) -> Option<Moment> {
-        if let Some(Reverse(mut ret)) = self.queue.pop() {
-            while let Some(Reverse(event)) = self.queue.peek() {
-                if let Some(merged) = ret.merge(event) {
-                    ret = merged;
-                } else {
-                    break;
-                }
-                self.queue.pop();
+        let Reverse(mut ret) = self.queue.pop()?;
+        while let Some(Reverse(event)) = self.queue.peek() {
+            if let Some(merged) = ret.merge(event) {
+                ret = merged;
+            } else {
+                break;
             }
-            Some(ret)
-        } else {
-            None
+            self.queue.pop();
         }
+        Some(ret)
     }
 }
 
