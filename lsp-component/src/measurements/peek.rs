@@ -33,7 +33,7 @@ impl<'a, I: Iterator> Measurement<'a, I> for PeekTimestamp {
     /// leveled signal, this method shouldn't do anything.
     fn update(&mut self, _: &mut UpdateContext<I>, _: &'a Self::Input) {}
 
-    /// This method can't depend on any recorded value, because time keeps changing and it is not a
+    /// This method can't depend on any recorded value, because time keeps changing, and it is not a
     /// leveled signal.
     fn measure(&self, ctx: &mut UpdateContext<I>) -> Self::Output {
         ctx.frontier()

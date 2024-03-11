@@ -72,7 +72,7 @@ impl InputSignalBag for StateBag {
 // This is a state machine that matches A(BC)*D
 // Actually there are algorithm which can automatically generate DFA from a regular expression
 // Thus in the code generator, the API would be like
-// macth_event_seq("A(BC)*D")
+// match_event_seq("A(BC)*D")
 fn state_transit(state: u32, input: &String) -> u32 {
     let next_state = match state {
         0 => {

@@ -155,7 +155,7 @@ class _MeasurementConfiguration:
 
         The `initial_value` should be a value that MUSTN'T match the first `metric_name` value.
         With a well design, the default value is a good choice. However, this is not always true,
-        sometimes pepole need to manually set it, and this is why we provide this API.
+        sometimes people need to manually set it, and this is why we provide this API.
         """
         self._complementary_output_reset_switch = _ResetSwitch(metric_name, initial_value)
         return self

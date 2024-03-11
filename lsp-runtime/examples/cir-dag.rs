@@ -70,7 +70,7 @@ impl InputSignalBag for InputType {
 
 #[allow(unused_assignments)]
 fn main() {
-    // To simplify the problem, we just assume the data comes from a input file
+    // To simplify the problem, we just assume the data comes from an input file
     let fin = File::open("../input.json").unwrap();
     let mut fout = BufWriter::new(File::open("/dev/null").unwrap());
     let reader = BufReader::new(fin);

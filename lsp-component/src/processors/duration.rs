@@ -4,7 +4,7 @@ use lsp_runtime::{signal::SignalProcessor, Duration, Timestamp, UpdateContext};
 
 /// Note:
 /// Although the duration of current level cannot be a measurement, as it's a function of time,
-/// duration of previous level is a well defined signal -- duration of previous level is a known
+/// duration of previous level is a well-defined signal -- duration of previous level is a known
 /// value.
 #[derive(Default, Debug, Deserialize, Serialize)]
 pub struct DurationOfPreviousLevel<Level> {
