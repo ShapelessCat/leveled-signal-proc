@@ -3,7 +3,7 @@ use std::ops::Sub;
 
 use serde::Serialize;
 
-use lsp_runtime::{measurement::Measurement, UpdateContext};
+use lsp_runtime::{signal_api::SignalMeasurement, UpdateContext};
 
 #[derive(Clone, Debug, Serialize)]
 pub struct ScopedMeasurement<ScopeType, MeasurementType, MeasurementOutput> {
@@ -27,13 +27,13 @@ where
     }
 }
 
-impl<'a, EventIterator, ScopeType, MeasurementType, Output> Measurement<'a, EventIterator>
+impl<'a, EventIterator, ScopeType, MeasurementType, Output> SignalMeasurement<'a, EventIterator>
     for ScopedMeasurement<ScopeType, MeasurementType, Output>
 where
     EventIterator: Iterator,
     ScopeType: Serialize + Clone + Eq + Debug,
     Output: Serialize + Clone + Sub<Output = Output> + Display,
-    MeasurementType: Measurement<'a, EventIterator, Output = Output>,
+    MeasurementType: SignalMeasurement<'a, EventIterator, Output = Output>,
 {
     type Input = (ScopeType, MeasurementType::Input);
     type Output = Output;

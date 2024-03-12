@@ -1,11 +1,11 @@
 use serde::Serialize;
 
-use lsp_runtime::{measurement::Measurement, Timestamp, UpdateContext};
+use lsp_runtime::{signal_api::SignalMeasurement, Timestamp, UpdateContext};
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct Peek<T>(T);
 
-impl<'a, I, T> Measurement<'a, I> for Peek<T>
+impl<'a, I, T> SignalMeasurement<'a, I> for Peek<T>
 where
     I: Iterator,
     T: Clone + Serialize,
@@ -28,7 +28,7 @@ where
 #[derive(Clone, Debug, Serialize)]
 pub struct PeekTimestamp;
 
-impl<'a, I: Iterator> Measurement<'a, I> for PeekTimestamp {
+impl<'a, I: Iterator> SignalMeasurement<'a, I> for PeekTimestamp {
     type Input = Timestamp;
 
     type Output = u64;

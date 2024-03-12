@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 
 use serde::Serialize;
 
-use lsp_runtime::signal::SignalProcessor;
+use lsp_runtime::signal_api::SignalProcessor;
 use lsp_runtime::UpdateContext;
 
 /// Mapping each input signal statelessly to an output signal.
@@ -46,7 +46,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use lsp_runtime::signal::SignalProcessor;
+    use lsp_runtime::signal_api::SignalProcessor;
 
     use crate::{processors::SignalMapper, test::create_lsp_context_for_test};
 

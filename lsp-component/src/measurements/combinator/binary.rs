@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 
 use serde::Serialize;
 
-use lsp_runtime::{measurement::Measurement, UpdateContext};
+use lsp_runtime::{signal_api::SignalMeasurement, UpdateContext};
 
 #[derive(Clone, Debug, Serialize)]
 pub struct BinaryCombinedMeasurement<
@@ -52,7 +52,7 @@ impl<
         ClosureType,
         MeasurementType0,
         MeasurementType1,
-    > Measurement<'a, EventIterator>
+    > SignalMeasurement<'a, EventIterator>
     for BinaryCombinedMeasurement<
         OutputType0,
         OutputType1,
@@ -65,8 +65,8 @@ where
     EventIterator: Iterator,
     OutputType: Clone + Display,
     ClosureType: Fn(&OutputType0, &OutputType1) -> OutputType,
-    MeasurementType0: Measurement<'a, EventIterator, Output = OutputType0>,
-    MeasurementType1: Measurement<'a, EventIterator, Output = OutputType1>,
+    MeasurementType0: SignalMeasurement<'a, EventIterator, Output = OutputType0>,
+    MeasurementType1: SignalMeasurement<'a, EventIterator, Output = OutputType1>,
 {
     type Input = (MeasurementType0::Input, MeasurementType1::Input);
     type Output = OutputType;

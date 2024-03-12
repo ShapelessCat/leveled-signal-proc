@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 
 use serde::Serialize;
 
-use lsp_runtime::{measurement::Measurement, UpdateContext};
+use lsp_runtime::{signal_api::SignalMeasurement, UpdateContext};
 
 #[derive(Clone, Debug, Serialize)]
 pub struct MappedMeasurement<InnerOutput, OutputType, ClosureType, MeasurementType> {
@@ -28,13 +28,13 @@ where
 }
 
 impl<'a, EventIterator, InnerOutput, OutputType, ClosureType, MeasurementType>
-    Measurement<'a, EventIterator>
+    SignalMeasurement<'a, EventIterator>
     for MappedMeasurement<InnerOutput, OutputType, ClosureType, MeasurementType>
 where
     EventIterator: Iterator,
     InnerOutput: Clone + Display,
     ClosureType: Fn(&InnerOutput) -> OutputType,
-    MeasurementType: Measurement<'a, EventIterator, Output = InnerOutput>,
+    MeasurementType: SignalMeasurement<'a, EventIterator, Output = InnerOutput>,
 {
     type Input = MeasurementType::Input;
     type Output = OutputType;

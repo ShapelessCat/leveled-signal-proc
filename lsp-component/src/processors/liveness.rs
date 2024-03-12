@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 
 use serde::Serialize;
 
-use lsp_runtime::signal::SignalProcessor;
+use lsp_runtime::signal_api::SignalProcessor;
 use lsp_runtime::{Duration, Timestamp, UpdateContext, WithTimestamp};
 
 /// This is the signal processor that analyzes the liveness of a session based on heartbeat signals.
@@ -78,7 +78,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use lsp_runtime::signal::SignalProcessor;
+    use lsp_runtime::signal_api::SignalProcessor;
 
     use crate::test::{create_lsp_context_for_test_from_input_slice, TestSignalInput};
 

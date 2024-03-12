@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use lsp_runtime::{measurement::Measurement, Duration, Timestamp, UpdateContext};
+use lsp_runtime::{signal_api::SignalMeasurement, Duration, Timestamp, UpdateContext};
 
 #[derive(Clone, Default, Serialize)]
 pub struct DurationSinceBecomeTrue {
@@ -8,7 +8,7 @@ pub struct DurationSinceBecomeTrue {
     last_assignment_timestamp: Timestamp,
 }
 
-impl<'a, I: Iterator> Measurement<'a, I> for DurationSinceBecomeTrue {
+impl<'a, I: Iterator> SignalMeasurement<'a, I> for DurationSinceBecomeTrue {
     type Input = bool;
     type Output = Duration;
 
@@ -34,7 +34,7 @@ pub struct DurationSinceLastLevel<T> {
     last_level: Option<T>,
 }
 
-impl<'a, I, T> Measurement<'a, I> for DurationSinceLastLevel<T>
+impl<'a, I, T> SignalMeasurement<'a, I> for DurationSinceLastLevel<T>
 where
     I: Iterator,
     T: Clone + Serialize,
@@ -63,7 +63,7 @@ pub struct DurationTrue {
     last_true_starts: Timestamp,
 }
 
-impl<'a, I: Iterator> Measurement<'a, I> for DurationTrue {
+impl<'a, I: Iterator> SignalMeasurement<'a, I> for DurationTrue {
     type Input = bool;
     type Output = Duration;
 

@@ -2,7 +2,7 @@ use std::{collections::VecDeque, fmt::Debug, marker::PhantomData};
 
 use serde::Serialize;
 
-use lsp_runtime::{signal::SignalProcessor, Duration, Timestamp, UpdateContext};
+use lsp_runtime::{signal_api::SignalProcessor, Duration, Timestamp, UpdateContext};
 
 /// A state machine is a signal processor that maintains a state machine internally.
 /// The state transition is defined as a lambda function passed in when construction.

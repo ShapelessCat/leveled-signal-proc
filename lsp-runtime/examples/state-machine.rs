@@ -24,10 +24,8 @@ use lsp_component::{
     measurements::Peek,
     processors::{Accumulator, DurationOfPreviousLevel, Latch, SignalMapper, StateMachine},
 };
-use lsp_runtime::{
-    measurement::Measurement, signal::SignalProcessor, InputSignalBag, LspContext, Timestamp,
-    WithTimestamp,
-};
+use lsp_runtime::signal_api::{SignalMeasurement, SignalProcessor};
+use lsp_runtime::{InputSignalBag, LspContext, Timestamp, WithTimestamp};
 use serde::Deserialize;
 use serde_json::Deserializer;
 

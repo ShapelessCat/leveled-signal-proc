@@ -131,7 +131,7 @@ impl MacroContext {
 
                 quote! {
                     {
-                        use lsp_runtime::measurement::Measurement;
+                        use lsp_runtime::signal_api::SignalMeasurement;
                         #conjunction
                     }
                 }
@@ -149,7 +149,7 @@ impl MacroContext {
             };
             item_list.push(quote! {
                 #id: {
-                    use lsp_runtime::measurement::Measurement;
+                    use lsp_runtime::signal_api::SignalMeasurement;
                     #node_ref . measure(&mut update_context)
                 }
             });
@@ -171,13 +171,13 @@ impl MacroContext {
                 let candidates = (
                     quote! {
                         #id: {
-                            use lsp_runtime::measurement::Measurement;
+                            use lsp_runtime::signal_api::SignalMeasurement;
                             #node_ref . measure(&mut update_context) - _previous_metrics_bag . #source_id
                         }
                     },
                     quote! {
                         #id: {
-                            use lsp_runtime::measurement::Measurement;
+                            use lsp_runtime::signal_api::SignalMeasurement;
                             #node_ref . measure(&mut update_context)
                         }
                     },
@@ -201,7 +201,7 @@ impl MacroContext {
                     };
                     quote! {
                         let #reset = {
-                            use lsp_runtime::measurement::Measurement;
+                            use lsp_runtime::signal_api::SignalMeasurement;
                             #node_ref . measure(&mut update_context)
                         };
                         let _metrics_bag = if _previous_metrics_bag . #reset == #reset {

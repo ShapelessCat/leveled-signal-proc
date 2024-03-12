@@ -138,11 +138,11 @@ impl MacroContext {
         }
         let use_stmt = if node.is_measurement {
             quote! {
-                use lsp_runtime::measurement::Measurement;
+                use lsp_runtime::signal_api::SignalMeasurement;
             }
         } else {
             quote! {
-                use lsp_runtime::signal::SignalProcessor;
+                use lsp_runtime::signal_api::SignalProcessor;
             }
         };
         Ok(quote! {

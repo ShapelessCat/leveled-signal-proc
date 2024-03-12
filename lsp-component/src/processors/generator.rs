@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use lsp_runtime::{signal::SignalProcessor, Duration, Timestamp, UpdateContext};
+use lsp_runtime::{signal_api::SignalProcessor, Duration, Timestamp, UpdateContext};
 
 pub trait SignalFunc<T> {
     fn call(&mut self, ts: Timestamp) -> (T, Timestamp);
@@ -110,7 +110,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use lsp_runtime::signal::SignalProcessor;
+    use lsp_runtime::signal_api::SignalProcessor;
 
     use crate::test::{create_lsp_context_for_test, TestSignalBag};
 

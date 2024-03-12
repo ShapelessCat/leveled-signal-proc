@@ -66,9 +66,8 @@ use std::{
 };
 
 use lsp_component::{measurements::DurationTrue, processors::SignalMapper};
-use lsp_runtime::{
-    measurement::Measurement, signal::SignalProcessor, InputSignalBag, LspContext, WithTimestamp,
-};
+use lsp_runtime::signal_api::{SignalMeasurement, SignalProcessor};
+use lsp_runtime::{InputSignalBag, LspContext, WithTimestamp};
 use serde::Deserialize;
 use serde_json::Deserializer;
 

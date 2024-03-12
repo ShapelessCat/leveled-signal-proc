@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use lsp_runtime::signal::SignalProcessor;
+use lsp_runtime::signal_api::SignalProcessor;
 use lsp_runtime::{Duration, Timestamp, UpdateContext};
 
 /// Abstracts the retention behavior of a latch
@@ -168,7 +168,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use lsp_runtime::signal::SignalProcessor;
+    use lsp_runtime::signal_api::SignalProcessor;
 
     use crate::{processors::Latch, test::create_lsp_context_for_test};
 

@@ -16,7 +16,7 @@ use chrono::{DateTime, Utc};
 use lsp_component::processors::{
     Accumulator, DurationOfPreviousLevel, Latch, LivenessChecker, SignalMapper, StateMachine,
 };
-use lsp_runtime::{signal::SignalProcessor, InputSignalBag, LspContext, Timestamp, WithTimestamp};
+use lsp_runtime::{signal_api::SignalProcessor, InputSignalBag, LspContext, Timestamp, WithTimestamp};
 use serde::Deserialize;
 use serde_json::Deserializer;
 

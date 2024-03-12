@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use lsp_runtime::{measurement::Measurement, Timestamp, UpdateContext};
+use lsp_runtime::{signal_api::SignalMeasurement, Timestamp, UpdateContext};
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct LinearChange {
@@ -9,7 +9,7 @@ pub struct LinearChange {
     accumulated_amount: f64,
 }
 
-impl<'a, I: Iterator> Measurement<'a, I> for LinearChange {
+impl<'a, I: Iterator> SignalMeasurement<'a, I> for LinearChange {
     type Input = f64;
     type Output = f64;
 

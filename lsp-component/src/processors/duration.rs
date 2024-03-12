@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use lsp_runtime::{signal::SignalProcessor, Duration, Timestamp, UpdateContext};
+use lsp_runtime::{signal_api::SignalProcessor, Duration, Timestamp, UpdateContext};
 
 /// Note:
 /// Although the duration of current level cannot be a measurement, as it's a function of time,
@@ -35,7 +35,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use lsp_runtime::signal::SignalProcessor;
+    use lsp_runtime::signal_api::SignalProcessor;
 
     use crate::test::{create_lsp_context_for_test, TestSignalBag};
 

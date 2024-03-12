@@ -2,7 +2,7 @@ use std::ops::AddAssign;
 
 use serde::Serialize;
 
-use lsp_runtime::{signal::SignalProcessor, UpdateContext};
+use lsp_runtime::{signal_api::SignalProcessor, UpdateContext};
 
 /// An accumulator is a signal processor that constantly add input to the internal state.
 /// Normally accumulator doesn't add input to the internal state, until it sees the control signal
@@ -59,7 +59,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use lsp_runtime::signal::SignalProcessor;
+    use lsp_runtime::signal_api::SignalProcessor;
 
     use crate::test::create_lsp_context_for_test;
 
