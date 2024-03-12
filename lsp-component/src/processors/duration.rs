@@ -1,6 +1,8 @@
 use serde::Serialize;
 
-use lsp_runtime::{signal_api::SignalProcessor, Duration, Timestamp, UpdateContext};
+use lsp_runtime::context::UpdateContext;
+use lsp_runtime::signal_api::SignalProcessor;
+use lsp_runtime::{Duration, Timestamp};
 
 /// Note:
 /// Although the duration of current level cannot be a measurement, as it's a function of time,
@@ -16,7 +18,7 @@ pub struct DurationOfPreviousLevel<Level> {
 impl<'a, I, L> SignalProcessor<'a, I> for DurationOfPreviousLevel<L>
 where
     I: Iterator,
-    L: Clone + PartialEq + Serialize
+    L: Clone + PartialEq + Serialize,
 {
     type Input = L;
 

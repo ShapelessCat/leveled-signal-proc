@@ -1,7 +1,8 @@
 use serde::Serialize;
 
+use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::SignalProcessor;
-use lsp_runtime::{Duration, Timestamp, UpdateContext};
+use lsp_runtime::{Duration, Timestamp};
 
 /// Abstracts the retention behavior of a latch
 pub trait Retention<T>: Serialize {
@@ -141,9 +142,8 @@ where
     I: Iterator,
     C: Clone + PartialEq + Serialize,
     D: Clone + Serialize,
-    R: Retention<D>
+    R: Retention<D>,
 {
-
     type Input = (C, D);
     type Output = D;
     #[inline(always)]

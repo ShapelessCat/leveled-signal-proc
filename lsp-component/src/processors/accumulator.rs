@@ -2,7 +2,8 @@ use std::ops::AddAssign;
 
 use serde::Serialize;
 
-use lsp_runtime::{signal_api::SignalProcessor, UpdateContext};
+use lsp_runtime::context::UpdateContext;
+use lsp_runtime::signal_api::SignalProcessor;
 
 /// An accumulator is a signal processor that constantly add input to the internal state.
 /// Normally accumulator doesn't add input to the internal state, until it sees the control signal

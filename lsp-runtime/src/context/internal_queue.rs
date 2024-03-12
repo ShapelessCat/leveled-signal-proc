@@ -1,4 +1,5 @@
-use std::{cmp::Reverse, collections::BinaryHeap};
+use std::cmp::Reverse;
+use std::collections::BinaryHeap;
 
 use crate::{Moment, Timestamp};
 

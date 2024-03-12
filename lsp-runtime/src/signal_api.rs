@@ -1,5 +1,6 @@
 use serde::Serialize;
-use crate::UpdateContext;
+
+use crate::context::UpdateContext;
 
 pub trait SignalProcessor<'a, EventIt: Iterator>: Serialize {
     type Input;

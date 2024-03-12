@@ -1,6 +1,8 @@
 use serde::Serialize;
 
-use lsp_runtime::{signal_api::SignalProcessor, Duration, Timestamp, UpdateContext};
+use lsp_runtime::context::UpdateContext;
+use lsp_runtime::signal_api::SignalProcessor;
+use lsp_runtime::{Duration, Timestamp};
 
 pub trait SignalFunc<T> {
     fn call(&mut self, ts: Timestamp) -> (T, Timestamp);

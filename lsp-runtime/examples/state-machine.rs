@@ -20,14 +20,16 @@
 use std::{fs::File, io::BufReader};
 
 use chrono::{DateTime, Utc};
+use serde::Deserialize;
+use serde_json::Deserializer;
+
 use lsp_component::{
     measurements::Peek,
     processors::{Accumulator, DurationOfPreviousLevel, Latch, SignalMapper, StateMachine},
 };
+use lsp_runtime::context::{InputSignalBag, LspContext, WithTimestamp};
 use lsp_runtime::signal_api::{SignalMeasurement, SignalProcessor};
-use lsp_runtime::{InputSignalBag, LspContext, Timestamp, WithTimestamp};
-use serde::Deserialize;
-use serde_json::Deserializer;
+use lsp_runtime::Timestamp;
 
 #[derive(Default, Clone, Debug)]
 struct StateBag {

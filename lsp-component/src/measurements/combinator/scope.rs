@@ -3,7 +3,8 @@ use std::ops::Sub;
 
 use serde::Serialize;
 
-use lsp_runtime::{signal_api::SignalMeasurement, UpdateContext};
+use lsp_runtime::context::UpdateContext;
+use lsp_runtime::signal_api::SignalMeasurement;
 
 #[derive(Clone, Debug, Serialize)]
 pub struct ScopedMeasurement<ScopeType, MeasurementType, MeasurementOutput> {

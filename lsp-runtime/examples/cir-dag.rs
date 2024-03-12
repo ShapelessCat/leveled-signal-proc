@@ -1,17 +1,18 @@
-use chrono::{DateTime, Utc};
 use std::{
     fs::File,
     io::{BufReader, BufWriter, Write},
 };
 
+use chrono::{DateTime, Utc};
+use serde::Deserialize;
+use serde_json::Deserializer;
+
 use lsp_component::{
     measurements::DurationTrue,
     processors::{Latch, SignalMapper},
 };
+use lsp_runtime::context::{InputSignalBag, LspContext, WithTimestamp};
 use lsp_runtime::signal_api::{SignalMeasurement, SignalProcessor};
-use lsp_runtime::{InputSignalBag, LspContext, WithTimestamp};
-use serde::Deserialize;
-use serde_json::Deserializer;
 
 #[derive(Default, Debug, Clone)]
 struct InputType {

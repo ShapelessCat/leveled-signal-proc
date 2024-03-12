@@ -3,8 +3,9 @@ use std::marker::PhantomData;
 
 use serde::Serialize;
 
+use lsp_runtime::context::{UpdateContext, WithTimestamp};
 use lsp_runtime::signal_api::SignalProcessor;
-use lsp_runtime::{Duration, Timestamp, UpdateContext, WithTimestamp};
+use lsp_runtime::{Duration, Timestamp};
 
 /// This is the signal processor that analyzes the liveness of a session based on heartbeat signals.
 /// The output constantly answering the question: Is current session still alive?

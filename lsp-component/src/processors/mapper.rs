@@ -3,8 +3,8 @@ use std::marker::PhantomData;
 
 use serde::Serialize;
 
+use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::SignalProcessor;
-use lsp_runtime::UpdateContext;
 
 /// Mapping each input signal statelessly to an output signal.
 #[derive(Serialize)]

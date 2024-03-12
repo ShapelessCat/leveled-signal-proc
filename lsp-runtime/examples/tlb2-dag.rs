@@ -1,4 +1,3 @@
-use chrono::{DateTime, Utc};
 /// This implements the DAG that is used in TLB2 profiling (See https://conviva.atlassian.net/wiki/spaces/~589178245/pages/1867646607/DAG-level+instrumentation for details)
 /// Please note that this file will be automatically generate from the LSP DSL in the formal LSP system.
 /// Currently, this file is handwritten for demonstration purposes.
@@ -65,11 +64,13 @@ use std::{
     io::{BufReader, BufWriter, Write},
 };
 
-use lsp_component::{measurements::DurationTrue, processors::SignalMapper};
-use lsp_runtime::signal_api::{SignalMeasurement, SignalProcessor};
-use lsp_runtime::{InputSignalBag, LspContext, WithTimestamp};
+use chrono::{DateTime, Utc};
 use serde::Deserialize;
 use serde_json::Deserializer;
+
+use lsp_component::{measurements::DurationTrue, processors::SignalMapper};
+use lsp_runtime::context::{InputSignalBag, LspContext, WithTimestamp};
+use lsp_runtime::signal_api::{SignalMeasurement, SignalProcessor};
 
 #[derive(Default, Debug, Clone)]
 struct InputType {

@@ -12,8 +12,9 @@ use lsp_component::{
         Accumulator, DurationOfPreviousLevel, Latch, LivenessChecker, SignalMapper, StateMachine,
     },
 };
+use lsp_runtime::context::{InputSignalBag, LspContext, WithTimestamp};
 use lsp_runtime::signal_api::{SignalMeasurement, SignalProcessor};
-use lsp_runtime::{InputSignalBag, LspContext, Timestamp, WithTimestamp};
+use lsp_runtime::Timestamp;
 
 #[derive(Default, Clone, Debug)]
 struct StateBag {

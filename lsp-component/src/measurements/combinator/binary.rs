@@ -3,7 +3,8 @@ use std::marker::PhantomData;
 
 use serde::Serialize;
 
-use lsp_runtime::{signal_api::SignalMeasurement, UpdateContext};
+use lsp_runtime::context::UpdateContext;
+use lsp_runtime::signal_api::SignalMeasurement;
 
 #[derive(Clone, Debug, Serialize)]
 pub struct BinaryCombinedMeasurement<

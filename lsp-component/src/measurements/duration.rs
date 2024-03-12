@@ -1,6 +1,8 @@
 use serde::Serialize;
 
-use lsp_runtime::{signal_api::SignalMeasurement, Duration, Timestamp, UpdateContext};
+use lsp_runtime::context::UpdateContext;
+use lsp_runtime::signal_api::SignalMeasurement;
+use lsp_runtime::{Duration, Timestamp};
 
 #[derive(Clone, Default, Serialize)]
 pub struct DurationSinceBecomeTrue {

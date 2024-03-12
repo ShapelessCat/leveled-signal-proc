@@ -108,7 +108,7 @@ impl MacroContext {
                 timestamp: chrono::DateTime<chrono::Utc>,
                 #(#diff_item_impls)*
             }
-            impl lsp_runtime::WithTimestamp for #patch_type_name {
+            impl lsp_runtime::context::WithTimestamp for #patch_type_name {
                 fn timestamp(&self) -> lsp_runtime::Timestamp {
                     self.timestamp
                         .timestamp_nanos_opt()
@@ -116,7 +116,7 @@ impl MacroContext {
                         as lsp_runtime::Timestamp
                 }
             }
-            impl lsp_runtime::InputSignalBag for #type_name {
+            impl lsp_runtime::context::InputSignalBag for #type_name {
                 type Input = #patch_type_name;
                 fn patch(&mut self, patch: #patch_type_name) {
                     #(#patch_code_impls)*

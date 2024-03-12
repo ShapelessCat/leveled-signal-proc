@@ -1,6 +1,8 @@
 use serde::Serialize;
 
-use lsp_runtime::{signal_api::SignalMeasurement, Timestamp, UpdateContext};
+use lsp_runtime::context::UpdateContext;
+use lsp_runtime::signal_api::SignalMeasurement;
+use lsp_runtime::Timestamp;
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct LinearChange {
