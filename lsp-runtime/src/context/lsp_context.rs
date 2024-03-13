@@ -1,28 +1,9 @@
 use std::marker::PhantomData;
 
-use crate::{multipeek::MultiPeek, Duration, InternalEventQueue, Moment, Timestamp};
+use crate::context::{InputSignalBag, InternalEventQueue, MultiPeek, WithTimestamp};
+use crate::{Duration, Moment, Timestamp};
 
-/// Some type with timestamp information.
-/// Typically, an event taken from outside should implements this trait and the context is
-/// responsible assemble the simultaneous event into the global input state.
-pub trait WithTimestamp {
-    fn timestamp(&self) -> Timestamp;
-}
-
-/// The global input state which applies the incoming events as patches to the state and this is the
-/// external input type of the LSP system.
-pub trait InputSignalBag: Clone + Default {
-    type Input;
-    /// Patch an event to the state
-    fn patch(&mut self, patch: Self::Input);
-
-    /// Determine if an input state need to trigger a measurement
-    fn should_measure(&mut self) -> bool {
-        false
-    }
-}
-
-/// The global context of a LSP system. This type is responsible for the following things:
+/// The global context of an LSP system. This type is responsible for the following things:
 /// 1. Take the ownership of an event queue which contains all the pending internal events
 /// 2. Assemble events into valid global state
 /// 3. Control the iteration of the LSP main iteration

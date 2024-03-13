@@ -1,18 +1,23 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
-use lsp_runtime::{signal::SignalProcessor, Duration, Timestamp, UpdateContext};
+use lsp_runtime::context::UpdateContext;
+use lsp_runtime::signal_api::SignalProcessor;
+use lsp_runtime::{Duration, Timestamp};
 
 pub trait SignalFunc<T> {
     fn call(&mut self, ts: Timestamp) -> (T, Timestamp);
 }
 
-impl<T, F: FnMut(Timestamp) -> (T, Timestamp)> SignalFunc<T> for F {
+impl<T, F> SignalFunc<T> for F
+where
+    F: FnMut(Timestamp) -> (T, Timestamp),
+{
     fn call(&mut self, ts: Timestamp) -> (T, Timestamp) {
         self(ts)
     }
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Serialize)]
 pub struct ConstSignalFunc<T>(pub T);
 
 impl<T: Clone> SignalFunc<T> for ConstSignalFunc<T> {
@@ -26,8 +31,9 @@ impl<T: Clone> SignalFunc<T> for ConstSignalFunc<T> {
 /// The `SignalFunc` is a lambda that is called to determine the current level of the signal it
 /// receives a timestamp for now and returns a tuple of signal level and the timestamp when current
 /// level ends.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Serialize)]
 pub struct SignalGenerator<SignalFunc = ConstSignalFunc<i32>, SignalType = i32> {
+    #[serde(skip_serializing)]
     signal_func: SignalFunc,
     last_value: SignalType,
     until_ts: Timestamp,
@@ -84,7 +90,7 @@ impl<'a, I, F, O> SignalProcessor<'a, I> for SignalGenerator<F, O>
 where
     I: Iterator,
     F: FnMut(Timestamp) -> (O, Timestamp),
-    O: Clone,
+    O: Clone + Serialize,
 {
     type Input = ();
 
@@ -106,7 +112,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use lsp_runtime::signal::SignalProcessor;
+    use lsp_runtime::signal_api::SignalProcessor;
 
     use crate::test::{create_lsp_context_for_test, TestSignalBag};
 

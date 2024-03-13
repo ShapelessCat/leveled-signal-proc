@@ -1,22 +1,29 @@
 use std::{collections::VecDeque, fmt::Debug, marker::PhantomData};
 
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
-use lsp_runtime::{signal::SignalProcessor, Duration, Timestamp, UpdateContext};
+use lsp_runtime::context::UpdateContext;
+use lsp_runtime::signal_api::SignalProcessor;
+use lsp_runtime::{Duration, Timestamp};
 
 /// A state machine is a signal processor that maintains a state machine internally.
 /// The state transition is defined as a lambda function passed in when construction.
 /// The state transition is triggered when the control input gets changed.
 /// The output is simply the current internal state.
-#[derive(Deserialize, Serialize)]
-pub struct StateMachine<Input, State: Clone, TransitionFunc, Trigger> {
+#[derive(Serialize)]
+pub struct StateMachine<Input, State, TransitionFunc, Trigger> {
     state: State,
+    #[serde(skip_serializing)]
     transition: TransitionFunc,
     last_trigger_value: Trigger,
     _phantom: PhantomData<Input>,
 }
 
-impl<I, S: Debug + Clone, F, T: Debug> Debug for StateMachine<I, S, F, T> {
+impl<I, S, F, T> Debug for StateMachine<I, S, F, T>
+where
+    S: Debug + Clone,
+    T: Debug,
+{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("StateMachine")
             .field("state", &self.state)
@@ -26,7 +33,11 @@ impl<I, S: Debug + Clone, F, T: Debug> Debug for StateMachine<I, S, F, T> {
     }
 }
 
-impl<I, S: Clone, F, T: Default> StateMachine<I, S, F, T> {
+impl<I, S, F, T> StateMachine<I, S, F, T>
+where
+    S: Clone,
+    T: Default,
+{
     pub fn new(initial_state: S, transition: F) -> Self
     where
         F: Fn(&S, &I) -> S,
@@ -45,8 +56,8 @@ impl<'a, EventIterator, Input, State, Transition, Trigger> SignalProcessor<'a, E
 where
     Transition: Fn(&State, &Input) -> State,
     EventIterator: Iterator,
-    State: Clone,
-    Trigger: Eq + Clone,
+    State: Clone + Serialize,
+    Trigger: Clone + Eq + Serialize,
 {
     type Input = (Trigger, Input);
 
@@ -65,8 +76,10 @@ where
     }
 }
 
+#[derive(Serialize)]
 pub struct SlidingWindow<Input, EmitFunc, Trigger, Output> {
     queue: VecDeque<Input>,
+    #[serde(skip_serializing)]
     emit_func: EmitFunc,
     last_trigger_value: Trigger,
     last_dequeued_value: Input,
@@ -93,9 +106,9 @@ impl<'a, Input, EmitFunc, Iter, Trigger, Output> SignalProcessor<'a, Iter>
 where
     EmitFunc: Fn(&VecDeque<Input>, &Input) -> Output,
     Iter: Iterator,
-    Output: Clone,
-    Trigger: Eq + Clone,
-    Input: Clone,
+    Output: Clone + Serialize,
+    Trigger: Clone + Eq + Serialize,
+    Input: Clone + Serialize,
 {
     type Input = (Trigger, Input);
 
@@ -117,9 +130,11 @@ where
     }
 }
 
+#[derive(Serialize)]
 pub struct SlidingTimeWindow<Input, EmitFunc, Trigger, Output> {
     queue: VecDeque<(Input, Timestamp)>,
     time_window_size: Duration,
+    #[serde(skip_serializing)]
     emit_func: EmitFunc,
     last_trigger_value: Trigger,
     last_dequeued_value: Input,
@@ -147,9 +162,9 @@ impl<'a, Input, EmitFunc, Iter, Trigger, Output> SignalProcessor<'a, Iter>
 where
     EmitFunc: Fn(&VecDeque<(Input, Timestamp)>, &Input) -> Output,
     Iter: Iterator,
-    Output: Clone,
-    Trigger: Eq + Clone,
-    Input: Clone,
+    Output: Clone + Serialize,
+    Trigger: Clone + Eq + Serialize,
+    Input: Clone + Serialize,
 {
     type Input = (Trigger, Input);
 

@@ -1,14 +1,16 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
-use lsp_runtime::{measurement::Measurement, Duration, Timestamp, UpdateContext};
+use lsp_runtime::context::UpdateContext;
+use lsp_runtime::signal_api::SignalMeasurement;
+use lsp_runtime::{Duration, Timestamp};
 
-#[derive(Clone, Default, Deserialize, Serialize)]
+#[derive(Clone, Default, Serialize)]
 pub struct DurationSinceBecomeTrue {
     last_input: bool,
     last_assignment_timestamp: Timestamp,
 }
 
-impl<'a, I: Iterator> Measurement<'a, I> for DurationSinceBecomeTrue {
+impl<'a, I: Iterator> SignalMeasurement<'a, I> for DurationSinceBecomeTrue {
     type Input = bool;
     type Output = Duration;
 
@@ -28,13 +30,17 @@ impl<'a, I: Iterator> Measurement<'a, I> for DurationSinceBecomeTrue {
     }
 }
 
-#[derive(Clone, Default, Debug, Deserialize, Serialize)]
-pub struct DurationSinceLastLevel<T: Clone> {
+#[derive(Clone, Default, Debug, Serialize)]
+pub struct DurationSinceLastLevel<T> {
     last_assignment_timestamp: Timestamp,
     last_level: Option<T>,
 }
 
-impl<'a, I: Iterator, T: Clone> Measurement<'a, I> for DurationSinceLastLevel<T> {
+impl<'a, I, T> SignalMeasurement<'a, I> for DurationSinceLastLevel<T>
+where
+    I: Iterator,
+    T: Clone + Serialize,
+{
     type Input = T;
     type Output = Duration;
 
@@ -52,14 +58,14 @@ impl<'a, I: Iterator, T: Clone> Measurement<'a, I> for DurationSinceLastLevel<T>
     }
 }
 
-#[derive(Clone, Default, Debug, Deserialize, Serialize)]
+#[derive(Clone, Default, Debug, Serialize)]
 pub struct DurationTrue {
     current_state: bool,
     accumulated_duration: Duration,
     last_true_starts: Timestamp,
 }
 
-impl<'a, I: Iterator> Measurement<'a, I> for DurationTrue {
+impl<'a, I: Iterator> SignalMeasurement<'a, I> for DurationTrue {
     type Input = bool;
     type Output = Duration;
 

@@ -1,4 +1,5 @@
-use std::{fmt::Display, time::Instant};
+use std::fmt::Display;
+use std::time::Instant;
 
 pub trait NodeOutputHandler<'a, T> {
     fn new(value: &'a T) -> Self;

@@ -1,11 +1,17 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
-use lsp_runtime::{measurement::Measurement, Timestamp, UpdateContext};
+use lsp_runtime::context::UpdateContext;
+use lsp_runtime::signal_api::SignalMeasurement;
+use lsp_runtime::Timestamp;
 
-#[derive(Clone, Default, Debug, Deserialize, Serialize)]
+#[derive(Clone, Default, Debug, Serialize)]
 pub struct Peek<T>(T);
 
-impl<'a, I: Iterator, T: Clone> Measurement<'a, I> for Peek<T> {
+impl<'a, I, T> SignalMeasurement<'a, I> for Peek<T>
+where
+    I: Iterator,
+    T: Clone + Serialize,
+{
     type Input = T;
 
     type Output = T;
@@ -21,10 +27,10 @@ impl<'a, I: Iterator, T: Clone> Measurement<'a, I> for Peek<T> {
 
 /// This is the measurement for timestamp.
 /// Time is not a leveled signal, and we can't use the [Peek] measurement to measure time.
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct PeekTimestamp;
 
-impl<'a, I: Iterator> Measurement<'a, I> for PeekTimestamp {
+impl<'a, I: Iterator> SignalMeasurement<'a, I> for PeekTimestamp {
     type Input = Timestamp;
 
     type Output = u64;
@@ -33,7 +39,7 @@ impl<'a, I: Iterator> Measurement<'a, I> for PeekTimestamp {
     /// leveled signal, this method shouldn't do anything.
     fn update(&mut self, _: &mut UpdateContext<I>, _: &'a Self::Input) {}
 
-    /// This method can't depend on any recorded value, because time keeps changing and it is not a
+    /// This method can't depend on any recorded value, because time keeps changing, and it is not a
     /// leveled signal.
     fn measure(&self, ctx: &mut UpdateContext<I>) -> Self::Output {
         ctx.frontier()

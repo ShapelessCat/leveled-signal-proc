@@ -12,10 +12,9 @@ use lsp_component::{
         Accumulator, DurationOfPreviousLevel, Latch, LivenessChecker, SignalMapper, StateMachine,
     },
 };
-use lsp_runtime::{
-    measurement::Measurement, signal::SignalProcessor, InputSignalBag, LspContext, Timestamp,
-    WithTimestamp,
-};
+use lsp_runtime::context::{InputSignalBag, LspContext, WithTimestamp};
+use lsp_runtime::signal_api::{SignalMeasurement, SignalProcessor};
+use lsp_runtime::Timestamp;
 
 #[derive(Default, Clone, Debug)]
 struct StateBag {
@@ -53,9 +52,9 @@ impl InputSignalBag for StateBag {
             self.page_watermark = ts;
             self.page = page;
         }
-        if let Some(user_aciton) = patch.user_action {
+        if let Some(user_action) = patch.user_action {
             self.user_action_watermark = ts;
-            self.user_action = user_aciton;
+            self.user_action = user_action;
         }
     }
     fn should_measure(&mut self) -> bool {
@@ -115,7 +114,7 @@ fn main() {
 
     let mut user_active_time = DurationSinceBecomeTrue::default();
 
-    let mut p_e_seesion = ScopedMeasurement::new(PeekTimestamp);
+    let mut p_e_session = ScopedMeasurement::new(PeekTimestamp);
 
     let mut first_iter = true;
 
@@ -140,11 +139,11 @@ fn main() {
             pe_duration = pe_dur_accu.update(&mut update_ctx, &(p_e_state, p_e_state_duration));
             session_id = session_id_acc.update(&mut update_ctx, &(is_user_alive, 1));
             user_active_time.update(&mut update_ctx, &is_user_alive);
-            p_e_seesion.update(&mut update_ctx, &(session_id, pe_duration));
+            p_e_session.update(&mut update_ctx, &(session_id, pe_duration));
         }
         if moment.should_take_measurements() {
             let user_active_time = user_active_time.measure(&mut update_ctx);
-            let pe_time = p_e_seesion.measure(&mut update_ctx);
+            let pe_time = p_e_session.measure(&mut update_ctx);
 
             if moment.timestamp() % 60_000_000_000 == 0 {
                 println!("1min summary");

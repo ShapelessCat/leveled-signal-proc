@@ -1,15 +1,17 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
-use lsp_runtime::{measurement::Measurement, Timestamp, UpdateContext};
+use lsp_runtime::context::UpdateContext;
+use lsp_runtime::signal_api::SignalMeasurement;
+use lsp_runtime::Timestamp;
 
-#[derive(Clone, Default, Debug, Deserialize, Serialize)]
+#[derive(Clone, Default, Debug, Serialize)]
 pub struct LinearChange {
     current_rate: f64,
     current_rate_start: Timestamp,
     accumulated_amount: f64,
 }
 
-impl<'a, I: Iterator> Measurement<'a, I> for LinearChange {
+impl<'a, I: Iterator> SignalMeasurement<'a, I> for LinearChange {
     type Input = f64;
     type Output = f64;
 

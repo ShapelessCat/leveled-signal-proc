@@ -5,7 +5,8 @@ pub mod processors;
 pub(crate) mod test {
     use std::vec::IntoIter;
 
-    use lsp_runtime::{InputSignalBag, LspContext, Timestamp, WithTimestamp};
+    use lsp_runtime::context::{InputSignalBag, LspContext, WithTimestamp};
+    use lsp_runtime::Timestamp;
 
     #[derive(Default, Clone)]
     pub(crate) struct TestSignalBag {

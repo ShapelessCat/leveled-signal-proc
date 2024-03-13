@@ -1,16 +1,17 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
-use lsp_runtime::signal::SignalProcessor;
-use lsp_runtime::{Duration, Timestamp, UpdateContext};
+use lsp_runtime::context::UpdateContext;
+use lsp_runtime::signal_api::SignalProcessor;
+use lsp_runtime::{Duration, Timestamp};
 
 /// Abstracts the retention behavior of a latch
-pub trait Retention<T> {
+pub trait Retention<T>: Serialize {
     fn drop_timestamp(&mut self, now: Timestamp) -> Option<Timestamp>;
     fn should_drop(&mut self, now: Timestamp) -> Option<T>;
 }
 
 /// The retention policy for latches that keep the value forever
-#[derive(Default, Debug, Deserialize, Serialize)]
+#[derive(Default, Debug, Serialize)]
 pub struct KeepForever;
 
 impl<T> Retention<T> for KeepForever {
@@ -24,14 +25,14 @@ impl<T> Retention<T> for KeepForever {
 }
 
 /// The retention policy for latches that keep the value for a period of time
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Serialize)]
 pub struct TimeToLive<T> {
     default_value: T,
     value_forgotten_timestamp: Timestamp,
     time_to_live: Duration,
 }
 
-impl<T: Clone> Retention<T> for TimeToLive<T> {
+impl<T: Clone + Serialize> Retention<T> for TimeToLive<T> {
     fn drop_timestamp(&mut self, now: Timestamp) -> Option<Timestamp> {
         self.value_forgotten_timestamp = now + self.time_to_live;
         Some(self.time_to_live)
@@ -51,13 +52,13 @@ impl<T: Clone> Retention<T> for TimeToLive<T> {
 /// When the control input becomes true, the latch changes its internal state to the data input.
 /// This concept borrowed from the hardware component which shares the same name. And it's widely
 /// used as one bit memory in digital circuits.
-#[derive(Default, Debug, Deserialize, Serialize)]
-pub struct Latch<Data: Clone, RetentionPolicy: Retention<Data> = KeepForever> {
+#[derive(Default, Debug, Serialize)]
+pub struct Latch<Data, RetentionPolicy: Retention<Data> = KeepForever> {
     data: Data,
     retention: RetentionPolicy,
 }
 
-#[derive(Default, Debug, Deserialize, Serialize)]
+#[derive(Default, Debug, Serialize)]
 pub struct EdgeTriggeredLatch<Control, Data, RetentionPolicy: Retention<Data> = KeepForever> {
     last_control_level: Control,
     data: Data,
@@ -83,7 +84,7 @@ impl<C: Default, D> EdgeTriggeredLatch<C, D> {
     }
 }
 
-impl<T: Clone> Latch<T, TimeToLive<T>> {
+impl<T: Clone + Serialize> Latch<T, TimeToLive<T>> {
     pub fn with_forget_behavior(data: T, default: T, time_to_memorize: Duration) -> Self {
         Self {
             data,
@@ -96,7 +97,11 @@ impl<T: Clone> Latch<T, TimeToLive<T>> {
     }
 }
 
-impl<C: Default, D: Clone> EdgeTriggeredLatch<C, D, TimeToLive<D>> {
+impl<C, D> EdgeTriggeredLatch<C, D, TimeToLive<D>>
+where
+    C: Default,
+    D: Clone + Serialize,
+{
     pub fn with_forget_behavior(data: D, default: D, time_to_memorize: Duration) -> Self {
         Self {
             data,
@@ -110,7 +115,12 @@ impl<C: Default, D: Clone> EdgeTriggeredLatch<C, D, TimeToLive<D>> {
     }
 }
 
-impl<'a, I: Iterator, T: Clone, R: Retention<T>> SignalProcessor<'a, I> for Latch<T, R> {
+impl<'a, I, T, R> SignalProcessor<'a, I> for Latch<T, R>
+where
+    I: Iterator,
+    T: Clone + Serialize,
+    R: Retention<T>,
+{
     type Input = (bool, T);
     type Output = T;
     #[inline(always)]
@@ -127,8 +137,12 @@ impl<'a, I: Iterator, T: Clone, R: Retention<T>> SignalProcessor<'a, I> for Latc
     }
 }
 
-impl<'a, I: Iterator, C: PartialEq + Clone, D: Clone, R: Retention<D>> SignalProcessor<'a, I>
-    for EdgeTriggeredLatch<C, D, R>
+impl<'a, I, C, D, R> SignalProcessor<'a, I> for EdgeTriggeredLatch<C, D, R>
+where
+    I: Iterator,
+    C: Clone + PartialEq + Serialize,
+    D: Clone + Serialize,
+    R: Retention<D>,
 {
     type Input = (C, D);
     type Output = D;
@@ -154,7 +168,7 @@ impl<'a, I: Iterator, C: PartialEq + Clone, D: Clone, R: Retention<D>> SignalPro
 
 #[cfg(test)]
 mod test {
-    use lsp_runtime::signal::SignalProcessor;
+    use lsp_runtime::signal_api::SignalProcessor;
 
     use crate::{processors::Latch, test::create_lsp_context_for_test};
 

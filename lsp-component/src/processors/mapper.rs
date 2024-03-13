@@ -1,14 +1,15 @@
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
-use lsp_runtime::signal::SignalProcessor;
-use lsp_runtime::UpdateContext;
+use lsp_runtime::context::UpdateContext;
+use lsp_runtime::signal_api::SignalProcessor;
 
 /// Mapping each input signal statelessly to an output signal.
-#[derive(Deserialize, Serialize)]
+#[derive(Serialize)]
 pub struct SignalMapper<ParamType, OutputType, ClosureType> {
+    #[serde(skip_serializing)]
     how: ClosureType,
     _phantom_data: PhantomData<(ParamType, OutputType)>,
 }
@@ -19,10 +20,7 @@ impl<P, O, C> Debug for SignalMapper<P, O, C> {
     }
 }
 
-impl<P, O, C> SignalMapper<P, O, C>
-where
-    C: FnMut(&P) -> O,
-{
+impl<P, O, C: FnMut(&P) -> O> SignalMapper<P, O, C> {
     pub fn new(how: C) -> Self {
         SignalMapper {
             how,
@@ -31,8 +29,9 @@ where
     }
 }
 
-impl<'a, I: Iterator, P, O, C> SignalProcessor<'a, I> for SignalMapper<P, O, C>
+impl<'a, I, P, O, C> SignalProcessor<'a, I> for SignalMapper<P, O, C>
 where
+    I: Iterator,
     C: FnMut(&P) -> O,
 {
     type Input = P;
@@ -47,7 +46,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use lsp_runtime::signal::SignalProcessor;
+    use lsp_runtime::signal_api::SignalProcessor;
 
     use crate::{processors::SignalMapper, test::create_lsp_context_for_test};
 

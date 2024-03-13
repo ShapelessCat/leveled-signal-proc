@@ -135,7 +135,7 @@ pub fn include_lsp_ir(input: TokenStream) -> TokenStream {
             OutputHandler: FnMut(&MetricsBag) -> Result<(), anyhow::Error>,
             Inst: lsp_runtime::instrument::LspDataLogicInstrument,
         {
-            use lsp_runtime::LspContext;
+            use lsp_runtime::context::LspContext;
             let mut input_state = Default::default();
             lsp_codegen::define_data_logic_nodes!(#path);
             lsp_codegen::define_measurement_trigger!(#path);

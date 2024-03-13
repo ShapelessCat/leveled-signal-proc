@@ -1,7 +1,6 @@
-use chrono::{DateTime, Utc};
 /// This implements the DAG that is used in TLB2 profiling (See https://conviva.atlassian.net/wiki/spaces/~589178245/pages/1867646607/DAG-level+instrumentation for details)
 /// Please note that this file will be automatically generate from the LSP DSL in the formal LSP system.
-/// Currently this file is hand written for demonstration purposes.
+/// Currently, this file is handwritten for demonstration purposes.
 ///
 ///     dag:
 ///       rawEvents:
@@ -65,12 +64,13 @@ use std::{
     io::{BufReader, BufWriter, Write},
 };
 
-use lsp_component::{measurements::DurationTrue, processors::SignalMapper};
-use lsp_runtime::{
-    measurement::Measurement, signal::SignalProcessor, InputSignalBag, LspContext, WithTimestamp,
-};
+use chrono::{DateTime, Utc};
 use serde::Deserialize;
 use serde_json::Deserializer;
+
+use lsp_component::{measurements::DurationTrue, processors::SignalMapper};
+use lsp_runtime::context::{InputSignalBag, LspContext, WithTimestamp};
+use lsp_runtime::signal_api::{SignalMeasurement, SignalProcessor};
 
 #[derive(Default, Debug, Clone)]
 struct InputType {
@@ -128,7 +128,7 @@ impl InputSignalBag for InputType {
 
 #[allow(unused_assignments)]
 fn main() {
-    // To simplify the problem, we just assume the data comes from a input file
+    // To simplify the problem, we just assume the data comes from an input file
     let fin = File::open("../input.json").unwrap();
     let mut fout = BufWriter::new(File::open("/dev/null").unwrap());
     let reader = BufReader::new(fin);

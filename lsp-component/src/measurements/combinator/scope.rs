@@ -1,10 +1,12 @@
+use std::fmt::{Debug, Display};
 use std::ops::Sub;
 
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
-use lsp_runtime::{measurement::Measurement, UpdateContext};
+use lsp_runtime::context::UpdateContext;
+use lsp_runtime::signal_api::SignalMeasurement;
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct ScopedMeasurement<ScopeType, MeasurementType, MeasurementOutput> {
     current_control_level: ScopeType,
     inner: MeasurementType,
@@ -26,13 +28,13 @@ where
     }
 }
 
-impl<'a, EventIterator, ScopeType, MeasurementType, Output> Measurement<'a, EventIterator>
+impl<'a, EventIterator, ScopeType, MeasurementType, Output> SignalMeasurement<'a, EventIterator>
     for ScopedMeasurement<ScopeType, MeasurementType, Output>
 where
     EventIterator: Iterator,
-    ScopeType: Clone + Eq + std::fmt::Debug,
-    Output: Clone + Sub<Output = Output> + std::fmt::Display,
-    MeasurementType: Measurement<'a, EventIterator, Output = Output>,
+    ScopeType: Serialize + Clone + Eq + Debug,
+    Output: Serialize + Clone + Sub<Output = Output> + Display,
+    MeasurementType: SignalMeasurement<'a, EventIterator, Output = Output>,
 {
     type Input = (ScopeType, MeasurementType::Input);
     type Output = Output;

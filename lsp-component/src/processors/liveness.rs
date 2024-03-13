@@ -1,18 +1,20 @@
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
-use lsp_runtime::signal::SignalProcessor;
-use lsp_runtime::{Duration, Timestamp, UpdateContext, WithTimestamp};
+use lsp_runtime::context::{UpdateContext, WithTimestamp};
+use lsp_runtime::signal_api::SignalProcessor;
+use lsp_runtime::{Duration, Timestamp};
 
 /// This is the signal processor that analyzes the liveness of a session based on heartbeat signals.
 /// The output constantly answering the question: Is current session still alive?
 /// The liveness defined as we can find a heartbeat event within `expiration_period` amount of time.
 /// Thus, this operator uses the look ahead mechanism of the LSP system to see if there's a future
 /// heartbeat event.
-#[derive(Deserialize, Serialize)]
+#[derive(Serialize)]
 pub struct LivenessChecker<IsLivenessEventFunc, Clock, Event> {
+    #[serde(skip_serializing)]
     is_liveness_event: IsLivenessEventFunc,
     expiration_period: Duration,
     last_event_clock: Clock,
@@ -50,7 +52,7 @@ impl<'a, I, F, C, E> SignalProcessor<'a, I> for LivenessChecker<F, C, E>
 where
     I: Iterator<Item = E>,
     F: FnMut(&E) -> bool,
-    C: Clone + PartialEq,
+    C: Clone + PartialEq + Serialize,
     E: WithTimestamp,
 {
     type Input = C;
@@ -77,7 +79,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use lsp_runtime::signal::SignalProcessor;
+    use lsp_runtime::signal_api::SignalProcessor;
 
     use crate::test::{create_lsp_context_for_test_from_input_slice, TestSignalInput};
 

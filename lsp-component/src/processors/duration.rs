@@ -1,19 +1,25 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
-use lsp_runtime::{signal::SignalProcessor, Duration, Timestamp, UpdateContext};
+use lsp_runtime::context::UpdateContext;
+use lsp_runtime::signal_api::SignalProcessor;
+use lsp_runtime::{Duration, Timestamp};
 
 /// Note:
 /// Although the duration of current level cannot be a measurement, as it's a function of time,
-/// duration of previous level is a well defined signal -- duration of previous level is a known
+/// duration of previous level is a well-defined signal -- duration of previous level is a known
 /// value.
-#[derive(Default, Debug, Deserialize, Serialize)]
+#[derive(Default, Debug, Serialize)]
 pub struct DurationOfPreviousLevel<Level> {
     current_value: Level,
     current_value_since: Timestamp,
     output_buf: Timestamp,
 }
 
-impl<'a, I: Iterator, L: PartialEq + Clone> SignalProcessor<'a, I> for DurationOfPreviousLevel<L> {
+impl<'a, I, L> SignalProcessor<'a, I> for DurationOfPreviousLevel<L>
+where
+    I: Iterator,
+    L: Clone + PartialEq + Serialize,
+{
     type Input = L;
 
     type Output = Duration;
@@ -31,7 +37,7 @@ impl<'a, I: Iterator, L: PartialEq + Clone> SignalProcessor<'a, I> for DurationO
 
 #[cfg(test)]
 mod test {
-    use lsp_runtime::signal::SignalProcessor;
+    use lsp_runtime::signal_api::SignalProcessor;
 
     use crate::test::{create_lsp_context_for_test, TestSignalBag};
 

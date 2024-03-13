@@ -68,7 +68,7 @@ impl<I: Iterator> MultiPeek<I> {
 
 #[cfg(test)]
 mod test {
-    use crate::MultiPeek;
+    use super::MultiPeek;
 
     #[test]
     fn test_iter_api() {

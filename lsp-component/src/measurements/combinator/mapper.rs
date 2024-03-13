@@ -1,11 +1,14 @@
+use std::fmt::Display;
 use std::marker::PhantomData;
 
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
-use lsp_runtime::{measurement::Measurement, UpdateContext};
+use lsp_runtime::context::UpdateContext;
+use lsp_runtime::signal_api::SignalMeasurement;
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct MappedMeasurement<InnerOutput, OutputType, ClosureType, MeasurementType> {
+    #[serde(skip_serializing)]
     how: ClosureType,
     inner: MeasurementType,
     _phantom_data: PhantomData<(InnerOutput, OutputType)>,
@@ -26,13 +29,13 @@ where
 }
 
 impl<'a, EventIterator, InnerOutput, OutputType, ClosureType, MeasurementType>
-    Measurement<'a, EventIterator>
+    SignalMeasurement<'a, EventIterator>
     for MappedMeasurement<InnerOutput, OutputType, ClosureType, MeasurementType>
 where
     EventIterator: Iterator,
-    InnerOutput: Clone + std::fmt::Display,
+    InnerOutput: Clone + Display,
     ClosureType: Fn(&InnerOutput) -> OutputType,
-    MeasurementType: Measurement<'a, EventIterator, Output = InnerOutput>,
+    MeasurementType: SignalMeasurement<'a, EventIterator, Output = InnerOutput>,
 {
     type Input = MeasurementType::Input;
     type Output = OutputType;

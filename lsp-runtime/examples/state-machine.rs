@@ -20,16 +20,16 @@
 use std::{fs::File, io::BufReader};
 
 use chrono::{DateTime, Utc};
+use serde::Deserialize;
+use serde_json::Deserializer;
+
 use lsp_component::{
     measurements::Peek,
     processors::{Accumulator, DurationOfPreviousLevel, Latch, SignalMapper, StateMachine},
 };
-use lsp_runtime::{
-    measurement::Measurement, signal::SignalProcessor, InputSignalBag, LspContext, Timestamp,
-    WithTimestamp,
-};
-use serde::Deserialize;
-use serde_json::Deserializer;
+use lsp_runtime::context::{InputSignalBag, LspContext, WithTimestamp};
+use lsp_runtime::signal_api::{SignalMeasurement, SignalProcessor};
+use lsp_runtime::Timestamp;
 
 #[derive(Default, Clone, Debug)]
 struct StateBag {
@@ -72,7 +72,7 @@ impl InputSignalBag for StateBag {
 // This is a state machine that matches A(BC)*D
 // Actually there are algorithm which can automatically generate DFA from a regular expression
 // Thus in the code generator, the API would be like
-// macth_event_seq("A(BC)*D")
+// match_event_seq("A(BC)*D")
 fn state_transit(state: u32, input: &String) -> u32 {
     let next_state = match state {
         0 => {

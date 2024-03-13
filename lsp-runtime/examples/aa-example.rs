@@ -13,12 +13,15 @@
 use std::{fs::File, io::BufReader};
 
 use chrono::{DateTime, Utc};
+use serde::Deserialize;
+use serde_json::Deserializer;
+
 use lsp_component::processors::{
     Accumulator, DurationOfPreviousLevel, Latch, LivenessChecker, SignalMapper, StateMachine,
 };
-use lsp_runtime::{signal::SignalProcessor, InputSignalBag, LspContext, Timestamp, WithTimestamp};
-use serde::Deserialize;
-use serde_json::Deserializer;
+use lsp_runtime::context::{InputSignalBag, LspContext, WithTimestamp};
+use lsp_runtime::signal_api::SignalProcessor;
+use lsp_runtime::Timestamp;
 
 #[derive(Default, Clone, Debug)]
 struct StateBag {
@@ -56,9 +59,9 @@ impl InputSignalBag for StateBag {
             self.page_watermark = ts;
             self.page = page;
         }
-        if let Some(user_aciton) = patch.user_action {
+        if let Some(user_action) = patch.user_action {
             self.user_action_watermark = ts;
-            self.user_action = user_aciton;
+            self.user_action = user_action;
         }
     }
     fn should_measure(&mut self) -> bool {
@@ -118,7 +121,7 @@ fn main() {
     let mut p_e_state_filter = SignalMapper::new(|&s| s == 2);
     let mut p_e_event_latch = Latch::<Timestamp>::default();
 
-    let mut p_e_duration_accmulator = Accumulator::with_event_filter(0, |_| true);
+    let mut p_e_duration_accumulator = Accumulator::with_event_filter(0, |_| true);
 
     let mut p_e_level_duration = DurationOfPreviousLevel::default();
 
@@ -170,7 +173,7 @@ fn main() {
                 &mut update_ctx,
                 &(p_e_state_filter_output, state.user_action_watermark),
             );
-            p_e_duration_accu_output = p_e_duration_accmulator.update(
+            p_e_duration_accu_output = p_e_duration_accumulator.update(
                 &mut update_ctx,
                 &(p_e_event_latch_output, p_e_level_duration_output),
             );
