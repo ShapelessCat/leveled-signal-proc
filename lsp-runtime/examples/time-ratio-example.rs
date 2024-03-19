@@ -9,7 +9,7 @@ use lsp_component::measurements::combinator::ScopedMeasurement;
 use lsp_component::{
     measurements::{DurationSinceBecomeTrue, PeekTimestamp},
     processors::{
-        Accumulator, DurationOfPreviousLevel, Latch, LivenessChecker, SignalMapper, StateMachine,
+        Accumulator, DurationOfPreviousLevel, LevelTriggeredLatch, LivenessChecker, SignalMapper, StateMachine,
     },
 };
 use lsp_runtime::context::{InputSignalBag, LspContext, WithTimestamp};
@@ -81,7 +81,7 @@ fn main() {
 
     let mut is_heart_beat_mapper = SignalMapper::new(|state: &StateBag| state.user_action != "X");
     let mut is_heart_beat;
-    let mut state_watermark_latch = Latch::<Timestamp>::default();
+    let mut state_watermark_latch = LevelTriggeredLatch::<Timestamp>::default();
     let mut filtered_hb_signal;
     let mut liveness_signal = LivenessChecker::new(
         |e: &Event| e.user_action.as_ref().map_or(false, |action| action != "X"),

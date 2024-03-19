@@ -5,7 +5,7 @@ from ..lsp_model.core import SignalBase
 
 
 @final
-class Latch(BuiltinProcessorComponentBase):
+class LevelTriggeredLatch(BuiltinProcessorComponentBase):
     def __init__(self,
                  control: SignalBase,
                  data: SignalBase,

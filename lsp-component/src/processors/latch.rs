@@ -53,7 +53,7 @@ impl<T: Clone + Serialize> Retention<T> for TimeToLive<T> {
 /// This concept borrowed from the hardware component which shares the same name. And it's widely
 /// used as one bit memory in digital circuits.
 #[derive(Default, Debug, Serialize)]
-pub struct Latch<Data, RetentionPolicy: Retention<Data> = KeepForever> {
+pub struct LevelTriggeredLatch<Data, RetentionPolicy: Retention<Data> = KeepForever> {
     data: Data,
     retention: RetentionPolicy,
 }
@@ -65,7 +65,7 @@ pub struct EdgeTriggeredLatch<Control, Data, RetentionPolicy: Retention<Data> = 
     retention: RetentionPolicy,
 }
 
-impl<T: Clone> Latch<T> {
+impl<T: Clone> LevelTriggeredLatch<T> {
     pub fn with_initial_value(data: T) -> Self {
         Self {
             data,
@@ -84,7 +84,7 @@ impl<C: Default, D> EdgeTriggeredLatch<C, D> {
     }
 }
 
-impl<T: Clone + Serialize> Latch<T, TimeToLive<T>> {
+impl<T: Clone + Serialize> LevelTriggeredLatch<T, TimeToLive<T>> {
     pub fn with_forget_behavior(data: T, default: T, time_to_memorize: Duration) -> Self {
         Self {
             data,
@@ -115,7 +115,7 @@ where
     }
 }
 
-impl<'a, I, T, R> SignalProcessor<'a, I> for Latch<T, R>
+impl<'a, I, T, R> SignalProcessor<'a, I> for LevelTriggeredLatch<T, R>
 where
     I: Iterator,
     T: Clone + Serialize,
@@ -170,11 +170,11 @@ where
 mod test {
     use lsp_runtime::signal_api::SignalProcessor;
 
-    use crate::{processors::Latch, test::create_lsp_context_for_test};
+    use crate::{processors::LevelTriggeredLatch, test::create_lsp_context_for_test};
 
     #[test]
     fn test_basic_latch() {
-        let mut latch = Latch::with_initial_value(0);
+        let mut latch = LevelTriggeredLatch::with_initial_value(0);
         let mut c = create_lsp_context_for_test();
         let mut ctx = c.borrow_update_context();
         assert_eq!(latch.update(&mut ctx, &(true, 1)), 1);
@@ -188,7 +188,7 @@ mod test {
 
     #[test]
     fn test_forget_behavior() {
-        let mut latch = Latch::with_forget_behavior(0, 0, 2);
+        let mut latch = LevelTriggeredLatch::with_forget_behavior(0, 0, 2);
         let mut c = create_lsp_context_for_test();
         let mut buf = Default::default();
 

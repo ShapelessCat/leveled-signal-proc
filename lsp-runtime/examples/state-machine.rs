@@ -25,7 +25,7 @@ use serde_json::Deserializer;
 
 use lsp_component::{
     measurements::Peek,
-    processors::{Accumulator, DurationOfPreviousLevel, Latch, SignalMapper, StateMachine},
+    processors::{Accumulator, DurationOfPreviousLevel, LevelTriggeredLatch, SignalMapper, StateMachine},
 };
 use lsp_runtime::context::{InputSignalBag, LspContext, WithTimestamp};
 use lsp_runtime::signal_api::{SignalMeasurement, SignalProcessor};
@@ -132,7 +132,7 @@ fn main() {
     });
     let mut event_filter_output;
 
-    let mut event_filter_latch = Latch::<Timestamp>::default();
+    let mut event_filter_latch = LevelTriggeredLatch::<Timestamp>::default();
     let mut event_filter_latch_output;
 
     let mut state_machine = StateMachine::new(0, |s, i| state_transit(*s, i));

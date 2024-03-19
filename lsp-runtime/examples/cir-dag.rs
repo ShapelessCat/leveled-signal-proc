@@ -9,7 +9,7 @@ use serde_json::Deserializer;
 
 use lsp_component::{
     measurements::DurationTrue,
-    processors::{Latch, SignalMapper},
+    processors::{LevelTriggeredLatch, SignalMapper},
 };
 use lsp_runtime::context::{InputSignalBag, LspContext, WithTimestamp};
 use lsp_runtime::signal_api::{SignalMeasurement, SignalProcessor};
@@ -95,13 +95,13 @@ fn main() {
     let mut has_started_mapper = SignalMapper::new(|input: &InputType| input.user_action == "play");
     let mut has_started_mapper_output;
 
-    let mut has_started_latch = Latch::<bool>::default();
+    let mut has_started_latch = LevelTriggeredLatch::<bool>::default();
     let mut has_started;
 
     let mut has_seeked_mapper = SignalMapper::new(|input: &InputType| input.user_action == "seek");
     let mut has_seeked_mapper_output;
 
-    let mut has_seeked_latch = Latch::with_forget_behavior(false, false, 5_000_000_000);
+    let mut has_seeked_latch = LevelTriggeredLatch::with_forget_behavior(false, false, 5_000_000_000);
     let mut has_seeked;
 
     let mut is_buffered_mapper =
