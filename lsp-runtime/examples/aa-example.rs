@@ -17,7 +17,8 @@ use serde::Deserialize;
 use serde_json::Deserializer;
 
 use lsp_component::processors::{
-    Accumulator, DurationOfPreviousLevel, LevelTriggeredLatch, LivenessChecker, SignalMapper, StateMachine,
+    Accumulator, DurationOfPreviousLevel, LevelTriggeredLatch, LivenessChecker, SignalMapper,
+    StateMachine,
 };
 use lsp_runtime::context::{InputSignalBag, LspContext, WithTimestamp};
 use lsp_runtime::signal_api::SignalProcessor;

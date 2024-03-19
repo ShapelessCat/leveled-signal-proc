@@ -9,7 +9,8 @@ use lsp_component::measurements::combinator::ScopedMeasurement;
 use lsp_component::{
     measurements::{DurationSinceBecomeTrue, PeekTimestamp},
     processors::{
-        Accumulator, DurationOfPreviousLevel, LevelTriggeredLatch, LivenessChecker, SignalMapper, StateMachine,
+        Accumulator, DurationOfPreviousLevel, LevelTriggeredLatch, LivenessChecker, SignalMapper,
+        StateMachine,
     },
 };
 use lsp_runtime::context::{InputSignalBag, LspContext, WithTimestamp};

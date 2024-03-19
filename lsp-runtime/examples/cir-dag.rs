@@ -101,7 +101,8 @@ fn main() {
     let mut has_seeked_mapper = SignalMapper::new(|input: &InputType| input.user_action == "seek");
     let mut has_seeked_mapper_output;
 
-    let mut has_seeked_latch = LevelTriggeredLatch::with_forget_behavior(false, false, 5_000_000_000);
+    let mut has_seeked_latch =
+        LevelTriggeredLatch::with_forget_behavior(false, false, 5_000_000_000);
     let mut has_seeked;
 
     let mut is_buffered_mapper =
