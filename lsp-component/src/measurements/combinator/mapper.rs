@@ -1,16 +1,18 @@
 use std::fmt::Display;
 use std::marker::PhantomData;
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use lsp_runtime::context::UpdateContext;
-use lsp_runtime::signal_api::SignalMeasurement;
+use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 
 #[derive(Clone, Debug, Serialize)]
 pub struct MappedMeasurement<InnerOutput, OutputType, ClosureType, MeasurementType> {
     #[serde(skip_serializing)]
     how: ClosureType,
+    #[serde(skip_serializing)]
     inner: MeasurementType,
+    #[serde(skip_serializing)]
     _phantom_data: PhantomData<(InnerOutput, OutputType)>,
 }
 
@@ -47,4 +49,11 @@ where
     fn measure(&self, ctx: &mut UpdateContext<EventIterator>) -> Self::Output {
         (self.how)(&self.inner.measure(ctx))
     }
+}
+
+#[derive(Deserialize)]
+struct MappedMeasurementState;
+
+impl<I, O, C, M> Patchable for MappedMeasurement<I, O, C, M> {
+    fn patch(&mut self, _state: &str) {}
 }

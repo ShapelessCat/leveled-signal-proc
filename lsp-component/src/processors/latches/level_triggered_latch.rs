@@ -1,8 +1,9 @@
-use serde::Serialize;
+use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize};
 
-use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::SignalProcessor;
 use lsp_runtime::Duration;
+use lsp_runtime::{context::UpdateContext, signal_api::Patchable};
 
 use super::retention::{KeepForever, Retention, TimeToLive};
 
@@ -26,7 +27,7 @@ impl<T: Clone> LevelTriggeredLatch<T> {
     }
 }
 
-impl<T: Clone + Serialize> LevelTriggeredLatch<T, TimeToLive<T>> {
+impl<T: Clone + Serialize + DeserializeOwned> LevelTriggeredLatch<T, TimeToLive<T>> {
     pub fn with_forget_behavior(data: T, default: T, time_to_memorize: Duration) -> Self {
         Self {
             data,
@@ -42,7 +43,7 @@ impl<T: Clone + Serialize> LevelTriggeredLatch<T, TimeToLive<T>> {
 impl<'a, I, T, R> SignalProcessor<'a, I> for LevelTriggeredLatch<T, R>
 where
     I: Iterator,
-    T: Clone + Serialize,
+    T: Clone,
     R: Retention<T>,
 {
     type Input = (bool, T);
@@ -58,6 +59,24 @@ where
             self.data = value;
         }
         self.data.clone()
+    }
+}
+
+#[derive(Deserialize)]
+struct LevelTriggeredLatchState<Data, RetentionPolicy> {
+    data: Data,
+    retention: RetentionPolicy,
+}
+
+impl<D, R: Retention<D>> Patchable for LevelTriggeredLatch<D, R>
+where
+    D: Serialize + DeserializeOwned,
+    R: Serialize + DeserializeOwned,
+{
+    fn patch(&mut self, state: &str) {
+        let state: LevelTriggeredLatchState<D, R> = serde_json::from_str(state).unwrap();
+        self.data = state.data;
+        self.retention = state.retention;
     }
 }
 

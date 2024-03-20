@@ -2,10 +2,11 @@ use std::collections::VecDeque;
 
 use std::marker::PhantomData;
 
-use serde::Serialize;
+use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize};
 
 use lsp_runtime::context::UpdateContext;
-use lsp_runtime::signal_api::SignalProcessor;
+use lsp_runtime::signal_api::{Patchable, SignalProcessor};
 use lsp_runtime::{Duration, Timestamp};
 
 /// TODO: `SlidingWindow` and `SlidingTimeWindow` are not fundamental, try to implement these two
@@ -17,7 +18,8 @@ pub struct SlidingWindow<Input, EmitFunc, Trigger, Output> {
     emit_func: EmitFunc,
     last_trigger_value: Trigger,
     last_dequeued_value: Input,
-    _phantom: PhantomData<Output>,
+    #[serde(skip_serializing)]
+    _phantom_data: PhantomData<Output>,
 }
 
 impl<I: Default, F, T: Default, O> SlidingWindow<I, F, T, O> {
@@ -30,7 +32,7 @@ impl<I: Default, F, T: Default, O> SlidingWindow<I, F, T, O> {
             emit_func,
             last_trigger_value: Default::default(),
             last_dequeued_value: init_value,
-            _phantom: PhantomData,
+            _phantom_data: PhantomData,
         }
     }
 }
@@ -64,6 +66,26 @@ where
     }
 }
 
+#[derive(Deserialize)]
+struct SlidingWindowState<Input, Trigger> {
+    queue: VecDeque<Input>,
+    last_trigger_value: Trigger,
+    last_dequeued_value: Input,
+}
+
+impl<I, E, T, O> Patchable for SlidingWindow<I, E, T, O>
+where
+    I: Serialize + DeserializeOwned,
+    T: Serialize + DeserializeOwned,
+{
+    fn patch(&mut self, state: &str) {
+        let state: SlidingWindowState<I, T> = serde_json::from_str(state).unwrap();
+        self.queue = state.queue;
+        self.last_trigger_value = state.last_trigger_value;
+        self.last_dequeued_value = state.last_dequeued_value;
+    }
+}
+
 #[derive(Serialize)]
 pub struct SlidingTimeWindow<Input, EmitFunc, Trigger, Output> {
     queue: VecDeque<(Input, Timestamp)>,
@@ -72,7 +94,8 @@ pub struct SlidingTimeWindow<Input, EmitFunc, Trigger, Output> {
     emit_func: EmitFunc,
     last_trigger_value: Trigger,
     last_dequeued_value: Input,
-    _phantom: PhantomData<Output>,
+    #[serde(skip_serializing)]
+    _phantom_data: PhantomData<Output>,
 }
 
 impl<I: Default, F, T: Default, O> SlidingTimeWindow<I, F, T, O> {
@@ -86,7 +109,7 @@ impl<I: Default, F, T: Default, O> SlidingTimeWindow<I, F, T, O> {
             emit_func,
             last_trigger_value: Default::default(),
             last_dequeued_value: init_value,
-            _phantom: PhantomData,
+            _phantom_data: PhantomData,
         }
     }
 }
@@ -122,5 +145,27 @@ where
             self.last_trigger_value = trigger.clone();
         }
         (self.emit_func)(&self.queue, &self.last_dequeued_value)
+    }
+}
+
+#[derive(Deserialize)]
+struct SlidingTimeWindowState<Input, Trigger> {
+    queue: VecDeque<(Input, Timestamp)>,
+    time_window_size: Duration,
+    last_trigger_value: Trigger,
+    last_dequeued_value: Input,
+}
+
+impl<I, E, T, O> Patchable for SlidingTimeWindow<I, E, T, O>
+where
+    I: Serialize + DeserializeOwned,
+    T: Serialize + DeserializeOwned,
+{
+    fn patch(&mut self, state: &str) {
+        let state: SlidingTimeWindowState<I, T> = serde_json::from_str(state).unwrap();
+        self.queue = state.queue;
+        self.time_window_size = state.time_window_size;
+        self.last_trigger_value = state.last_trigger_value;
+        self.last_dequeued_value = state.last_dequeued_value;
     }
 }

@@ -1,7 +1,7 @@
 use lsp_runtime::context::UpdateContext;
-use lsp_runtime::signal_api::SignalMeasurement;
+use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 use lsp_runtime::{Duration, Timestamp};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct DurationTrue {
@@ -37,5 +37,21 @@ impl<'a, I: Iterator> SignalMeasurement<'a, I> for DurationTrue {
         };
 
         self.accumulated_duration + current_state_duration
+    }
+}
+
+#[derive(Deserialize)]
+struct DurationTrueState {
+    current_state: bool,
+    accumulated_duration: Duration,
+    last_true_starts: Timestamp,
+}
+
+impl Patchable for DurationTrue {
+    fn patch(&mut self, state: &str) {
+        let state: DurationTrueState = serde_json::from_str(state).unwrap();
+        self.current_state = state.current_state;
+        self.accumulated_duration = state.accumulated_duration;
+        self.last_true_starts = state.last_true_starts;
     }
 }

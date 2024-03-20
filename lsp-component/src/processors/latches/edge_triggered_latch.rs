@@ -1,8 +1,9 @@
-use serde::Serialize;
+use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize};
 
-use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::SignalProcessor;
 use lsp_runtime::Duration;
+use lsp_runtime::{context::UpdateContext, signal_api::Patchable};
 
 use super::retention::{KeepForever, Retention, TimeToLive};
 
@@ -26,7 +27,7 @@ impl<C: Default, D> EdgeTriggeredLatch<C, D> {
 impl<C, D> EdgeTriggeredLatch<C, D, TimeToLive<D>>
 where
     C: Default,
-    D: Clone + Serialize,
+    D: Clone + Serialize + DeserializeOwned,
 {
     pub fn with_forget_behavior(data: D, default: D, time_to_memorize: Duration) -> Self {
         Self {
@@ -44,8 +45,8 @@ where
 impl<'a, I, C, D, R> SignalProcessor<'a, I> for EdgeTriggeredLatch<C, D, R>
 where
     I: Iterator,
-    C: Clone + PartialEq + Serialize,
-    D: Clone + Serialize,
+    C: Clone + PartialEq,
+    D: Clone,
     R: Retention<D>,
 {
     type Input = (C, D);
@@ -67,5 +68,26 @@ where
             self.data = value;
         }
         self.data.clone()
+    }
+}
+
+#[derive(Deserialize)]
+struct EdgeTriggeredLatchState<Control, Data, RetentionPolicy> {
+    last_control_level: Control,
+    data: Data,
+    retention: RetentionPolicy,
+}
+
+impl<C, D, R: Retention<D>> Patchable for EdgeTriggeredLatch<C, D, R>
+where
+    C: Serialize + DeserializeOwned,
+    D: Serialize + DeserializeOwned,
+    R: Serialize + DeserializeOwned,
+{
+    fn patch(&mut self, state: &str) {
+        let state: EdgeTriggeredLatchState<C, D, R> = serde_json::from_str(state).unwrap();
+        self.last_control_level = state.last_control_level;
+        self.data = state.data;
+        self.retention = state.retention;
     }
 }

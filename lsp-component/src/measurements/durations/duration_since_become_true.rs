@@ -1,7 +1,7 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use lsp_runtime::context::UpdateContext;
-use lsp_runtime::signal_api::SignalMeasurement;
+use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 use lsp_runtime::{Duration, Timestamp};
 
 #[derive(Clone, Default, Serialize)]
@@ -27,5 +27,23 @@ impl<'a, I: Iterator> SignalMeasurement<'a, I> for DurationSinceBecomeTrue {
         } else {
             0
         }
+    }
+}
+
+#[derive(Deserialize)]
+struct DurationSinceBecomeTrueState {
+    last_input: bool,
+    last_assignment_timestamp: Timestamp,
+}
+
+impl Patchable for DurationSinceBecomeTrue {
+    fn to_state(&self) -> String {
+        serde_json::to_string(&self).unwrap()
+    }
+
+    fn patch(&mut self, state: &str) {
+        let state: DurationSinceBecomeTrueState = serde_json::from_str(state).unwrap();
+        self.last_input = state.last_input;
+        self.last_assignment_timestamp = state.last_assignment_timestamp;
     }
 }

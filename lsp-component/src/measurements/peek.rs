@@ -1,7 +1,8 @@
-use serde::Serialize;
+use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize};
 
 use lsp_runtime::context::UpdateContext;
-use lsp_runtime::signal_api::SignalMeasurement;
+use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 use lsp_runtime::Timestamp;
 
 #[derive(Clone, Default, Debug, Serialize)]
@@ -10,7 +11,7 @@ pub struct Peek<T>(T);
 impl<'a, I, T> SignalMeasurement<'a, I> for Peek<T>
 where
     I: Iterator,
-    T: Clone + Serialize,
+    T: Clone,
 {
     type Input = T;
 
@@ -22,6 +23,19 @@ where
 
     fn measure(&self, _: &mut UpdateContext<I>) -> Self::Output {
         self.0.clone()
+    }
+}
+
+#[derive(Deserialize)]
+struct PeekState<T>(T);
+
+impl<T> Patchable for Peek<T>
+where
+    T: Serialize + DeserializeOwned,
+{
+    fn patch(&mut self, state: &str) {
+        let state: PeekState<T> = serde_json::from_str(state).unwrap();
+        self.0 = state.0;
     }
 }
 
@@ -44,4 +58,11 @@ impl<'a, I: Iterator> SignalMeasurement<'a, I> for PeekTimestamp {
     fn measure(&self, ctx: &mut UpdateContext<I>) -> Self::Output {
         ctx.frontier()
     }
+}
+
+#[derive(Deserialize)]
+struct PeekTimestampState;
+
+impl Patchable for PeekTimestamp {
+    fn patch(&mut self, _state: &str) {}
 }

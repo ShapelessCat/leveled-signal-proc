@@ -1,7 +1,7 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use lsp_runtime::context::UpdateContext;
-use lsp_runtime::signal_api::SignalMeasurement;
+use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 use lsp_runtime::Timestamp;
 
 #[derive(Clone, Default, Debug, Serialize)]
@@ -28,5 +28,21 @@ impl<'a, I: Iterator> SignalMeasurement<'a, I> for LinearChange {
         let duration = ctx.frontier() - self.current_rate_start;
         let current_level_change = self.current_rate * duration as f64;
         (self.accumulated_amount + current_level_change) / 1e9
+    }
+}
+
+#[derive(Deserialize)]
+struct LinearChangeState {
+    current_rate: f64,
+    current_rate_start: Timestamp,
+    accumulated_amount: f64,
+}
+
+impl Patchable for LinearChange {
+    fn patch(&mut self, state: &str) {
+        let state: LinearChangeState = serde_json::from_str(state).unwrap();
+        self.current_rate = state.current_rate;
+        self.current_rate_start = state.current_rate_start;
+        self.accumulated_amount = state.accumulated_amount;
     }
 }

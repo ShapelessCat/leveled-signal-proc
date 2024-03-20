@@ -2,7 +2,15 @@ use serde::Serialize;
 
 use crate::context::UpdateContext;
 
-pub trait SignalProcessor<'a, EventIt: Iterator>: Serialize {
+pub trait Patchable: Serialize {
+    fn to_state(&self) -> String {
+        serde_json::to_string(&self).unwrap()
+    }
+
+    fn patch(&mut self, state: &str);
+}
+
+pub trait SignalProcessor<'a, EventIt: Iterator> {
     type Input;
     type Output;
 
@@ -17,7 +25,7 @@ pub trait SignalProcessor<'a, EventIt: Iterator>: Serialize {
 /// Although all the signal processor doesn't take timestamp as input, the measurement can be a
 /// function of time.
 /// For example, you can measure the duration since an output is true, etc.
-pub trait SignalMeasurement<'a, EventIter: Iterator>: Serialize {
+pub trait SignalMeasurement<'a, EventIter: Iterator> {
     type Input;
     type Output;
 

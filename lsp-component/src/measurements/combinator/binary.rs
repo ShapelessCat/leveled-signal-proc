@@ -1,10 +1,10 @@
 use std::fmt::Display;
 use std::marker::PhantomData;
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use lsp_runtime::context::UpdateContext;
-use lsp_runtime::signal_api::SignalMeasurement;
+use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 
 #[derive(Clone, Debug, Serialize)]
 pub struct BinaryCombinedMeasurement<
@@ -17,8 +17,11 @@ pub struct BinaryCombinedMeasurement<
 > {
     #[serde(skip_serializing)]
     binary_op: ClosureType,
+    #[serde(skip_serializing)]
     inner0: MeasurementType0,
+    #[serde(skip_serializing)]
     inner1: MeasurementType1,
+    #[serde(skip_serializing)]
     _phantom_data: PhantomData<(OutputType0, OutputType1, OutputType)>,
 }
 
@@ -84,4 +87,11 @@ where
     fn measure(&self, ctx: &mut UpdateContext<EventIterator>) -> Self::Output {
         (self.binary_op)(&self.inner0.measure(ctx), &self.inner1.measure(ctx))
     }
+}
+
+#[derive(Deserialize)]
+struct BinaryCombinedMeasurementState;
+
+impl<O0, O1, O, C, M0, M1> Patchable for BinaryCombinedMeasurement<O0, O1, O, C, M0, M1> {
+    fn patch(&mut self, _state: &str) {}
 }

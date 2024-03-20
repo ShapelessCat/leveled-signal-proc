@@ -1,14 +1,16 @@
 use std::fmt::{Debug, Display};
 use std::ops::Sub;
 
-use serde::Serialize;
+use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize};
 
 use lsp_runtime::context::UpdateContext;
-use lsp_runtime::signal_api::SignalMeasurement;
+use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 
 #[derive(Clone, Debug, Serialize)]
 pub struct ScopedMeasurement<ScopeType, MeasurementType, MeasurementOutput> {
     current_control_level: ScopeType,
+    #[serde(skip_serializing)]
     inner: MeasurementType,
     current_base: MeasurementOutput,
 }
@@ -32,8 +34,8 @@ impl<'a, EventIterator, ScopeType, MeasurementType, Output> SignalMeasurement<'a
     for ScopedMeasurement<ScopeType, MeasurementType, Output>
 where
     EventIterator: Iterator,
-    ScopeType: Serialize + Clone + Eq + Debug,
-    Output: Serialize + Clone + Sub<Output = Output> + Display,
+    ScopeType: Clone + Eq + Debug,
+    Output: Clone + Sub<Output = Output> + Display,
     MeasurementType: SignalMeasurement<'a, EventIterator, Output = Output>,
 {
     type Input = (ScopeType, MeasurementType::Input);
@@ -51,5 +53,23 @@ where
     fn measure(&self, ctx: &mut UpdateContext<EventIterator>) -> Self::Output {
         let base = self.current_base.clone();
         self.inner.measure(ctx) - base
+    }
+}
+
+#[derive(Deserialize)]
+struct ScopedMeasurementState<ScopeType, MeasurementOutput> {
+    current_control_level: ScopeType,
+    current_base: MeasurementOutput,
+}
+
+impl<S, M, O> Patchable for ScopedMeasurement<S, M, O>
+where
+    S: Serialize + DeserializeOwned,
+    O: Serialize + DeserializeOwned,
+{
+    fn patch(&mut self, state: &str) {
+        let state: ScopedMeasurementState<S, O> = serde_json::from_str(state).unwrap();
+        self.current_control_level = state.current_control_level;
+        self.current_base = state.current_base;
     }
 }

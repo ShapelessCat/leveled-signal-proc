@@ -1,7 +1,8 @@
-use serde::Serialize;
+use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize};
 
 use lsp_runtime::context::UpdateContext;
-use lsp_runtime::signal_api::SignalProcessor;
+use lsp_runtime::signal_api::{Patchable, SignalProcessor};
 use lsp_runtime::{Duration, Timestamp};
 
 pub trait SignalFunc<T> {
@@ -17,7 +18,7 @@ where
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug)]
 pub struct ConstSignalFunc<T>(pub T);
 
 impl<T: Clone> SignalFunc<T> for ConstSignalFunc<T> {
@@ -90,7 +91,7 @@ impl<'a, I, F, O> SignalProcessor<'a, I> for SignalGenerator<F, O>
 where
     I: Iterator,
     F: FnMut(Timestamp) -> (O, Timestamp),
-    O: Clone + Serialize,
+    O: Clone,
 {
     type Input = ();
 
@@ -107,6 +108,23 @@ where
             }
         }
         self.last_value.clone()
+    }
+}
+
+#[derive(Deserialize)]
+pub struct SignalGeneratorState<SignalType> {
+    last_value: SignalType,
+    until_ts: Timestamp,
+}
+
+impl<F, S> Patchable for SignalGenerator<F, S>
+where
+    S: Serialize + DeserializeOwned,
+{
+    fn patch(&mut self, state: &str) {
+        let state: SignalGeneratorState<S> = serde_json::from_str(state).unwrap();
+        self.last_value = state.last_value;
+        self.until_ts = state.until_ts;
     }
 }
 
