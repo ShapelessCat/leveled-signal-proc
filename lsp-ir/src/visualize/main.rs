@@ -65,7 +65,7 @@ fn visualize_lsp_ir<R: Read>(reader: R) -> Result<(), Error> {
                 if let Some(filename) = file.file_name().map(|s| s.to_string_lossy()) {
                     source_code_list
                         .entry(filename.to_string())
-                        .or_insert_with(|| reader.lines().filter_map(|l| l.ok()).collect());
+                        .or_insert_with(|| reader.lines().map_while(Result::ok).collect());
                 }
             }
         }

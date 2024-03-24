@@ -49,40 +49,46 @@ mod test {
         let mut node = DurationOfPreviousLevel::default();
         let mut ctx = create_lsp_context_for_test();
 
-        let moment = ctx.next_event(&mut signal_bag).unwrap();
-        assert_eq!(moment.timestamp(), 0);
-        let mut uc = ctx.borrow_update_context();
-        assert_eq!(node.update(&mut uc, &0), 0);
-        drop(uc);
+        {
+            let moment = ctx.next_event(&mut signal_bag).unwrap();
+            assert_eq!(moment.timestamp(), 0);
+            let mut uc = ctx.borrow_update_context();
+            assert_eq!(node.update(&mut uc, &0), 0);
+        }
 
-        let moment = ctx.next_event(&mut signal_bag).unwrap();
-        assert_eq!(moment.timestamp(), 1);
-        let mut uc = ctx.borrow_update_context();
-        assert_eq!(node.update(&mut uc, &0), 0);
-        drop(uc);
+        {
+            let moment = ctx.next_event(&mut signal_bag).unwrap();
+            assert_eq!(moment.timestamp(), 1);
+            let mut uc = ctx.borrow_update_context();
+            assert_eq!(node.update(&mut uc, &0), 0);
+        }
 
-        let moment = ctx.next_event(&mut signal_bag).unwrap();
-        assert_eq!(moment.timestamp(), 2);
-        let mut uc = ctx.borrow_update_context();
-        assert_eq!(node.update(&mut uc, &1), 2);
-        drop(uc);
+        {
+            let moment = ctx.next_event(&mut signal_bag).unwrap();
+            assert_eq!(moment.timestamp(), 2);
+            let mut uc = ctx.borrow_update_context();
+            assert_eq!(node.update(&mut uc, &1), 2);
+        }
 
-        let moment = ctx.next_event(&mut signal_bag).unwrap();
-        assert_eq!(moment.timestamp(), 3);
-        let mut uc = ctx.borrow_update_context();
-        assert_eq!(node.update(&mut uc, &1), 2);
-        drop(uc);
+        {
+            let moment = ctx.next_event(&mut signal_bag).unwrap();
+            assert_eq!(moment.timestamp(), 3);
+            let mut uc = ctx.borrow_update_context();
+            assert_eq!(node.update(&mut uc, &1), 2);
+        }
 
-        let moment = ctx.next_event(&mut signal_bag).unwrap();
-        assert_eq!(moment.timestamp(), 4);
-        let mut uc = ctx.borrow_update_context();
-        assert_eq!(node.update(&mut uc, &1), 2);
-        drop(uc);
+        {
+            let moment = ctx.next_event(&mut signal_bag).unwrap();
+            assert_eq!(moment.timestamp(), 4);
+            let mut uc = ctx.borrow_update_context();
+            assert_eq!(node.update(&mut uc, &1), 2);
+        }
 
-        let moment = ctx.next_event(&mut signal_bag).unwrap();
-        assert_eq!(moment.timestamp(), 5);
-        let mut uc = ctx.borrow_update_context();
-        assert_eq!(node.update(&mut uc, &0), 3);
-        drop(uc);
+        {
+            let moment = ctx.next_event(&mut signal_bag).unwrap();
+            assert_eq!(moment.timestamp(), 5);
+            let mut uc = ctx.borrow_update_context();
+            assert_eq!(node.update(&mut uc, &0), 3);
+        }
     }
 }
