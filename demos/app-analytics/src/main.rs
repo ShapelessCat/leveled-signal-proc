@@ -13,7 +13,7 @@ fn main() -> Result<(), Error> {
     let fp = BufReader::new(File::open(path)?);
     let input_stream = serde_json::Deserializer::from_reader(fp)
         .into_iter()
-        .filter_map(|r| r.ok());
+        .filter_map(Result::ok);
     let mut instr_ctx = NoInstrument;
     let mut output = std::io::BufWriter::new(std::io::stdout());
     lsp_main(

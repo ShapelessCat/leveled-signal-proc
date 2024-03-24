@@ -75,7 +75,7 @@ impl LsdlSourceDirectory {
         Handle: FnMut(LsdlSource) -> Result<(), anyhow::Error>,
     {
         let source_iter = read_dir(&self.source_dir)?
-            .filter_map(|entry_result| entry_result.ok())
+            .filter_map(Result::ok)
             .filter(|entry| entry.file_type().map_or(false, |t| t.is_file()))
             .map(|entry| entry.path())
             .filter(|path| path.extension().map_or(false, |ext| ext == "py"));
