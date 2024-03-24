@@ -75,7 +75,7 @@ mod test {
         let inner: Vec<_> = (0..1000).collect();
         let mut mp_iter = MultiPeek::from(inner.clone().into_iter());
         assert_eq!(mp_iter.peek(), Some(&0));
-        assert_eq!(inner.into_iter().sum::<i32>(), mp_iter.sum());
+        assert_eq!(inner.into_iter().sum::<i32>(), mp_iter.sum::<i32>());
     }
     #[test]
     fn test_peek_out_of_bound() {
