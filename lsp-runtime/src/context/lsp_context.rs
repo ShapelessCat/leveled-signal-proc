@@ -88,14 +88,14 @@ where
     #[inline(always)]
     fn assemble_next_state(&mut self, timestamp: Timestamp, state: &mut SignalBag) {
         if self.merge_simultaneous_moments {
-            while let Some(ts) = self.iter.peek().map(|p| p.timestamp()) {
+            while let Some(ts) = self.iter.peek().map(WithTimestamp::timestamp) {
                 if ts != timestamp {
                     break;
                 }
                 let event = self.iter.next().unwrap();
                 state.patch(event);
             }
-        } else if let Some(ts) = self.iter.peek().map(|p| p.timestamp()) {
+        } else if let Some(ts) = self.iter.peek().map(WithTimestamp::timestamp) {
             if ts == timestamp {
                 let event = self.iter.next().unwrap();
                 state.patch(event);

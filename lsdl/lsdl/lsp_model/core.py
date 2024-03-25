@@ -107,8 +107,8 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         For example, "100ms", "2h", etc...
         """
         from .internal import normalize_duration
-        from ..processors import Const, Latch
-        return Latch(
+        from ..processors import Const, LevelTriggeredLatch
+        return LevelTriggeredLatch(
             data=Const(True),
             control=self,
             forget_duration=normalize_duration(duration)

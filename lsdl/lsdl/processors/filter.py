@@ -54,15 +54,15 @@ class SignalFilterBuilder:
         return ret
 
     def build_clock_filter(self) -> SignalBase:
-        from ..processors import Latch
-        return Latch(
+        from ..processors import LevelTriggeredLatch
+        return LevelTriggeredLatch(
             data=self._clock_signal,
             control=self._filter_node
         )
 
     def build_value_filter(self) -> SignalBase:
-        from ..processors import Latch
-        return Latch(
+        from ..processors import LevelTriggeredLatch
+        return LevelTriggeredLatch(
             data=self._filter_signal,
             control=self._filter_node
         )

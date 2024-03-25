@@ -61,8 +61,8 @@ class If(SignalBase):
 class Cond(SignalBase):
     """The scheme `cond` style expression for a leveled signal."""
     def __init__(self,
-                 first_branch: (SignalBase, SignalBase),
-                 middle_branches: [(SignalBase, SignalBase)],
+                 first_branch: tuple[SignalBase, SignalBase],
+                 middle_branches: list[tuple[SignalBase, SignalBase]],
                  fallback_value: SignalBase):
         inner = _build_signal_mapper(*first_branch, fallback_value)
         while middle_branches:

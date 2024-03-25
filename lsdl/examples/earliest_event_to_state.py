@@ -2,7 +2,7 @@
 
 from lsdl import print_ir_to_stdout
 from lsdl.lsp_model import InputSchemaBase, String
-from lsdl.processors import Const, Latch, StateMachine
+from lsdl.processors import Const, LevelTriggeredLatch, StateMachine
 
 
 class InputSignal(InputSchemaBase):
@@ -18,7 +18,7 @@ is_earliest_event = StateMachine(
     data=Const(1),
     transition_fn="|&s:&i32, _| (s+1).min(2)"
 ) == 1
-earliest_event_value = Latch(control=is_earliest_event,
+earliest_event_value = LevelTriggeredLatch(control=is_earliest_event,
                              data=input_signal.event)
 earliest_event_value.add_metric("earliestEventName")
 

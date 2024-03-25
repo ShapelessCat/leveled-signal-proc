@@ -17,7 +17,8 @@ use serde::Deserialize;
 use serde_json::Deserializer;
 
 use lsp_component::processors::{
-    Accumulator, DurationOfPreviousLevel, Latch, LivenessChecker, SignalMapper, StateMachine,
+    Accumulator, DurationOfPreviousLevel, LevelTriggeredLatch, LivenessChecker, SignalMapper,
+    StateMachine,
 };
 use lsp_runtime::context::{InputSignalBag, LspContext, WithTimestamp};
 use lsp_runtime::signal_api::SignalProcessor;
@@ -87,14 +88,14 @@ fn main() {
     let mut state = StateBag::default();
 
     let mut is_heart_beat_mapper = SignalMapper::new(|state: &StateBag| state.user_action != "X");
-    let mut state_watermark_latch = Latch::<Timestamp>::default();
+    let mut state_watermark_latch = LevelTriggeredLatch::<Timestamp>::default();
     let mut liveness_signal = LivenessChecker::new(
         |e: &Event| e.user_action.as_ref().map_or(false, |action| action != "X"),
         90_000_000_000,
     );
 
     let mut is_c_mapper = SignalMapper::new(|state: &StateBag| state.user_action == "C");
-    let mut c_filter_latch = Latch::<Timestamp>::default();
+    let mut c_filter_latch = LevelTriggeredLatch::<Timestamp>::default();
     let mut c_counter = Accumulator::with_event_filter(0, |_| true);
 
     let mut all_counter = Accumulator::with_event_filter(0, |_| true);
@@ -119,7 +120,7 @@ fn main() {
         });
 
     let mut p_e_state_filter = SignalMapper::new(|&s| s == 2);
-    let mut p_e_event_latch = Latch::<Timestamp>::default();
+    let mut p_e_event_latch = LevelTriggeredLatch::<Timestamp>::default();
 
     let mut p_e_duration_accumulator = Accumulator::with_event_filter(0, |_| true);
 

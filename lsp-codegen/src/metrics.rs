@@ -1,5 +1,6 @@
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
+use syn::Error;
 
 use crate::MacroContext;
 
@@ -86,7 +87,7 @@ impl MacroContext {
         let signal_node = &self.get_ir_data().measurement_policy.measure_trigger_signal;
         let signal_ref = self
             .generate_downstream_ref(signal_node, &())
-            .unwrap_or_else(|e| e.into_compile_error());
+            .unwrap_or_else(Error::into_compile_error);
         quote! {
             let __signal_trigger_fired = {
                 let next_state = (#signal_ref).clone();
@@ -104,7 +105,7 @@ impl MacroContext {
             .measure_left_side_limit_signal;
         let signal_ref = self
             .generate_downstream_ref(signal_node, &())
-            .unwrap_or_else(|e| e.into_compile_error());
+            .unwrap_or_else(Error::into_compile_error);
         quote! {
             let __should_measure_left_side_limit : bool = (#signal_ref).clone();
         }
