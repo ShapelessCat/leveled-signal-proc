@@ -1,14 +1,14 @@
 from .combinators.binary import BinaryCombinedMeasurement
 from .combinators.mapper import MappedMeasurement
 from .combinators.scope import ScopedMeasurement
-from .duration import DurationSinceBecomeTrue, DurationSinceLastLevel, DurationTrue
+from .duration import DurationSinceBecomeTrue, DurationOfCurrentLevel, DurationTrue
 from .linear_change import LinearChange
 from .peek import Peek, PeekTimestamp
 
 __all__ = [
     'BinaryCombinedMeasurement',
+    'DurationOfCurrentLevel',
     'DurationSinceBecomeTrue',
-    'DurationSinceLastLevel',
     'DurationTrue',
     'LinearChange',
     'MappedMeasurement',
