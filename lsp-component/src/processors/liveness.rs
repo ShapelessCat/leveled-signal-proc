@@ -81,35 +81,38 @@ where
 mod test {
     use lsp_runtime::signal_api::SignalProcessor;
 
-    use crate::test::{create_lsp_context_for_test_from_input_slice, TestSignalInput};
+    use crate::test::{create_lsp_context_for_test_from_input_slice, TestSignalBag, TestSignalInput};
 
     use super::LivenessChecker;
 
     #[test]
     fn test_liveness_checker() {
+        let mut liveness = LivenessChecker::<_, _, TestSignalInput<_>>::new(
+            |data| data.value > 0,
+            6
+        );
+
         let input = [
             1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
         ];
+        let mut context = create_lsp_context_for_test_from_input_slice(&input);
+
         let output = [
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0,
         ];
-        let mut context = create_lsp_context_for_test_from_input_slice(&input);
-        let mut liveness = LivenessChecker::<_, _, TestSignalInput>::new(|data| data.value > 0, 6);
+        let mut output = output.into_iter();
+
+        let mut input_state = TestSignalBag::default();
         let mut latch_output = 0;
-        let mut buf = Default::default();
-
-        let mut out_iter = output.iter();
-
-        while let Some(m) = context.next_event(&mut buf) {
-            if buf.value > 0 {
+        while let Some(m) = context.next_event(&mut input_state) {
+            if input_state.value > 0 {
                 latch_output = m.timestamp();
             }
-            let value = if liveness.update(&mut context.borrow_update_context(), &latch_output) {
-                1
-            } else {
-                0
-            };
-            assert_eq!(Some(value), out_iter.next().cloned())
+            let value = liveness.update(
+                &mut context.borrow_update_context(),
+                &latch_output
+            ) as i32;
+            assert_eq!(value, output.next().unwrap())
         }
     }
 }

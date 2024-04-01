@@ -8,25 +8,25 @@ pub(crate) mod test {
     use lsp_runtime::context::{InputSignalBag, LspContext, WithTimestamp};
     use lsp_runtime::Timestamp;
 
-    #[derive(Default, Clone)]
-    pub(crate) struct TestSignalBag {
-        pub(crate) value: u32,
+    #[derive(Clone, Default)]
+    pub(crate) struct TestSignalBag<T> {
+        pub(crate) value: T,
     }
 
-    #[derive(Default, Clone)]
-    pub(crate) struct TestSignalInput {
-        pub(crate) value: u32,
+    #[derive(Clone, Default)]
+    pub(crate) struct TestSignalInput<T> {
+        pub(crate) value: T,
         pub(crate) timestamp: Timestamp,
     }
 
-    impl WithTimestamp for TestSignalInput {
+    impl<T> WithTimestamp for TestSignalInput<T> {
         fn timestamp(&self) -> u64 {
             self.timestamp
         }
     }
 
-    impl InputSignalBag for TestSignalBag {
-        type Input = TestSignalInput;
+    impl<T: Clone + Default> InputSignalBag for TestSignalBag<T> {
+        type Input = TestSignalInput<T>;
 
         fn patch(&mut self, patch: Self::Input) {
             self.value = patch.value;
@@ -34,9 +34,9 @@ pub(crate) mod test {
     }
 
     pub(crate) fn create_lsp_context_for_test(
-    ) -> LspContext<IntoIter<TestSignalInput>, TestSignalBag> {
+    ) -> LspContext<IntoIter<TestSignalInput<u32>>, TestSignalBag<u32>> {
         LspContext::new(
-            (0..1000)
+            (0..100)
                 .map(|i| TestSignalInput {
                     value: i as u32,
                     timestamp: i,
@@ -47,15 +47,15 @@ pub(crate) mod test {
         )
     }
 
-    pub(crate) fn create_lsp_context_for_test_from_input_slice(
-        input: &[u32],
-    ) -> LspContext<IntoIter<TestSignalInput>, TestSignalBag> {
+    pub(crate) fn create_lsp_context_for_test_from_input_slice<T: Clone + Default>(
+        input: &[T],
+    ) -> LspContext<IntoIter<TestSignalInput<T>>, TestSignalBag<T>> {
         LspContext::new(
             input
                 .iter()
                 .zip(0..)
-                .map(|(&v, t)| TestSignalInput {
-                    value: v,
+                .map(|(v, t)| TestSignalInput {
+                    value: v.to_owned(),
                     timestamp: t,
                 })
                 .collect::<Vec<_>>()
