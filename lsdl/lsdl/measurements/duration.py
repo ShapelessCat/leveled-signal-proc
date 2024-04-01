@@ -29,7 +29,7 @@ class DurationSinceBecomeTrue(DirectBuiltinMeasurementComponentBase):
 
 
 @final
-class DurationSinceLastLevel(DirectBuiltinMeasurementComponentBase):
+class DurationOfCurrentLevel(DirectBuiltinMeasurementComponentBase):
     def __init__(self, input_signal: SignalBase):
         rust_component_name = self.__class__.__name__
         super().__init__(
