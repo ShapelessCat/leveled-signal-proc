@@ -1,4 +1,5 @@
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize};
 
 use lsp_runtime::{Duration, Timestamp};
 
@@ -42,5 +43,44 @@ impl<T: Clone + Serialize + DeserializeOwned> Retention<T> for TimeToLive<T> {
         } else {
             None
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::processors::latches::retention::{KeepForever, Retention, TimeToLive};
+
+    #[test]
+    fn test_keep_forever() {
+        let mut keep_forever = KeepForever;
+        assert_eq!(
+            <KeepForever as Retention<bool>>::should_drop(&mut keep_forever, 0u64),
+            None
+        );
+        assert_eq!(
+            <KeepForever as Retention<bool>>::drop_timestamp(&mut keep_forever, 0u64),
+            None
+        );
+    }
+
+    #[test]
+    fn test_time_to_live() {
+        let mut time_to_live = TimeToLive {
+            default_value: 0,
+            value_forgotten_timestamp: 0,
+            time_to_live: 2,
+        };
+        assert_eq!(time_to_live.should_drop(0), Some(0));
+        assert_eq!(time_to_live.should_drop(1), Some(0));
+
+        assert_eq!(time_to_live.drop_timestamp(2), Some(2));
+        assert_eq!(time_to_live.should_drop(2), None);
+        assert_eq!(time_to_live.should_drop(3), None);
+        assert_eq!(time_to_live.should_drop(4), Some(0));
+
+        assert_eq!(time_to_live.drop_timestamp(4), Some(2));
+        assert_eq!(time_to_live.should_drop(5), None);
+        assert_eq!(time_to_live.should_drop(6), Some(0));
+        assert_eq!(time_to_live.should_drop(7), Some(0));
     }
 }

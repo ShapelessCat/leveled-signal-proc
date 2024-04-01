@@ -131,7 +131,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use lsp_runtime::signal_api::SignalProcessor;
+    use lsp_runtime::signal_api::{Patchable, SignalProcessor};
 
     use crate::test::{create_lsp_context_for_test, TestSignalBag};
 
@@ -148,6 +148,11 @@ mod test {
             let value = square_wave.update(&mut uc, &());
             assert_eq!(value, (moment.timestamp() / 10) % 2 == 1);
         }
+
+        let state = square_wave.to_state();
+        let mut init_square_wave = SignalGenerator::square_wave(10, 0);
+        init_square_wave.patch(&state);
+        assert_eq!(state, init_square_wave.to_state())
     }
 
     #[test]
@@ -161,6 +166,11 @@ mod test {
             let value = raising_level.update(&mut uc, &());
             assert_eq!(value, moment.timestamp() as i64 / 10);
         }
+
+        let state = raising_level.to_state();
+        let mut init_raising_level = SignalGenerator::raising_level(0, 1, 10, 0);
+        init_raising_level.patch(&state);
+        assert_eq!(state, init_raising_level.to_state())
     }
 
     #[test]
@@ -191,5 +201,15 @@ mod test {
 
             assert_eq!(value, fa);
         }
+
+        let state = fib_seq.to_state();
+        let mut init_fib_seq = SignalGenerator::new(move |_now| {
+            let c = a + b;
+            a = b;
+            b = c;
+            (a, 100)
+        });
+        init_fib_seq.patch(&state);
+        assert_eq!(state, init_fib_seq.to_state());
     }
 }

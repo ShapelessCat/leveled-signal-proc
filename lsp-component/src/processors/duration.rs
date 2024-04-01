@@ -58,58 +58,30 @@ where
 
 #[cfg(test)]
 mod test {
-    use lsp_runtime::signal_api::SignalProcessor;
+    use lsp_runtime::signal_api::{Patchable, SignalProcessor};
 
-    use crate::test::{create_lsp_context_for_test, TestSignalBag};
+    use crate::test::{create_lsp_context_for_test_from_input, TestSignalBag};
 
     use super::DurationOfPreviousLevel;
 
     #[test]
     fn test_duration_prev_level() {
-        let mut signal_bag = TestSignalBag::default();
-        let mut node = DurationOfPreviousLevel::default();
-        let mut ctx = create_lsp_context_for_test();
+        let mut duration_of_prev_level = DurationOfPreviousLevel::default();
+        let input = [0, 0, 1, 1, 1, 0];
+        let mut context = create_lsp_context_for_test_from_input(&input);
+        let output = [0, 0, 2, 2, 2, 3];
+        let mut output_iter = output.into_iter();
+        let mut state_buf = TestSignalBag::default();
 
-        {
-            let moment = ctx.next_event(&mut signal_bag).unwrap();
-            assert_eq!(moment.timestamp(), 0);
-            let mut uc = ctx.borrow_update_context();
-            assert_eq!(node.update(&mut uc, &0), 0);
+        while context.next_event(&mut state_buf).is_some() {
+            let mut uc = context.borrow_update_context();
+            let transformed_value = duration_of_prev_level.update(&mut uc, &state_buf.value);
+            assert_eq!(transformed_value, output_iter.next().unwrap());
         }
 
-        {
-            let moment = ctx.next_event(&mut signal_bag).unwrap();
-            assert_eq!(moment.timestamp(), 1);
-            let mut uc = ctx.borrow_update_context();
-            assert_eq!(node.update(&mut uc, &0), 0);
-        }
-
-        {
-            let moment = ctx.next_event(&mut signal_bag).unwrap();
-            assert_eq!(moment.timestamp(), 2);
-            let mut uc = ctx.borrow_update_context();
-            assert_eq!(node.update(&mut uc, &1), 2);
-        }
-
-        {
-            let moment = ctx.next_event(&mut signal_bag).unwrap();
-            assert_eq!(moment.timestamp(), 3);
-            let mut uc = ctx.borrow_update_context();
-            assert_eq!(node.update(&mut uc, &1), 2);
-        }
-
-        {
-            let moment = ctx.next_event(&mut signal_bag).unwrap();
-            assert_eq!(moment.timestamp(), 4);
-            let mut uc = ctx.borrow_update_context();
-            assert_eq!(node.update(&mut uc, &1), 2);
-        }
-
-        {
-            let moment = ctx.next_event(&mut signal_bag).unwrap();
-            assert_eq!(moment.timestamp(), 5);
-            let mut uc = ctx.borrow_update_context();
-            assert_eq!(node.update(&mut uc, &0), 3);
-        }
+        let state = duration_of_prev_level.to_state();
+        let mut init_duration_of_prev_level = DurationOfPreviousLevel::<i32>::default();
+        init_duration_of_prev_level.patch(&state);
+        assert_eq!(state, init_duration_of_prev_level.to_state());
     }
 }

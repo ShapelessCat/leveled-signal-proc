@@ -58,7 +58,7 @@ impl<P, O, C> Patchable for SignalMapper<P, O, C> {
 
 #[cfg(test)]
 mod test {
-    use lsp_runtime::signal_api::SignalProcessor;
+    use lsp_runtime::signal_api::{Patchable, SignalProcessor};
 
     use super::SignalMapper;
     use crate::test::create_lsp_context_for_test;
@@ -70,5 +70,10 @@ mod test {
         let mut uc = ctx.borrow_update_context();
         assert_eq!(mapper.update(&mut uc, &1), 2);
         assert_eq!(mapper.update(&mut uc, &2), 3);
+
+        let state = mapper.to_state();
+        let mut init_mapper = SignalMapper::new(|x: &i32| x + 1);
+        init_mapper.patch(&state);
+        assert_eq!(state, init_mapper.to_state());
     }
 }

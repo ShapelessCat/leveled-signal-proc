@@ -83,7 +83,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use lsp_runtime::signal_api::SignalProcessor;
+    use lsp_runtime::signal_api::{Patchable, SignalProcessor};
 
     use super::LevelTriggeredLatch;
     use crate::test::create_lsp_context_for_test;
@@ -100,6 +100,11 @@ mod test {
         assert_eq!(latch.update(&mut ctx, &(false, 5)), 3);
         assert_eq!(latch.update(&mut ctx, &(true, 6)), 6);
         assert_eq!(latch.update(&mut ctx, &(false, 7)), 6);
+
+        let state = latch.to_state();
+        let mut init_latch = LevelTriggeredLatch::with_initial_value(0);
+        init_latch.patch(&state);
+        assert_eq!(state, init_latch.to_state());
     }
 
     #[test]
@@ -138,5 +143,10 @@ mod test {
         c.next_event(&mut buf).unwrap();
         let mut ctx = c.borrow_update_context();
         assert_eq!(latch.update(&mut ctx, &(false, 2)), 0);
+
+        let state = latch.to_state();
+        let mut init_latch = LevelTriggeredLatch::with_forget_behavior(0, 0, 2);
+        init_latch.patch(&state);
+        assert_eq!(state, init_latch.to_state());
     }
 }

@@ -101,7 +101,8 @@ where
 
 #[cfg(test)]
 mod test {
-    use lsp_runtime::signal_api::SignalProcessor;
+    use lsp_runtime::signal_api::{Patchable, SignalProcessor};
+    use lsp_runtime::Timestamp;
 
     use crate::test::{create_lsp_context_for_test_from_input, TestSignalBag, TestSignalInput};
 
@@ -131,5 +132,11 @@ mod test {
             let value = liveness.update(&mut context.borrow_update_context(), &latch_output) as i32;
             assert_eq!(value, output.next().unwrap())
         }
+
+        let state = liveness.to_state();
+        let mut init_liveness =
+            LivenessChecker::<_, Timestamp, TestSignalInput<i32>>::new(|data| data.value > 0, 6);
+        init_liveness.patch(&state);
+        assert_eq!(state, init_liveness.to_state());
     }
 }

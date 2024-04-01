@@ -97,3 +97,72 @@ where
         self.retention = state.retention;
     }
 }
+
+#[cfg(test)]
+mod test {
+    use lsp_runtime::signal_api::{Patchable, SignalProcessor};
+
+    use crate::{processors::EdgeTriggeredLatch, test::create_lsp_context_for_test};
+
+    #[test]
+    fn test_basic_latch() {
+        let mut latch = EdgeTriggeredLatch::with_initial_value(0);
+        let mut c = create_lsp_context_for_test();
+        let mut ctx = c.borrow_update_context();
+        assert_eq!(latch.update(&mut ctx, &(true, 1)), 1);
+        assert_eq!(latch.update(&mut ctx, &(false, 2)), 2);
+        assert_eq!(latch.update(&mut ctx, &(false, 3)), 2);
+        assert_eq!(latch.update(&mut ctx, &(true, 4)), 4);
+        assert_eq!(latch.update(&mut ctx, &(true, 5)), 4);
+        assert_eq!(latch.update(&mut ctx, &(false, 6)), 6);
+
+        let state = latch.to_state();
+        let mut init_latch = EdgeTriggeredLatch::<bool, i32>::with_initial_value(0);
+        init_latch.patch(&state);
+        assert_eq!(state, init_latch.to_state());
+    }
+
+    #[test]
+    fn test_forget_behavior() {
+        let mut latch = EdgeTriggeredLatch::with_forget_behavior(0, 0, 2);
+        let mut c = create_lsp_context_for_test();
+        let mut buf = Default::default();
+
+        c.next_event(&mut buf).unwrap();
+        let mut ctx = c.borrow_update_context();
+        assert_eq!(latch.update(&mut ctx, &(true, 1)), 1);
+
+        c.next_event(&mut buf).unwrap();
+        let mut ctx = c.borrow_update_context();
+        assert_eq!(latch.update(&mut ctx, &(true, 2)), 1);
+
+        c.next_event(&mut buf).unwrap();
+        let mut ctx = c.borrow_update_context();
+        assert_eq!(latch.update(&mut ctx, &(true, 3)), 0);
+
+        c.next_event(&mut buf).unwrap();
+        let mut ctx = c.borrow_update_context();
+        assert_eq!(latch.update(&mut ctx, &(false, 4)), 4);
+
+        c.next_event(&mut buf).unwrap();
+        let mut ctx = c.borrow_update_context();
+        assert_eq!(latch.update(&mut ctx, &(false, 5)), 4);
+
+        c.next_event(&mut buf).unwrap();
+        let mut ctx = c.borrow_update_context();
+        assert_eq!(latch.update(&mut ctx, &(false, 6)), 0);
+
+        c.next_event(&mut buf).unwrap();
+        let mut ctx = c.borrow_update_context();
+        assert_eq!(latch.update(&mut ctx, &(true, 7)), 7);
+
+        c.next_event(&mut buf).unwrap();
+        let mut ctx = c.borrow_update_context();
+        assert_eq!(latch.update(&mut ctx, &(false, 8)), 8);
+
+        let state = latch.to_state();
+        let mut init_latch = EdgeTriggeredLatch::<bool, _, _>::with_forget_behavior(0, 0, 2);
+        init_latch.patch(&state);
+        assert_eq!(state, init_latch.to_state());
+    }
+}

@@ -77,3 +77,45 @@ impl Patchable for PeekTimestamp {
 
     fn patch_from(&mut self, _state: Self::State) {}
 }
+
+#[cfg(test)]
+mod test {
+    use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
+
+    use super::{Peek, PeekTimestamp};
+    use crate::test::create_lsp_context_for_test;
+
+    #[test]
+    fn test_peek() {
+        let mut peek = Peek::default();
+        let mut ctx = create_lsp_context_for_test();
+        let mut uc = ctx.borrow_update_context();
+        peek.update(&mut uc, &1);
+        assert_eq!(peek.measure(&mut uc), 1);
+        peek.update(&mut uc, &2);
+        assert_eq!(peek.measure(&mut uc), 2);
+
+        let state = peek.to_state();
+        let mut init_peek = Peek::<i32>::default();
+        init_peek.patch(&state);
+        assert_eq!(state, init_peek.to_state());
+    }
+
+    #[test]
+    fn test_peek_timestamp() {
+        let mut peek_timestamp = PeekTimestamp;
+        let mut ctx = create_lsp_context_for_test();
+        let mut buf = Default::default();
+        let mut out_iter = 0..100;
+        while ctx.next_event(&mut buf).is_some() {
+            peek_timestamp.update(&mut ctx.borrow_update_context(), &0);
+            let value = peek_timestamp.measure(&mut ctx.borrow_update_context());
+            assert_eq!(Some(value), out_iter.next().clone())
+        }
+
+        let state = peek_timestamp.to_state();
+        let mut init_peek_timestamp = PeekTimestamp;
+        init_peek_timestamp.patch(&state);
+        assert_eq!(state, init_peek_timestamp.to_state());
+    }
+}

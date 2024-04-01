@@ -80,7 +80,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use lsp_runtime::signal_api::SignalProcessor;
+    use lsp_runtime::signal_api::{Patchable, SignalProcessor};
 
     use crate::test::create_lsp_context_for_test;
 
@@ -96,6 +96,11 @@ mod test {
         assert_eq!(1, counter.update(&mut uc, &(1, 1)));
         assert_eq!(1, counter.update(&mut uc, &(1, 2)));
         assert_eq!(4, counter.update(&mut uc, &(2, 3)));
+
+        let state = counter.to_state();
+        let mut init_counter = Accumulator::with_event_filter(0, |_: &i32| true);
+        init_counter.patch(&state);
+        assert_eq!(state, init_counter.to_state());
     }
 
     #[test]
@@ -109,5 +114,10 @@ mod test {
         assert_eq!(2, counter.update(&mut uc, &(2, 2)));
         assert_eq!(2, counter.update(&mut uc, &(3, 3)));
         assert_eq!(6, counter.update(&mut uc, &(4, 4)));
+
+        let state = counter.to_state();
+        let mut init_counter = Accumulator::with_event_filter(0, |&x: &i32| x % 2 == 0);
+        init_counter.patch(&state);
+        assert_eq!(state, init_counter.to_state());
     }
 }

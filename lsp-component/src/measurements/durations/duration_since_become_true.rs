@@ -48,3 +48,72 @@ impl Patchable for DurationSinceBecomeTrue {
         self.last_assignment_timestamp = state.last_assignment_timestamp;
     }
 }
+
+#[cfg(test)]
+mod test {
+    use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
+
+    use crate::test::{create_lsp_context_for_test, TestSignalBag};
+
+    use super::DurationSinceBecomeTrue;
+
+    #[test]
+    fn test_duration_since_become_true() {
+        let mut signal_bag = TestSignalBag::default();
+        let mut duration_since_become_true = DurationSinceBecomeTrue::default();
+        let mut ctx = create_lsp_context_for_test();
+
+        {
+            let moment = ctx.next_event(&mut signal_bag).unwrap();
+            assert_eq!(moment.timestamp(), 0);
+            let mut uc = ctx.borrow_update_context();
+            duration_since_become_true.update(&mut uc, &true);
+            assert_eq!(duration_since_become_true.measure(&mut uc), 0);
+        }
+
+        {
+            let moment = ctx.next_event(&mut signal_bag).unwrap();
+            assert_eq!(moment.timestamp(), 1);
+            let mut uc = ctx.borrow_update_context();
+            duration_since_become_true.update(&mut uc, &true);
+            assert_eq!(duration_since_become_true.measure(&mut uc), 1);
+        }
+
+        {
+            let moment = ctx.next_event(&mut signal_bag).unwrap();
+            assert_eq!(moment.timestamp(), 2);
+            let mut uc = ctx.borrow_update_context();
+            duration_since_become_true.update(&mut uc, &false);
+            assert_eq!(duration_since_become_true.measure(&mut uc), 0);
+        }
+
+        {
+            let moment = ctx.next_event(&mut signal_bag).unwrap();
+            assert_eq!(moment.timestamp(), 3);
+            let mut uc = ctx.borrow_update_context();
+            duration_since_become_true.update(&mut uc, &false);
+            assert_eq!(duration_since_become_true.measure(&mut uc), 0);
+        }
+
+        {
+            let moment = ctx.next_event(&mut signal_bag).unwrap();
+            assert_eq!(moment.timestamp(), 4);
+            let mut uc = ctx.borrow_update_context();
+            duration_since_become_true.update(&mut uc, &true);
+            assert_eq!(duration_since_become_true.measure(&mut uc), 0);
+        }
+
+        {
+            let moment = ctx.next_event(&mut signal_bag).unwrap();
+            assert_eq!(moment.timestamp(), 5);
+            let mut uc = ctx.borrow_update_context();
+            duration_since_become_true.update(&mut uc, &true);
+            assert_eq!(duration_since_become_true.measure(&mut uc), 1);
+        }
+
+        let state = duration_since_become_true.to_state();
+        let mut init_duration_since_become_true = DurationSinceBecomeTrue::default();
+        init_duration_since_become_true.patch(&state);
+        assert_eq!(state, init_duration_since_become_true.to_state());
+    }
+}

@@ -56,7 +56,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use lsp_runtime::signal_api::SignalMeasurement;
+    use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 
     use crate::test::{create_lsp_context_for_test, TestSignalBag};
 
@@ -65,55 +65,60 @@ mod test {
     #[test]
     fn test_duration_since_last_level() {
         let mut signal_bag = TestSignalBag::default();
-        let mut duration_since_last_level = DurationOfCurrentLevel::default();
+        let mut duration_of_current_level = DurationOfCurrentLevel::default();
         let mut ctx = create_lsp_context_for_test();
 
         {
             let moment = ctx.next_event(&mut signal_bag).unwrap();
             assert_eq!(moment.timestamp(), 0);
             let mut uc = ctx.borrow_update_context();
-            duration_since_last_level.update(&mut uc, &true);
-            assert_eq!(duration_since_last_level.measure(&mut uc), 0);
+            duration_of_current_level.update(&mut uc, &true);
+            assert_eq!(duration_of_current_level.measure(&mut uc), 0);
         }
 
         {
             let moment = ctx.next_event(&mut signal_bag).unwrap();
             assert_eq!(moment.timestamp(), 1);
             let mut uc = ctx.borrow_update_context();
-            duration_since_last_level.update(&mut uc, &true);
-            assert_eq!(duration_since_last_level.measure(&mut uc), 1);
+            duration_of_current_level.update(&mut uc, &true);
+            assert_eq!(duration_of_current_level.measure(&mut uc), 1);
         }
 
         {
             let moment = ctx.next_event(&mut signal_bag).unwrap();
             assert_eq!(moment.timestamp(), 2);
             let mut uc = ctx.borrow_update_context();
-            duration_since_last_level.update(&mut uc, &false);
-            assert_eq!(duration_since_last_level.measure(&mut uc), 0);
+            duration_of_current_level.update(&mut uc, &false);
+            assert_eq!(duration_of_current_level.measure(&mut uc), 0);
         }
 
         {
             let moment = ctx.next_event(&mut signal_bag).unwrap();
             assert_eq!(moment.timestamp(), 3);
             let mut uc = ctx.borrow_update_context();
-            duration_since_last_level.update(&mut uc, &false);
-            assert_eq!(duration_since_last_level.measure(&mut uc), 1);
+            duration_of_current_level.update(&mut uc, &false);
+            assert_eq!(duration_of_current_level.measure(&mut uc), 1);
         }
 
         {
             let moment = ctx.next_event(&mut signal_bag).unwrap();
             assert_eq!(moment.timestamp(), 4);
             let mut uc = ctx.borrow_update_context();
-            duration_since_last_level.update(&mut uc, &true);
-            assert_eq!(duration_since_last_level.measure(&mut uc), 0);
+            duration_of_current_level.update(&mut uc, &true);
+            assert_eq!(duration_of_current_level.measure(&mut uc), 0);
         }
 
         {
             let moment = ctx.next_event(&mut signal_bag).unwrap();
             assert_eq!(moment.timestamp(), 5);
             let mut uc = ctx.borrow_update_context();
-            duration_since_last_level.update(&mut uc, &true);
-            assert_eq!(duration_since_last_level.measure(&mut uc), 1);
+            duration_of_current_level.update(&mut uc, &true);
+            assert_eq!(duration_of_current_level.measure(&mut uc), 1);
         }
+
+        let state = duration_of_current_level.to_state();
+        let mut init_duration_of_current_level = DurationOfCurrentLevel::<bool>::default();
+        init_duration_of_current_level.patch(&state);
+        assert_eq!(state, init_duration_of_current_level.to_state());
     }
 }

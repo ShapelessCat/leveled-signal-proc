@@ -58,3 +58,80 @@ impl Patchable for DurationTrue {
         self.last_true_starts = state.last_true_starts;
     }
 }
+
+#[cfg(test)]
+mod test {
+    use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
+
+    use crate::test::{create_lsp_context_for_test, TestSignalBag};
+
+    use super::DurationTrue;
+
+    #[test]
+    fn test_duration_prev_level() {
+        let mut signal_bag = TestSignalBag::default();
+        let mut duration_true = DurationTrue::default();
+        let mut ctx = create_lsp_context_for_test();
+
+        {
+            let moment = ctx.next_event(&mut signal_bag).unwrap();
+            assert_eq!(moment.timestamp(), 0);
+            let mut uc = ctx.borrow_update_context();
+            duration_true.update(&mut uc, &true);
+            assert_eq!(duration_true.measure(&mut uc), 0);
+        }
+
+        {
+            let moment = ctx.next_event(&mut signal_bag).unwrap();
+            assert_eq!(moment.timestamp(), 1);
+            let mut uc = ctx.borrow_update_context();
+            duration_true.update(&mut uc, &true);
+            assert_eq!(duration_true.measure(&mut uc), 1);
+        }
+
+        {
+            let moment = ctx.next_event(&mut signal_bag).unwrap();
+            assert_eq!(moment.timestamp(), 2);
+            let mut uc = ctx.borrow_update_context();
+            duration_true.update(&mut uc, &true);
+            assert_eq!(duration_true.measure(&mut uc), 2);
+        }
+
+        {
+            let moment = ctx.next_event(&mut signal_bag).unwrap();
+            assert_eq!(moment.timestamp(), 3);
+            let mut uc = ctx.borrow_update_context();
+            duration_true.update(&mut uc, &false);
+            assert_eq!(duration_true.measure(&mut uc), 3);
+        }
+
+        {
+            let moment = ctx.next_event(&mut signal_bag).unwrap();
+            assert_eq!(moment.timestamp(), 4);
+            let mut uc = ctx.borrow_update_context();
+            duration_true.update(&mut uc, &false);
+            assert_eq!(duration_true.measure(&mut uc), 3);
+        }
+
+        {
+            let moment = ctx.next_event(&mut signal_bag).unwrap();
+            assert_eq!(moment.timestamp(), 5);
+            let mut uc = ctx.borrow_update_context();
+            duration_true.update(&mut uc, &true);
+            assert_eq!(duration_true.measure(&mut uc), 3);
+        }
+
+        {
+            let moment = ctx.next_event(&mut signal_bag).unwrap();
+            assert_eq!(moment.timestamp(), 6);
+            let mut uc = ctx.borrow_update_context();
+            duration_true.update(&mut uc, &true);
+            assert_eq!(duration_true.measure(&mut uc), 4);
+        }
+
+        let state = duration_true.to_state();
+        let mut init_duration_true = DurationTrue::default();
+        init_duration_true.patch(&state);
+        assert_eq!(state, init_duration_true.to_state());
+    }
+}
