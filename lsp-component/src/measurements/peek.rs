@@ -5,6 +5,7 @@ use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 use lsp_runtime::Timestamp;
 
+/// Measure by peeking the input value.
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct Peek<T>(T);
 

@@ -5,6 +5,7 @@ use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 use lsp_runtime::{Duration, Timestamp};
 
+/// Measure the duration from the start of the current level.
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct DurationOfCurrentLevel<T> {
     current_level_start: Timestamp,

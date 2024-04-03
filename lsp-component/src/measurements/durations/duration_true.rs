@@ -3,6 +3,8 @@ use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 use lsp_runtime::{Duration, Timestamp};
 use serde::{Deserialize, Serialize};
 
+/// Measure the duration during which the input signal is `true`, yielding a cumulative result
+/// accounting for all `true` levels up to the current measurement time.
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct DurationTrue {
     current_state: bool,

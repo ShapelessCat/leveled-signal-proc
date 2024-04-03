@@ -2,6 +2,7 @@ use serde::Serialize;
 
 use crate::context::UpdateContext;
 
+/// This trait is created for doing checkpoint read/write.
 pub trait Patchable: Serialize {
     fn to_state(&self) -> String {
         serde_json::to_string(&self).unwrap()

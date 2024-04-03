@@ -4,6 +4,8 @@ use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 use lsp_runtime::Timestamp;
 
+/// Measure cumulative changes. The input signal must be some rates for describing a piecewise
+/// linear function.
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct LinearChange {
     current_rate: f64,

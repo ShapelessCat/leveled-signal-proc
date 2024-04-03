@@ -9,6 +9,7 @@ use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::{Patchable, SignalProcessor};
 use lsp_runtime::{Duration, Timestamp};
 
+/// TODO: !!!
 /// TODO: `SlidingWindow` and `SlidingTimeWindow` are not fundamental, try to implement these two
 ///       processors with `StateMachine`.
 #[derive(Serialize)]

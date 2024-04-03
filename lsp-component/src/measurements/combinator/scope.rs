@@ -7,6 +7,8 @@ use serde::{Deserialize, Serialize};
 use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 
+/// A measurement combinator that can take a control signal and a measurement, reset the measurement
+/// result when the control signal level changes.
 #[derive(Clone, Debug, Serialize)]
 pub struct ScopedMeasurement<ScopeType, MeasurementType, MeasurementOutput> {
     current_control_level: ScopeType,

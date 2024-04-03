@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 
+/// A measurement combinator that can combine two measurements.
 #[derive(Clone, Debug, Serialize)]
 pub struct BinaryCombinedMeasurement<
     OutputType0,
