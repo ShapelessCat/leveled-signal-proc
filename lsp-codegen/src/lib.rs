@@ -136,11 +136,15 @@ pub fn include_lsp_ir(input: TokenStream) -> TokenStream {
             Inst: lsp_runtime::instrument::LspDataLogicInstrument,
         {
             use lsp_runtime::context::LspContext;
-            let mut input_state = Default::default();
+            // Create LSP components, processors and measurements
             lsp_codegen::define_data_logic_nodes!(#path);
             lsp_codegen::define_measurement_trigger!(#path);
-            let mut ctx = LspContext::<_, InputSignalBag>::new(input_iter, lsp_codegen::should_merge_simultaneous_moments!(#path));
+            // Setup for interval metrics computation
             lsp_codegen::define_previous_metrics_bag!(#path);
+            // Setup for input singal state and computation context
+            let mut input_state = Default::default();
+            let mut ctx = LspContext::<_, InputSignalBag>::new(input_iter, lsp_codegen::should_merge_simultaneous_moments!(#path));
+            // Main iteration
             while let Some(moment) = ctx.next_event(&mut input_state) {
                 instrument_ctx.data_logic_update_begin();
                 let mut update_context = ctx.borrow_update_context();
@@ -159,7 +163,7 @@ pub fn include_lsp_ir(input: TokenStream) -> TokenStream {
                     lsp_codegen::impl_signal_measurement_limit_side_control!(#path);
                     should_use_left_limit = __should_measure_left_side_limit;
                 }
-                let should_output = lsp_codegen::impl_should_output!(#path); // TODO:
+                let should_output = lsp_codegen::impl_should_output!(#path);
                 if should_measure && should_output {
                     let _metrics_bag = if should_use_left_limit {
                         left_limit_measurements
