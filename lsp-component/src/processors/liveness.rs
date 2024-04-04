@@ -103,9 +103,7 @@ where
 mod test {
     use lsp_runtime::signal_api::SignalProcessor;
 
-    use crate::test::{
-        create_lsp_context_for_test_from_input_slice, TestSignalBag, TestSignalInput,
-    };
+    use crate::test::{create_lsp_context_for_test_from_input, TestSignalBag, TestSignalInput};
 
     use super::LivenessChecker;
 
@@ -117,7 +115,7 @@ mod test {
         let input = [
             1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
         ];
-        let mut context = create_lsp_context_for_test_from_input_slice(&input);
+        let mut context = create_lsp_context_for_test_from_input(&input);
 
         let output = [
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0,

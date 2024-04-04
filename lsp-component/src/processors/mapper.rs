@@ -60,7 +60,8 @@ impl<P, O, C> Patchable for SignalMapper<P, O, C> {
 mod test {
     use lsp_runtime::signal_api::SignalProcessor;
 
-    use crate::{processors::SignalMapper, test::create_lsp_context_for_test};
+    use super::SignalMapper;
+    use crate::test::create_lsp_context_for_test;
 
     #[test]
     fn test_signal_mapper() {

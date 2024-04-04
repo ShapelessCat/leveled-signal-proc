@@ -85,7 +85,8 @@ where
 mod test {
     use lsp_runtime::signal_api::SignalProcessor;
 
-    use crate::{processors::LevelTriggeredLatch, test::create_lsp_context_for_test};
+    use super::LevelTriggeredLatch;
+    use crate::test::create_lsp_context_for_test;
 
     #[test]
     fn test_basic_latch() {
