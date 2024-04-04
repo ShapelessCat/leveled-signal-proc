@@ -4,7 +4,7 @@
 
 perf.*
 
-lsdl/*.egg-info
+lsdl.egg-info
 lsdl/dist
 lsdl/build
 **/__pycache__
