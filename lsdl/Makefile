@@ -12,5 +12,4 @@ uninstall:
 install:
 	pip install "${WHEEL}"
 
-update: build uninstall install
-
+reinstall: clean build uninstall install
