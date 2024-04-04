@@ -1,6 +1,8 @@
 import functools
-from lsdl.const import Const
-from lsdl.signal_processors import SignalGenerator
+
+from lsdl.processors import SignalGenerator, SlidingWindow
+from lsdl.processors.generators import Const
+from lsdl.rust_code import RUST_DEFAULT_VALUE
 
 
 class Operator:
@@ -71,7 +73,7 @@ class Equals(BinaryOperator):
     op = "equals"
 
     def process(self):
-        return (self.left == self.right)
+        return self.left == self.right
 
 
 class Get(UnaryOperator):
@@ -113,13 +115,13 @@ class Inequality(BinaryOperator):
 
     def process(self, op):
         if op == "greaterThan":
-            return (self.left > self.right)
+            return self.left > self.right
         elif op == "greaterThanOrEqualTo":
-            return (self.left >= self.right)
+            return self.left >= self.right
         elif op == "lessThan":
-            return (self.left < self.right)
+            return self.left < self.right
         elif op == "lessThanOrEqualTo":
-            return (self.left <= self.right)
+            return self.left <= self.right
 
 
 class Add(KaryOperator):
@@ -136,18 +138,18 @@ class Multiply(KaryOperator):
         return functools.reduce(lambda a, b: a * b, self.args)
 
 
-class Substract(BinaryOperator):
-    op = "substract"
+class Subtract(BinaryOperator):
+    op = "subtract"
 
     def process(self):
-        return (self.left - self.right)
+        return self.left - self.right
 
 
 class Divide(BinaryOperator):
     op = "divide"
 
     def process(self):
-        return (self.left / self.right)
+        return self.left / self.right
 
 
 class Any(UnaryOperator):
@@ -160,15 +162,32 @@ class Any(UnaryOperator):
 class PriorEvent(UnaryOperator):
     op = "prior_event"
 
+    @staticmethod
+    def prior_event(input, window_size=1, init_value=None):
+        if not init_value:
+            init_value = RUST_DEFAULT_VALUE
+        sw = SlidingWindow(
+            clock=input,
+            data=input,
+            window_size=window_size,
+            init_value=init_value,
+            emit_fn='|_, data| data.clone()'
+        )
+        return sw
+
     def process(self, window=1, initial_value=None):
-        return self.input.prior_event(window_size=window, init_value=initial_value)
+        return PriorEvent.prior_event(
+            self.input,
+            window_size=window,
+            init_value=initial_value
+        )
 
 
 class IfOp(KaryOperator):
     op = "if_op"
 
     def process(self):
-        from lsdl.signal_processors import If
+        from lsdl.processors import If
         return If(self.args[0], self.args[1], self.args[2])
 
 
@@ -180,11 +199,11 @@ class DurationSinceLastEvent(UnaryOperator):
         return self.input.measure_duration_since_last_level()
 
 
-class CummulativeFunc(UnaryOperator):
+class CumulativeFunc(UnaryOperator):
     op = None
 
     def process(self, op):
-        from lsdl.prelude import time_domain_fold
+        from lsdl.processors.combinators import time_domain_fold
         return time_domain_fold(
             data=self.input,
             fold_method=op
