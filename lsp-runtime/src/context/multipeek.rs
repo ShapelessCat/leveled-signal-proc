@@ -1,14 +1,33 @@
 use std::collections::VecDeque;
 
+use serde::{Deserialize, Serialize};
+
+use crate::signal_api::Patchable;
+
+fn serialize_vecdeque_len<T, S>(vec: &VecDeque<T>, s: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    s.serialize_u64(vec.len() as u64)
+}
+
+#[derive(Serialize)]
+#[serde(bound = "")]
 pub struct MultiPeek<I: Iterator> {
+    #[serde(skip_serializing)]
     inner: I,
+    offset: usize,
+    #[serde(rename = "peek_buffer_size", serialize_with = "serialize_vecdeque_len")]
     peek_buffer: VecDeque<I::Item>,
 }
 
 impl<I: Iterator> Iterator for MultiPeek<I> {
     type Item = I::Item;
+
     fn next(&mut self) -> Option<Self::Item> {
         if self.peek_buffer.is_empty() {
+            // TODO: how to make sure the following two consecutive statements execute atomically?
+            self.offset += 1;
             self.inner.next()
         } else {
             self.peek_buffer.pop_front()
@@ -20,16 +39,46 @@ impl<I: Iterator> From<I> for MultiPeek<I> {
     fn from(inner: I) -> Self {
         Self {
             inner,
+            offset: 0usize,
             peek_buffer: VecDeque::new(),
         }
     }
 }
 
+#[derive(Default, Deserialize)]
+pub struct MultiPeekState {
+    offset: usize,
+    peek_buffer_size: usize,
+}
+
+impl<I: Iterator> Patchable for MultiPeek<I> {
+    type State = MultiPeekState;
+
+    // TODO: Make this more robust, and handle the issue: `next()` result is `None`.
+    //       This shouldn't happen when the iterator is built from the original data source.
+    fn patch_from(&mut self, state: Self::State) {
+        self.offset = state.offset;
+        let n4drop = state.offset - state.peek_buffer_size;
+        (0..n4drop).for_each(|_| {
+            self.inner.next();
+        });
+        (0..state.peek_buffer_size)
+            .for_each(|_| self.peek_buffer.push_back(self.inner.next().unwrap()));
+    }
+}
+
 impl<I: Iterator> MultiPeek<I> {
+    #[inline(always)]
+    pub fn offset(&self) -> usize {
+        self.offset
+    }
+
     #[inline(always)]
     pub fn peek_n(&mut self, n: usize) -> Option<&I::Item> {
         while self.peek_buffer.len() < n {
             if let Some(item) = self.inner.next() {
+                // TODO: how to make sure the following two consecutive statements execute atomically?
+                self.offset += 1;
                 self.peek_buffer.push_back(item);
             } else {
                 return None;

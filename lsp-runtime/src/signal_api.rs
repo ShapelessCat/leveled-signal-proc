@@ -1,14 +1,23 @@
-use serde::Serialize;
+use serde::{de::DeserializeOwned, Serialize};
 
 use crate::context::UpdateContext;
 
-/// This trait is created for doing checkpoint read/write.
+/// This trait is created for creating/loading any checkpoint component.
+/// Checkpoint is a state for the whole system, which is used to continue computation without losing
+/// previous state.
 pub trait Patchable: Serialize {
+    type State: DeserializeOwned;
+
     fn to_state(&self) -> String {
         serde_json::to_string(&self).unwrap()
     }
 
-    fn patch(&mut self, state: &str);
+    fn patch(&mut self, state: &str) {
+        let state: Self::State = serde_json::from_str(state).unwrap();
+        self.patch_from(state);
+    }
+
+    fn patch_from(&mut self, state: Self::State);
 }
 
 pub trait SignalProcessor<'a, EventIt: Iterator> {

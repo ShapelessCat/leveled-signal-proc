@@ -1,6 +1,8 @@
 use std::cmp::Reverse;
 use std::collections::BinaryHeap;
 
+use serde::{Deserialize, Serialize};
+
 use crate::{Moment, Timestamp};
 
 /// The queue sorting internal events.
@@ -12,7 +14,7 @@ use crate::{Moment, Timestamp};
 /// triggered by any external event, but scheduled whenever the signal processor needs a recompute.
 ///
 /// Also, we handle the measurement request as an internal event.
-#[derive(Default)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct InternalEventQueue {
     queue: BinaryHeap<Reverse<Moment>>,
 }
