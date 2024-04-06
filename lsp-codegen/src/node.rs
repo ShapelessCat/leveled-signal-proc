@@ -47,18 +47,39 @@ impl MacroContext {
         Ok(decl_code)
     }
 
+    fn generate_lsp_node_state_loading(&self, node: &Node) -> Result<TokenStream2, syn::Error> {
+        let node_id = self.get_node_ident(node.id);
+        let key = syn::Index::from(node.id);
+        let load_state = quote! {
+            if let Some(state) = entries.get(& #key) {
+                #node_id . patch(state);
+            }
+        };
+        Ok(load_state)
+    }
+
     pub(crate) fn define_lsp_nodes(&self) -> Result<TokenStream2, syn::Error> {
         let nodes = &self.get_ir_data().nodes;
-
         let mut decl_codes = Vec::new();
-
-        //let ir = serde_json::to_string_pretty(self.get_ir_data()).unwrap();
-
         for node in nodes.iter() {
             decl_codes.push(self.generate_lsp_node_declaration(node)?);
         }
         Ok(quote! {
             #(#decl_codes)*
+        })
+    }
+
+    pub(crate) fn patch_lsp_nodes(&self) -> Result<TokenStream2, syn::Error> {
+        let nodes = &self.get_ir_data().nodes;
+        let mut load_state_stmts = Vec::new();
+        for node in nodes.iter() {
+            load_state_stmts.push(self.generate_lsp_node_state_loading(node)?);
+        }
+        Ok(quote! {
+            if let Some(entries) = entries {
+                use lsp_runtime::signal_api::Patchable;
+                #(#load_state_stmts)*
+            }
         })
     }
 
@@ -167,5 +188,32 @@ impl MacroContext {
             #(#update_code_vec)*
         };
         Ok(out)
+    }
+
+    // The second parameter is used for debugging.
+    // In generated code it can be `ctx` or `update_context`, depends on this function call site.
+    pub(crate) fn build_checkpoint(&self, context: TokenStream2) -> TokenStream2 {
+        let mut insert_statements = Vec::new();
+        let nodes = &self.get_ir_data().nodes;
+        for node in nodes {
+            let key = node.id;
+            let node_ident = self.get_node_ident(node.id);
+            insert_statements.push(quote! {
+                let _ = entries.insert(#key, #node_ident . to_state());
+            });
+        }
+
+        quote! {
+            {
+                use lsp_runtime::signal_api::Patchable;
+                let mut entries = std::collections::HashMap::new();
+                #(#insert_statements)*
+                Checkpoint {
+                    context_state: serde_json::to_string(& #context)?,
+                    input_state: serde_json::to_string(&input_state)?,
+                    entries,
+                }
+            }
+        }
     }
 }

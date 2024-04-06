@@ -1,6 +1,7 @@
 use std::{
     fs::File,
     io::{BufReader, Write},
+    path::Path,
 };
 
 use anyhow::Error;
@@ -16,6 +17,7 @@ fn main() -> Result<(), Error> {
         .filter_map(Result::ok);
     let mut instr_ctx = NoInstrument;
     let mut output = std::io::BufWriter::new(std::io::stdout());
+    let checkpoint_home = Path::new("./demos/experiment");
     lsp_main(
         input_stream,
         move |metric| {
@@ -24,6 +26,7 @@ fn main() -> Result<(), Error> {
             Ok(())
         },
         &mut instr_ctx,
+        checkpoint_home,
     )?;
     eprintln!("{}", instr_ctx);
     Ok(())
