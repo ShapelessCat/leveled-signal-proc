@@ -60,7 +60,7 @@ where
 }
 
 #[derive(Deserialize)]
-struct AccumulatorState<Data, ControlSignal> {
+pub struct AccumulatorState<Data, ControlSignal> {
     prev_control_signal: ControlSignal,
     accumulator: Data,
 }
@@ -70,8 +70,9 @@ where
     D: Serialize + DeserializeOwned,
     C: Serialize + DeserializeOwned,
 {
-    fn patch(&mut self, state: &str) {
-        let state: AccumulatorState<D, C> = serde_json::from_str(state).unwrap();
+    type State = AccumulatorState<D, C>;
+
+    fn patch_from(&mut self, state: Self::State) {
         self.prev_control_signal = state.prev_control_signal;
         self.accumulator = state.accumulator;
     }

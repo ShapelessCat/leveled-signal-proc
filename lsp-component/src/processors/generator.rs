@@ -121,8 +121,9 @@ impl<F, S> Patchable for SignalGenerator<F, S>
 where
     S: Serialize + DeserializeOwned,
 {
-    fn patch(&mut self, state: &str) {
-        let state: SignalGeneratorState<S> = serde_json::from_str(state).unwrap();
+    type State = SignalGeneratorState<S>;
+
+    fn patch_from(&mut self, state: Self::State) {
         self.last_value = state.last_value;
         self.until_ts = state.until_ts;
     }

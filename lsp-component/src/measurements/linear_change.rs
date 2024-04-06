@@ -32,15 +32,16 @@ impl<'a, I: Iterator> SignalMeasurement<'a, I> for LinearChange {
 }
 
 #[derive(Deserialize)]
-struct LinearChangeState {
+pub struct LinearChangeState {
     current_rate: f64,
     current_rate_start: Timestamp,
     accumulated_amount: f64,
 }
 
 impl Patchable for LinearChange {
-    fn patch(&mut self, state: &str) {
-        let state: LinearChangeState = serde_json::from_str(state).unwrap();
+    type State = LinearChangeState;
+
+    fn patch_from(&mut self, state: Self::State) {
         self.current_rate = state.current_rate;
         self.current_rate_start = state.current_rate_start;
         self.accumulated_amount = state.accumulated_amount;

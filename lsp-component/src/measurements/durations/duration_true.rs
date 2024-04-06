@@ -41,15 +41,16 @@ impl<'a, I: Iterator> SignalMeasurement<'a, I> for DurationTrue {
 }
 
 #[derive(Deserialize)]
-struct DurationTrueState {
+pub struct DurationTrueState {
     current_state: bool,
     accumulated_duration: Duration,
     last_true_starts: Timestamp,
 }
 
 impl Patchable for DurationTrue {
-    fn patch(&mut self, state: &str) {
-        let state: DurationTrueState = serde_json::from_str(state).unwrap();
+    type State = DurationTrueState;
+
+    fn patch_from(&mut self, state: Self::State) {
         self.current_state = state.current_state;
         self.accumulated_duration = state.accumulated_duration;
         self.last_true_starts = state.last_true_starts;

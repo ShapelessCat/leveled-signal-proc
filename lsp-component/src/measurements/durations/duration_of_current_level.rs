@@ -36,7 +36,7 @@ where
 }
 
 #[derive(Deserialize)]
-struct DurationOfCurrentLevelState<T> {
+pub struct DurationOfCurrentLevelState<T> {
     current_level_start: Timestamp,
     current_level: Option<T>,
 }
@@ -45,8 +45,9 @@ impl<T> Patchable for DurationOfCurrentLevel<T>
 where
     T: Serialize + DeserializeOwned,
 {
-    fn patch(&mut self, state: &str) {
-        let state: DurationOfCurrentLevelState<T> = serde_json::from_str(state).unwrap();
+    type State = DurationOfCurrentLevelState<T>;
+
+    fn patch_from(&mut self, state: Self::State) {
         self.current_level = state.current_level;
         self.current_level_start = state.current_level_start;
     }

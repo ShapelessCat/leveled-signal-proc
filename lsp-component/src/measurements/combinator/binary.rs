@@ -17,9 +17,7 @@ pub struct BinaryCombinedMeasurement<
 > {
     #[serde(skip_serializing)]
     binary_op: ClosureType,
-    #[serde(skip_serializing)]
     inner0: MeasurementType0,
-    #[serde(skip_serializing)]
     inner1: MeasurementType1,
     #[serde(skip_serializing)]
     _phantom_data: PhantomData<(OutputType0, OutputType1, OutputType)>,
@@ -90,8 +88,20 @@ where
 }
 
 #[derive(Deserialize)]
-struct BinaryCombinedMeasurementState;
+pub struct BinaryCombinedMeasurementState<MeasurementStateType0, MeasurementStateType1> {
+    inner0: MeasurementStateType0,
+    inner1: MeasurementStateType1,
+}
 
-impl<O0, O1, O, C, M0, M1> Patchable for BinaryCombinedMeasurement<O0, O1, O, C, M0, M1> {
-    fn patch(&mut self, _state: &str) {}
+impl<O0, O1, O, C, M0, M1> Patchable for BinaryCombinedMeasurement<O0, O1, O, C, M0, M1>
+where
+    M0: Serialize + Patchable,
+    M1: Serialize + Patchable,
+{
+    type State = BinaryCombinedMeasurementState<M0::State, M1::State>;
+
+    fn patch_from(&mut self, state: Self::State) {
+        self.inner0.patch_from(state.inner0);
+        self.inner1.patch_from(state.inner1);
+    }
 }

@@ -67,7 +67,7 @@ where
 }
 
 #[derive(Deserialize)]
-struct SlidingWindowState<Input, Trigger> {
+pub struct SlidingWindowState<Input, Trigger> {
     queue: VecDeque<Input>,
     last_trigger_value: Trigger,
     last_dequeued_value: Input,
@@ -78,8 +78,9 @@ where
     I: Serialize + DeserializeOwned,
     T: Serialize + DeserializeOwned,
 {
-    fn patch(&mut self, state: &str) {
-        let state: SlidingWindowState<I, T> = serde_json::from_str(state).unwrap();
+    type State = SlidingWindowState<I, T>;
+
+    fn patch_from(&mut self, state: Self::State) {
         self.queue = state.queue;
         self.last_trigger_value = state.last_trigger_value;
         self.last_dequeued_value = state.last_dequeued_value;
@@ -149,7 +150,7 @@ where
 }
 
 #[derive(Deserialize)]
-struct SlidingTimeWindowState<Input, Trigger> {
+pub struct SlidingTimeWindowState<Input, Trigger> {
     queue: VecDeque<(Input, Timestamp)>,
     time_window_size: Duration,
     last_trigger_value: Trigger,
@@ -161,8 +162,9 @@ where
     I: Serialize + DeserializeOwned,
     T: Serialize + DeserializeOwned,
 {
-    fn patch(&mut self, state: &str) {
-        let state: SlidingTimeWindowState<I, T> = serde_json::from_str(state).unwrap();
+    type State = SlidingTimeWindowState<I, T>;
+
+    fn patch_from(&mut self, state: Self::State) {
         self.queue = state.queue;
         self.time_window_size = state.time_window_size;
         self.last_trigger_value = state.last_trigger_value;

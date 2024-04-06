@@ -80,7 +80,7 @@ where
 }
 
 #[derive(Deserialize)]
-struct LivenessCheckerState<Clock> {
+pub struct LivenessCheckerState<Clock> {
     expiration_period: Duration,
     last_event_clock: Clock,
     last_event_timestamp: Timestamp,
@@ -90,8 +90,9 @@ impl<F, C, E> Patchable for LivenessChecker<F, C, E>
 where
     C: Serialize + DeserializeOwned,
 {
-    fn patch(&mut self, state: &str) {
-        let state: LivenessCheckerState<C> = serde_json::from_str(state).unwrap();
+    type State = LivenessCheckerState<C>;
+
+    fn patch_from(&mut self, state: Self::State) {
         self.expiration_period = state.expiration_period;
         self.last_event_clock = state.last_event_clock;
         self.last_event_timestamp = state.last_event_timestamp;

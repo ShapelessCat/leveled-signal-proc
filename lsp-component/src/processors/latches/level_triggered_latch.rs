@@ -63,7 +63,7 @@ where
 }
 
 #[derive(Deserialize)]
-struct LevelTriggeredLatchState<Data, RetentionPolicy> {
+pub struct LevelTriggeredLatchState<Data, RetentionPolicy> {
     data: Data,
     retention: RetentionPolicy,
 }
@@ -73,8 +73,9 @@ where
     D: Serialize + DeserializeOwned,
     R: Serialize + DeserializeOwned,
 {
-    fn patch(&mut self, state: &str) {
-        let state: LevelTriggeredLatchState<D, R> = serde_json::from_str(state).unwrap();
+    type State = LevelTriggeredLatchState<D, R>;
+
+    fn patch_from(&mut self, state: Self::State) {
         self.data = state.data;
         self.retention = state.retention;
     }

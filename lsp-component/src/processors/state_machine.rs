@@ -79,7 +79,7 @@ where
 }
 
 #[derive(Deserialize)]
-struct StateMachineState<State, Trigger> {
+pub struct StateMachineState<State, Trigger> {
     state: State,
     last_trigger_value: Trigger,
 }
@@ -89,8 +89,9 @@ where
     S: Serialize + DeserializeOwned,
     T: Serialize + DeserializeOwned,
 {
-    fn patch(&mut self, state: &str) {
-        let state: StateMachineState<S, T> = serde_json::from_str(state).unwrap();
+    type State = StateMachineState<S, T>;
+
+    fn patch_from(&mut self, state: Self::State) {
         self.state = state.state;
         self.last_trigger_value = state.last_trigger_value;
     }

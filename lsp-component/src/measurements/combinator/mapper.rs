@@ -10,7 +10,6 @@ use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 pub struct MappedMeasurement<InnerOutput, OutputType, ClosureType, MeasurementType> {
     #[serde(skip_serializing)]
     how: ClosureType,
-    #[serde(skip_serializing)]
     inner: MeasurementType,
     #[serde(skip_serializing)]
     _phantom_data: PhantomData<(InnerOutput, OutputType)>,
@@ -52,8 +51,17 @@ where
 }
 
 #[derive(Deserialize)]
-struct MappedMeasurementState;
+pub struct MappedMeasurementState<MeasurementStateType> {
+    inner: MeasurementStateType,
+}
 
-impl<I, O, C, M> Patchable for MappedMeasurement<I, O, C, M> {
-    fn patch(&mut self, _state: &str) {}
+impl<I, O, C, M> Patchable for MappedMeasurement<I, O, C, M>
+where
+    M: Serialize + Patchable,
+{
+    type State = MappedMeasurementState<M::State>;
+
+    fn patch_from(&mut self, state: Self::State) {
+        self.inner.patch_from(state.inner);
+    }
 }

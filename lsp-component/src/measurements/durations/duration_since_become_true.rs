@@ -31,18 +31,15 @@ impl<'a, I: Iterator> SignalMeasurement<'a, I> for DurationSinceBecomeTrue {
 }
 
 #[derive(Deserialize)]
-struct DurationSinceBecomeTrueState {
+pub struct DurationSinceBecomeTrueState {
     last_input: bool,
     last_assignment_timestamp: Timestamp,
 }
 
 impl Patchable for DurationSinceBecomeTrue {
-    fn to_state(&self) -> String {
-        serde_json::to_string(&self).unwrap()
-    }
+    type State = DurationSinceBecomeTrueState;
 
-    fn patch(&mut self, state: &str) {
-        let state: DurationSinceBecomeTrueState = serde_json::from_str(state).unwrap();
+    fn patch_from(&mut self, state: Self::State) {
         self.last_input = state.last_input;
         self.last_assignment_timestamp = state.last_assignment_timestamp;
     }

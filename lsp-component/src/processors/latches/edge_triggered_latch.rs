@@ -72,7 +72,7 @@ where
 }
 
 #[derive(Deserialize)]
-struct EdgeTriggeredLatchState<Control, Data, RetentionPolicy> {
+pub struct EdgeTriggeredLatchState<Control, Data, RetentionPolicy> {
     last_control_level: Control,
     data: Data,
     retention: RetentionPolicy,
@@ -84,8 +84,9 @@ where
     D: Serialize + DeserializeOwned,
     R: Serialize + DeserializeOwned,
 {
-    fn patch(&mut self, state: &str) {
-        let state: EdgeTriggeredLatchState<C, D, R> = serde_json::from_str(state).unwrap();
+    type State = EdgeTriggeredLatchState<C, D, R>;
+
+    fn patch_from(&mut self, state: Self::State) {
         self.last_control_level = state.last_control_level;
         self.data = state.data;
         self.retention = state.retention;

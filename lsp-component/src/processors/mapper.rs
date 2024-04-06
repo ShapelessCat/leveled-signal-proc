@@ -46,10 +46,14 @@ where
 }
 
 #[derive(Deserialize)]
-struct SignalMapperState;
+pub struct SignalMapperState;
 
 impl<P, O, C> Patchable for SignalMapper<P, O, C> {
+    type State = SignalMapperState;
+
     fn patch(&mut self, _state: &str) {}
+
+    fn patch_from(&mut self, _state: Self::State) {}
 }
 
 #[cfg(test)]

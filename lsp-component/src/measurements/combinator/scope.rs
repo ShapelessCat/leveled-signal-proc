@@ -10,7 +10,6 @@ use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 #[derive(Clone, Debug, Serialize)]
 pub struct ScopedMeasurement<ScopeType, MeasurementType, MeasurementOutput> {
     current_control_level: ScopeType,
-    #[serde(skip_serializing)]
     inner: MeasurementType,
     current_base: MeasurementOutput,
 }
@@ -57,19 +56,23 @@ where
 }
 
 #[derive(Deserialize)]
-struct ScopedMeasurementState<ScopeType, MeasurementOutput> {
+pub struct ScopedMeasurementState<ScopeType, MeasurementStateType, MeasurementOutput> {
     current_control_level: ScopeType,
+    inner: MeasurementStateType,
     current_base: MeasurementOutput,
 }
 
 impl<S, M, O> Patchable for ScopedMeasurement<S, M, O>
 where
     S: Serialize + DeserializeOwned,
+    M: Serialize + Patchable,
     O: Serialize + DeserializeOwned,
 {
-    fn patch(&mut self, state: &str) {
-        let state: ScopedMeasurementState<S, O> = serde_json::from_str(state).unwrap();
+    type State = ScopedMeasurementState<S, M::State, O>;
+
+    fn patch_from(&mut self, state: Self::State) {
         self.current_control_level = state.current_control_level;
+        self.inner.patch_from(state.inner);
         self.current_base = state.current_base;
     }
 }
