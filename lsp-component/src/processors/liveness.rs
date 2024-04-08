@@ -1,10 +1,11 @@
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use serde::Serialize;
+use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize};
 
 use lsp_runtime::context::{UpdateContext, WithTimestamp};
-use lsp_runtime::signal_api::SignalProcessor;
+use lsp_runtime::signal_api::{Patchable, SignalProcessor};
 use lsp_runtime::{Duration, Timestamp};
 
 /// This is the signal processor that analyzes the liveness of a session based on heartbeat signals.
@@ -19,18 +20,8 @@ pub struct LivenessChecker<IsLivenessEventFunc, Clock, Event> {
     expiration_period: Duration,
     last_event_clock: Clock,
     last_event_timestamp: Timestamp,
-    phantom: PhantomData<Event>,
-}
-
-impl<F, C: Debug, E: Debug> Debug for LivenessChecker<F, C, E> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("LivenessChecker")
-            .field("expiration_period", &self.expiration_period)
-            .field("last_event_timestamp", &self.last_event_timestamp)
-            .field("last_event_clock", &self.last_event_clock)
-            .field("phantom", &self.phantom)
-            .finish()
-    }
+    #[serde(skip_serializing)]
+    _phantom_data: PhantomData<Event>,
 }
 
 impl<F, C: Default, E> LivenessChecker<F, C, E> {
@@ -43,8 +34,19 @@ impl<F, C: Default, E> LivenessChecker<F, C, E> {
             expiration_period,
             last_event_clock: Default::default(),
             last_event_timestamp: Default::default(),
-            phantom: PhantomData,
+            _phantom_data: PhantomData,
         }
+    }
+}
+
+impl<F, C: Debug, E: Debug> Debug for LivenessChecker<F, C, E> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("LivenessChecker")
+            .field("expiration_period", &self.expiration_period)
+            .field("last_event_timestamp", &self.last_event_timestamp)
+            .field("last_event_clock", &self.last_event_clock)
+            .field("_phantom_data", &self._phantom_data)
+            .finish()
     }
 }
 
@@ -52,7 +54,7 @@ impl<'a, I, F, C, E> SignalProcessor<'a, I> for LivenessChecker<F, C, E>
 where
     I: Iterator<Item = E>,
     F: FnMut(&E) -> bool,
-    C: Clone + PartialEq + Serialize,
+    C: Clone + PartialEq,
     E: WithTimestamp,
 {
     type Input = C;
@@ -77,25 +79,43 @@ where
     }
 }
 
+#[derive(Deserialize)]
+pub struct LivenessCheckerState<Clock> {
+    expiration_period: Duration,
+    last_event_clock: Clock,
+    last_event_timestamp: Timestamp,
+}
+
+impl<F, C, E> Patchable for LivenessChecker<F, C, E>
+where
+    C: Serialize + DeserializeOwned,
+{
+    type State = LivenessCheckerState<C>;
+
+    fn patch_from(&mut self, state: Self::State) {
+        self.expiration_period = state.expiration_period;
+        self.last_event_clock = state.last_event_clock;
+        self.last_event_timestamp = state.last_event_timestamp;
+    }
+}
+
 #[cfg(test)]
 mod test {
     use lsp_runtime::signal_api::SignalProcessor;
 
-    use crate::test::{create_lsp_context_for_test_from_input_slice, TestSignalBag, TestSignalInput};
+    use crate::test::{create_lsp_context_for_test_from_input, TestSignalBag, TestSignalInput};
 
     use super::LivenessChecker;
 
     #[test]
     fn test_liveness_checker() {
-        let mut liveness = LivenessChecker::<_, _, TestSignalInput<_>>::new(
-            |data| data.value > 0,
-            6
-        );
+        let mut liveness =
+            LivenessChecker::<_, _, TestSignalInput<_>>::new(|data| data.value > 0, 6);
 
         let input = [
             1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
         ];
-        let mut context = create_lsp_context_for_test_from_input_slice(&input);
+        let mut context = create_lsp_context_for_test_from_input(&input);
 
         let output = [
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0,
@@ -108,10 +128,7 @@ mod test {
             if input_state.value > 0 {
                 latch_output = m.timestamp();
             }
-            let value = liveness.update(
-                &mut context.borrow_update_context(),
-                &latch_output
-            ) as i32;
+            let value = liveness.update(&mut context.borrow_update_context(), &latch_output) as i32;
             assert_eq!(value, output.next().unwrap())
         }
     }

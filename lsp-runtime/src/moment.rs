@@ -1,9 +1,11 @@
+use serde::{Deserialize, Serialize};
+
 use crate::Timestamp;
 
 /// Moment in LSP system is a point of time when the LSP system may change its state or the
 /// measurement may be taken.
 /// This is the type that describes the moment.
-#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Moment {
     timestamp: Timestamp,
     update_flags: u32,

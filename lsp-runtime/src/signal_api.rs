@@ -1,8 +1,26 @@
-use serde::Serialize;
+use serde::{de::DeserializeOwned, Serialize};
 
 use crate::context::UpdateContext;
 
-pub trait SignalProcessor<'a, EventIt: Iterator>: Serialize {
+/// This trait is created for creating/loading any checkpoint component.
+/// Checkpoint is a state for the whole system, which is used to continue computation without losing
+/// previous state.
+pub trait Patchable: Serialize {
+    type State: DeserializeOwned;
+
+    fn to_state(&self) -> String {
+        serde_json::to_string(&self).unwrap()
+    }
+
+    fn patch(&mut self, state: &str) {
+        let state: Self::State = serde_json::from_str(state).unwrap();
+        self.patch_from(state);
+    }
+
+    fn patch_from(&mut self, state: Self::State);
+}
+
+pub trait SignalProcessor<'a, EventIt: Iterator> {
     type Input;
     type Output;
 
@@ -17,7 +35,7 @@ pub trait SignalProcessor<'a, EventIt: Iterator>: Serialize {
 /// Although all the signal processor doesn't take timestamp as input, the measurement can be a
 /// function of time.
 /// For example, you can measure the duration since an output is true, etc.
-pub trait SignalMeasurement<'a, EventIter: Iterator>: Serialize {
+pub trait SignalMeasurement<'a, EventIter: Iterator> {
     type Input;
     type Output;
 

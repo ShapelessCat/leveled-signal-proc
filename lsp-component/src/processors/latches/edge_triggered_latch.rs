@@ -1,11 +1,17 @@
-use serde::Serialize;
+use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize};
 
-use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::SignalProcessor;
 use lsp_runtime::Duration;
+use lsp_runtime::{context::UpdateContext, signal_api::Patchable};
 
 use super::retention::{KeepForever, Retention, TimeToLive};
 
+/// An edge triggered latch is a signal processor that takes a control input and a data input.
+/// For each time, an edge triggered latch produces the same output as its internal state.
+/// Once the control input changes, an edge appears, the edge triggered latch changes its internal
+/// state to the data input. This concept borrowed from the hardware component which shares the same
+/// name. And it's widely used as one bit memory in digital circuits.
 #[derive(Default, Debug, Serialize)]
 pub struct EdgeTriggeredLatch<Control, Data, RetentionPolicy: Retention<Data> = KeepForever> {
     last_control_level: Control,
@@ -26,7 +32,7 @@ impl<C: Default, D> EdgeTriggeredLatch<C, D> {
 impl<C, D> EdgeTriggeredLatch<C, D, TimeToLive<D>>
 where
     C: Default,
-    D: Clone + Serialize,
+    D: Clone + Serialize + DeserializeOwned,
 {
     pub fn with_forget_behavior(data: D, default: D, time_to_memorize: Duration) -> Self {
         Self {
@@ -44,8 +50,8 @@ where
 impl<'a, I, C, D, R> SignalProcessor<'a, I> for EdgeTriggeredLatch<C, D, R>
 where
     I: Iterator,
-    C: Clone + PartialEq + Serialize,
-    D: Clone + Serialize,
+    C: Clone + PartialEq,
+    D: Clone,
     R: Retention<D>,
 {
     type Input = (C, D);
@@ -67,5 +73,27 @@ where
             self.data = value;
         }
         self.data.clone()
+    }
+}
+
+#[derive(Deserialize)]
+pub struct EdgeTriggeredLatchState<Control, Data, RetentionPolicy> {
+    last_control_level: Control,
+    data: Data,
+    retention: RetentionPolicy,
+}
+
+impl<C, D, R: Retention<D>> Patchable for EdgeTriggeredLatch<C, D, R>
+where
+    C: Serialize + DeserializeOwned,
+    D: Serialize + DeserializeOwned,
+    R: Serialize + DeserializeOwned,
+{
+    type State = EdgeTriggeredLatchState<C, D, R>;
+
+    fn patch_from(&mut self, state: Self::State) {
+        self.last_control_level = state.last_control_level;
+        self.data = state.data;
+        self.retention = state.retention;
     }
 }

@@ -1,16 +1,17 @@
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use lsp_runtime::context::UpdateContext;
-use lsp_runtime::signal_api::SignalProcessor;
+use lsp_runtime::signal_api::{Patchable, SignalProcessor};
 
 /// Mapping each input signal statelessly to an output signal.
 #[derive(Serialize)]
 pub struct SignalMapper<ParamType, OutputType, ClosureType> {
     #[serde(skip_serializing)]
     how: ClosureType,
+    #[serde(skip_serializing)]
     _phantom_data: PhantomData<(ParamType, OutputType)>,
 }
 
@@ -44,11 +45,23 @@ where
     }
 }
 
+#[derive(Deserialize)]
+pub struct SignalMapperState;
+
+impl<P, O, C> Patchable for SignalMapper<P, O, C> {
+    type State = SignalMapperState;
+
+    fn patch(&mut self, _state: &str) {}
+
+    fn patch_from(&mut self, _state: Self::State) {}
+}
+
 #[cfg(test)]
 mod test {
     use lsp_runtime::signal_api::SignalProcessor;
 
-    use crate::{processors::SignalMapper, test::create_lsp_context_for_test};
+    use super::SignalMapper;
+    use crate::test::create_lsp_context_for_test;
 
     #[test]
     fn test_signal_mapper() {

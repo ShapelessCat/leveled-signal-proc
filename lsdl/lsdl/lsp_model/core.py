@@ -4,7 +4,7 @@ from abc import ABC
 from typing import Any, Optional, Self, final
 
 from ..debug_info import DebugInfo
-from ..rust_code import COMPILER_INFERABLE_TYPE, RustCode, RUST_DEFAULT_VALUE
+from ..rust_code import COMPILER_INFERABLE_TYPE, RustCode
 
 
 class LeveledSignalProcessingModelComponentBase(ABC):
@@ -132,20 +132,6 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
             data=Const(True),
             forget_duration=normalize_duration(duration)
         )
-
-    @final
-    def prior_event(self, window_size=1, init_value=None) -> 'SignalBase':
-        from ..processors import SlidingWindow
-        if not init_value:
-            init_value = RUST_DEFAULT_VALUE
-        sw = SlidingWindow(
-            clock=self,
-            data=self,
-            window_size=window_size,
-            init_value=init_value,
-            emit_fn='|_, data| data.clone()'
-        )
-        return sw.annotate_type(self.get_rust_type_name())
 
     def moving_average(self, window_size=1, init_value=0) -> 'SignalBase':
         from ..processors import SlidingWindow

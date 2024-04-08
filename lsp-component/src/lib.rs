@@ -35,19 +35,12 @@ pub(crate) mod test {
 
     pub(crate) fn create_lsp_context_for_test(
     ) -> LspContext<IntoIter<TestSignalInput<u32>>, TestSignalBag<u32>> {
-        LspContext::new(
-            (0..100)
-                .map(|i| TestSignalInput {
-                    value: i as u32,
-                    timestamp: i,
-                })
-                .collect::<Vec<_>>()
-                .into_iter(),
-            true,
-        )
+        let data = 0..100;
+        let input = &data.collect::<Vec<u32>>()[..];
+        create_lsp_context_for_test_from_input(input)
     }
 
-    pub(crate) fn create_lsp_context_for_test_from_input_slice<T: Clone + Default>(
+    pub(crate) fn create_lsp_context_for_test_from_input<T: Clone + Default>(
         input: &[T],
     ) -> LspContext<IntoIter<TestSignalInput<T>>, TestSignalBag<T>> {
         LspContext::new(

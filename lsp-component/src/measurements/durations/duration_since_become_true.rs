@@ -1,9 +1,13 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use lsp_runtime::context::UpdateContext;
-use lsp_runtime::signal_api::SignalMeasurement;
+use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 use lsp_runtime::{Duration, Timestamp};
 
+/// Measure the duration since the signal become `true`.
+/// It is easy get some conclusion based on this description:
+/// - If the current level is `true`, the measurement result is greater than or equal to 0.
+/// - If the current level is `false`, the measurement result 0.
 #[derive(Clone, Default, Serialize)]
 pub struct DurationSinceBecomeTrue {
     last_input: bool,
@@ -27,5 +31,20 @@ impl<'a, I: Iterator> SignalMeasurement<'a, I> for DurationSinceBecomeTrue {
         } else {
             0
         }
+    }
+}
+
+#[derive(Deserialize)]
+pub struct DurationSinceBecomeTrueState {
+    last_input: bool,
+    last_assignment_timestamp: Timestamp,
+}
+
+impl Patchable for DurationSinceBecomeTrue {
+    type State = DurationSinceBecomeTrueState;
+
+    fn patch_from(&mut self, state: Self::State) {
+        self.last_input = state.last_input;
+        self.last_assignment_timestamp = state.last_assignment_timestamp;
     }
 }

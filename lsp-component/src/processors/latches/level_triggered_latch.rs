@@ -1,16 +1,17 @@
-use serde::Serialize;
+use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize};
 
-use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::SignalProcessor;
 use lsp_runtime::Duration;
+use lsp_runtime::{context::UpdateContext, signal_api::Patchable};
 
 use super::retention::{KeepForever, Retention, TimeToLive};
 
 /// A level triggered latch is a signal processor that takes a control input and a data input.
-/// For each time, a level triggered latch produces the same output as the internal state.
-/// When the control input becomes true, the level triggered latch changes its internal state to the data input.
-/// This concept borrowed from the hardware component which shares the same name. And it's widely
-/// used as one bit memory in digital circuits.
+/// For each time, a level triggered latch produces the same output as its internal state.
+/// When the control input becomes true, the level triggered latch changes its internal state to the
+/// data input. This concept borrowed from the hardware component which shares the same name. And
+/// it's widely used as one bit memory in digital circuits.
 #[derive(Default, Debug, Serialize)]
 pub struct LevelTriggeredLatch<Data, RetentionPolicy: Retention<Data> = KeepForever> {
     data: Data,
@@ -26,7 +27,7 @@ impl<T: Clone> LevelTriggeredLatch<T> {
     }
 }
 
-impl<T: Clone + Serialize> LevelTriggeredLatch<T, TimeToLive<T>> {
+impl<T: Clone + Serialize + DeserializeOwned> LevelTriggeredLatch<T, TimeToLive<T>> {
     pub fn with_forget_behavior(data: T, default: T, time_to_memorize: Duration) -> Self {
         Self {
             data,
@@ -42,7 +43,7 @@ impl<T: Clone + Serialize> LevelTriggeredLatch<T, TimeToLive<T>> {
 impl<'a, I, T, R> SignalProcessor<'a, I> for LevelTriggeredLatch<T, R>
 where
     I: Iterator,
-    T: Clone + Serialize,
+    T: Clone,
     R: Retention<T>,
 {
     type Input = (bool, T);
@@ -61,11 +62,31 @@ where
     }
 }
 
+#[derive(Deserialize)]
+pub struct LevelTriggeredLatchState<Data, RetentionPolicy> {
+    data: Data,
+    retention: RetentionPolicy,
+}
+
+impl<D, R: Retention<D>> Patchable for LevelTriggeredLatch<D, R>
+where
+    D: Serialize + DeserializeOwned,
+    R: Serialize + DeserializeOwned,
+{
+    type State = LevelTriggeredLatchState<D, R>;
+
+    fn patch_from(&mut self, state: Self::State) {
+        self.data = state.data;
+        self.retention = state.retention;
+    }
+}
+
 #[cfg(test)]
 mod test {
     use lsp_runtime::signal_api::SignalProcessor;
 
-    use crate::{processors::LevelTriggeredLatch, test::create_lsp_context_for_test};
+    use super::LevelTriggeredLatch;
+    use crate::test::create_lsp_context_for_test;
 
     #[test]
     fn test_basic_latch() {

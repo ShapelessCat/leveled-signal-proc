@@ -1,7 +1,8 @@
-use serde::Serialize;
+use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize};
 
 use lsp_runtime::context::UpdateContext;
-use lsp_runtime::signal_api::SignalProcessor;
+use lsp_runtime::signal_api::{Patchable, SignalProcessor};
 use lsp_runtime::{Duration, Timestamp};
 
 /// Note:
@@ -18,7 +19,7 @@ pub struct DurationOfPreviousLevel<Level> {
 impl<'a, I, L> SignalProcessor<'a, I> for DurationOfPreviousLevel<L>
 where
     I: Iterator,
-    L: Clone + PartialEq + Serialize,
+    L: Clone + PartialEq,
 {
     type Input = L;
 
@@ -32,6 +33,26 @@ where
             self.current_value_since = ctx.frontier();
         }
         self.output_buf
+    }
+}
+
+#[derive(Deserialize)]
+pub struct DurationOfPreviousLevelState<Level> {
+    current_value: Level,
+    current_value_since: Timestamp,
+    output_buf: Timestamp,
+}
+
+impl<L> Patchable for DurationOfPreviousLevel<L>
+where
+    L: Serialize + DeserializeOwned,
+{
+    type State = DurationOfPreviousLevelState<L>;
+
+    fn patch_from(&mut self, state: Self::State) {
+        self.current_value = state.current_value;
+        self.current_value_since = state.current_value_since;
+        self.output_buf = state.output_buf;
     }
 }
 

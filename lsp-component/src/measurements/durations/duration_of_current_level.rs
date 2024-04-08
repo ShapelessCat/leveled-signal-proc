@@ -1,9 +1,11 @@
-use serde::Serialize;
+use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize};
 
 use lsp_runtime::context::UpdateContext;
-use lsp_runtime::signal_api::SignalMeasurement;
+use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 use lsp_runtime::{Duration, Timestamp};
 
+/// Measure the duration from the start of the current level.
 #[derive(Clone, Default, Debug, Serialize)]
 pub struct DurationOfCurrentLevel<T> {
     current_level_start: Timestamp,
@@ -31,6 +33,24 @@ where
         } else {
             ctx.frontier() - self.current_level_start
         }
+    }
+}
+
+#[derive(Deserialize)]
+pub struct DurationOfCurrentLevelState<T> {
+    current_level_start: Timestamp,
+    current_level: Option<T>,
+}
+
+impl<T> Patchable for DurationOfCurrentLevel<T>
+where
+    T: Serialize + DeserializeOwned,
+{
+    type State = DurationOfCurrentLevelState<T>;
+
+    fn patch_from(&mut self, state: Self::State) {
+        self.current_level = state.current_level;
+        self.current_level_start = state.current_level_start;
     }
 }
 

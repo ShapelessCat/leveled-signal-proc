@@ -1,44 +1,86 @@
 use std::marker::PhantomData;
 
-use crate::context::{InputSignalBag, InternalEventQueue, MultiPeek, WithTimestamp};
+use serde::{Deserialize, Serialize};
+
+use crate::signal_api::Patchable;
 use crate::{Duration, Moment, Timestamp};
+
+use super::multipeek::MultiPeekState;
+use super::{InputSignalBag, InternalEventQueue, MultiPeek, WithTimestamp};
 
 /// The global context of an LSP system. This type is responsible for the following things:
 /// 1. Take the ownership of an event queue which contains all the pending internal events
 /// 2. Assemble events into valid global state
 /// 3. Control the iteration of the LSP main iteration
+#[derive(Serialize)]
+#[serde(bound = "")]
 pub struct LspContext<InputIter: Iterator, InputSignalBagType> {
     frontier: Timestamp,
+    #[serde(rename = "iter_state")]
     iter: MultiPeek<InputIter>,
     queue: InternalEventQueue,
     merge_simultaneous_moments: bool,
-    _phantom: PhantomData<InputSignalBagType>,
+    #[serde(skip_serializing)]
+    _phantom_data: PhantomData<InputSignalBagType>,
 }
 
+#[derive(Default, Deserialize)]
+pub struct LspContextState {
+    frontier: Timestamp,
+    iter_state: MultiPeekState,
+    queue: InternalEventQueue,
+    merge_simultaneous_moments: bool,
+}
+
+impl<InputIter: Iterator, InputSignalBagType> Patchable
+    for LspContext<InputIter, InputSignalBagType>
+{
+    type State = LspContextState;
+
+    fn patch_from(&mut self, state: Self::State) {
+        self.frontier = state.frontier;
+        self.iter.patch_from(state.iter_state);
+        self.queue = state.queue;
+        self.merge_simultaneous_moments = state.merge_simultaneous_moments;
+    }
+}
+
+#[derive(Serialize)]
+#[serde(bound = "")]
 pub struct UpdateContext<'a, InputIter: Iterator> {
     queue: &'a mut InternalEventQueue,
+    #[serde(rename = "iter_state")]
     iter: &'a mut MultiPeek<InputIter>,
     frontier: Timestamp,
+    merge_simultaneous_moments: bool,
 }
 
 impl<'a, InputIter: Iterator> UpdateContext<'a, InputIter> {
+    pub fn offset(&self) -> usize {
+        self.iter.offset()
+    }
+
     pub fn set_current_update_group(&mut self, _group_id: u32) {
         // Dummy implementation reserved for partial update
     }
+
     pub fn schedule_measurement(&mut self, time_diff: Duration) {
         let scheduled_time = self.frontier.saturating_add(time_diff);
         self.queue.schedule_measurement(scheduled_time);
     }
+
     pub fn schedule_signal_update(&mut self, time_diff: Duration) {
         let scheduled_time = self.frontier.saturating_add(time_diff);
         self.queue.schedule_signal_update(scheduled_time);
     }
+
     pub fn peek_fold<U, F>(&mut self, init: U, func: F) -> U
     where
         F: FnMut(&U, &InputIter::Item) -> Option<U>,
     {
         self.iter.peek_fold(init, func)
     }
+
     pub fn frontier(&self) -> Timestamp {
         self.frontier
     }
@@ -68,7 +110,7 @@ where
             queue,
             frontier: 0,
             merge_simultaneous_moments,
-            _phantom: PhantomData,
+            _phantom_data: PhantomData,
         }
     }
 
@@ -82,6 +124,7 @@ where
             queue: &mut self.queue,
             frontier: self.frontier,
             iter: &mut self.iter,
+            merge_simultaneous_moments: self.merge_simultaneous_moments,
         }
     }
 

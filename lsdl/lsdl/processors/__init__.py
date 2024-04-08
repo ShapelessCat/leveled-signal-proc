@@ -1,9 +1,9 @@
 from .accumulator import Accumulator
 from .combinators import make_tuple, time_domain_fold
-from .latch import EdgeTriggeredLatch, LevelTriggeredLatch
-from .liveness import LivenessChecker
 from .filter import SignalFilterBuilder
 from .generators import Const, MonotonicSteps, SignalGenerator, SquareWave
+from .latch import EdgeTriggeredLatch, LevelTriggeredLatch
+from .liveness import LivenessChecker
 from .mapper import Cond, If, SignalMapper
 from .state_machine import SlidingWindow, SlidingTimeWindow, StateMachine, StateMachineBuilder
 
