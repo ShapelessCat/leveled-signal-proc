@@ -33,6 +33,15 @@ pub fn define_data_logic_nodes(input: TokenStream) -> TokenStream {
 }
 
 #[proc_macro]
+pub fn patch_lsp_nodes(input: TokenStream) -> TokenStream {
+    let ctx = parse_macro_input!(input as MacroContext);
+    match ctx.patch_lsp_nodes() {
+        Ok(res) => res.into(),
+        Err(err) => err.to_compile_error().into(),
+    }
+}
+
+#[proc_macro]
 pub fn impl_data_logic_updates(input: TokenStream) -> TokenStream {
     let ctx = parse_macro_input!(input as MacroContext);
     match ctx.impl_nodes_update() {
@@ -98,6 +107,20 @@ pub fn impl_should_output(input: TokenStream) -> TokenStream {
     ctx.impl_should_output().into()
 }
 
+#[proc_macro]
+pub fn build_checkpoint(input: TokenStream) -> TokenStream {
+    let ctx = parse_macro_input!(input as MacroContext);
+    ctx.build_checkpoint(quote::quote! { update_context })
+        .into()
+}
+
+// // For debugging, output the final checkpoint after the whole iteration.
+// #[proc_macro]
+// pub fn build_debug_final_checkpoint(input: TokenStream) -> TokenStream {
+//     let ctx = parse_macro_input!(input as MacroContext);
+//     ctx.build_checkpoint(quote::quote! { ctx }).into()
+// }
+
 struct MainFnMeta {
     id: syn::Ident,
     path: syn::LitStr,
@@ -129,21 +152,55 @@ pub fn include_lsp_ir(input: TokenStream) -> TokenStream {
         const _ : () = { include_str!(#real_ir_path); };
         lsp_codegen::define_input_schema!(#path);
         lsp_codegen::define_output_schema!(#path);
-        pub fn #id<InputIter, OutputHandler, Inst>(input_iter: InputIter, mut out_handle: OutputHandler, instrument_ctx: &mut Inst) -> Result<(), anyhow::Error>
+
+        pub fn #id<InputIter, OutputHandler, Inst>(
+            input_iter: InputIter,
+            mut out_handle: OutputHandler,
+            instrument_ctx: &mut Inst,
+            checkpoint_home: &std::path::Path,
+        ) -> Result<(), anyhow::Error>
         where
             InputIter: Iterator<Item = InputSignalBagPatch>,
             OutputHandler: FnMut(&MetricsBag) -> Result<(), anyhow::Error>,
             Inst: lsp_runtime::instrument::LspDataLogicInstrument,
         {
             use lsp_runtime::context::LspContext;
-            // Create LSP components, processors and measurements
+            use lsp_runtime::checkpoint::Checkpoint;
+            let path2checkpoint = checkpoint_home.join("checkpoint.json");
+            let (context_state, input_state, entries) = std::fs::read_to_string(path2checkpoint.as_path())
+                .ok()
+                .and_then(|s| serde_json::from_str::<Checkpoint>(&s).ok())
+                .map_or(Default::default(), |c| {
+                    let Checkpoint {
+                        context_state,
+                        input_state,
+                        entries,
+                    } = c;
+                    (Some(context_state), Some(input_state), Some(entries))
+                });
             lsp_codegen::define_data_logic_nodes!(#path);
+            lsp_codegen::patch_lsp_nodes!(#path);
+
             lsp_codegen::define_measurement_trigger!(#path);
+
             // Setup for interval metrics computation
             lsp_codegen::define_previous_metrics_bag!(#path);
-            // Setup for input singal state and computation context
-            let mut input_state = Default::default();
-            let mut ctx = LspContext::<_, InputSignalBag>::new(input_iter, lsp_codegen::should_merge_simultaneous_moments!(#path));
+
+            // Setup for input singal state
+            let mut input_state: InputSignalBag = input_state
+                .and_then(|s| serde_json::from_str(&s).ok())
+                .unwrap_or(Default::default());
+
+            // Setup for computation context
+            let mut ctx = LspContext::<_, InputSignalBag>::new(
+                input_iter,
+                lsp_codegen::should_merge_simultaneous_moments!(#path)
+            );
+            if let Some(context_state) = context_state {
+                use lsp_runtime::signal_api::Patchable;
+                ctx.patch(&context_state);
+            };
+
             // Main iteration
             while let Some(moment) = ctx.next_event(&mut input_state) {
                 instrument_ctx.data_logic_update_begin();
@@ -177,8 +234,20 @@ pub fn include_lsp_ir(input: TokenStream) -> TokenStream {
                 } else {
                     instrument_ctx.data_logic_update_end();
                 }
+                // Write checkpoint
+                if update_context.offset() % 200 == 0 {
+                    let checkpoint = lsp_codegen::build_checkpoint!(#path);
+                    std::fs::write(
+                        path2checkpoint.as_path(),
+                        &serde_json::to_string(&checkpoint)?,
+                    )?;
+                }
             }
+            // // Debug
+            // let final_checkpoint = lsp_codegen::build_debug_final_checkpoint!(#path);
+            // std::fs::write(path2checkpoint.as_path(), &serde_json::to_string(&final_checkpoint)?)?;
             Ok(())
         }
-    }.into()
+    }
+    .into()
 }

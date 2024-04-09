@@ -98,7 +98,7 @@ impl MacroContext {
             syn::parse_str(predicate)?
         };
         let item_impl = quote! {
-            #[derive(Clone, Default, Debug)]
+            #[derive(Clone, Default, Debug, serde::Serialize, serde::Deserialize)]
             pub struct #type_name {
                 #(#item_impls)*
             }

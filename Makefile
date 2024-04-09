@@ -1,6 +1,15 @@
 .DEFAULT_GOAL := regression
 
-regression:
+.DELETE_ON_ERROR:
+
+.PHONY: regression run-regression clean-checkpoints
+
+regression: clean-checkpoints run-regression clean-checkpoints
+
+clean-checkpoints:
+	rm -f ./demos/*/*checkpoint*.json
+
+run-regression:
 	cargo clean
 
 	cargo build

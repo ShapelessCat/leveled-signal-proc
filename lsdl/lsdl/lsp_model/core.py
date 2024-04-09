@@ -76,6 +76,8 @@ def _validate_rust_identifier(identifier: str) -> None:
 
 
 class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
+    __CMP_OP = ["==", "<", ">", "<=", ">="]
+
     @final
     def map(self, bind_var: str, lambda_src: str) -> 'SignalBase':
         """Shortcut to apply a signal mapper on current signal.
@@ -189,9 +191,16 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
                 upstream=[self, other]
             )
         else:
+            rust_const = Const(other).rust_constant_value
+            if op in SignalBase.__CMP_OP:
+                # Currently, handling Rust strings in this manner is sufficient to avoid extra
+                # memory allocation. As we plan to support additional Rust types in the future,
+                # namely by adding more `TypeWithLiteralValue` subtypes, we can continue refining
+                # this process.
+                rust_const = rust_const.strip(".to_string()")
             ret = SignalMapper(
                 bind_var="lhs",
-                lambda_src=f"*lhs {op} {Const(other).rust_constant_value}",
+                lambda_src=f"*lhs {op} {rust_const}",
                 upstream=self
             )
         if typename is not None:

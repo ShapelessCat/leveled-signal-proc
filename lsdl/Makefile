@@ -1,3 +1,7 @@
+.DEFAULT_GOAL := reinstall
+
+.DELETE_ON_ERROR:
+
 WHEEL=$(shell ls ./dist/*.whl)
 
 clean:
