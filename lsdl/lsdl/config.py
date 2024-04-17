@@ -139,6 +139,10 @@ class _MeasurementConfiguration:
             "type": typename
         }
         if need_interval_metric:
+            if interval_metric_name is None and not key.startswith('life'):
+                raise Exception(
+                    """This metric name doesn't start with 'life_navigation' or 'life_session', """
+                    """and you also doesn't manutally provide a interval metric name""")
             metric_name = (interval_metric_name
                            or re.sub(r'^life_(navigation|session)', 'interval', key))
             self._complementary_output_schema[metric_name] = {
