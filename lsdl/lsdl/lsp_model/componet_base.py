@@ -85,7 +85,7 @@ class BuiltinMeasurementComponentBase(BuiltinComponentBase, MeasurementBase, ABC
         super().__init__(component_package, component_name=name, **kwargs)
 
     def to_dict(self) -> dict[str, object]:
-        return BuiltinComponentBase.to_dict(self) | {'moved': self.is_moved}
+        return BuiltinComponentBase.to_dict(self)
 
 
 class DirectBuiltinMeasurementComponentBase(BuiltinMeasurementComponentBase):
@@ -98,8 +98,6 @@ class IndirectBuiltinMeasurementComponentBase(BuiltinMeasurementComponentBase):
     REFERENCE_PREFIX = "$"
 
     def __init__(self, name: RustCode, upstreams: list[MeasurementBase], **kwargs):
-        for u in upstreams:
-            u.is_moved = True
         super().__init__(name,
                          component_package="measurements::combinator",
                          upstreams=upstreams,

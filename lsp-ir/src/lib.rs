@@ -59,8 +59,6 @@ pub struct Node {
     pub package: String,
     pub namespace: String,
     #[serde(default)]
-    pub moved: bool,
-    #[serde(default)]
     pub debug_info: Option<DebugInfo>,
 }
 
