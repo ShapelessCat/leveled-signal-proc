@@ -14,16 +14,7 @@ class LeveledSignalProcessingModelComponentBase(ABC):
     """
     def __init__(self, rust_type: RustCode):
         self._rust_type = rust_type
-        self._is_moved = False
         self.debug_info = DebugInfo()
-
-    @property
-    def is_moved(self) -> bool:
-        return self._is_moved
-
-    @is_moved.setter
-    def is_moved(self, value: bool):
-        self._is_moved = value
 
     def add_metric(self,
                    key: RustCode,

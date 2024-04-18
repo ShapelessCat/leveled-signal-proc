@@ -29,20 +29,12 @@ impl MacroContext {
         let decl_namespace: syn::Path =
             syn::parse_str(&node.namespace).map_err(self.map_lsdl_error(node))?;
         let decl_expr: syn::Expr = MacroContext::get_decl_expr(node)?;
-        //let decl = serde_json::to_string_pretty(&node).unwrap();
-        let output_stmt = if node.moved {
-            quote! {}
-        } else {
-            quote! { let mut #output_var; }
-        };
-
         let decl_code = quote! {
             let mut #node_id = {
                 use #decl_namespace;
-                //let code = #decl;
                 #decl_expr
             };
-            #output_stmt
+            let mut #output_var;
         };
         Ok(decl_code)
     }
@@ -180,7 +172,7 @@ impl MacroContext {
         let nodes = &self.get_ir_data().nodes;
 
         let mut update_code_vec = Vec::new();
-        for node in nodes.iter().filter(|nd| !nd.moved) {
+        for node in nodes {
             update_code_vec.push(self.generate_node_update_code(node)?);
         }
 
