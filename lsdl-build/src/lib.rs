@@ -146,7 +146,7 @@ impl LsdlSource {
                     if !comment_body.starts_with(EXTRA_SRC_LIT) {
                         continue;
                     }
-                    let list = comment_body[EXTRA_SRC_LIT.len()..].split(|c| c == ' ' || c == '\t');
+                    let list = comment_body[EXTRA_SRC_LIT.len()..].split([' ', '\t']);
                     for item in list {
                         if !item.is_empty() {
                             src_prefix.push(item);
