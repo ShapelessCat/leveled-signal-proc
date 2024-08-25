@@ -9,7 +9,7 @@ mod state_machine;
 
 pub use accumulator::Accumulator;
 pub use duration::DurationOfPreviousLevel;
-pub use generator::SignalGenerator;
+pub use generator::{SignalFunc, SignalGenerator};
 pub use latches::{EdgeTriggeredLatch, LevelTriggeredLatch};
 pub use liveness::LivenessChecker;
 pub use mapper::SignalMapper;
