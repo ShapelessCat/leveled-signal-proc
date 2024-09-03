@@ -1,6 +1,6 @@
 from typing import final
 
-from ..lsp_model.componet_base import BuiltinProcessorComponentBase
+from ..lsp_model.component_base import BuiltinProcessorComponentBase
 from ..lsp_model.core import SignalBase
 
 

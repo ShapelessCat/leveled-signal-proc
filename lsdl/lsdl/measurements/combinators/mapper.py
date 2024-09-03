@@ -1,6 +1,6 @@
 from typing import final
 
-from ...lsp_model.componet_base import IndirectBuiltinMeasurementComponentBase
+from ...lsp_model.component_base import IndirectBuiltinMeasurementComponentBase
 from ...lsp_model.core import MeasurementBase
 
 

@@ -186,7 +186,7 @@ pub fn include_lsp_ir(input: TokenStream) -> TokenStream {
             // Setup for interval metrics computation
             lsp_codegen::define_previous_metrics_bag!(#path);
 
-            // Setup for input singal state
+            // Setup for input signal state
             let mut input_state: InputSignalBag = input_state
                 .and_then(|s| serde_json::from_str(&s).ok())
                 .unwrap_or(Default::default());

@@ -3,7 +3,7 @@ import re
 from collections import namedtuple
 from typing import Any, Optional, Self, final
 
-from .lsp_model.componet_base import LspComponentBase
+from .lsp_model.component_base import LspComponentBase
 from .lsp_model.core import MeasurementBase, SignalBase
 from .rust_code import COMPILER_INFERABLE_TYPE, RUST_DEFAULT_VALUE, RustCode
 

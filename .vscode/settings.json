@@ -1,5 +1,16 @@
 {
     "python.analysis.extraPaths": [
         "./lsdl"
+    ],
+    "cSpell.words": [
+        "codegen",
+        "Deque",
+        "impls",
+        "lsdl",
+        "nanos",
+        "Sessionized",
+        "statelessly",
+        "upstreams",
+        "vecdeque"
     ]
 }
