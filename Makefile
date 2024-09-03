@@ -6,7 +6,7 @@
 
 regression: clean-checkpoints run-regression clean-checkpoints
 
-clean-checkpoints:
+rm-checkpoints:
 	rm -f ./demos/*/*checkpoint*.json
 
 run-regression:
