@@ -9,9 +9,9 @@ use lsp_runtime::signal_api::{Patchable, SignalProcessor};
 /// Mapping each input signal statelessly to an output signal.
 #[derive(Serialize)]
 pub struct SignalMapper<ParamType, OutputType, ClosureType> {
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     how: ClosureType,
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     _phantom_data: PhantomData<(ParamType, OutputType)>,
 }
 

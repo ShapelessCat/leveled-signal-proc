@@ -20,7 +20,7 @@ pub struct LspContext<InputIter: Iterator, InputSignalBagType> {
     iter: MultiPeek<InputIter>,
     queue: InternalEventQueue,
     merge_simultaneous_moments: bool,
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     _phantom_data: PhantomData<InputSignalBagType>,
 }
 

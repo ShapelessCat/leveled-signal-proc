@@ -15,12 +15,12 @@ use lsp_runtime::{Duration, Timestamp};
 /// heartbeat event.
 #[derive(Serialize)]
 pub struct LivenessChecker<IsLivenessEventFunc, Clock, Event> {
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     is_liveness_event: IsLivenessEventFunc,
     expiration_period: Duration,
     last_event_clock: Clock,
     last_event_timestamp: Timestamp,
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     _phantom_data: PhantomData<Event>,
 }
 

@@ -14,10 +14,10 @@ use lsp_runtime::signal_api::{Patchable, SignalProcessor};
 #[derive(Serialize)]
 pub struct StateMachine<Input, State, TransitionFunc, Trigger> {
     state: State,
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     transition: TransitionFunc,
     last_trigger_value: Trigger,
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     _phantom_data: PhantomData<Input>,
 }
 

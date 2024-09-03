@@ -14,7 +14,7 @@ where
 #[derive(Serialize)]
 #[serde(bound = "")]
 pub struct MultiPeek<I: Iterator> {
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     inner: I,
     offset: usize,
     #[serde(rename = "peek_buffer_size", serialize_with = "serialize_vecdeque_len")]

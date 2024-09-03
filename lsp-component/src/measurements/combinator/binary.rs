@@ -16,11 +16,11 @@ pub struct BinaryCombinedMeasurement<
     MeasurementType0,
     MeasurementType1,
 > {
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     binary_op: ClosureType,
     inner0: MeasurementType0,
     inner1: MeasurementType1,
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     _phantom_data: PhantomData<(OutputType0, OutputType1, OutputType)>,
 }
 

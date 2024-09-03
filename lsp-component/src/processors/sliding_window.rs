@@ -15,11 +15,11 @@ use lsp_runtime::{Duration, Timestamp};
 #[derive(Serialize)]
 pub struct SlidingWindow<Input, EmitFunc, Trigger, Output> {
     queue: VecDeque<Input>,
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     emit_func: EmitFunc,
     last_trigger_value: Trigger,
     last_dequeued_value: Input,
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     _phantom_data: PhantomData<Output>,
 }
 
@@ -92,11 +92,11 @@ where
 pub struct SlidingTimeWindow<Input, EmitFunc, Trigger, Output> {
     queue: VecDeque<(Input, Timestamp)>,
     time_window_size: Duration,
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     emit_func: EmitFunc,
     last_trigger_value: Trigger,
     last_dequeued_value: Input,
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     _phantom_data: PhantomData<Output>,
 }
 

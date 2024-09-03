@@ -9,10 +9,10 @@ use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 /// A measurement combinator that can apply a function to a given measurement result.
 #[derive(Clone, Debug, Serialize)]
 pub struct MappedMeasurement<InnerOutput, OutputType, ClosureType, MeasurementType> {
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     how: ClosureType,
     inner: MeasurementType,
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     _phantom_data: PhantomData<(InnerOutput, OutputType)>,
 }
 

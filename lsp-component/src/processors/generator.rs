@@ -34,7 +34,7 @@ impl<T: Clone> SignalFunc<T> for ConstSignalFunc<T> {
 /// level ends.
 #[derive(Debug, Serialize)]
 pub struct SignalGenerator<SignalFunc = ConstSignalFunc<i32>, SignalType = i32> {
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     signal_func: SignalFunc,
     last_value: SignalType,
     until_ts: Timestamp,

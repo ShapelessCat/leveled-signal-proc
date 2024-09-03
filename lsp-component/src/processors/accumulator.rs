@@ -12,7 +12,7 @@ use lsp_runtime::signal_api::{Patchable, SignalProcessor};
 #[derive(Debug, Serialize)]
 pub struct Accumulator<Data, ControlSignal, Filter> {
     prev_control_signal: ControlSignal,
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     filter: Filter,
     accumulator: Data,
 }
