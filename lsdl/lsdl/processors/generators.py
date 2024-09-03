@@ -9,7 +9,7 @@ from ..rust_code import RustCode
 @final
 class Const(SignalBase):
     """Constant value signal."""
-    def __init__(self, value, val_type: Optional[TypeWithLiteralValue] = None):
+    def __init__(self, value, need_owned: bool = True, val_type: Optional[TypeWithLiteralValue] = None):
         if val_type is None:
             tpe = type(value)
             if tpe == int:
@@ -23,7 +23,7 @@ class Const(SignalBase):
         if val_type is None:
             raise Exception("Can't render this value to a Rust constant.")
         super().__init__(val_type.get_rust_type_name())
-        self._rust_constant_value = val_type.render_rust_const(value)
+        self._rust_constant_value = val_type.render_rust_const(value, need_owned)
 
     @property
     def rust_constant_value(self) -> RustCode:

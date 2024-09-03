@@ -182,22 +182,18 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
                 upstream=[self, other]
             )
         else:
-            rust_const = Const(other).rust_constant_value
-            if op in SignalBase.__CMP_OP:
-                # Currently, handling Rust strings in this manner is sufficient to avoid extra
-                # memory allocation. As we plan to support additional Rust types in the future,
-                # namely by adding more `TypeWithLiteralValue` subtypes, we can continue refining
-                # this process.
-                rust_const = rust_const.strip(".to_string()")
+            bind_var="lhs"
+            is_cmp_string = op in SignalBase.__CMP_OP and self.get_rust_type_name() == "String"
+            bind_var_in_use = f"{bind_var}.as_str()" if is_cmp_string else f"*{bind_var}"
             ret = SignalMapper(
-                bind_var="lhs",
-                lambda_src=f"*lhs {op} {rust_const}",
+                bind_var,
+                lambda_src=f"{bind_var_in_use} {op} {Const(other, need_owned=False).rust_constant_value}",
                 upstream=self
             )
         if typename is not None:
             ret.annotate_type(typename)
         return ret
-
+    
     @final
     def __eq__(self, other) -> 'SignalBase':
         return self._bin_op(other, "==", "bool")

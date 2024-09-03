@@ -27,7 +27,7 @@ class _TypeBase(LeveledSignalProcessingModelComponentBase, ABC):
 
 class TypeWithLiteralValue(_TypeBase, ABC):
     @abstractmethod
-    def render_rust_const(self, val) -> RustCode:
+    def render_rust_const(self, val, need_owned: bool = True) -> RustCode:
         raise NotImplementedError()
 
 
@@ -43,8 +43,9 @@ class String(TypeWithLiteralValue):
         super().__init__("String")
 
     # @override
-    def render_rust_const(self, val) -> RustCode:
-        return f"{json.dumps(val)}.to_string()"
+    def render_rust_const(self, val, need_owned: bool = True) -> RustCode:
+        s = json.dumps(val)
+        return f"{s}.to_string()" if need_owned else s
 
 
 @final
@@ -53,7 +54,7 @@ class Bool(TypeWithLiteralValue):
         super().__init__("bool")
 
     # @override
-    def render_rust_const(self, val) -> RustCode:
+    def render_rust_const(self, val, _need_owned: bool = True) -> RustCode:
         return "true" if val else "false"
 
 
@@ -64,7 +65,7 @@ class Integer(TypeWithLiteralValue):
         super().__init__(f"{type_prefix}{width}")
 
     # @override
-    def render_rust_const(self, val) -> RustCode:
+    def render_rust_const(self, val, _need_owned: bool = True) -> RustCode:
         return str(val) + self.get_rust_type_name()
 
 
@@ -74,7 +75,7 @@ class Float(TypeWithLiteralValue):
         super().__init__(f"f{width}")
 
     # @override
-    def render_rust_const(self, val) -> RustCode:
+    def render_rust_const(self, val, _need_owned: bool = True) -> RustCode:
         return str(val) + self.get_rust_type_name()
 
 
@@ -85,7 +86,7 @@ class Vector(TypeWithLiteralValue):
         self._element_type = element_type
 
     # @override
-    def render_rust_const(self, val) -> RustCode:
+    def render_rust_const(self, val, _need_owned: bool = True) -> RustCode:
         if isinstance(self._element_type, TypeWithLiteralValue):
             typed_const_elements = ", ".join([self._element_type.render_rust_const(v) for v in val])
             return f"vec![{typed_const_elements}]"
