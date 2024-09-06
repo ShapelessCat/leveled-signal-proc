@@ -32,6 +32,7 @@ pub trait SignalProcessor<'a, EventIt: Iterator> {
 }
 
 /// A measurement is an inspection of the state of the signal processing system.
+///
 /// Although all the signal processor doesn't take timestamp as input, the measurement can be a
 /// function of time.
 /// For example, you can measure the duration since an output is true, etc.

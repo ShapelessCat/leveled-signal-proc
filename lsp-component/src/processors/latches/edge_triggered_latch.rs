@@ -8,6 +8,7 @@ use lsp_runtime::{context::UpdateContext, signal_api::Patchable};
 use super::retention::{KeepForever, Retention, TimeToLive};
 
 /// An edge triggered latch is a signal processor that takes a control input and a data input.
+///
 /// For each time, an edge triggered latch produces the same output as its internal state.
 /// Once the control input changes, an edge appears, the edge triggered latch changes its internal
 /// state to the data input. This concept borrowed from the hardware component which shares the same

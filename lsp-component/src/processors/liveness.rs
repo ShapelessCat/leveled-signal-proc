@@ -9,6 +9,7 @@ use lsp_runtime::signal_api::{Patchable, SignalProcessor};
 use lsp_runtime::{Duration, Timestamp};
 
 /// This is the signal processor that analyzes the liveness of a session based on heartbeat signals.
+///
 /// The output constantly answering the question: Is current session still alive?
 /// The liveness defined as we can find a heartbeat event within `expiration_period` amount of time.
 /// Thus, this operator uses the look ahead mechanism of the LSP system to see if there's a future

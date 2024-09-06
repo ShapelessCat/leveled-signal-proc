@@ -27,8 +27,8 @@ impl<T: Clone> SignalFunc<T> for ConstSignalFunc<T> {
     }
 }
 
-/// A signal generator is a leveled signal processor that produces leveled signal based on
-/// timestamps.
+/// A timestamp-based leveled signal generator.
+///
 /// The `SignalFunc` is a lambda that is called to determine the current level of the signal it
 /// receives a timestamp for now and returns a tuple of signal level and the timestamp when current
 /// level ends.
