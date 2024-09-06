@@ -41,7 +41,7 @@ fn visualize_lsp_ir<R: Read>(reader: R) -> Result<(), Error> {
     println!("\t{{");
 
     let mut schema_node = String::new();
-    for (name, tn) in ir.schema.members.iter() {
+    for (name, tn) in &ir.schema.members {
         write!(&mut schema_node, "<{name}>{name}|", name = name)?;
         write!(
             &mut schema_node,
@@ -90,7 +90,7 @@ fn visualize_lsp_ir<R: Read>(reader: R) -> Result<(), Error> {
         );
     }
 
-    for (metric_name, _) in ir.measurement_policy.output_schema.iter() {
+    for metric_name in ir.measurement_policy.output_schema.keys() {
         println!(
             "\t\toutput_{name}[shape=box;style=filled;fillcolor=gray;label=\"{name}\"]",
             name = metric_name
@@ -98,7 +98,7 @@ fn visualize_lsp_ir<R: Read>(reader: R) -> Result<(), Error> {
     }
     println!("\t}}");
 
-    for node in ir.nodes.iter() {
+    for node in &ir.nodes {
         for (id, input) in node.upstreams.iter().enumerate() {
             let input_ref = format!("node_{}:input{}", node.id, id);
             let upstreams = render_upstream_refs(input);
@@ -115,7 +115,7 @@ fn visualize_lsp_ir<R: Read>(reader: R) -> Result<(), Error> {
         }
     }
     let mut subgraphs = HashMap::<_, (String, i32, Vec<_>)>::new();
-    for node in ir.nodes.iter() {
+    for node in &ir.nodes {
         if let Some(di) = &node.debug_info {
             let file: &Path = di.file.as_ref();
             let name = file

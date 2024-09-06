@@ -12,7 +12,7 @@ impl MacroContext {
                 #[derive(Default, serde::Serialize)]
             },
         };
-        for (name, data_spec) in self.get_ir_data().measurement_policy.output_schema.iter() {
+        for (name, data_spec) in &self.get_ir_data().measurement_policy.output_schema {
             let id = syn::Ident::new(name, self.span());
             let ty: syn::Type = syn::parse_str(&data_spec.typename)?;
             item_list.push(quote! {
@@ -24,7 +24,7 @@ impl MacroContext {
             .measurement_policy
             .complementary_output_config
         {
-            for (name, data_spec) in conf.schema.iter() {
+            for (name, data_spec) in &conf.schema {
                 let id = syn::Ident::new(name, self.span());
                 let ty: syn::Type = syn::parse_str(&data_spec.typename)?;
                 item_list.push(quote! {
@@ -142,7 +142,7 @@ impl MacroContext {
 
     pub(crate) fn impl_metrics_measuring(&self) -> TokenStream2 {
         let mut item_list = Vec::new();
-        for (name, data_spec) in self.get_ir_data().measurement_policy.output_schema.iter() {
+        for (name, data_spec) in &self.get_ir_data().measurement_policy.output_schema {
             let id = syn::Ident::new(name, self.span());
             let node_ref = match data_spec.source {
                 lsp_ir::NodeInput::Component { id } => self.get_node_ident(id),
@@ -162,7 +162,7 @@ impl MacroContext {
             .measurement_policy
             .complementary_output_config
         {
-            for (name, data_spec) in conf.schema.iter() {
+            for (name, data_spec) in &conf.schema {
                 let id = syn::Ident::new(name, self.span());
                 let node_ref = match data_spec.source {
                     lsp_ir::NodeInput::Component { id } => self.get_node_ident(id),

@@ -53,7 +53,7 @@ impl MacroContext {
     pub(crate) fn define_lsp_nodes(&self) -> Result<TokenStream2, syn::Error> {
         let nodes = &self.get_ir_data().nodes;
         let mut decl_codes = Vec::new();
-        for node in nodes.iter() {
+        for node in nodes {
             decl_codes.push(self.generate_lsp_node_declaration(node)?);
         }
         Ok(quote! {
@@ -64,7 +64,7 @@ impl MacroContext {
     pub(crate) fn patch_lsp_nodes(&self) -> Result<TokenStream2, syn::Error> {
         let nodes = &self.get_ir_data().nodes;
         let mut load_state_stmts = Vec::new();
-        for node in nodes.iter() {
+        for node in nodes {
             load_state_stmts.push(self.generate_lsp_node_state_loading(node)?);
         }
         Ok(quote! {
@@ -121,7 +121,7 @@ impl MacroContext {
 
         let mut upstream_refs = Vec::new();
 
-        for up in node.upstreams.iter() {
+        for up in &node.upstreams {
             upstream_refs.push(self.generate_downstream_ref(up, node)?);
         }
 

@@ -84,7 +84,7 @@ impl MacroContext {
         let input_state_bag_clock_update_item = quote! { self.#input_state_bag_clock += 1; };
         patch_code_impls.push(input_state_bag_clock_update_item);
 
-        for (id, field) in schema.members.iter() {
+        for (id, field) in &schema.members {
             item_impls.push(self.expand_input_state_item(id, field)?);
             diff_item_impls.push(self.expand_input_patch_item(id, field)?);
             patch_code_impls.push(self.expand_input_patch_code(id, field)?);
