@@ -35,7 +35,7 @@ def _make_processing_configuration():
 processing_config = _make_processing_configuration()
 
 
-_ResetSwitch = namedtuple('ResetSwitch', ['metric_name', 'initial_value'])
+ResetSwitch = namedtuple('ResetSwitch', ['metric_name', 'initial_value'])
 
 
 @final
@@ -56,12 +56,12 @@ class _MeasurementConfiguration:
         # for interval metrics
         self._complementary_output_schema = {}
         # (metric name, initial value)
-        self._complementary_output_reset_switch: Optional[_ResetSwitch] = None
+        self._complementary_output_reset_switch: Optional[ResetSwitch] = None
 
     def set_measure_at_measurement_true(self,
                                         *lsp_components: LspComponentBase) -> Self:
         """Set the rule for a single measurement triggered full measurement."""
-        measurements = []
+        measurements: list[MeasurementBase] = []
         for c in lsp_components:
             match c:
                 case MeasurementBase():
@@ -69,7 +69,7 @@ class _MeasurementConfiguration:
                 case SignalBase():
                     measurements.append(c.peek())
                 case _:
-                    raise Exception("Shouldn't reach here!")
+                    raise TypeError("Expect a Measurement or Signal!")
 
         self._output_control_measurement_ids = [
             m.get_description()["id"]
@@ -161,12 +161,12 @@ class _MeasurementConfiguration:
         With a well design, the default value is a good choice. However, this is not always true,
         sometimes people need to manually set it, and this is why we provide this API.
         """
-        self._complementary_output_reset_switch = _ResetSwitch(metric_name, initial_value)
+        self._complementary_output_reset_switch = ResetSwitch(metric_name, initial_value)
         return self
 
     def to_dict(self) -> dict[str, Any]:
         """Dump the measurement policy into a dictionary that can be JSONified."""
-        ret = {
+        ret: dict = {
             "measure_at_event_filter": self._measure_at_event_lambda,
             "metrics_drain": self._metrics_drain,
             "output_schema": self._output_schema,

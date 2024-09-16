@@ -193,7 +193,7 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         if typename is not None:
             ret.annotate_type(typename)
         return ret
-    
+
     @final
     def __eq__(self, other) -> 'SignalBase':
         return self._bin_op(other, "==", "bool")

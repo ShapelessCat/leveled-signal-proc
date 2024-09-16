@@ -1,4 +1,4 @@
-from typing import final
+from typing import Optional, final
 
 from ..lsp_model.component_base import BuiltinProcessorComponentBase
 from ..lsp_model.core import SignalBase
@@ -13,7 +13,7 @@ class StateMachineBuilder:
         self._clock = clock
         self._data = data
         self._transition_fn = '|_, _| ()'
-        self._scope_signal = None
+        self._scope_signal: Optional[SignalBase] = None
         self._init_state = RUST_DEFAULT_VALUE
 
     def init_state(self, init_state):
@@ -70,13 +70,13 @@ class StateMachineBuilder:
 @final
 class StateMachine(BuiltinProcessorComponentBase):
     def __init__(self,
-                 clock: SignalBase | list[SignalBase],
-                 data: SignalBase | list[SignalBase],
+                 clock: SignalBase | list[SignalBase] | list[SignalBase | list[SignalBase]],
+                 data: SignalBase | list[SignalBase] | list[SignalBase | list[SignalBase]],
                  **kwargs):
         if 'transition_fn' in kwargs:
             transition_fn = kwargs['transition_fn']
         else:
-            raise "Currently only support transition_fn"
+            raise ValueError("Currently only support transition_fn")
         rust_processor_name = self.__class__.__name__
         init_state = kwargs.get("init_state", RUST_DEFAULT_VALUE)
         super().__init__(

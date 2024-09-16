@@ -9,8 +9,8 @@ from ..rust_code import INPUT_SIGNAL_BAG, RUST_DEFAULT_VALUE, RustCode
 class _TypeBase(LeveledSignalProcessingModelComponentBase, ABC):
     def __init__(self, rust_type: RustCode):
         super().__init__(rust_type)
-        self._reset_expr = None
-        self._parent: Optional[_InputMember] = None
+        self._reset_expr: Optional[RustCode] = None
+        self._parent: Optional[LeveledSignalProcessingModelComponentBase] = None
 
     @property
     def reset_expr(self):
@@ -195,7 +195,7 @@ class InputSchemaBase(SignalBase):
         self.__init__(rust_type)
 
     def to_dict(self) -> dict:
-        ret = {
+        ret: dict = {
             "type_name": self.type_name,
             "patch_timestamp_key": self._timestamp_key,
             "members": {}
@@ -242,11 +242,14 @@ class _ScopeContext:
 
 
 class SessionizedInputSchemaBase(InputSchemaBase, ABC):
+    SESSIONIZED_PREFIX = "sessionized_"
+    SESSIONIZED_PREFIX_SIZE = len(SESSIONIZED_PREFIX)
+
     def __init__(self, rust_type: RustCode = INPUT_SIGNAL_BAG):
         super().__init__(rust_type)
         self.session_signal = self.create_session_signal()
         self.epoch_signal = self.create_epoch_signal()
-        self._sessionized_signals = dict()
+        self._sessionized_signals: dict[str, SignalBase] = dict()
         self._scope_ctx = _ScopeContext(scope_level=self.session_signal, epoch=self.epoch_signal)
 
     @abstractmethod
@@ -257,7 +260,7 @@ class SessionizedInputSchemaBase(InputSchemaBase, ABC):
     def create_epoch_signal(self) -> SignalBase:
         raise NotImplementedError()
 
-    def _make_sessionized_input(self, key) -> SignalBase:
+    def _make_sessionized_input(self, key: str) -> SignalBase:
         if key not in self._sessionized_signals:
             raw_signal = super().__getattribute__(key)
             raw_signal_clock = raw_signal.clock()
@@ -273,10 +276,11 @@ class SessionizedInputSchemaBase(InputSchemaBase, ABC):
         return self._scope_ctx.scoped(data=signal, clock=signal_clock, default=default_value)
 
     def __getattr__(self, name: str) -> Optional[SignalBase]:
-        sessionized_prefix = "sessionized_"
-        if name.startswith(sessionized_prefix):
-            actual_key = name[len(sessionized_prefix):]
+        if name.startswith(self.SESSIONIZED_PREFIX):
+            actual_key = name[self.SESSIONIZED_PREFIX_SIZE:]
             return self._make_sessionized_input(actual_key)
+        else:
+            return None
 
 
 def named(name: str, inner: _TypeBase = String()) -> MappedInputMember:

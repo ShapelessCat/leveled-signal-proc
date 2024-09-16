@@ -35,11 +35,11 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
             return super().__getattribute__(__name)
         except AttributeError as e:
             type_model = create_type_model_from_rust_type_name(self.get_rust_type_name())
-            type_model._parent = self
-            if type_model is not None:
-                return getattr(type_model, __name)
-            else:
+            if type_model is None:
                 raise e
+            else:
+                type_model._parent = self
+                return getattr(type_model, __name)
 
     def get_description(self):
         return {
@@ -97,7 +97,7 @@ class IndirectBuiltinMeasurementComponentBase(BuiltinMeasurementComponentBase):
     # This is for codegen
     REFERENCE_PREFIX = "$"
 
-    def __init__(self, name: RustCode, upstreams: list[MeasurementBase], **kwargs):
+    def __init__(self, name: RustCode, upstreams: list[SignalBase | MeasurementBase], **kwargs):
         super().__init__(name,
                          component_package="measurements::combinator",
                          upstreams=upstreams,

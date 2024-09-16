@@ -14,7 +14,7 @@ class SignalFilterBuilder:
     def __init__(self, filter_signal: SignalBase, clock_signal: Optional[SignalBase] = None):
         self._filter_signal = filter_signal
         self._clock_signal = clock_signal
-        self._filter_node = None
+        self._filter_node: SignalBase
         if isinstance(filter_signal, MappedInputMember) and clock_signal is None:
             self._clock_signal = filter_signal.clock()
         self._filter_lambda = None
@@ -54,15 +54,26 @@ class SignalFilterBuilder:
         return ret
 
     def build_clock_filter(self) -> SignalBase:
-        from ..processors import LevelTriggeredLatch
-        return LevelTriggeredLatch(
-            data=self._clock_signal,
-            control=self._filter_node
-        )
+        """Build filter based on the input filter signal's companion clock signal.
+
+        Only each input signal from original data has corresponding clock signal can build clock filter."""
+        if self._filter_node is None:
+            raise ValueError("Not ready to build: no filter node")
+        elif self._clock_signal:
+            from ..processors import LevelTriggeredLatch
+            return LevelTriggeredLatch(
+                data=self._clock_signal,
+                control=self._filter_node
+            )
+        else:
+            raise ValueError("Input filter signal doesn't have a companion clock signal")
 
     def build_value_filter(self) -> SignalBase:
-        from ..processors import LevelTriggeredLatch
-        return LevelTriggeredLatch(
-            data=self._filter_signal,
-            control=self._filter_node
-        )
+        if self._filter_node is None:
+            raise ValueError("Not ready to build: no filter node")
+        else:
+            from ..processors import LevelTriggeredLatch
+            return LevelTriggeredLatch(
+                data=self._filter_signal,
+                control=self._filter_node
+            )
