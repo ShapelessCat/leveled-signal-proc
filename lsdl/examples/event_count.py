@@ -4,8 +4,8 @@ from lsdl.processors import SignalFilterBuilder
 
 
 class InputSignal(InputSchemaBase):
-    user_action = named("userAction", String())  # noqa: E221
-    page        = String()                             # noqa: E221
+    user_action = named("userAction")  # noqa: E221
+    page        = String()             # noqa: E221
 
 
 input_signal = InputSignal()

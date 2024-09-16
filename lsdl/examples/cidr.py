@@ -1,14 +1,14 @@
 from lsdl import print_ir_to_stdout
-from lsdl.lsp_model import named, InputSchemaBase, String
+from lsdl.lsp_model import named, InputSchemaBase
 
 
 class InputSignal(InputSchemaBase):
     _timestamp_key = "dateTime"
 
-    player_state = named("newPlayerState", String())  # noqa: E221
-    network      = named("newNetwork",     String())  # noqa: E221
-    cdn          = named("newCdn",         String())  # noqa: E221
-    user_action  = named("newUserAction",  String())  # noqa: E221
+    player_state = named("newPlayerState")  # noqa: E221
+    network      = named("newNetwork")      # noqa: E221
+    cdn          = named("newCdn")          # noqa: E221
+    user_action  = named("newUserAction")   # noqa: E221
 
 
 input_signal = InputSignal()

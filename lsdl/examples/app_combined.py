@@ -1,5 +1,5 @@
 from lsdl import print_ir_to_stdout
-from lsdl.lsp_model import named, InputSchemaBase, String
+from lsdl.lsp_model import named, InputSchemaBase
 from lsdl.processors import Const, SignalFilterBuilder, StateMachine
 
 
@@ -10,8 +10,8 @@ class InputSignal(InputSchemaBase):
 
     # Define the member of the schemas:
     # Function `named` maps the key in the input data to the member name.
-    video_event = named("unstruct_event_com_conviva_conviva_video_events_1_0_2.name", String())  # noqa: E221, E501
-    raw_event   = named("unstruct_event_com_conviva_raw_event_1_0_1.name", String())             # noqa: E221, E501
+    video_event = named("unstruct_event_com_conviva_conviva_video_events_1_0_2.name")  # noqa: E221, E501
+    raw_event   = named("unstruct_event_com_conviva_raw_event_1_0_1.name")             # noqa: E221, E501
 
 
 # Then, let's instantiate the input schema

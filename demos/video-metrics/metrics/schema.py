@@ -4,11 +4,11 @@ from lsdl.lsp_model import Integer, SessionizedInputSchemaBase, String, named
 class InputSignal(SessionizedInputSchemaBase):
     _timestamp_key = "timestamp"
 
-    session_id   = named("sessionId",   String())   # noqa: E221
-    player_state = named("PlayerState", String())   # noqa: E221
-    cdn          = named("CDN",         String())   # noqa: E221
-    bit_rate     = named("BitRate",     Integer())  # noqa: E221
-    ev           = named("ev",          String())   # noqa: E221
+    session_id   = named("sessionId")           # noqa: E221
+    player_state = named("PlayerState")         # noqa: E221
+    cdn          = named("CDN")                 # noqa: E221
+    bit_rate     = named("BitRate", Integer())  # noqa: E221
+    ev           = named("ev")                  # noqa: E221
 
     bit_rate_default = -1
 
