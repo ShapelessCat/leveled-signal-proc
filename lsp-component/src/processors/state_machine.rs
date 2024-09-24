@@ -1,8 +1,7 @@
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::{Patchable, SignalProcessor};
@@ -12,7 +11,7 @@ use lsp_runtime::signal_api::{Patchable, SignalProcessor};
 /// The state transition is defined as a lambda function passed in when construction.
 /// The state transition is triggered when the control input gets changed.
 /// The output is simply the current internal state.
-#[derive(Serialize)]
+#[derive(Serialize, Patchable)]
 pub struct StateMachine<Input, State, TransitionFunc, Trigger> {
     state: State,
     #[serde(skip)]
@@ -79,21 +78,21 @@ where
     }
 }
 
-#[derive(Deserialize)]
-pub struct StateMachineState<State, Trigger> {
-    state: State,
-    last_trigger_value: Trigger,
-}
-
-impl<I, S, F, T> Patchable for StateMachine<I, S, F, T>
-where
-    S: Serialize + DeserializeOwned,
-    T: Serialize + DeserializeOwned,
-{
-    type State = StateMachineState<S, T>;
-
-    fn patch_from(&mut self, state: Self::State) {
-        self.state = state.state;
-        self.last_trigger_value = state.last_trigger_value;
-    }
-}
+// #[derive(Deserialize)]
+// pub struct StateMachineState<State, Trigger> {
+//     state: State,
+//     last_trigger_value: Trigger,
+// }
+//
+// impl<I, S, F, T> Patchable for StateMachine<I, S, F, T>
+// where
+//     S: Serialize + DeserializeOwned,
+//     T: Serialize + DeserializeOwned,
+// {
+//     type State = StateMachineState<S, T>;
+//
+//     fn patch_from(&mut self, state: Self::State) {
+//         self.state = state.state;
+//         self.last_trigger_value = state.last_trigger_value;
+//     }
+// }

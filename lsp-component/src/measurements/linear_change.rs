@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
@@ -6,7 +6,7 @@ use lsp_runtime::Timestamp;
 
 /// Measure cumulative changes. The input signal must be some rates for describing a piecewise
 /// linear function.
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Default, Debug, Serialize, Patchable)]
 pub struct LinearChange {
     current_rate: f64,
     current_rate_start: Timestamp,
@@ -33,19 +33,19 @@ impl<'a, I: Iterator> SignalMeasurement<'a, I> for LinearChange {
     }
 }
 
-#[derive(Deserialize)]
-pub struct LinearChangeState {
-    current_rate: f64,
-    current_rate_start: Timestamp,
-    accumulated_amount: f64,
-}
-
-impl Patchable for LinearChange {
-    type State = LinearChangeState;
-
-    fn patch_from(&mut self, state: Self::State) {
-        self.current_rate = state.current_rate;
-        self.current_rate_start = state.current_rate_start;
-        self.accumulated_amount = state.accumulated_amount;
-    }
-}
+// #[derive(Deserialize)]
+// pub struct LinearChangeState {
+//     current_rate: f64,
+//     current_rate_start: Timestamp,
+//     accumulated_amount: f64,
+// }
+//
+// impl Patchable for LinearChange {
+//     type State = LinearChangeState;
+//
+//     fn patch_from(&mut self, state: Self::State) {
+//         self.current_rate = state.current_rate;
+//         self.current_rate_start = state.current_rate_start;
+//         self.accumulated_amount = state.accumulated_amount;
+//     }
+// }

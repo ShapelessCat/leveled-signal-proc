@@ -1,16 +1,17 @@
 use std::fmt::Display;
 use std::marker::PhantomData;
 
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 
 /// A measurement combinator that can apply a function to a given measurement result.
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Patchable)]
 pub struct MappedMeasurement<InnerOutput, OutputType, ClosureType, MeasurementType> {
     #[serde(skip)]
     how: ClosureType,
+    #[patchable]
     inner: MeasurementType,
     #[serde(skip)]
     _phantom_data: PhantomData<(InnerOutput, OutputType)>,
@@ -51,18 +52,18 @@ where
     }
 }
 
-#[derive(Deserialize)]
-pub struct MappedMeasurementState<MeasurementStateType> {
-    inner: MeasurementStateType,
-}
-
-impl<I, O, C, M> Patchable for MappedMeasurement<I, O, C, M>
-where
-    M: Serialize + Patchable,
-{
-    type State = MappedMeasurementState<M::State>;
-
-    fn patch_from(&mut self, state: Self::State) {
-        self.inner.patch_from(state.inner);
-    }
-}
+// #[derive(Deserialize)]
+// pub struct MappedMeasurementState<MeasurementStateType> {
+//     inner: MeasurementStateType,
+// }
+//
+// impl<I, O, C, M> Patchable for MappedMeasurement<I, O, C, M>
+// where
+//     M: Serialize + Patchable,
+// {
+//     type State = MappedMeasurementState<M::State>;
+//
+//     fn patch_from(&mut self, state: Self::State) {
+//         self.inner.patch_from(state.inner);
+//     }
+// }

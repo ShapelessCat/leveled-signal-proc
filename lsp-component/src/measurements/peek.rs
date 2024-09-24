@@ -1,12 +1,11 @@
-use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 use lsp_runtime::Timestamp;
 
 /// Measure by peeking the input value.
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Default, Debug, Serialize, Patchable)]
 pub struct Peek<T>(T);
 
 impl<'a, I, T> SignalMeasurement<'a, I> for Peek<T>
@@ -27,28 +26,23 @@ where
     }
 }
 
-#[derive(Deserialize)]
-pub struct PeekState<T>(T);
-
-impl<T> Patchable for Peek<T>
-where
-    T: Serialize + DeserializeOwned,
-{
-    type State = PeekState<T>;
-
-    // fn patch(&mut self, state: &str) {
-    //     let state: Self::State = serde_json::from_str(state).unwrap();
-    //     self.patch_from(state);
-    // }
-
-    fn patch_from(&mut self, state: Self::State) {
-        self.0 = state.0;
-    }
-}
+// #[derive(Deserialize)]
+// pub struct PeekState<T>(T);
+//
+// impl<T> Patchable for Peek<T>
+// where
+//     T: Serialize + DeserializeOwned,
+// {
+//     type State = PeekState<T>;
+//
+//     fn patch_from(&mut self, state: Self::State) {
+//         self.0 = state.0;
+//     }
+// }
 
 /// This is the measurement for timestamp.
 /// Time is not a leveled signal, and we can't use the [Peek] measurement to measure time.
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Patchable)]
 pub struct PeekTimestamp;
 
 impl<'a, I: Iterator> SignalMeasurement<'a, I> for PeekTimestamp {
@@ -67,16 +61,16 @@ impl<'a, I: Iterator> SignalMeasurement<'a, I> for PeekTimestamp {
     }
 }
 
-#[derive(Deserialize)]
-pub struct PeekTimestampState;
-
-impl Patchable for PeekTimestamp {
-    type State = PeekTimestampState;
-
-    fn patch(&mut self, _state: &str) {}
-
-    fn patch_from(&mut self, _state: Self::State) {}
-}
+// #[derive(Deserialize)]
+// pub struct PeekTimestampState;
+//
+// impl Patchable for PeekTimestamp {
+//     type State = PeekTimestampState;
+//
+//     fn patch(&mut self, _state: &str) {}
+//
+//     fn patch_from(&mut self, _state: Self::State) {}
+// }
 
 #[cfg(test)]
 mod test {

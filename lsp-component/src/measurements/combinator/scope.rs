@@ -1,17 +1,17 @@
 use std::fmt::{Debug, Display};
 use std::ops::Sub;
 
-use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 
 /// A measurement combinator that can take a control signal and a measurement, reset the measurement
 /// result when the control signal level changes.
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Patchable)]
 pub struct ScopedMeasurement<ScopeType, MeasurementType, MeasurementOutput> {
     current_control_level: ScopeType,
+    #[patchable]
     inner: MeasurementType,
     current_base: MeasurementOutput,
 }
@@ -57,24 +57,24 @@ where
     }
 }
 
-#[derive(Deserialize)]
-pub struct ScopedMeasurementState<ScopeType, MeasurementStateType, MeasurementOutput> {
-    current_control_level: ScopeType,
-    inner: MeasurementStateType,
-    current_base: MeasurementOutput,
-}
-
-impl<S, M, O> Patchable for ScopedMeasurement<S, M, O>
-where
-    S: Serialize + DeserializeOwned,
-    M: Serialize + Patchable,
-    O: Serialize + DeserializeOwned,
-{
-    type State = ScopedMeasurementState<S, M::State, O>;
-
-    fn patch_from(&mut self, state: Self::State) {
-        self.current_control_level = state.current_control_level;
-        self.inner.patch_from(state.inner);
-        self.current_base = state.current_base;
-    }
-}
+// #[derive(Deserialize)]
+// pub struct ScopedMeasurementState<ScopeType, MeasurementStateType, MeasurementOutput> {
+//     current_control_level: ScopeType,
+//     inner: MeasurementStateType,
+//     current_base: MeasurementOutput,
+// }
+//
+// impl<S, M, O> Patchable for ScopedMeasurement<S, M, O>
+// where
+//     S: Serialize + DeserializeOwned,
+//     M: Serialize + Patchable,
+//     O: Serialize + DeserializeOwned,
+// {
+//     type State = ScopedMeasurementState<S, M::State, O>;
+//
+//     fn patch_from(&mut self, state: Self::State) {
+//         self.current_control_level = state.current_control_level;
+//         self.inner.patch_from(state.inner);
+//         self.current_base = state.current_base;
+//     }
+// }

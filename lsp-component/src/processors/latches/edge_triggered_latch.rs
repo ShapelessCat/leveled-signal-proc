@@ -1,5 +1,5 @@
 use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::signal_api::SignalProcessor;
 use lsp_runtime::Duration;
@@ -13,7 +13,7 @@ use super::retention::{KeepForever, Retention, TimeToLive};
 /// Once the control input changes, an edge appears, the edge triggered latch changes its internal
 /// state to the data input. This concept borrowed from the hardware component which shares the same
 /// name. And it's widely used as one bit memory in digital circuits.
-#[derive(Default, Debug, Serialize)]
+#[derive(Default, Debug, Serialize, Patchable)]
 pub struct EdgeTriggeredLatch<Control, Data, RetentionPolicy: Retention<Data> = KeepForever> {
     last_control_level: Control,
     data: Data,
@@ -77,27 +77,27 @@ where
     }
 }
 
-#[derive(Deserialize)]
-pub struct EdgeTriggeredLatchState<Control, Data, RetentionPolicy> {
-    last_control_level: Control,
-    data: Data,
-    retention: RetentionPolicy,
-}
-
-impl<C, D, R: Retention<D>> Patchable for EdgeTriggeredLatch<C, D, R>
-where
-    C: Serialize + DeserializeOwned,
-    D: Serialize + DeserializeOwned,
-    R: Serialize + DeserializeOwned,
-{
-    type State = EdgeTriggeredLatchState<C, D, R>;
-
-    fn patch_from(&mut self, state: Self::State) {
-        self.last_control_level = state.last_control_level;
-        self.data = state.data;
-        self.retention = state.retention;
-    }
-}
+// #[derive(Deserialize)]
+// pub struct EdgeTriggeredLatchState<Control, Data, RetentionPolicy> {
+//     last_control_level: Control,
+//     data: Data,
+//     retention: RetentionPolicy,
+// }
+//
+// impl<C, D, R: Retention<D>> Patchable for EdgeTriggeredLatch<C, D, R>
+// where
+//     C: Serialize + DeserializeOwned,
+//     D: Serialize + DeserializeOwned,
+//     R: Serialize + DeserializeOwned,
+// {
+//     type State = EdgeTriggeredLatchState<C, D, R>;
+//
+//     fn patch_from(&mut self, state: Self::State) {
+//         self.last_control_level = state.last_control_level;
+//         self.data = state.data;
+//         self.retention = state.retention;
+//     }
+// }
 
 #[cfg(test)]
 mod test {

@@ -3,11 +3,13 @@
         "./lsdl"
     ],
     "cSpell.words": [
+        "bimap",
         "codegen",
         "Deque",
         "impls",
         "lsdl",
         "nanos",
+        "qself",
         "Sessionized",
         "statelessly",
         "upstreams",

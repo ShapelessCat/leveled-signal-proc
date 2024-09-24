@@ -1,7 +1,6 @@
 use std::ops::AddAssign;
 
-use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::{Patchable, SignalProcessor};
@@ -9,7 +8,7 @@ use lsp_runtime::signal_api::{Patchable, SignalProcessor};
 /// An accumulator is a signal processor that constantly add input to the internal state.
 /// Normally accumulator doesn't add input to the internal state, until it sees the control signal
 /// has changed.
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Patchable)]
 pub struct Accumulator<Data, ControlSignal, Filter> {
     prev_control_signal: ControlSignal,
     #[serde(skip)]
@@ -59,24 +58,24 @@ where
     }
 }
 
-#[derive(Deserialize)]
-pub struct AccumulatorState<Data, ControlSignal> {
-    prev_control_signal: ControlSignal,
-    accumulator: Data,
-}
-
-impl<D, C, F> Patchable for Accumulator<D, C, F>
-where
-    D: Serialize + DeserializeOwned,
-    C: Serialize + DeserializeOwned,
-{
-    type State = AccumulatorState<D, C>;
-
-    fn patch_from(&mut self, state: Self::State) {
-        self.prev_control_signal = state.prev_control_signal;
-        self.accumulator = state.accumulator;
-    }
-}
+// #[derive(Deserialize)]
+// pub struct AccumulatorState<Data, ControlSignal> {
+//     prev_control_signal: ControlSignal,
+//     accumulator: Data,
+// }
+//
+// impl<D, C, F> Patchable for Accumulator<D, C, F>
+// where
+//     D: Serialize + DeserializeOwned,
+//     C: Serialize + DeserializeOwned,
+// {
+//     type State = AccumulatorState<D, C>;
+//
+//     fn patch_from(&mut self, state: Self::State) {
+//         self.prev_control_signal = state.prev_control_signal;
+//         self.accumulator = state.accumulator;
+//     }
+// }
 
 #[cfg(test)]
 mod test {

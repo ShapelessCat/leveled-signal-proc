@@ -1,5 +1,5 @@
 use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::signal_api::SignalProcessor;
 use lsp_runtime::Duration;
@@ -13,7 +13,7 @@ use super::retention::{KeepForever, Retention, TimeToLive};
 /// When the control input becomes true, the level triggered latch changes its internal state to the
 /// data input. This concept borrowed from the hardware component which shares the same name. And
 /// it's widely used as one bit memory in digital circuits.
-#[derive(Default, Debug, Serialize)]
+#[derive(Default, Debug, Serialize, Patchable)]
 pub struct LevelTriggeredLatch<Data, RetentionPolicy: Retention<Data> = KeepForever> {
     data: Data,
     retention: RetentionPolicy,
@@ -63,24 +63,24 @@ where
     }
 }
 
-#[derive(Deserialize)]
-pub struct LevelTriggeredLatchState<Data, RetentionPolicy> {
-    data: Data,
-    retention: RetentionPolicy,
-}
-
-impl<D, R: Retention<D>> Patchable for LevelTriggeredLatch<D, R>
-where
-    D: Serialize + DeserializeOwned,
-    R: Serialize + DeserializeOwned,
-{
-    type State = LevelTriggeredLatchState<D, R>;
-
-    fn patch_from(&mut self, state: Self::State) {
-        self.data = state.data;
-        self.retention = state.retention;
-    }
-}
+// #[derive(Deserialize)]
+// pub struct LevelTriggeredLatchState<Data, RetentionPolicy> {
+//     data: Data,
+//     retention: RetentionPolicy,
+// }
+//
+// impl<D, R: Retention<D>> Patchable for LevelTriggeredLatch<D, R>
+// where
+//     D: Serialize + DeserializeOwned,
+//     R: Serialize + DeserializeOwned,
+// {
+//     type State = LevelTriggeredLatchState<D, R>;
+//
+//     fn patch_from(&mut self, state: Self::State) {
+//         self.data = state.data;
+//         self.retention = state.retention;
+//     }
+// }
 
 #[cfg(test)]
 mod test {
