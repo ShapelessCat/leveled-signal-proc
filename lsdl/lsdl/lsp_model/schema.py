@@ -191,9 +191,6 @@ class InputSchemaBase(SignalBase):
                 self._members.append(item_name)
         _defined_schema = self
 
-    def rebuild(self, rust_type: RustCode = INPUT_SIGNAL_BAG):
-        self.__init__(rust_type)
-
     def to_dict(self) -> dict:
         ret: dict = {
             "type_name": self.type_name,
