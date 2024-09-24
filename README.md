@@ -44,20 +44,20 @@ cargo build --package=lsp-codegen-test
 
 There are handwritten examples in the `lsp-runtime/examples/` directory.
 
-There are some examples written in `LDSL`, the DSL we use in the LSP framework. `lsdl/examples/`.
+There are some examples written in `LSDL`, the DSL we use in the LSP framework. `lsdl/examples/`.
 As we are moving forward quickly, more LSDL examples will be added.
 
-### LDSL
+### LSDL
 
 _The Leveled Signal Description Language (__LSDL__)_ is a DSL describing data logic for the leveled-signal based data
 analytics system. It is built on top of Python3. We can use Python's language feature to define schema, develop a high
 level module system and finally build a web-based GUI for those most commonly used queries. This document is aiming to
 clarify the detailed design of the LSDL.
 
-For LDSL examples, check `ldsl/examples/` directory. All the Python source code are LDSL and JSON files are the IR's
+For LSDL examples, check `lsdl/examples/` directory. All the Python source code are LSDL and JSON files are the IR's
 generated from them.
 
-#### Build and Install The Wheel for LDSL
+#### Build and Install The Wheel for LSDL
 
 The `<version>` below should be replaced with the `version` value from the `[project]` section of
 `<project-folder>/lsdl/pyproject.toml`.
