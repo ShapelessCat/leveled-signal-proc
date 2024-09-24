@@ -1,8 +1,7 @@
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::context::{UpdateContext, WithTimestamp};
 use lsp_runtime::signal_api::{Patchable, SignalProcessor};
@@ -14,7 +13,7 @@ use lsp_runtime::{Duration, Timestamp};
 /// The liveness defined as we can find a heartbeat event within `expiration_period` amount of time.
 /// Thus, this operator uses the look ahead mechanism of the LSP system to see if there's a future
 /// heartbeat event.
-#[derive(Serialize)]
+#[derive(Serialize, Patchable)]
 pub struct LivenessChecker<IsLivenessEventFunc, Clock, Event> {
     #[serde(skip)]
     is_liveness_event: IsLivenessEventFunc,
@@ -80,25 +79,25 @@ where
     }
 }
 
-#[derive(Deserialize)]
-pub struct LivenessCheckerState<Clock> {
-    expiration_period: Duration,
-    last_event_clock: Clock,
-    last_event_timestamp: Timestamp,
-}
-
-impl<F, C, E> Patchable for LivenessChecker<F, C, E>
-where
-    C: Serialize + DeserializeOwned,
-{
-    type State = LivenessCheckerState<C>;
-
-    fn patch_from(&mut self, state: Self::State) {
-        self.expiration_period = state.expiration_period;
-        self.last_event_clock = state.last_event_clock;
-        self.last_event_timestamp = state.last_event_timestamp;
-    }
-}
+// #[derive(Deserialize)]
+// pub struct LivenessCheckerState<Clock> {
+//     expiration_period: Duration,
+//     last_event_clock: Clock,
+//     last_event_timestamp: Timestamp,
+// }
+//
+// impl<F, C, E> Patchable for LivenessChecker<F, C, E>
+// where
+//     C: Serialize + DeserializeOwned,
+// {
+//     type State = LivenessCheckerState<C>;
+//
+//     fn patch_from(&mut self, state: Self::State) {
+//         self.expiration_period = state.expiration_period;
+//         self.last_event_clock = state.last_event_clock;
+//         self.last_event_timestamp = state.last_event_timestamp;
+//     }
+// }
 
 #[cfg(test)]
 mod test {

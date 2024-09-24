@@ -221,6 +221,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "lsp-component",
+ "lsp-macro",
  "serde",
  "serde_json",
 ]

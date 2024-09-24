@@ -1,5 +1,4 @@
-use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::{Patchable, SignalProcessor};
@@ -32,7 +31,7 @@ impl<T: Clone> SignalFunc<T> for ConstSignalFunc<T> {
 /// The `SignalFunc` is a lambda that is called to determine the current level of the signal it
 /// receives a timestamp for now and returns a tuple of signal level and the timestamp when current
 /// level ends.
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Patchable)]
 pub struct SignalGenerator<SignalFunc = ConstSignalFunc<i32>, SignalType = i32> {
     #[serde(skip)]
     signal_func: SignalFunc,
@@ -111,23 +110,23 @@ where
     }
 }
 
-#[derive(Deserialize)]
-pub struct SignalGeneratorState<SignalType> {
-    last_value: SignalType,
-    until_ts: Timestamp,
-}
-
-impl<F, S> Patchable for SignalGenerator<F, S>
-where
-    S: Serialize + DeserializeOwned,
-{
-    type State = SignalGeneratorState<S>;
-
-    fn patch_from(&mut self, state: Self::State) {
-        self.last_value = state.last_value;
-        self.until_ts = state.until_ts;
-    }
-}
+// #[derive(Deserialize)]
+// pub struct SignalGeneratorState<SignalType> {
+//     last_value: SignalType,
+//     until_ts: Timestamp,
+// }
+//
+// impl<F, S> Patchable for SignalGenerator<F, S>
+// where
+//     S: Serialize + DeserializeOwned,
+// {
+//     type State = SignalGeneratorState<S>;
+//
+//     fn patch_from(&mut self, state: Self::State) {
+//         self.last_value = state.last_value;
+//         self.until_ts = state.until_ts;
+//     }
+// }
 
 #[cfg(test)]
 mod test {

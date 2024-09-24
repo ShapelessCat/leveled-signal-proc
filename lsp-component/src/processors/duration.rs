@@ -1,5 +1,4 @@
-use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::{Patchable, SignalProcessor};
@@ -9,7 +8,7 @@ use lsp_runtime::{Duration, Timestamp};
 /// Although the duration of current level cannot be a measurement, as it's a function of time,
 /// duration of previous level is a well-defined signal -- duration of previous level is a known
 /// value.
-#[derive(Default, Debug, Serialize)]
+#[derive(Default, Debug, Serialize, Patchable)]
 pub struct DurationOfPreviousLevel<Level> {
     current_value: Level,
     current_value_since: Timestamp,
@@ -36,25 +35,25 @@ where
     }
 }
 
-#[derive(Deserialize)]
-pub struct DurationOfPreviousLevelState<Level> {
-    current_value: Level,
-    current_value_since: Timestamp,
-    output_buf: Timestamp,
-}
-
-impl<L> Patchable for DurationOfPreviousLevel<L>
-where
-    L: Serialize + DeserializeOwned,
-{
-    type State = DurationOfPreviousLevelState<L>;
-
-    fn patch_from(&mut self, state: Self::State) {
-        self.current_value = state.current_value;
-        self.current_value_since = state.current_value_since;
-        self.output_buf = state.output_buf;
-    }
-}
+// #[derive(Deserialize)]
+// pub struct DurationOfPreviousLevelState<Level> {
+//     current_value: Level,
+//     current_value_since: Timestamp,
+//     output_buf: Timestamp,
+// }
+//
+// impl<L> Patchable for DurationOfPreviousLevel<L>
+// where
+//     L: Serialize + DeserializeOwned,
+// {
+//     type State = DurationOfPreviousLevelState<L>;
+//
+//     fn patch_from(&mut self, state: Self::State) {
+//         self.current_value = state.current_value;
+//         self.current_value_since = state.current_value_since;
+//         self.output_buf = state.output_buf;
+//     }
+// }
 
 #[cfg(test)]
 mod test {

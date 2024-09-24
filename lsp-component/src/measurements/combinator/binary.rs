@@ -1,13 +1,13 @@
 use std::fmt::Display;
 use std::marker::PhantomData;
 
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use lsp_runtime::context::UpdateContext;
 use lsp_runtime::signal_api::{Patchable, SignalMeasurement};
 
 /// A measurement combinator that can combine two measurements.
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Patchable)]
 pub struct BinaryCombinedMeasurement<
     OutputType0,
     OutputType1,
@@ -18,7 +18,9 @@ pub struct BinaryCombinedMeasurement<
 > {
     #[serde(skip)]
     binary_op: ClosureType,
+    #[patchable]
     inner0: MeasurementType0,
+    #[patchable]
     inner1: MeasurementType1,
     #[serde(skip)]
     _phantom_data: PhantomData<(OutputType0, OutputType1, OutputType)>,
@@ -88,21 +90,21 @@ where
     }
 }
 
-#[derive(Deserialize)]
-pub struct BinaryCombinedMeasurementState<MeasurementStateType0, MeasurementStateType1> {
-    inner0: MeasurementStateType0,
-    inner1: MeasurementStateType1,
-}
-
-impl<O0, O1, O, C, M0, M1> Patchable for BinaryCombinedMeasurement<O0, O1, O, C, M0, M1>
-where
-    M0: Serialize + Patchable,
-    M1: Serialize + Patchable,
-{
-    type State = BinaryCombinedMeasurementState<M0::State, M1::State>;
-
-    fn patch_from(&mut self, state: Self::State) {
-        self.inner0.patch_from(state.inner0);
-        self.inner1.patch_from(state.inner1);
-    }
-}
+// #[derive(Deserialize)]
+// pub struct BinaryCombinedMeasurementState<MeasurementStateType0, MeasurementStateType1> {
+//     inner0: MeasurementStateType0,
+//     inner1: MeasurementStateType1,
+// }
+//
+// impl<O0, O1, O, C, M0, M1> Patchable for BinaryCombinedMeasurement<O0, O1, O, C, M0, M1>
+// where
+//     M0: Serialize + Patchable,
+//     M1: Serialize + Patchable,
+// {
+//     type State = BinaryCombinedMeasurementState<M0::State, M1::State>;
+//
+//     fn patch_from(&mut self, state: Self::State) {
+//         self.inner0.patch_from(state.inner0);
+//         self.inner1.patch_from(state.inner1);
+//     }
+// }

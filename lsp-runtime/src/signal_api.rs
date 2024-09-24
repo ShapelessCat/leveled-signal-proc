@@ -2,6 +2,8 @@ use serde::{de::DeserializeOwned, Serialize};
 
 use crate::context::UpdateContext;
 
+pub use lsp_macro::Patchable;
+
 /// This trait is created for creating/loading any checkpoint component.
 /// Checkpoint is a state for the whole system, which is used to continue computation without losing
 /// previous state.
