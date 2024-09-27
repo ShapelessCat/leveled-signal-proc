@@ -7,11 +7,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lsdl"
-version = "0.4.1"
+version = "0.4.2"
 authors = [
-    {name = "Hao Hou", email = "hhou@conviva.com"},
-    {name = "Jian Lan", email = "jilan@conviva.com"},
-    {name = "Smart Sun", email = "csun@conviva.com"},
+    {name = "Hao Hou", email = "haohou302@gmail.com"},
+    {name = "Jian Lan", email = "shapeless.cat@gmail.com"},
 ]
 description = "The Leveled Signal Description Language (LSDL)"
 requires-python = ">=3.12"
