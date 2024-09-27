@@ -23,7 +23,7 @@ use are imported there. The recommended usage for newcomers:
   Usually, you only need these in your project entry point file.
 
 - `from lsdl.lsp_model import *`:
-  When you need LSP model fundamental components. 
+  When you need LSP model fundamental components.
   Mostly, you need these when defining the schema for input signals.
 
 - `from lsdl.processors import *`:

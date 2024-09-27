@@ -23,7 +23,7 @@ class _ProcessingConfiguration:
         return self
 
     def to_dict(self) -> dict[str, Any]:
-        """Dump the processing policy into a dictionary that can be JSONified."""
+        """Dump the processing policy into a dictionary."""
         return {"merge_simultaneous_moments": self._merge_simultaneous_moments}
 
 
@@ -142,7 +142,7 @@ class _MeasurementConfiguration:
             if interval_metric_name is None and not key.startswith('life'):
                 raise Exception(
                     """This metric name doesn't start with 'life_navigation' or 'life_session', """
-                    """and you also doesn't manutally provide a interval metric name""")
+                    """and you also doesn't manually provide a interval metric name""")
             metric_name = (interval_metric_name
                            or re.sub(r'^life_(navigation|session)', 'interval', key))
             self._complementary_output_schema[metric_name] = {
@@ -165,7 +165,7 @@ class _MeasurementConfiguration:
         return self
 
     def to_dict(self) -> dict[str, Any]:
-        """Dump the measurement policy into a dictionary that can be JSONified."""
+        """Dump the measurement policy into a dictionary."""
         ret: dict = {
             "measure_at_event_filter": self._measure_at_event_lambda,
             "metrics_drain": self._metrics_drain,
