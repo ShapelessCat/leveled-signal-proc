@@ -181,15 +181,18 @@ mod test {
         timestamp: Timestamp,
         value: u32,
     }
+
     impl WithTimestamp for TestInput {
         fn timestamp(&self) -> Timestamp {
             self.timestamp
         }
     }
+
     #[derive(Clone, Debug, PartialEq, Default)]
     struct TestSignalBag {
         value: u32,
     }
+
     impl InputSignalBag for TestSignalBag {
         type Input = TestInput;
 

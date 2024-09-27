@@ -41,12 +41,15 @@ impl MacroContext {
     pub fn get_instrument_var(&self) -> Option<&Ident> {
         self.instrument_var.as_ref()
     }
+
     pub fn get_ir_data(&self) -> &LspIr {
         &self.ir_data
     }
+
     pub fn span(&self) -> Span {
         self.ir_path_span
     }
+
     pub fn map_lsdl_error<T: LsdlDebugInfo>(
         &self,
         ir_obj: &T,
@@ -61,6 +64,7 @@ impl MacroContext {
             syn::Error::new(err.span(), message)
         }
     }
+
     pub fn normalize_ir_path<P: AsRef<FilePath>>(ir_path: &P) -> Result<PathBuf, VarError> {
         let manifest_dir_str = std::env::var("CARGO_MANIFEST_DIR")?;
         let ir_path = ir_path.as_ref();
@@ -73,6 +77,7 @@ impl MacroContext {
             ir_path.to_path_buf()
         })
     }
+
     pub(super) fn parse_ir_file(path_lit: &LitStr) -> syn::Result<LspIr> {
         let ir_path_str = path_lit.value();
         let ir_path = Self::normalize_ir_path(&ir_path_str)

@@ -3,6 +3,7 @@ use std::time::Instant;
 
 pub trait NodeOutputHandler<'a, T> {
     fn new(value: &'a T) -> Self;
+
     fn handle_node_output<Instr: LspDataLogicInstrument + ?Sized>(
         &self,
         instrument_ctx: &mut Instr,
@@ -11,14 +12,19 @@ pub trait NodeOutputHandler<'a, T> {
 
 pub trait LspDataLogicInstrument: Display {
     type NodeOutputHandler<'a, T>: NodeOutputHandler<'a, T>;
+
     #[inline(always)]
     fn data_logic_update_begin(&mut self) {}
+
     #[inline(always)]
     fn data_logic_update_end(&mut self) {}
+
     #[inline(always)]
     fn node_update_begin(&mut self, _node_id: usize) {}
+
     #[inline(always)]
     fn node_update_end(&mut self, _node_id: usize) {}
+
     #[inline(always)]
     fn handle_node_output<'a, T>(&mut self, node_output: &'a T) {
         let wrapped =
@@ -28,22 +34,26 @@ pub trait LspDataLogicInstrument: Display {
 }
 
 pub struct DropNodeOutput;
+
 impl<'a, T> NodeOutputHandler<'a, T> for DropNodeOutput {
     #[inline(always)]
     fn new(_: &'a T) -> Self {
         Self
     }
+
     #[inline(always)]
     fn handle_node_output<Instr: LspDataLogicInstrument + ?Sized>(&self, _: &mut Instr) {}
 }
 
 #[derive(Default)]
 pub struct NoInstrument;
+
 impl Display for NoInstrument {
     fn fmt(&self, _: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         Ok(())
     }
 }
+
 impl LspDataLogicInstrument for NoInstrument {
     type NodeOutputHandler<'a, T> = DropNodeOutput;
 }

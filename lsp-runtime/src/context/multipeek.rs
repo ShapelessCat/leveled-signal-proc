@@ -90,6 +90,7 @@ impl<I: Iterator> MultiPeek<I> {
             None
         }
     }
+
     #[inline(always)]
     pub fn peek(&mut self) -> Option<&I::Item> {
         self.peek_n(1)
@@ -126,6 +127,7 @@ mod test {
         assert_eq!(mp_iter.peek(), Some(&0));
         assert_eq!(inner.into_iter().sum::<i32>(), mp_iter.sum::<i32>());
     }
+
     #[test]
     fn test_peek_out_of_bound() {
         let inner: Vec<_> = (0..1000).collect();
@@ -135,6 +137,7 @@ mod test {
         assert_eq!(mp_iter.peek_n(1002), None);
         assert_eq!(mp_iter.peek_n(5002), None);
     }
+
     #[test]
     fn test_peek_empty_inner_iter() {
         let inner: Vec<_> = (0..0).collect();
@@ -143,6 +146,7 @@ mod test {
         assert_eq!(mp_iter.peek_n(1), None);
         assert_eq!(mp_iter.peek_n(1000), None);
     }
+
     #[test]
     fn test_peek_fold_full() {
         let inner: Vec<_> = (0..1000).collect();
@@ -153,6 +157,7 @@ mod test {
         );
         assert_eq!(mp_iter.next(), Some(0));
     }
+
     #[test]
     fn test_peek_fold_early_terminate() {
         let inner: Vec<_> = (0..1000).collect();
