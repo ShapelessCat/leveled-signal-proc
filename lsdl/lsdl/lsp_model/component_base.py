@@ -2,7 +2,7 @@ from abc import ABC
 
 from .core import LeveledSignalProcessingModelComponentBase, MeasurementBase, SignalBase
 from .schema import create_type_model_from_rust_type_name
-from ..rust_code import COMPILER_INFERABLE_TYPE, RustCode
+from ..rust_code import COMPILER_INFERABLE_TYPE, NAMESPACE_OP, RustCode
 
 
 def _make_assign_fresh_component_closure():
@@ -75,8 +75,8 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
 class BuiltinComponentBase(LspComponentBase, ABC):
     def __init__(self, component_package: RustCode, component_name: RustCode, **kwargs):
         package = "lsp-component"
-        namespace = (
-            f"{package.replace('-', '_')}::{component_package}::{component_name}"
+        namespace = NAMESPACE_OP.join(
+            [package.replace("-", "_"), component_package, component_name]
         )
         super().__init__(package, namespace, **kwargs)
 
@@ -108,7 +108,7 @@ class IndirectBuiltinMeasurementComponentBase(BuiltinMeasurementComponentBase):
     ):
         super().__init__(
             name,
-            component_package="measurements::combinator",
+            component_package=NAMESPACE_OP.join(["measurements", "combinator"]),
             upstreams=upstreams,
             **kwargs,
         )
