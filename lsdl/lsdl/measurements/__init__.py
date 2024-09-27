@@ -6,13 +6,13 @@ from .linear_change import LinearChange
 from .peek import Peek, PeekTimestamp
 
 __all__ = [
-    'BinaryCombinedMeasurement',
-    'DurationOfCurrentLevel',
-    'DurationSinceBecomeTrue',
-    'DurationTrue',
-    'LinearChange',
-    'MappedMeasurement',
-    'Peek',
-    'PeekTimestamp',
-    'ScopedMeasurement'
+    "BinaryCombinedMeasurement",
+    "DurationOfCurrentLevel",
+    "DurationSinceBecomeTrue",
+    "DurationTrue",
+    "LinearChange",
+    "MappedMeasurement",
+    "Peek",
+    "PeekTimestamp",
+    "ScopedMeasurement",
 ]

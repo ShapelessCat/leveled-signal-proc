@@ -13,6 +13,7 @@ def _make_assign_fresh_component_closure():
         ret = next_fresh_component_id
         next_fresh_component_id += 1
         return ret
+
     return assign_fresh_component
 
 
@@ -21,7 +22,9 @@ _components = []
 
 
 class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
-    def __init__(self, package: str, namespace: RustCode, node_decl: RustCode, upstreams: list):
+    def __init__(
+        self, package: str, namespace: RustCode, node_decl: RustCode, upstreams: list
+    ):
         super().__init__(COMPILER_INFERABLE_TYPE)
         self._package = package
         self._namespace = namespace
@@ -34,7 +37,9 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
         try:
             return super().__getattribute__(__name)
         except AttributeError as e:
-            type_model = create_type_model_from_rust_type_name(self.get_rust_type_name())
+            type_model = create_type_model_from_rust_type_name(
+                self.get_rust_type_name()
+            )
             if type_model is None:
                 raise e
             else:
@@ -51,10 +56,9 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
         upstreams = []
         for p in self._upstreams:
             if isinstance(p, list):
-                upstreams.append({
-                    "type": "Tuple",
-                    "values": [e.get_description() for e in p]
-                })
+                upstreams.append(
+                    {"type": "Tuple", "values": [e.get_description() for e in p]}
+                )
             else:
                 upstreams.append(p.get_description())
         return {
@@ -71,7 +75,9 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
 class BuiltinComponentBase(LspComponentBase, ABC):
     def __init__(self, component_package: RustCode, component_name: RustCode, **kwargs):
         package = "lsp-component"
-        namespace = f"{package.replace('-', '_')}::{component_package}::{component_name}"
+        namespace = (
+            f"{package.replace('-', '_')}::{component_package}::{component_name}"
+        )
         super().__init__(package, namespace, **kwargs)
 
 
@@ -97,20 +103,28 @@ class IndirectBuiltinMeasurementComponentBase(BuiltinMeasurementComponentBase):
     # This is for codegen
     REFERENCE_PREFIX = "$"
 
-    def __init__(self, name: RustCode, upstreams: list[SignalBase | MeasurementBase], **kwargs):
-        super().__init__(name,
-                         component_package="measurements::combinator",
-                         upstreams=upstreams,
-                         **kwargs)
+    def __init__(
+        self, name: RustCode, upstreams: list[SignalBase | MeasurementBase], **kwargs
+    ):
+        super().__init__(
+            name,
+            component_package="measurements::combinator",
+            upstreams=upstreams,
+            **kwargs,
+        )
 
     @staticmethod
-    def get_id_or_literal_value(component: LeveledSignalProcessingModelComponentBase) -> str:
+    def get_id_or_literal_value(
+        component: LeveledSignalProcessingModelComponentBase,
+    ) -> str:
         from ..processors import Const
+
         if isinstance(component, Const):
             return component.rust_constant_value
         else:
-            return (IndirectBuiltinMeasurementComponentBase.REFERENCE_PREFIX
-                    + str(component.get_description()['id']))
+            return IndirectBuiltinMeasurementComponentBase.REFERENCE_PREFIX + str(
+                component.get_description()["id"]
+            )
 
 
 def get_components() -> list[LspComponentBase]:

@@ -6,13 +6,16 @@ from ..lsp_model.core import SignalBase
 
 @final
 class LevelTriggeredLatch(BuiltinProcessorComponentBase):
-    def __init__(self,
-                 control: SignalBase,
-                 data: SignalBase,
-                 forget_duration: int | str = -1,
-                 **kwargs):
+    def __init__(
+        self,
+        control: SignalBase,
+        data: SignalBase,
+        forget_duration: int | str = -1,
+        **kwargs,
+    ):
         rust_processor_name = self.__class__.__name__
         from ..lsp_model.internal import normalize_duration
+
         forget_duration = normalize_duration(forget_duration)
         dt = data.get_rust_type_name()
         if forget_duration < 0:
@@ -25,9 +28,7 @@ class LevelTriggeredLatch(BuiltinProcessorComponentBase):
                 )
             """
         super().__init__(
-            name=rust_processor_name,
-            node_decl=node_decl,
-            upstreams=[control, data]
+            name=rust_processor_name, node_decl=node_decl, upstreams=[control, data]
         )
         key4type = "output_type"
         if key4type in kwargs:
@@ -38,13 +39,16 @@ class LevelTriggeredLatch(BuiltinProcessorComponentBase):
 
 @final
 class EdgeTriggeredLatch(BuiltinProcessorComponentBase):
-    def __init__(self,
-                 control: SignalBase,
-                 data: SignalBase,
-                 forget_duration: int | str = -1,
-                 **kwargs):
+    def __init__(
+        self,
+        control: SignalBase,
+        data: SignalBase,
+        forget_duration: int | str = -1,
+        **kwargs,
+    ):
         rust_processor_name = self.__class__.__name__
         from ..lsp_model.internal import normalize_duration
+
         forget_duration = normalize_duration(forget_duration)
         dt = data.get_rust_type_name()
         if forget_duration < 0:
@@ -58,9 +62,7 @@ class EdgeTriggeredLatch(BuiltinProcessorComponentBase):
                 )
             """
         super().__init__(
-            name=rust_processor_name,
-            node_decl=node_decl,
-            upstreams=[control, data]
+            name=rust_processor_name, node_decl=node_decl, upstreams=[control, data]
         )
         key4type = "output_type"
         if key4type in kwargs:

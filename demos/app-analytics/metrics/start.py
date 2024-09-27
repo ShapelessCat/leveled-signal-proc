@@ -11,5 +11,6 @@ previous_session_id = session_id.prior_value(all_input_events_clock)
 # Navigation start
 # Original name and type in AA: `intvIsJustPageSwitched: Boolean`
 previous_navigation_id = navigation_id.prior_value(all_input_events_clock)
-(~(previous_navigation_id == navigation_id)) \
-    .add_metric("is_navigation_switch_start_interval")
+(~(previous_navigation_id == navigation_id)).add_metric(
+    "is_navigation_switch_start_interval"
+)

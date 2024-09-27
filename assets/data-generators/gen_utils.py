@@ -6,9 +6,12 @@ from typing import Callable
 logging.basicConfig(level=logging.INFO)
 
 
-def timestamp_gen(initial_timestamp: datetime = datetime.now()) -> Callable[[timedelta], str]:
-    return (lambda delta:
-            f"{(initial_timestamp + delta).isoformat(sep=' ', timespec='milliseconds')} UTC")
+def timestamp_gen(
+    initial_timestamp: datetime = datetime.now(),
+) -> Callable[[timedelta], str]:
+    return (
+        lambda delta: f"{(initial_timestamp + delta).isoformat(sep=' ', timespec='milliseconds')} UTC"
+    )
 
 
 def random_bool():
@@ -28,5 +31,5 @@ def generate_timestamps(count: int):
 
         t = timestamp_of(time_delta)
         if is_simultaneous:
-            logging.info('No timestamp change for %s', t)
+            logging.info("No timestamp change for %s", t)
         yield t

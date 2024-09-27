@@ -9,7 +9,13 @@ from ..rust_code import RustCode
 @final
 class Const(SignalBase):
     """Constant value signal."""
-    def __init__(self, value, need_owned: bool = True, val_type: Optional[TypeWithLiteralValue] = None):
+
+    def __init__(
+        self,
+        value,
+        need_owned: bool = True,
+        val_type: Optional[TypeWithLiteralValue] = None,
+    ):
         if val_type is None:
             tpe = type(value)
             if tpe == int:
@@ -45,11 +51,12 @@ _rust_component_name: RustCode = "SignalGenerator"
 class SquareWave(BuiltinProcessorComponentBase):
     def __init__(self, period, phase=0):
         from ..lsp_model.internal import normalize_duration
+
         period = normalize_duration(period)
         super().__init__(
             name=_rust_component_name,
             node_decl=f"{_rust_component_name}::square_wave({period}, {phase})",
-            upstreams=[]
+            upstreams=[],
         )
         self.annotate_type("bool")
 
@@ -59,11 +66,12 @@ class SquareWave(BuiltinProcessorComponentBase):
 class MonotonicSteps(BuiltinProcessorComponentBase):
     def __init__(self, period, start=0, step=1, phase=0):
         from ..lsp_model.internal import normalize_duration
+
         period = normalize_duration(period)
         super().__init__(
             name=_rust_component_name,
             node_decl=f"{_rust_component_name}::raising_level({start}, {step}, {period}, {phase})",
-            upstreams=[]
+            upstreams=[],
         )
         self.annotate_type("f64")
 
@@ -75,5 +83,5 @@ class SignalGenerator(BuiltinProcessorComponentBase):
         super().__init__(
             name=_rust_component_name,
             node_decl=f"{_rust_component_name}::new(|{bind_var}| {lambda_src})",
-            upstreams=[]
+            upstreams=[],
         )

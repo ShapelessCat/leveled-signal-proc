@@ -6,21 +6,23 @@ from ..lsp_model.core import SignalBase
 def make_tuple(*args: SignalBase) -> SignalBase:
     """Make a tuple from multiple input signals."""
     from . import SignalMapper
+
     return SignalMapper(
-        bind_var="s",
-        lambda_src="s.clone()",
-        upstream=list(args)
+        bind_var="s", lambda_src="s.clone()", upstream=list(args)
     ).annotate_type(f'({",".join([arg.get_rust_type_name() for arg in args])})')
 
 
-def time_domain_fold(data: SignalBase,
-                     clock: Optional[SignalBase] = None,
-                     scope: Optional[SignalBase] = None,
-                     fold_method="sum",
-                     init_state=None):
+def time_domain_fold(
+    data: SignalBase,
+    clock: Optional[SignalBase] = None,
+    scope: Optional[SignalBase] = None,
+    fold_method="sum",
+    init_state=None,
+):
     if clock is None:
         clock = data
     from . import StateMachineBuilder
+
     data_type = data.get_rust_type_name()
     lambda_param = f"s: &{data_type}, d: &{data_type}"
     if fold_method == "sum":

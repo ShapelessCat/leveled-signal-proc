@@ -22,7 +22,7 @@ class Platform(Enum):
     WEB = 2
 
     def __str__(self):
-        return f'{self.name.lower()}'
+        return f"{self.name.lower()}"
 
 
 # TODO: Not in use. Can be used to make the generated data more like real data.
@@ -31,7 +31,7 @@ class FixedFrequency(ABC):
 
 
 class Event(ABC):
-    PAGE_LOAD_TIME_THRESHOLD = 90000    # ms
+    PAGE_LOAD_TIME_THRESHOLD = 90000  # ms
     SCREEN_LOAD_TIME_THRESHOLD = 60000  # ms
 
     EVENT_CATEGORY_POOL = [f"ec{i}" for i in range(3)]
@@ -41,42 +41,55 @@ class Event(ABC):
         self.event_name = event_name
         self.platform = platform
         self.basic_info = {
-            'event_name': self.event_name,
-            'event_category': random.choice(self.EVENT_CATEGORY_POOL),
-            'platform': str(self.platform),
+            "event_name": self.event_name,
+            "event_category": random.choice(self.EVENT_CATEGORY_POOL),
+            "platform": str(self.platform),
         }
         self.is_web = platform is Platform.WEB
 
     def generate(self):
-        id_key = 'page_id' if self.is_web else 'screen_id'
-        navigation_id_info = ({}
-                              if bool(random.getrandbits(3))
-                              else {id_key: f"nav-id-{random.randint(0, 5)}"})
-        load_threshold = self.PAGE_LOAD_TIME_THRESHOLD if self.is_web else self.SCREEN_LOAD_TIME_THRESHOLD
-        load_start_end_info = ({}
-                               if random_bool()
-                               else self._random_time_interval('load_start', 'load_end', load_threshold))
+        id_key = "page_id" if self.is_web else "screen_id"
+        navigation_id_info = (
+            {}
+            if bool(random.getrandbits(3))
+            else {id_key: f"nav-id-{random.randint(0, 5)}"}
+        )
+        load_threshold = (
+            self.PAGE_LOAD_TIME_THRESHOLD
+            if self.is_web
+            else self.SCREEN_LOAD_TIME_THRESHOLD
+        )
+        load_start_end_info = (
+            {}
+            if random_bool()
+            else self._random_time_interval("load_start", "load_end", load_threshold)
+        )
         return self.basic_info | navigation_id_info | load_start_end_info
 
     # This time interval can be valid or invalid
     @classmethod
-    def _random_time_interval(cls, start_key: str, end_key: str, threshold: int) -> dict[str, str]:
+    def _random_time_interval(
+        cls, start_key: str, end_key: str, threshold: int
+    ) -> dict[str, str]:
         smaller = random.randint(0, 10)
         greater = random.randint(10, 1000)
         valid_order = random_bool()
         return {
             start_key: str(smaller if valid_order else greater),
-            end_key: str((greater if valid_order else smaller) + random.choice([0, 10, 100, threshold]))
+            end_key: str(
+                (greater if valid_order else smaller)
+                + random.choice([0, 10, 100, threshold])
+            ),
         }
 
     @classmethod
     def _camel_case2snake_case(cls, name: str) -> str:
-        return re.sub(r'(?<!^)(?=[A-Z])', '_', name).lower()
+        return re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
 
 
 class RandomNameEvent(Event):
     def __init__(self, platform: Platform):
-        super().__init__('random_event_' + str(random.randint(1, 10)), platform)
+        super().__init__("random_event_" + str(random.randint(1, 10)), platform)
 
 
 class MobileOnlyEvent(Event, ABC):
@@ -101,11 +114,15 @@ class ConvivaScreenView(MobileOnlyEvent):
         basic_info = super().generate()
         no_previous_exist = random_bool()
         return (
-                basic_info |
-                self._random_time_interval('app_startup_start',
-                                           'app_startup_end',
-                                           self.APP_STARTUP_TIME_THRESHOLD) |
-                ({} if no_previous_exist else {'app_startup_previous_exist': 'previous-name'})
+            basic_info
+            | self._random_time_interval(
+                "app_startup_start", "app_startup_end", self.APP_STARTUP_TIME_THRESHOLD
+            )
+            | (
+                {}
+                if no_previous_exist
+                else {"app_startup_previous_exist": "previous-name"}
+            )
         )
 
 
@@ -138,16 +155,21 @@ class ConvivaApplicationError(Event):
 
 
 class ConvivaVideoEvents(Event):
-    _names = (['c3.sdk.custom_event', 'c3.video.custom_event'] +  # can keep session alive in next 90s
-              ['c3.video.attempt'] +
-              [f"cannot-keep-session-alive-{i}" for i in range(2)])
+    _names = (
+        [
+            "c3.sdk.custom_event",
+            "c3.video.custom_event",
+        ]  # can keep session alive in next 90s
+        + ["c3.video.attempt"]
+        + [f"cannot-keep-session-alive-{i}" for i in range(2)]
+    )
 
     def __init__(self, platform: Platform):
         super().__init__(self._camel_case2snake_case(self.__class__.__name__), platform)
 
     def generate(self):
         basic_info = super().generate()
-        return {**basic_info, 'conviva_video_events_name': random.choice(self._names)}
+        return {**basic_info, "conviva_video_events_name": random.choice(self._names)}
 
 
 class ConvivaNetworkRequest(Event):
@@ -158,13 +180,10 @@ class ConvivaNetworkRequest(Event):
 
     def generate(self):
         basic_info = super().generate()
-        return (
-                basic_info |
-                {
-                    "response_code": random.choice(['100', '200', '300', '400', '500']),
-                    "network_request_duration": str(random.randint(10, 1000) + 1)
-                }
-        )
+        return basic_info | {
+            "response_code": random.choice(["100", "200", "300", "400", "500"]),
+            "network_request_duration": str(random.randint(10, 1000) + 1),
+        }
 
 
 def all_kinds_of_events() -> list[Type[Event]]:
@@ -183,7 +202,9 @@ def all_kinds_of_events() -> list[Type[Event]]:
 
 def collect_event_generators_for(platform: Platform) -> list[Event]:
     platform_event_type = MobileOnlyEvent if platform is Platform.MOB else WebOnlyEvent
-    to_be_excluded_event_type = MobileOnlyEvent if platform_event_type is not MobileOnlyEvent else WebOnlyEvent
+    to_be_excluded_event_type = (
+        MobileOnlyEvent if platform_event_type is not MobileOnlyEvent else WebOnlyEvent
+    )
     result = {
         eg() if issubclass(eg, platform_event_type) else eg(platform)
         for eg in all_kinds_of_events()
@@ -191,8 +212,9 @@ def collect_event_generators_for(platform: Platform) -> list[Event]:
     }
     # For now both platforms have 6 distinct event types, except the random
     # placeholder events.
-    assert len(result) == 6 if platform is Platform.WEB else 7,\
-           "Please fix event data generator: some events don't show up in generated result!"
+    assert (
+        len(result) == 6 if platform is Platform.WEB else 7
+    ), "Please fix event data generator: some events don't show up in generated result!"
     return list(result | {RandomNameEvent(selected_platform) for _ in range(4)})
 
 
@@ -209,24 +231,26 @@ def generate_all_timestamps(count: int):
 
         t = timestamp_of(time_delta)
         if is_simultaneous:
-            logging.info('No timestamp change for %s', t)
+            logging.info("No timestamp change for %s", t)
         yield t
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     output_file = sys.stdout
     if len(sys.argv) < 2 or not sys.argv[1].isdigit():
         logging.error(
-            'Only accept one integer argument that specifies the required number of entries.'
+            "Only accept one integer argument that specifies the required number of entries."
         )
         sys.exit(1)
     else:
         required_count = int(sys.argv[1])
-        sample_data_home = Path(__file__).parent.parent / 'data'
-        default_output_path = sample_data_home / 'app-analytics-metrics-demo-input.jsonl'
+        sample_data_home = Path(__file__).parent.parent / "data"
+        default_output_path = (
+            sample_data_home / "app-analytics-metrics-demo-input.jsonl"
+        )
         output_path = sys.argv[2] if len(sys.argv) >= 3 else default_output_path
         if output_path != "-":
-            output_file = open(output_path, 'w', encoding='utf-8')
+            output_file = open(output_path, "w", encoding="utf-8")
     selected_platform = random.choice([Platform.MOB, Platform.WEB])
     logging.info("Generate data for the %s platform.", selected_platform)
     event_generators = collect_event_generators_for(selected_platform)

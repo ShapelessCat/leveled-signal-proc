@@ -7,12 +7,12 @@ from ..rust_code import RUST_DEFAULT_VALUE, RustCode
 
 @final
 class StateMachineBuilder:
-    def __init__(self,
-                 clock: SignalBase | list[SignalBase],
-                 data: SignalBase | list[SignalBase]):
+    def __init__(
+        self, clock: SignalBase | list[SignalBase], data: SignalBase | list[SignalBase]
+    ):
         self._clock = clock
         self._data = data
-        self._transition_fn = '|_, _| ()'
+        self._transition_fn = "|_, _| ()"
         self._scope_signal: Optional[SignalBase] = None
         self._init_state = RUST_DEFAULT_VALUE
 
@@ -31,9 +31,7 @@ class StateMachineBuilder:
     def build(self):
         if self._scope_signal is None:
             return StateMachine(
-                clock=self._clock,
-                data=self._data,
-                transition_fn=self._transition_fn
+                clock=self._clock, data=self._data, transition_fn=self._transition_fn
             )
         else:
             # When a type in `self._transition_fn` can't be inferred, it seems
@@ -69,12 +67,14 @@ class StateMachineBuilder:
 
 @final
 class StateMachine(BuiltinProcessorComponentBase):
-    def __init__(self,
-                 clock: SignalBase | list[SignalBase] | list[SignalBase | list[SignalBase]],
-                 data: SignalBase | list[SignalBase] | list[SignalBase | list[SignalBase]],
-                 **kwargs):
-        if 'transition_fn' in kwargs:
-            transition_fn = kwargs['transition_fn']
+    def __init__(
+        self,
+        clock: SignalBase | list[SignalBase] | list[SignalBase | list[SignalBase]],
+        data: SignalBase | list[SignalBase] | list[SignalBase | list[SignalBase]],
+        **kwargs,
+    ):
+        if "transition_fn" in kwargs:
+            transition_fn = kwargs["transition_fn"]
         else:
             raise ValueError("Currently only support transition_fn")
         rust_processor_name = self.__class__.__name__
@@ -82,5 +82,5 @@ class StateMachine(BuiltinProcessorComponentBase):
         super().__init__(
             name=rust_processor_name,
             node_decl=f"{rust_processor_name}::new({init_state}, {transition_fn})",
-            upstreams=[clock, data]
+            upstreams=[clock, data],
         )

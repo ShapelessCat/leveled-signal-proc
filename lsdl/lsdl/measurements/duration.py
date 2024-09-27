@@ -11,7 +11,7 @@ class DurationTrue(DirectBuiltinMeasurementComponentBase):
         super().__init__(
             name=rust_component_name,
             node_decl=f"{rust_component_name}::default()",
-            upstreams=[input_signal]
+            upstreams=[input_signal],
         )
         self.annotate_type("u64")
 
@@ -23,7 +23,7 @@ class DurationSinceBecomeTrue(DirectBuiltinMeasurementComponentBase):
         super().__init__(
             name=rust_component_name,
             node_decl=f"{rust_component_name}::default()",
-            upstreams=[input_signal]
+            upstreams=[input_signal],
         )
         self.annotate_type("u64")
 
@@ -35,6 +35,6 @@ class DurationOfCurrentLevel(DirectBuiltinMeasurementComponentBase):
         super().__init__(
             name=rust_component_name,
             node_decl=f"{rust_component_name}::default()",
-            upstreams=[input_signal]
+            upstreams=[input_signal],
         )
         self.annotate_type("u64")

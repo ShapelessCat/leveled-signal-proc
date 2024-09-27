@@ -11,6 +11,6 @@ class LinearChange(DirectBuiltinMeasurementComponentBase):
         super().__init__(
             name=rust_component_name,
             node_decl=f"{rust_component_name}::default()",
-            upstreams=[input_signal]
+            upstreams=[input_signal],
         )
         self.annotate_type("f64")

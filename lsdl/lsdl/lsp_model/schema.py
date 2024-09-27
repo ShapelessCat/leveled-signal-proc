@@ -88,7 +88,9 @@ class Vector(TypeWithLiteralValue):
     # @override
     def render_rust_const(self, val, _need_owned: bool = True) -> RustCode:
         if isinstance(self._element_type, TypeWithLiteralValue):
-            typed_const_elements = ", ".join([self._element_type.render_rust_const(v) for v in val])
+            typed_const_elements = ", ".join(
+                [self._element_type.render_rust_const(v) for v in val]
+            )
             return f"vec![{typed_const_elements}]"
         else:
             raise Exception("Not a vector literal!")
@@ -142,29 +144,30 @@ class MappedInputMember(_InputMember):
         return _ClockCompanion(f"{self.name}_clock")
 
     # TODO: move this outside of this class or convert them to static methods!!!
-    def parse(self, type_name, default_value: RustCode = RUST_DEFAULT_VALUE) -> SignalBase:
+    def parse(
+        self, type_name, default_value: RustCode = RUST_DEFAULT_VALUE
+    ) -> SignalBase:
         return self.map(
             bind_var="s",
-            lambda_src=f"s.parse::<{type_name}>().unwrap_or({default_value})"
+            lambda_src=f"s.parse::<{type_name}>().unwrap_or({default_value})",
         ).annotate_type(type_name)
 
     def starts_with(self, other) -> SignalBase:
         from ..processors import Const, make_tuple
+
         if not isinstance(other, LeveledSignalProcessingModelComponentBase):
             other = Const(other)
-        return make_tuple(self, other).map(
-            bind_var="(s, p)",
-            lambda_src="s.starts_with(p)"
-        ).annotate_type("bool")
+        return (
+            make_tuple(self, other)
+            .map(bind_var="(s, p)", lambda_src="s.starts_with(p)")
+            .annotate_type("bool")
+        )
 
     def timestamp(self):
-        return self.map(
-            bind_var="t",
-            lambda_src="t.timestamp()"
-        ).annotate_type("i64")
+        return self.map(bind_var="t", lambda_src="t.timestamp()").annotate_type("i64")
 
 
-_defined_schema: Optional['InputSchemaBase'] = None
+_defined_schema: Optional["InputSchemaBase"] = None
 
 
 class InputSchemaBase(SignalBase):
@@ -195,7 +198,7 @@ class InputSchemaBase(SignalBase):
         ret: dict = {
             "type_name": self.type_name,
             "patch_timestamp_key": self._timestamp_key,
-            "members": {}
+            "members": {},
         }
         for member in self._members:
             member_type = getattr(self, member)
@@ -213,10 +216,7 @@ class InputSchemaBase(SignalBase):
         return ret
 
     def get_description(self):
-        return {
-            "type": "InputSignal",
-            "id": "_clock"
-        }
+        return {"type": "InputSignal", "id": "_clock"}
 
 
 @final
@@ -227,6 +227,7 @@ class _ScopeContext:
 
     def scoped(self, data: SignalBase, clock: SignalBase, default=None) -> SignalBase:
         from ..processors import EdgeTriggeredLatch, SignalMapper
+
         scope_starts = EdgeTriggeredLatch(control=self._scope, data=self._epoch)
         event_starts = EdgeTriggeredLatch(control=clock, data=self._epoch)
         return SignalMapper(
@@ -234,7 +235,7 @@ class _ScopeContext:
             lambda_src=f"""if *sep <= *eep {{ signal.clone() }} else {{
                 {"Default::default()" if default is None else str(default)}
             }}""",
-            upstream=[scope_starts, event_starts, data]
+            upstream=[scope_starts, event_starts, data],
         ).annotate_type(data.get_rust_type_name())
 
 
@@ -247,7 +248,9 @@ class SessionizedInputSchemaBase(InputSchemaBase, ABC):
         self.session_signal = self.create_session_signal()
         self.epoch_signal = self.create_epoch_signal()
         self._sessionized_signals: dict[str, SignalBase] = dict()
-        self._scope_ctx = _ScopeContext(scope_level=self.session_signal, epoch=self.epoch_signal)
+        self._scope_ctx = _ScopeContext(
+            scope_level=self.session_signal, epoch=self.epoch_signal
+        )
 
     @abstractmethod
     def create_session_signal(self) -> SignalBase:
@@ -262,19 +265,21 @@ class SessionizedInputSchemaBase(InputSchemaBase, ABC):
             raw_signal = super().__getattribute__(key)
             raw_signal_clock = raw_signal.clock()
             default_value = getattr(self, key + "_default", None)
-            self._sessionized_signals[key] = self.sessionized(raw_signal,
-                                                              raw_signal_clock,
-                                                              default_value)
+            self._sessionized_signals[key] = self.sessionized(
+                raw_signal, raw_signal_clock, default_value
+            )
         return self._sessionized_signals[key]
 
     def sessionized(self, signal, signal_clock=None, default_value=None):
         if signal_clock is None:
             signal_clock = signal.clock()
-        return self._scope_ctx.scoped(data=signal, clock=signal_clock, default=default_value)
+        return self._scope_ctx.scoped(
+            data=signal, clock=signal_clock, default=default_value
+        )
 
     def __getattr__(self, name: str) -> Optional[SignalBase]:
         if name.startswith(self.SESSIONIZED_PREFIX):
-            actual_key = name[self.SESSIONIZED_PREFIX_SIZE:]
+            actual_key = name[self.SESSIONIZED_PREFIX_SIZE :]
             return self._make_sessionized_input(actual_key)
         else:
             return None
@@ -284,7 +289,9 @@ def named(name: str, inner: _TypeBase = String()) -> MappedInputMember:
     return MappedInputMember(name, inner)
 
 
-def volatile(inner: _TypeBase, default_value: RustCode = RUST_DEFAULT_VALUE) -> _TypeBase:
+def volatile(
+    inner: _TypeBase, default_value: RustCode = RUST_DEFAULT_VALUE
+) -> _TypeBase:
     inner._reset_expr = default_value
     return inner
 
@@ -296,14 +303,14 @@ def get_schema():
 def create_type_model_from_rust_type_name(rust_type: RustCode) -> Optional[_TypeBase]:
     if rust_type == "String":
         return String()
-    elif rust_type[0] in ['i', 'u']:
+    elif rust_type[0] in ["i", "u"]:
         width = int(rust_type[1:])
-        signed = rust_type[0] == 'i'
+        signed = rust_type[0] == "i"
         return Integer(signed, width)
-    elif rust_type[0] == 'f':
+    elif rust_type[0] == "f":
         width = int(rust_type[1:])
         return Float(width)
-    elif rust_type[0] == 'bool':
+    elif rust_type[0] == "bool":
         return Bool()
     else:
         return None

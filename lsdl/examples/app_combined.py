@@ -10,8 +10,12 @@ class InputSignal(InputSchemaBase):
 
     # Define the member of the schemas:
     # Function `named` maps the key in the input data to the member name.
-    video_event = named("unstruct_event_com_conviva_conviva_video_events_1_0_2.name")  # noqa: E221, E501
-    raw_event   = named("unstruct_event_com_conviva_raw_event_1_0_1.name")             # noqa: E221, E501
+    video_event = named(
+        "unstruct_event_com_conviva_conviva_video_events_1_0_2.name"
+    )  # noqa: E221, E501
+    raw_event = named(
+        "unstruct_event_com_conviva_raw_event_1_0_1.name"
+    )  # noqa: E221, E501
 
 
 # Then, let's instantiate the input schema
@@ -34,11 +38,9 @@ attempt_event = (
 
 # Then we use a state machine to match the event pattern ".+", which indicates
 # that we have seen at least 1 attempt event
-has_attempted = StateMachine(
-    clock=attempt_event,
-    data=Const(1),
-    transition_fn="|_, _| 1"
-) > 0
+has_attempted = (
+    StateMachine(clock=attempt_event, data=Const(1), transition_fn="|_, _| 1") > 0
+)
 # Finally we measure the duration since the has_attempt signal becomes true
 has_attempted.measure_duration_since_true().add_metric("timeToFirstAttempt")
 
@@ -60,14 +62,11 @@ player_state = (
 #   1. The player_state is "buffering"
 #   2. The player_state has been "play" before
 #   3. The user is seeking within 5s
-seeking = (input_signal.raw_event == RE_SEEK_F) | \
-          (input_signal.raw_event == RE_SEEK_B)
+seeking = (input_signal.raw_event == RE_SEEK_F) | (input_signal.raw_event == RE_SEEK_B)
 is_buffering = player_state == VE_BUFFER
 is_playing = player_state == VE_PLAY
-(is_buffering &
- is_playing.has_been_true() &
- seeking.has_been_true(duration="5s")) \
-    .measure_duration_since_true() \
-    .add_metric("connectionInducedBufferingTime")
+(
+    is_buffering & is_playing.has_been_true() & seeking.has_been_true(duration="5s")
+).measure_duration_since_true().add_metric("connectionInducedBufferingTime")
 
 print_ir_to_stdout()

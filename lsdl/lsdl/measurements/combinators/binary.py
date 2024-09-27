@@ -7,10 +7,14 @@ from ...rust_code import RustCode
 
 @final
 class BinaryCombinedMeasurement(IndirectBuiltinMeasurementComponentBase):
-    def __init__(self,
-                 bind_var0: RustCode, bind_var1: RustCode, lambda_src: RustCode,
-                 inner0: MeasurementBase,
-                 inner1: MeasurementBase):
+    def __init__(
+        self,
+        bind_var0: RustCode,
+        bind_var1: RustCode,
+        lambda_src: RustCode,
+        inner0: MeasurementBase,
+        inner1: MeasurementBase,
+    ):
         rust_component_name = self.__class__.__name__
         super().__init__(
             name=rust_component_name,

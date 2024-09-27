@@ -8,9 +8,9 @@ start = input_signal.app_startup_start.parse("i32")
 end = input_signal.app_startup_end.parse("i32")
 duration = end - start
 is_valid_app_startup_duration = (
-    (input_signal.app_startup_previous_exist == "") &
-    (start > 0) &
-    (0 < duration < 300_000)
+    (input_signal.app_startup_previous_exist == "")
+    & (start > 0)
+    & (0 < duration < 300_000)
 )
 app_startup_time = If(is_valid_app_startup_duration, duration, Const(-1))
 
@@ -31,26 +31,24 @@ def fold_app_startup_time(scope, method, init=None):
         clock=app_startup_clock,
         init_state=init,
         fold_method=method,
-        scope=scope)
+        scope=scope,
+    )
 
 
 def create_app_startup_metrics_for(scope_signal, scope_name: ScopeName):
     global total_startup_count
     scope = scope_name.name.lower()
-    total_startup_count\
-        .peek()\
-        .scope(scope_signal)\
-        .add_metric(f"life_{scope}_startup_count")
+    total_startup_count.peek().scope(scope_signal).add_metric(
+        f"life_{scope}_startup_count"
+    )
 
-    fold_app_startup_time(
-        scope_signal,
-        "max",
-        init=0
-    ).add_metric(f"life_{scope}_max_startup_duration")
+    fold_app_startup_time(scope_signal, "max", init=0).add_metric(
+        f"life_{scope}_max_startup_duration"
+    )
 
-    fold_app_startup_time(
-        scope_signal, "sum"
-    ).add_metric(f"life_{scope}_startup_duration")
+    fold_app_startup_time(scope_signal, "sum").add_metric(
+        f"life_{scope}_startup_duration"
+    )
 
 
 create_app_startup_metrics_for(session_id, ScopeName.Session)
