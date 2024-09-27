@@ -5,7 +5,8 @@ from .generators import Const, MonotonicSteps, SignalGenerator, SquareWave
 from .latch import EdgeTriggeredLatch, LevelTriggeredLatch
 from .liveness import LivenessChecker
 from .mapper import Cond, If, SignalMapper
-from .state_machine import SlidingWindow, SlidingTimeWindow, StateMachine, StateMachineBuilder
+from .sliding_window import SlidingTimeWindow, SlidingWindow
+from .state_machine import StateMachine, StateMachineBuilder
 
 __all__ = [
     'Accumulator',
