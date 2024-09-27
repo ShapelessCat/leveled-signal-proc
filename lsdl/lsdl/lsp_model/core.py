@@ -1,7 +1,7 @@
 import configparser
 import os
 from abc import ABC
-from typing import Any, Optional, Self, final
+from typing import Any, Optional, Self, final, no_type_check
 
 from ..debug_info import DebugInfo
 from ..rust_code import COMPILER_INFERABLE_TYPE, RustCode
@@ -216,6 +216,7 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         return ret
 
     @final
+    @no_type_check
     def __eq__(self, other) -> "SignalBase":
         return self._bin_op(other, "==", "bool")
 
