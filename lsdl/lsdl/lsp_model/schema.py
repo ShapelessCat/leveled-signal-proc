@@ -127,10 +127,10 @@ class _ClockCompanion(_InputMember):
 
 @final
 class MappedInputMember(_InputMember):
-    def __init__(self, input_key: str, tpe: _TypeBase):
+    def __init__(self, input_key: str, tpe: _TypeBase, volatile_default_value: Optional[RustCode] = None):
         super().__init__(tpe)
         self._input_key = input_key
-        self._reset_expr = self._inner.reset_expr
+        self._reset_expr = volatile_default_value or self._inner.reset_expr
 
     @property
     def reset_expr(self):
@@ -285,8 +285,8 @@ class SessionizedInputSchemaBase(InputSchemaBase, ABC):
             return None
 
 
-def named(name: str, inner: _TypeBase = String()) -> MappedInputMember:
-    return MappedInputMember(name, inner)
+def named(name: str, inner: _TypeBase = String(), *, volatile_default_value: Optional[RustCode] = None) -> MappedInputMember:
+    return MappedInputMember(name, inner, volatile_default_value)
 
 
 def volatile(
