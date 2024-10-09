@@ -1,4 +1,4 @@
-use std::env::args;
+use std::{env, fs, io};
 
 use serde::{Deserialize, Serialize};
 
@@ -11,8 +11,8 @@ pub fn input_iter<InputTy>() -> Result<impl Iterator<Item = InputTy>, anyhow::Er
 where
     InputTy: Deserialize<'static>,
 {
-    let fin = std::fs::File::open(args().nth(1).unwrap()).unwrap();
-    let reader = std::io::BufReader::new(fin);
+    let fin = fs::File::open(env::args().nth(1).unwrap()).unwrap();
+    let reader = io::BufReader::new(fin);
     let input_iter = serde_json::Deserializer::from_reader(reader)
         .into_iter::<InputTy>()
         .filter_map(Result::ok);

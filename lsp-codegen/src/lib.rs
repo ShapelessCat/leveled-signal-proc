@@ -1,6 +1,5 @@
 use context::MacroContext;
 use proc_macro::TokenStream;
-use syn::parse_macro_input;
 
 mod context;
 mod metrics;
@@ -10,13 +9,13 @@ mod schema;
 
 #[proc_macro]
 pub fn should_merge_simultaneous_moments(input: TokenStream) -> TokenStream {
-    let ctx = parse_macro_input!(input as MacroContext);
+    let ctx = syn::parse_macro_input!(input as MacroContext);
     ctx.merge_simultaneous_moments().into()
 }
 
 #[proc_macro]
 pub fn define_input_schema(input: TokenStream) -> TokenStream {
-    let ctx = parse_macro_input!(input as MacroContext);
+    let ctx = syn::parse_macro_input!(input as MacroContext);
     match ctx.expand_input_state_bag() {
         Ok(state_bag) => state_bag.into(),
         Err(err) => err.to_compile_error().into(),
@@ -25,7 +24,7 @@ pub fn define_input_schema(input: TokenStream) -> TokenStream {
 
 #[proc_macro]
 pub fn define_data_logic_nodes(input: TokenStream) -> TokenStream {
-    let ctx = parse_macro_input!(input as MacroContext);
+    let ctx = syn::parse_macro_input!(input as MacroContext);
     match ctx.define_lsp_nodes() {
         Ok(res) => res.into(),
         Err(err) => err.to_compile_error().into(),
@@ -34,7 +33,7 @@ pub fn define_data_logic_nodes(input: TokenStream) -> TokenStream {
 
 #[proc_macro]
 pub fn patch_lsp_nodes(input: TokenStream) -> TokenStream {
-    let ctx = parse_macro_input!(input as MacroContext);
+    let ctx = syn::parse_macro_input!(input as MacroContext);
     match ctx.patch_lsp_nodes() {
         Ok(res) => res.into(),
         Err(err) => err.to_compile_error().into(),
@@ -43,7 +42,7 @@ pub fn patch_lsp_nodes(input: TokenStream) -> TokenStream {
 
 #[proc_macro]
 pub fn impl_data_logic_updates(input: TokenStream) -> TokenStream {
-    let ctx = parse_macro_input!(input as MacroContext);
+    let ctx = syn::parse_macro_input!(input as MacroContext);
     match ctx.impl_nodes_update() {
         Ok(res) => res.into(),
         Err(err) => err.to_compile_error().into(),
@@ -52,7 +51,7 @@ pub fn impl_data_logic_updates(input: TokenStream) -> TokenStream {
 
 #[proc_macro]
 pub fn define_output_schema(input: TokenStream) -> TokenStream {
-    let ctx = parse_macro_input!(input as MacroContext);
+    let ctx = syn::parse_macro_input!(input as MacroContext);
     match ctx.define_output_schema() {
         Ok(res) => res.into(),
         Err(err) => err.to_compile_error().into(),
@@ -61,7 +60,7 @@ pub fn define_output_schema(input: TokenStream) -> TokenStream {
 
 #[proc_macro]
 pub fn define_previous_metrics_bag(input: TokenStream) -> TokenStream {
-    let ctx = parse_macro_input!(input as MacroContext);
+    let ctx = syn::parse_macro_input!(input as MacroContext);
     match ctx.define_previous_metrics_bag() {
         Ok(res) => res.into(),
         Err(err) => err.to_compile_error().into(),
@@ -70,7 +69,7 @@ pub fn define_previous_metrics_bag(input: TokenStream) -> TokenStream {
 
 #[proc_macro]
 pub fn set_previous_metrics_bag_value(input: TokenStream) -> TokenStream {
-    let ctx = parse_macro_input!(input as MacroContext);
+    let ctx = syn::parse_macro_input!(input as MacroContext);
     match ctx.set_previous_metrics_bag_value() {
         Ok(res) => res.into(),
         Err(err) => err.to_compile_error().into(),
@@ -79,37 +78,37 @@ pub fn set_previous_metrics_bag_value(input: TokenStream) -> TokenStream {
 
 #[proc_macro]
 pub fn impl_metrics_measurement(input: TokenStream) -> TokenStream {
-    let ctx = parse_macro_input!(input as MacroContext);
+    let ctx = syn::parse_macro_input!(input as MacroContext);
     ctx.impl_metrics_measuring().into()
 }
 
 #[proc_macro]
 pub fn define_measurement_trigger(input: TokenStream) -> TokenStream {
-    let ctx = parse_macro_input!(input as MacroContext);
+    let ctx = syn::parse_macro_input!(input as MacroContext);
     ctx.define_signal_trigger_measurement_ctx().into()
 }
 
 #[proc_macro]
 pub fn impl_signal_measurement_trigger(input: TokenStream) -> TokenStream {
-    let ctx = parse_macro_input!(input as MacroContext);
+    let ctx = syn::parse_macro_input!(input as MacroContext);
     ctx.impl_signal_triggered_measurement().into()
 }
 
 #[proc_macro]
 pub fn impl_signal_measurement_limit_side_control(input: TokenStream) -> TokenStream {
-    let ctx = parse_macro_input!(input as MacroContext);
+    let ctx = syn::parse_macro_input!(input as MacroContext);
     ctx.impl_measurement_limit_side_control().into()
 }
 
 #[proc_macro]
 pub fn impl_should_output(input: TokenStream) -> TokenStream {
-    let ctx = parse_macro_input!(input as MacroContext);
+    let ctx = syn::parse_macro_input!(input as MacroContext);
     ctx.impl_should_output().into()
 }
 
 #[proc_macro]
 pub fn build_checkpoint(input: TokenStream) -> TokenStream {
-    let ctx = parse_macro_input!(input as MacroContext);
+    let ctx = syn::parse_macro_input!(input as MacroContext);
     ctx.build_checkpoint(quote::quote! { update_context })
         .into()
 }
@@ -137,7 +136,7 @@ impl syn::parse::Parse for MainFnMeta {
 
 #[proc_macro]
 pub fn include_lsp_ir(input: TokenStream) -> TokenStream {
-    let MainFnMeta { id, path } = parse_macro_input!(input as MainFnMeta);
+    let MainFnMeta { id, path } = syn::parse_macro_input!(input as MainFnMeta);
     let real_ir_path = match MacroContext::normalize_ir_path(&path.value()) {
         Ok(path) => path,
         Err(e) => panic!("{}", e.to_string()),
