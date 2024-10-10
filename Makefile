@@ -2,14 +2,19 @@
 
 .DELETE_ON_ERROR:
 
-.PHONY: regression run-regression clean-checkpoints
+.PHONY: regression rm-checkpoints .run-regression 
 
-regression: clean-checkpoints run-regression clean-checkpoints
+regression: rm-checkpoints .run-regression rm-checkpoints
 
 rm-checkpoints:
 	rm -f ./demos/*/*checkpoint*.json
 
-run-regression:
+# Since no syntax for declaring a private target in a Makefile, I prefix the
+# name with a dot, which is similar to the by default hidden files in *nix
+# filesystems.
+
+# Private target
+.run-regression:
 	cargo clean
 
 	cargo build
