@@ -102,7 +102,7 @@ class _InputMember(SignalBase, ABC):
         tpe._parent = self
         self._inner = tpe
         self._name = name
-        self._reset_expr = None
+        self._reset_expr: Optional[RustCode] = None
 
     @property
     def name(self) -> str:
@@ -127,7 +127,12 @@ class _ClockCompanion(_InputMember):
 
 @final
 class MappedInputMember(_InputMember):
-    def __init__(self, input_key: str, tpe: SignalDataTypeBase, volatile_default_value: Optional[RustCode] = None):
+    def __init__(
+        self,
+        input_key: str,
+        tpe: SignalDataTypeBase,
+        volatile_default_value: Optional[RustCode] = None,
+    ):
         super().__init__(tpe)
         self._input_key = input_key
         self._reset_expr = volatile_default_value or self._inner.reset_expr
@@ -285,7 +290,12 @@ class SessionizedInputSchemaBase(InputSchemaBase, ABC):
             return None
 
 
-def named(name: str, inner: SignalDataTypeBase = String(), *, volatile_default_value: Optional[RustCode] = None) -> MappedInputMember:
+def named(
+    name: str,
+    inner: SignalDataTypeBase = String(),
+    *,
+    volatile_default_value: Optional[RustCode] = None,
+) -> MappedInputMember:
     return MappedInputMember(name, inner, volatile_default_value)
 
 
@@ -300,7 +310,9 @@ def get_schema():
     return _defined_schema
 
 
-def create_type_model_from_rust_type_name(rust_type: RustCode) -> Optional[SignalDataTypeBase]:
+def create_type_model_from_rust_type_name(
+    rust_type: RustCode,
+) -> Optional[SignalDataTypeBase]:
     if rust_type == "String":
         return String()
     elif rust_type[0] in ["i", "u"]:
