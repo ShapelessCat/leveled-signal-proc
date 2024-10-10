@@ -55,7 +55,7 @@ pub struct UpdateContext<'a, InputIter: Iterator> {
     merge_simultaneous_moments: bool,
 }
 
-impl<'a, InputIter: Iterator> UpdateContext<'a, InputIter> {
+impl<InputIter: Iterator> UpdateContext<'_, InputIter> {
     pub fn offset(&self) -> usize {
         self.iter.offset()
     }
