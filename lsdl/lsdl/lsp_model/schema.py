@@ -1,12 +1,12 @@
 import json
 from abc import ABC, abstractmethod
-from typing import Optional, final
+from typing import Optional, final, override
 
 from .core import LeveledSignalProcessingModelComponentBase, SignalBase
 from ..rust_code import INPUT_SIGNAL_BAG, RUST_DEFAULT_VALUE, RustCode
 
 
-class _TypeBase(LeveledSignalProcessingModelComponentBase, ABC):
+class SignalDataTypeBase(LeveledSignalProcessingModelComponentBase, ABC):
     def __init__(self, rust_type: RustCode):
         super().__init__(rust_type)
         self._reset_expr: Optional[RustCode] = None
@@ -25,14 +25,14 @@ class _TypeBase(LeveledSignalProcessingModelComponentBase, ABC):
             raise e
 
 
-class TypeWithLiteralValue(_TypeBase, ABC):
+class TypeWithLiteralValue(SignalDataTypeBase, ABC):
     @abstractmethod
     def render_rust_const(self, val, need_owned: bool = True) -> RustCode:
         raise NotImplementedError()
 
 
 @final
-class DateTime(_TypeBase):
+class DateTime(SignalDataTypeBase):
     def __init__(self, timezone: RustCode = "Utc"):
         super().__init__(f"chrono::DateTime<chrono::{timezone}>")
 
@@ -42,7 +42,7 @@ class String(TypeWithLiteralValue):
     def __init__(self):
         super().__init__("String")
 
-    # @override
+    @override
     def render_rust_const(self, val, need_owned: bool = True) -> RustCode:
         s = json.dumps(val)
         return f"{s}.to_string()" if need_owned else s
@@ -53,7 +53,7 @@ class Bool(TypeWithLiteralValue):
     def __init__(self):
         super().__init__("bool")
 
-    # @override
+    @override
     def render_rust_const(self, val, _need_owned: bool = True) -> RustCode:
         return "true" if val else "false"
 
@@ -64,7 +64,7 @@ class Integer(TypeWithLiteralValue):
         type_prefix = "i" if signed else "u"
         super().__init__(f"{type_prefix}{width}")
 
-    # @override
+    @override
     def render_rust_const(self, val, _need_owned: bool = True) -> RustCode:
         return str(val) + self.get_rust_type_name()
 
@@ -74,18 +74,18 @@ class Float(TypeWithLiteralValue):
     def __init__(self, width=64):
         super().__init__(f"f{width}")
 
-    # @override
+    @override
     def render_rust_const(self, val, _need_owned: bool = True) -> RustCode:
         return str(val) + self.get_rust_type_name()
 
 
 @final
 class Vector(TypeWithLiteralValue):
-    def __init__(self, element_type: _TypeBase):
+    def __init__(self, element_type: SignalDataTypeBase):
         super().__init__(f"Vec<{element_type.get_rust_type_name()}>")
         self._element_type = element_type
 
-    # @override
+    @override
     def render_rust_const(self, val, _need_owned: bool = True) -> RustCode:
         if isinstance(self._element_type, TypeWithLiteralValue):
             typed_const_elements = ", ".join(
@@ -97,7 +97,7 @@ class Vector(TypeWithLiteralValue):
 
 
 class _InputMember(SignalBase, ABC):
-    def __init__(self, tpe: _TypeBase, name=""):
+    def __init__(self, tpe: SignalDataTypeBase, name=""):
         super().__init__(tpe.get_rust_type_name())
         tpe._parent = self
         self._inner = tpe
@@ -127,7 +127,7 @@ class _ClockCompanion(_InputMember):
 
 @final
 class MappedInputMember(_InputMember):
-    def __init__(self, input_key: str, tpe: _TypeBase, volatile_default_value: Optional[RustCode] = None):
+    def __init__(self, input_key: str, tpe: SignalDataTypeBase, volatile_default_value: Optional[RustCode] = None):
         super().__init__(tpe)
         self._input_key = input_key
         self._reset_expr = volatile_default_value or self._inner.reset_expr
@@ -186,7 +186,7 @@ class InputSchemaBase(SignalBase):
             item = self.__getattribute__(item_name)
             # There won't be members as `ClockCompanion`s in the source code of
             # an `InputSchemaBase` instance, therefore we don't try to handle it here.
-            if isinstance(item, _TypeBase):
+            if isinstance(item, SignalDataTypeBase):
                 item = MappedInputMember(input_key=item_name, tpe=item)
             if isinstance(item, MappedInputMember):
                 item.name = item_name
@@ -285,13 +285,13 @@ class SessionizedInputSchemaBase(InputSchemaBase, ABC):
             return None
 
 
-def named(name: str, inner: _TypeBase = String(), *, volatile_default_value: Optional[RustCode] = None) -> MappedInputMember:
+def named(name: str, inner: SignalDataTypeBase = String(), *, volatile_default_value: Optional[RustCode] = None) -> MappedInputMember:
     return MappedInputMember(name, inner, volatile_default_value)
 
 
 def volatile(
-    inner: _TypeBase, default_value: RustCode = RUST_DEFAULT_VALUE
-) -> _TypeBase:
+    inner: SignalDataTypeBase, default_value: RustCode = RUST_DEFAULT_VALUE
+) -> SignalDataTypeBase:
     inner._reset_expr = default_value
     return inner
 
@@ -300,7 +300,7 @@ def get_schema():
     return _defined_schema
 
 
-def create_type_model_from_rust_type_name(rust_type: RustCode) -> Optional[_TypeBase]:
+def create_type_model_from_rust_type_name(rust_type: RustCode) -> Optional[SignalDataTypeBase]:
     if rust_type == "String":
         return String()
     elif rust_type[0] in ["i", "u"]:
