@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$comment": "InputSignalBag schema",
+  "title": "InputSignalBag",
+  "type": "object",
+  "properties": {
+    "fundamental": { "$ref": "#/$defs/fundamental" },
+    "encoded_fps": { "$ref": "#/$defs/encoded_fps" },
+    "inferred_rendered_fps": { "$ref": "#/$defs/inferred_rendered_fps" },
+    "currency": { "$ref": "#/$defs/currency" }
+  },
+  "$defs": {
+    "fundamental": {
+      "type": "object",
+      "properties": {
+        "event_name": {
+          "$ref": "#/$defs/event_name"
+        },
+        "event_category": {
+          "$ref": "#/$defs/event_name"
+        },
+        "inner": {
+          "$ref": "#/$defs/inner"
+        }
+      }
+    },
+
+    "event_name": {
+      "type": "string"
+    },
+
+    "event_category": {
+      "type": "string"
+    },
+
+    "inner": {
+      "type": "object",
+      "properties": {
+        "test": {
+          "$ref": "#/$defs/test"
+        }
+      }
+    },
+
+    "test": {
+      "type": "number"
+    },
+
+    "encoded_fps": {
+      "$comment": "test comment",
+      "type": "number"
+    },
+
+    "inferred_rendered_fps": {
+      "type": "number"
+    },
+
+    "currency": { "enum": [ "USD", "GBP" ] }
+  }
+}
