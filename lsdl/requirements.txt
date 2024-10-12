@@ -1,7 +1,10 @@
+# Required
 build
-ipython
 packaging
-pytimeparse
-PyYAML
 setuptools
 wheel
+
+# Optional
+black
+ipython
+mypy
