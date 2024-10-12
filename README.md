@@ -10,8 +10,8 @@ The experimental time-state analytics platform written in Rust.
   - If you use _pyenv_, you can:
 
     ```shell
-    pyenv install -v 3.12.4
-    pyenv virtualenv 3.12.4 lsdl
+    pyenv install -v 3.12.6
+    pyenv virtualenv 3.12.6 lsdl
 
     pyenv activate lsdl
 
