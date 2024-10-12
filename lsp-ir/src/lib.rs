@@ -22,9 +22,17 @@ impl Default for SignalBehavior {
 }
 
 #[derive(Deserialize, Serialize, Clone)]
+pub struct EnumVariantInfo {
+    pub variant_name: String,
+    pub input_value: String,
+}
+
+#[derive(Deserialize, Serialize, Clone)]
 pub struct SchemaField {
     #[serde(rename = "type")]
     pub type_name: String,
+    #[serde(default)]
+    pub enum_variants: Vec<EnumVariantInfo>,
     pub clock_companion: String,
     pub input_key: String,
     #[serde(default)]

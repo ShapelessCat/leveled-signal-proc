@@ -1,7 +1,9 @@
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
 
-use lsp_ir::{SchemaField, SignalBehavior};
+use lsp_ir::{EnumVariantInfo, SchemaField, SignalBehavior};
+
+use heck::ToUpperCamelCase;
 
 use crate::MacroContext;
 
@@ -12,8 +14,11 @@ impl MacroContext {
         schema: &SchemaField,
     ) -> Result<TokenStream2, syn::Error> {
         let field_id = syn::Ident::new(id, self.span());
-        let type_name: syn::Type =
-            syn::parse_str(&schema.type_name).map_err(self.map_lsdl_error(schema))?;
+        let type_name: syn::Type = if schema.enum_variants.is_empty() {
+            syn::parse_str(&schema.type_name).map_err(self.map_lsdl_error(schema))?
+        } else {
+            syn::parse_str(&id.to_upper_camel_case()).map_err(self.map_lsdl_error(schema))?
+        };
         let clock_companion = syn::Ident::new(&schema.clock_companion, self.span());
         let item_impl = quote! {
             pub #field_id: #type_name,
@@ -28,8 +33,11 @@ impl MacroContext {
         schema: &SchemaField,
     ) -> Result<TokenStream2, syn::Error> {
         let field_id = syn::Ident::new(id, self.span());
-        let type_name: syn::Type =
-            syn::parse_str(&schema.type_name).map_err(self.map_lsdl_error(schema))?;
+        let type_name: syn::Type = if schema.enum_variants.is_empty() {
+            syn::parse_str(&schema.type_name).map_err(self.map_lsdl_error(schema))?
+        } else {
+            syn::parse_str(&id.to_upper_camel_case()).map_err(self.map_lsdl_error(schema))?
+        };
         let input_key = schema.input_key.as_str();
         let item_impl = quote! {
             #[serde(rename = #input_key)]
@@ -68,6 +76,61 @@ impl MacroContext {
         Ok(item_impl)
     }
 
+    fn expand_enum_types(&self) -> Result<TokenStream2, syn::Error> {
+        let schema = &self.get_ir_data().schema;
+
+        let enum_defs = schema
+            .members
+            .iter()
+            .filter(|(_, v)| !v.enum_variants.is_empty())
+            .map(|(k, v)| self.build_enum(k, &v.enum_variants));
+
+        Ok(quote! {
+            #(#enum_defs)*
+        })
+    }
+
+    fn build_enum(&self, name: &str, variants_info: &[EnumVariantInfo]) -> TokenStream2 {
+        let name = syn::Ident::new(&name.to_upper_camel_case(), self.span());
+        let attributes = variants_info.iter().map(
+            |EnumVariantInfo {
+                 input_value, ..
+             }| {
+                quote! { #[serde(rename = #input_value)] }
+            },
+        );
+        let variants = variants_info.iter().map(
+            |EnumVariantInfo {
+                 variant_name, ..
+             }| { syn::Ident::new(variant_name, self.span()) },
+        );
+        let match_branches = variants_info.iter().map(
+            |EnumVariantInfo {
+                 variant_name,
+                 input_value,
+             }| {
+                let variant = syn::Ident::new(variant_name, self.span());
+                quote! { #name::#variant => #input_value }
+            },
+        );
+        quote! {
+            #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, serde::Serialize, serde::Deserialize)]
+            pub enum #name {
+                #[default]
+                #(#attributes #variants),*
+            }
+
+            impl std::fmt::Display for #name {
+                fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    let repr = match self {
+                        #(#match_branches),*
+                    };
+                    write!(f, "{}", repr)
+                }
+            }
+        }
+    }
+
     pub(super) fn expand_input_state_bag(&self) -> Result<TokenStream2, syn::Error> {
         let schema = &self.get_ir_data().schema;
         let span = &self.span();
@@ -97,7 +160,10 @@ impl MacroContext {
                 .measure_at_event_filter;
             syn::parse_str(predicate)?
         };
+        let enum_defs = self.expand_enum_types()?;
         let item_impl = quote! {
+            #enum_defs
+
             #[derive(Clone, Default, Debug, serde::Serialize, serde::Deserialize)]
             pub struct #type_name {
                 #(#item_impls)*
