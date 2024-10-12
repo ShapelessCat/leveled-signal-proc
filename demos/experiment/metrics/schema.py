@@ -1,4 +1,15 @@
-from lsdl.lsp_model import InputSchemaBase, String, Float
+from typing import final
+
+from lsdl.lsp_model import CStyleEnum, Float, InputSchemaBase, LspEnumBase, String
+
+
+# Customize our StrEnum subtype to regulate the value case issue
+@final
+class Currency(LspEnumBase):
+    Unknown = "Unknown"
+    Cny = "CNY"
+    Euro = "EURO"
+    Usd = "USD"
 
 
 class InputSignal(InputSchemaBase):
@@ -16,6 +27,8 @@ class InputSignal(InputSchemaBase):
 
     encoded_fps = Float()  # noqa: E221
     inferred_rendered_fps = Float()  # noqa: E221
+
+    currency = CStyleEnum(Currency)
 
 
 input_signal = InputSignal()

@@ -1,4 +1,4 @@
-{"timestamp": "2023-10-24 17:44:21.161 UTC", "event_name": "conviva_application_error", "event_category": "ec2", "platform": "mob", "screen_id": "nav-id-3", "encoded_fps": 10}
+{"timestamp": "2023-10-24 17:44:21.161 UTC", "event_name": "conviva_application_error", "event_category": "ec2", "platform": "mob", "screen_id": "nav-id-3", "encoded_fps": 10, "currency": "USD"}
 {"timestamp": "2023-10-24 17:44:54.161 UTC", "event_name": "random_event_8", "event_category": "ec1", "platform": "mob", "inferred_rendered_fps": 8}
 {"timestamp": "2023-10-24 17:44:57.561 UTC", "event_name": "random_event_8", "event_category": "ec2", "platform": "mob", "load_start": "2", "load_end": "891", "inferred_rendered_fps": 2}
 {"timestamp": "2023-10-24 17:46:00.461 UTC", "event_name": "random_event_3", "event_category": "ec2", "platform": "mob"}

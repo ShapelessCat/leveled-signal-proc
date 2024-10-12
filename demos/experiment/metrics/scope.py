@@ -1,8 +1,7 @@
 from enum import Enum
 
-from lsdl.processors import SignalFilterBuilder, make_tuple
-
 import const
+from lsdl.processors import SignalFilterBuilder, make_tuple
 from schema import input_signal
 
 _unconditional = (
