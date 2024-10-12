@@ -1,4 +1,4 @@
-from typing import Self, Optional, final
+from typing import Optional, Self, final
 
 from ..lsp_model.core import SignalBase
 from ..lsp_model.schema import MappedInputMember

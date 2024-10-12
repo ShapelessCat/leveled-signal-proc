@@ -1,8 +1,8 @@
 from abc import ABC
 
+from ..rust_code import COMPILER_INFERABLE_TYPE, NAMESPACE_OP, RustCode
 from .core import LeveledSignalProcessingModelComponentBase, MeasurementBase, SignalBase
 from .schema import create_type_model_from_rust_type_name
-from ..rust_code import COMPILER_INFERABLE_TYPE, NAMESPACE_OP, RustCode
 
 
 def _make_assign_fresh_component_closure():

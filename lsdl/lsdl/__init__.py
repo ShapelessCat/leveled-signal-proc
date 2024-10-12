@@ -1,6 +1,4 @@
-from . import lsp_model
-from . import measurements
-from . import processors
+from . import lsp_model, measurements, processors
 from .config import measurement_config, processing_config
 from .ir import print_ir_to_stdout
 from .rust_code import RustCode

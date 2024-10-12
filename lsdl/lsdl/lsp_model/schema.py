@@ -1,9 +1,10 @@
 import json
 from abc import ABC, abstractmethod
+from enum import StrEnum
 from typing import Optional, final, override
 
-from .core import LeveledSignalProcessingModelComponentBase, SignalBase
 from ..rust_code import INPUT_SIGNAL_BAG, RUST_DEFAULT_VALUE, RustCode
+from .core import LeveledSignalProcessingModelComponentBase, SignalBase
 
 
 class SignalDataTypeBase(LeveledSignalProcessingModelComponentBase, ABC):
@@ -79,6 +80,45 @@ class Float(TypeWithLiteralValue):
         return str(val) + self.get_rust_type_name()
 
 
+class LspEnumBase(StrEnum):
+    def __str__(self) -> str:
+        # Assume the `self.__class__.__name__` is upper camel case.
+        # This should be true if we follow Python naming conventions.
+        return f"{self.__class__.__name__}::{LspEnumBase.upper_camel_case(self.name)}"
+
+    @classmethod
+    def variants_info(cls) -> list[dict[str, str]]:
+        """Generate IR for the variants of current enum"""
+        return [
+            {
+                "variant_name": LspEnumBase.upper_camel_case(v.name),
+                "input_value": v.value,
+            }
+            for v in cls
+        ]
+
+    @staticmethod
+    def upper_camel_case(python_identifier: str) -> str:
+        return "".join(seg.lower().capitalize() for seg in python_identifier.split("_"))
+
+
+@final
+class CStyleEnum(TypeWithLiteralValue):
+    def __init__(self, python_str_enum: LspEnumBase):
+        super().__init__(python_str_enum.__name__)
+        self.str_enum_type = python_str_enum
+
+    @override
+    def render_rust_const(self, val: RustCode, _need_owned: bool = True) -> RustCode:
+        maybe_variant = self.str_enum_type(val)
+        if maybe_variant in self.str_enum_type:
+            return str(maybe_variant)
+        else:
+            raise ValueError(
+                f"Value {val} should be a variant of {self.get_rust_type_name()}: [{", ".join(v.value for v in self.str_enum_type)}]"
+            )
+
+
 @final
 class Vector(TypeWithLiteralValue):
     def __init__(self, element_type: SignalDataTypeBase):
@@ -100,9 +140,13 @@ class _InputMember(SignalBase, ABC):
     def __init__(self, tpe: SignalDataTypeBase, name=""):
         super().__init__(tpe.get_rust_type_name())
         tpe._parent = self
-        self._inner = tpe
+        self._signal_data_type = tpe
         self._name = name
         self._reset_expr: Optional[RustCode] = None
+
+    @property
+    def signal_data_type(self) -> SignalDataTypeBase:
+        return self._signal_data_type
 
     @property
     def name(self) -> str:
@@ -135,7 +179,7 @@ class MappedInputMember(_InputMember):
     ):
         super().__init__(tpe)
         self._input_key = input_key
-        self._reset_expr = volatile_default_value or self._inner.reset_expr
+        self._reset_expr = volatile_default_value or self.signal_data_type.reset_expr
 
     @property
     def reset_expr(self):
@@ -184,7 +228,7 @@ class InputSchemaBase(SignalBase):
         # to the codegen result struct of this class, and the generated struct name should
         # be the value of `self.type_name`.
         super().__init__("u64")
-        self._members = []
+        self._member_names = []
         if "_timestamp_key" not in self.__dir__():
             self._timestamp_key = "timestamp"
         for item_name in self.__dir__():
@@ -196,7 +240,7 @@ class InputSchemaBase(SignalBase):
             if isinstance(item, MappedInputMember):
                 item.name = item_name
                 self.__setattr__(item_name, item)
-                self._members.append(item_name)
+                self._member_names.append(item_name)
         _defined_schema = self
 
     def to_dict(self) -> dict:
@@ -205,18 +249,23 @@ class InputSchemaBase(SignalBase):
             "patch_timestamp_key": self._timestamp_key,
             "members": {},
         }
-        for member in self._members:
-            member_type = getattr(self, member)
-            ret["members"][member] = {
-                "type": member_type.get_rust_type_name(),
-                "clock_companion": member_type.clock().name,
-                "input_key": member_type.get_input_key(),
-                "debug_info": member_type.debug_info.to_dict(),
+        for name in self._member_names:
+            member: MappedInputMember = getattr(self, name)
+            ret["members"][name] = {
+                "type": member.get_rust_type_name(),
+                "clock_companion": member.clock().name,
+                "input_key": member.get_input_key(),
+                "debug_info": member.debug_info.to_dict(),
             }
-            if member_type.reset_expr is not None:
-                ret["members"][member]["signal_behavior"] = {
+            if isinstance(enum := member.signal_data_type, CStyleEnum):
+                ret["members"][name][
+                    "enum_variants"
+                ] = enum.str_enum_type.variants_info()
+                # ret["members"][name]["enum_variants"] = enum.variants
+            if member.reset_expr is not None:
+                ret["members"][name]["signal_behavior"] = {
                     "name": "Reset",
-                    "default_expr": member_type.reset_expr,
+                    "default_expr": member.reset_expr,
                 }
         return ret
 

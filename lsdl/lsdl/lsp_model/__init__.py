@@ -1,14 +1,28 @@
 from .core import LeveledSignalProcessingModelComponentBase, MeasurementBase, SignalBase
-from .schema import InputSchemaBase, SessionizedInputSchemaBase, volatile, named
-from .schema import String, Integer, Bool, DateTime, Float, Vector
+from .schema import (
+    Bool,
+    CStyleEnum,
+    DateTime,
+    Float,
+    InputSchemaBase,
+    Integer,
+    LspEnumBase,
+    SessionizedInputSchemaBase,
+    String,
+    Vector,
+    named,
+    volatile,
+)
 
 __all__ = [
     "Bool",
+    "CStyleEnum",
     "DateTime",
     "Float",
     "InputSchemaBase",
     "Integer",
     "LeveledSignalProcessingModelComponentBase",
+    "LspEnumBase",
     "MeasurementBase",
     "SessionizedInputSchemaBase",
     "SignalBase",

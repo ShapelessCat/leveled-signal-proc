@@ -111,8 +111,8 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         `duration` can be either an integer as number of nanoseconds or a string of "<value><unit>".
         For example, "100ms", "2h", etc...
         """
-        from .internal import normalize_duration
         from ..processors import Const, LevelTriggeredLatch
+        from .internal import normalize_duration
 
         return LevelTriggeredLatch(
             data=Const(True), control=self, forget_duration=normalize_duration(duration)
@@ -129,8 +129,8 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         `duration` can be either an integer as number of nanoseconds or a string of "<value><unit>".
         For example, "100ms", "2h", etc...
         """
-        from .internal import normalize_duration
         from ..processors import Const, EdgeTriggeredLatch
+        from .internal import normalize_duration
 
         return EdgeTriggeredLatch(
             control=self, data=Const(True), forget_duration=normalize_duration(duration)
@@ -162,8 +162,8 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
     def prior_value(
         self, clock: Optional["SignalBase"] = None, scope: Optional["SignalBase"] = None
     ) -> "SignalBase":
-        from .schema import MappedInputMember
         from ..processors import StateMachineBuilder
+        from .schema import MappedInputMember
 
         if clock is None:
             if isinstance(self, MappedInputMember):

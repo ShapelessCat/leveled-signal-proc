@@ -1,4 +1,4 @@
-from inspect import stack, getframeinfo
+from inspect import getframeinfo, stack
 from pathlib import Path
 from typing import final
 
