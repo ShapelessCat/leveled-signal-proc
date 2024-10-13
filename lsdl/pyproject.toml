@@ -33,3 +33,6 @@ packages = ["lsdl", "lsdl.lsp_model", "lsdl.processors", "lsdl.measurements", "l
 "lsdl.lsp_model" = ["rust_keywords.ini"]
 ## This also works:
 # lsdl = ["lsp_model/rust_keywords.ini"]
+
+[tool.isort]
+profile = "black"
