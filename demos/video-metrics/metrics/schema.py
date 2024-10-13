@@ -1,4 +1,4 @@
-from lsdl.lsp_model import Integer, SessionizedInputSchemaBase, String, named
+from lsdl.lsp_model import Integer, SessionizedInputSchemaBase, named
 
 
 class InputSignal(SessionizedInputSchemaBase):
