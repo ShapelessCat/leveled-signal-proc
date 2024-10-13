@@ -1,6 +1,12 @@
-from lsdl.processors import Cond, Const, If, SignalFilterBuilder, time_domain_fold
-
 import const
+from lsdl.processors import (
+    Cond,
+    Const,
+    FoldableOperation,
+    If,
+    SignalFilterBuilder,
+    time_domain_fold,
+)
 from schema import input_signal
 from scope import ScopeName, navigation_id, session_id
 
@@ -39,17 +45,16 @@ _load_time_clock = (
 _total_load_count = _load_time_clock.count_changes()
 
 
-def fold_load_time(scope, method, init=None):
+def fold_load_time(scope, method: FoldableOperation, init=None):
     """Summary a load time related metric in time domain.
 
     Use the `method` to summarize.
     """
-    return time_domain_fold(
+    return time_domain_fold(method)(
         data=_load_time,
         clock=_load_time_clock,
-        init_state=init,
-        fold_method=method,
         scope=scope,
+        init_state=init,
     )
 
 
@@ -57,10 +62,12 @@ def register_load_time_metrics(scope_signal, scope_name: ScopeName):
     """Build and register metrics for load time"""
     scope = scope_name.name.lower()
     _total_load_count.peek().scope(scope_signal).add_metric(f"life_{scope}_load_count")
-    fold_load_time(scope_signal, "max", init=0).add_metric(
+    fold_load_time(scope_signal, FoldableOperation.MAX, init=0).add_metric(
         f"life_{scope}_max_load_duration"
     )
-    fold_load_time(scope_signal, "sum").add_metric(f"life_{scope}_load_duration")
+    fold_load_time(scope_signal, FoldableOperation.SUM).add_metric(
+        f"life_{scope}_load_duration"
+    )
 
 
 register_load_time_metrics(session_id, ScopeName.Session)

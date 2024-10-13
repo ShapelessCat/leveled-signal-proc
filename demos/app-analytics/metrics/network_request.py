@@ -1,8 +1,7 @@
 from enum import Enum
 
-from lsdl.processors import SignalFilterBuilder, time_domain_fold
-
 import const
+from lsdl.processors import FoldableOperation, SignalFilterBuilder, time_domain_fold
 from schema import input_signal
 from scope import ScopeName, navigation_id, session_id
 
@@ -33,7 +32,7 @@ def create_network_request_metrics_for(
     count_with_given_status.peek().scope(scope_signal).add_metric(
         f"life_{scope_and_status}_network_request_count"
     )
-    time_domain_fold(
+    time_domain_fold(FoldableOperation.SUM)(
         data=network_request_duration,
         clock=network_request_with_given_status_clock,
         scope=scope_signal,

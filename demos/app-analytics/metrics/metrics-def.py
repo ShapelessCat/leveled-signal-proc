@@ -1,8 +1,6 @@
 # extra-src: app_startup.py const.py first_video_attempt.py network_request.py
 # extra-src: page_load.py schema.py scope.py start.py user_active_time.py
 
-from lsdl import measurement_config, print_ir_to_stdout
-
 # App Startup
 import app_startup  # noqa: F401
 
@@ -22,9 +20,9 @@ import start  # noqa: F401
 
 # User Active Time
 import user_active_time  # noqa: F401
+from lsdl import measurement_config, print_ir_to_stdout
 
 # End Status
-
 
 
 # TODO: Measurement Policy for 1 min

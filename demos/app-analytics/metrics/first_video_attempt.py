@@ -1,6 +1,5 @@
-from lsdl.processors import Const, SignalFilterBuilder, StateMachineBuilder
-
 import const
+from lsdl.processors import Const, SignalFilterBuilder, StateMachineBuilder
 from schema import input_signal
 from scope import session_id
 

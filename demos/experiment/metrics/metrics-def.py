@@ -1,10 +1,8 @@
 # extra-src: const.py schema.py scope.py first_video_attempt.py
+import scope  # noqa: F401
 from lsdl import measurement_config, print_ir_to_stdout
 from lsdl.processors.generators import Const
 from schema import Currency, input_signal
-
-import scope  # noqa: F401
-
 
 input_signal.peek_timestamp(apply_builtin_formatter=True).add_metric("ts")
 
@@ -44,8 +42,12 @@ encoded_frames.combine("x", "y", "x - y", inferred_rendered_frames).add_metric(
 input_signal.currency.map("v", "v.to_string()").add_metric("currency", "String")
 
 (input_signal.currency == Const(Currency.Cny)).add_metric("is_unknown", "bool")
-(input_signal.currency < Const(Currency.Unknown)).add_metric("currency_order_lt_usd", "bool")
-(input_signal.currency > Const(Currency.Unknown)).add_metric("currency_order_gt_usd", "bool")
+(input_signal.currency < Const(Currency.Unknown)).add_metric(
+    "currency_order_lt_usd", "bool"
+)
+(input_signal.currency > Const(Currency.Unknown)).add_metric(
+    "currency_order_gt_usd", "bool"
+)
 
 measurement_config().enable_measure_for_event().set_measure_at_measurement_true(
     scope.is_session_alive

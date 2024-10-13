@@ -1,5 +1,4 @@
 from lsdl.processors import LivenessChecker
-
 from schema import input_signal
 from scope import ScopeName, navigation_id, session_id
 

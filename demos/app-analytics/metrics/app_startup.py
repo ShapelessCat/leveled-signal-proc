@@ -1,6 +1,11 @@
-from lsdl.processors import Const, If, SignalFilterBuilder, time_domain_fold
-
 import const
+from lsdl.processors import (
+    Const,
+    FoldableOperation,
+    If,
+    SignalFilterBuilder,
+    time_domain_fold,
+)
 from schema import input_signal
 from scope import ScopeName, navigation_id, session_id
 
@@ -24,14 +29,13 @@ app_startup_clock = (
 total_startup_count = app_startup_clock.count_changes()
 
 
-def fold_app_startup_time(scope, method, init=None):
+def fold_app_startup_time(scope, method: FoldableOperation, init=None):
     global app_startup_time, app_startup_clock
-    return time_domain_fold(
+    return time_domain_fold(method)(
         data=app_startup_time,
         clock=app_startup_clock,
-        init_state=init,
-        fold_method=method,
         scope=scope,
+        init_state=init,
     )
 
 
@@ -42,11 +46,11 @@ def create_app_startup_metrics_for(scope_signal, scope_name: ScopeName):
         f"life_{scope}_startup_count"
     )
 
-    fold_app_startup_time(scope_signal, "max", init=0).add_metric(
+    fold_app_startup_time(scope_signal, FoldableOperation.MAX, init=0).add_metric(
         f"life_{scope}_max_startup_duration"
     )
 
-    fold_app_startup_time(scope_signal, "sum").add_metric(
+    fold_app_startup_time(scope_signal, FoldableOperation.SUM).add_metric(
         f"life_{scope}_startup_duration"
     )
 

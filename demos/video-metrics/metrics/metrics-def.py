@@ -1,8 +1,7 @@
 # extra-src: const.py schema.py
+import const
 from lsdl import print_ir_to_stdout, processing_config
 from lsdl.processors import StateMachineBuilder
-
-import const
 from schema import input_signal
 
 # Sessionized states
