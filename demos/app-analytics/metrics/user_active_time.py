@@ -1,7 +1,7 @@
 from lsdl.processors import LivenessChecker
 
 from schema import input_signal
-from scope import ScopeName, session_id, navigation_id
+from scope import ScopeName, navigation_id, session_id
 
 is_user_active = LivenessChecker(
     liveness_clock=input_signal.event_name.clock(),

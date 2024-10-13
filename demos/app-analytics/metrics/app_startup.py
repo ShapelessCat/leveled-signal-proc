@@ -2,7 +2,7 @@ from lsdl.processors import Const, If, SignalFilterBuilder, time_domain_fold
 
 import const
 from schema import input_signal
-from scope import ScopeName, session_id, navigation_id
+from scope import ScopeName, navigation_id, session_id
 
 start = input_signal.app_startup_start.parse("i32")
 end = input_signal.app_startup_end.parse("i32")

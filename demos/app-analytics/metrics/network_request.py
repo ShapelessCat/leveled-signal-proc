@@ -4,7 +4,7 @@ from lsdl.processors import SignalFilterBuilder, time_domain_fold
 
 import const
 from schema import input_signal
-from scope import ScopeName, session_id, navigation_id
+from scope import ScopeName, navigation_id, session_id
 
 ResponseStatus = Enum("ResponseStatus", ["Success", "Failure"])
 
