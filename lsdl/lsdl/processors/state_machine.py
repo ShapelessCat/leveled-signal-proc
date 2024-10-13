@@ -1,4 +1,4 @@
-from typing import Optional, final
+from typing import Optional, Self, final
 
 from ..lsp_model.component_base import BuiltinProcessorComponentBase
 from ..lsp_model.core import SignalBase
@@ -16,19 +16,19 @@ class StateMachineBuilder:
         self._scope_signal: Optional[SignalBase] = None
         self._init_state = RUST_DEFAULT_VALUE
 
-    def init_state(self, init_state: RustCode):
+    def init_state(self, init_state: RustCode) -> Self:
         self._init_state = init_state
         return self
 
-    def transition_fn(self, fn: RustCode):
+    def transition_fn(self, fn: RustCode) -> Self:
         self._transition_fn = fn
         return self
 
-    def scoped(self, scope_signal: SignalBase):
+    def scoped(self, scope_signal: SignalBase) -> Self:
         self._scope_signal = scope_signal
         return self
 
-    def build(self):
+    def build(self) -> SignalBase:
         if self._scope_signal is None:
             return StateMachine(
                 clock=self._clock, data=self._data, transition_fn=self._transition_fn

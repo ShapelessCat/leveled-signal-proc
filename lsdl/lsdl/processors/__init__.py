@@ -1,5 +1,5 @@
 from .accumulator import Accumulator
-from .combinators import make_tuple, time_domain_fold
+from .combinators import FoldableOperation, make_tuple, time_domain_fold
 from .filter import SignalFilterBuilder
 from .generators import Const, MonotonicSteps, SignalGenerator, SquareWave
 from .latch import EdgeTriggeredLatch, LevelTriggeredLatch
@@ -13,6 +13,7 @@ __all__ = [
     "Cond",
     "Const",
     "EdgeTriggeredLatch",
+    "FoldableOperation",
     "If",
     "LevelTriggeredLatch",
     "LivenessChecker",
