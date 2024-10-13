@@ -16,7 +16,7 @@ class StateMachineBuilder:
         self._scope_signal: Optional[SignalBase] = None
         self._init_state = RUST_DEFAULT_VALUE
 
-    def init_state(self, init_state):
+    def init_state(self, init_state: RustCode):
         self._init_state = init_state
         return self
 

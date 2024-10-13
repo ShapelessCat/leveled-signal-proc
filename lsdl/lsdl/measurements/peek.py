@@ -1,7 +1,8 @@
-from typing import final
+from typing import Tuple, final
 
 from ..lsp_model.component_base import DirectBuiltinMeasurementComponentBase
 from ..lsp_model.core import SignalBase
+from ..rust_code import RustCode
 
 
 @final
@@ -27,7 +28,7 @@ class PeekTimestamp(DirectBuiltinMeasurementComponentBase):
         )
         self.annotate_type("u64")
 
-    BUILTIN_DATETIME_FORMATTER = (
+    BUILTIN_DATETIME_FORMATTER: Tuple[RustCode, RustCode] = (
         "nano_seconds",
         """{
             use std::time::{UNIX_EPOCH, Duration};

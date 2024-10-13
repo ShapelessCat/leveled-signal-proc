@@ -1,7 +1,7 @@
 import json
 from abc import ABC, abstractmethod
 from enum import StrEnum
-from typing import Optional, final, override
+from typing import Optional, Type, final, override
 
 from ..rust_code import INPUT_SIGNAL_BAG, RUST_DEFAULT_VALUE, RustCode
 from .core import LeveledSignalProcessingModelComponentBase, SignalBase
@@ -104,7 +104,7 @@ class LspEnumBase(StrEnum):
 
 @final
 class CStyleEnum(TypeWithLiteralValue):
-    def __init__(self, python_str_enum: LspEnumBase):
+    def __init__(self, python_str_enum: Type[LspEnumBase]):
         super().__init__(python_str_enum.__name__)
         self.str_enum_type = python_str_enum
 
@@ -279,16 +279,16 @@ class _ScopeContext:
         self._scope = scope_level
         self._epoch = epoch
 
-    def scoped(self, data: SignalBase, clock: SignalBase, default=None) -> SignalBase:
+    def scoped(
+        self, data: SignalBase, clock: SignalBase, default: RustCode
+    ) -> SignalBase:
         from ..processors import EdgeTriggeredLatch, SignalMapper
 
         scope_starts = EdgeTriggeredLatch(control=self._scope, data=self._epoch)
         event_starts = EdgeTriggeredLatch(control=clock, data=self._epoch)
         return SignalMapper(
             bind_var="(sep, eep, signal)",
-            lambda_src=f"""if *sep <= *eep {{ signal.clone() }} else {{
-                {"Default::default()" if default is None else str(default)}
-            }}""",
+            lambda_src=f"if *sep <= *eep {{ signal.clone() }} else {{ {default} }}",
             upstream=[scope_starts, event_starts, data],
         ).annotate_type(data.get_rust_type_name())
 
@@ -299,8 +299,8 @@ class SessionizedInputSchemaBase(InputSchemaBase, ABC):
 
     def __init__(self, rust_type: RustCode = INPUT_SIGNAL_BAG):
         super().__init__(rust_type)
-        self.session_signal = self.create_session_signal()
-        self.epoch_signal = self.create_epoch_signal()
+        self.session_signal: SignalBase = self.create_session_signal()
+        self.epoch_signal: SignalBase = self.create_epoch_signal()
         self._sessionized_signals: dict[str, SignalBase] = dict()
         self._scope_ctx = _ScopeContext(
             scope_level=self.session_signal, epoch=self.epoch_signal
@@ -314,29 +314,42 @@ class SessionizedInputSchemaBase(InputSchemaBase, ABC):
     def create_epoch_signal(self) -> SignalBase:
         raise NotImplementedError()
 
-    def _make_sessionized_input(self, key: str) -> SignalBase:
-        if key not in self._sessionized_signals:
-            raw_signal = super().__getattribute__(key)
-            raw_signal_clock = raw_signal.clock()
-            default_value = getattr(self, key + "_default", None)
-            self._sessionized_signals[key] = self.sessionized(
-                raw_signal, raw_signal_clock, default_value
-            )
-        return self._sessionized_signals[key]
+    def _make_sessionized_input(self, input_member_name: str) -> SignalBase:
+        if input_member_name not in self._sessionized_signals:
+            raw_signal = super().__getattribute__(input_member_name)
+            if not isinstance(raw_signal, MappedInputMember):
+                raise TypeError(f"{input_member_name} must be from input signal bag")
 
-    def sessionized(self, signal, signal_clock=None, default_value=None):
-        if signal_clock is None:
-            signal_clock = signal.clock()
+            attr = f"{input_member_name}_default"
+            # Don't use `hasattr` and `getattr`, both can potentially trigger
+            # `__getattr__`.  I can modify the below `__getattr__`'s `else`
+            # branch to make it return `None`, which can be a workaround to make
+            # the code here much simpler, but the type hint of `__getattr__`
+            # will become `Optional<SignalBase>` instead of `SignalBase`, which
+            # is not what we expected.
+            default_value: RustCode = (
+                str(self.__getattribute__(attr))
+                if attr in self.__dict__
+                else RUST_DEFAULT_VALUE
+            )
+            self._sessionized_signals[input_member_name] = self._sessionized(
+                raw_signal, default_value
+            )
+        return self._sessionized_signals[input_member_name]
+
+    def _sessionized(
+        self, signal: MappedInputMember, default_value: RustCode
+    ) -> SignalBase:
         return self._scope_ctx.scoped(
-            data=signal, clock=signal_clock, default=default_value
+            data=signal, clock=signal.clock(), default=default_value
         )
 
-    def __getattr__(self, name: str) -> Optional[SignalBase]:
+    def __getattr__(self, name: str) -> SignalBase:
         if name.startswith(self.SESSIONIZED_PREFIX):
             actual_key = name[self.SESSIONIZED_PREFIX_SIZE :]
             return self._make_sessionized_input(actual_key)
         else:
-            return None
+            raise ValueError(f"Signal {name} doesn't exist")
 
 
 def named(

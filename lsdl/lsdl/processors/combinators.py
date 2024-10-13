@@ -1,6 +1,7 @@
 from typing import Optional
 
 from ..lsp_model.core import SignalBase
+from ..rust_code import RustCode
 
 
 def make_tuple(*args: SignalBase) -> SignalBase:
@@ -16,8 +17,8 @@ def time_domain_fold(
     data: SignalBase,
     clock: Optional[SignalBase] = None,
     scope: Optional[SignalBase] = None,
-    fold_method="sum",
-    init_state=None,
+    fold_method: str = "sum",
+    init_state: Optional[RustCode] = None,
 ):
     if clock is None:
         clock = data
@@ -40,6 +41,7 @@ def time_domain_fold(
     elif fold_method == "or":
         fold_method = f"|{lambda_param}| *s || *d"
         init_state = "false" if init_state is None else init_state
+
     builder = StateMachineBuilder(clock=clock, data=data)
 
     if init_state is not None:

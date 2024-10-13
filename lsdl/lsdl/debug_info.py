@@ -1,6 +1,6 @@
 from inspect import getframeinfo, stack
 from pathlib import Path
-from typing import final
+from typing import Any, final
 
 
 @final
@@ -24,7 +24,7 @@ class DebugInfo:
                 self._line = traceback.lineno
                 break
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         return {
             "file": self._file,
             "line": self._line,

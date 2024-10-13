@@ -1,7 +1,7 @@
 import logging
 import re
-from collections import namedtuple
-from typing import Any, Optional, Self, final
+from dataclasses import dataclass
+from typing import Any, Callable, Optional, Self, final
 
 from .lsp_model.component_base import LspComponentBase
 from .lsp_model.core import MeasurementBase, SignalBase
@@ -32,10 +32,15 @@ def _make_processing_configuration():
     return lambda: config
 
 
-processing_config = _make_processing_configuration()
+processing_config: Callable[[], _ProcessingConfiguration] = (
+    _make_processing_configuration()
+)
 
 
-ResetSwitch = namedtuple("ResetSwitch", ["metric_name", "initial_value"])
+@dataclass(frozen=True)
+class ResetSwitch:
+    metric_name: RustCode
+    initial_value: RustCode
 
 
 @final
@@ -219,4 +224,6 @@ def _make_measurement_configuration():
     return lambda: config
 
 
-measurement_config = _make_measurement_configuration()
+measurement_config: Callable[[], _MeasurementConfiguration] = (
+    _make_measurement_configuration()
+)
