@@ -157,6 +157,20 @@ impl MacroContext {
             syn::parse_str(predicate)?
         };
         let enum_defs = self.expand_enum_types()?;
+        let should_measure_body =
+            if let syn::Expr::Closure(syn::ExprClosure { inputs, body, .. }) =
+                &measure_at_event_filter
+            {
+                let should_ignore_inputs =
+                    inputs.iter().all(|arg| matches!(arg, syn::Pat::Wild(..)));
+                if should_ignore_inputs {
+                    quote! { #body }
+                } else {
+                    quote! { (#measure_at_event_filter)(self) }
+                }
+            } else {
+                quote! { (#measure_at_event_filter)(self) }
+            };
         let item_impl = quote! {
             #enum_defs
 
@@ -184,7 +198,7 @@ impl MacroContext {
                     #(#patch_code_impls)*
                 }
                 fn should_measure(&mut self) -> bool {
-                    (#measure_at_event_filter)(self)
+                    #should_measure_body
                 }
             }
         };
