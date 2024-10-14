@@ -17,7 +17,7 @@
           "$ref": "#/$defs/event_name"
         },
         "event_category": {
-          "$ref": "#/$defs/event_name"
+          "$ref": "#/$defs/event_category"
         },
         "inner": {
           "$ref": "#/$defs/inner"
