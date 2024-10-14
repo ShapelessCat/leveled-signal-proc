@@ -21,25 +21,37 @@ impl DerivationInfo {
         let mut state_struct_fields = vec![];
 
         stateful_fields.iter().for_each(|f| {
+            let mut field_builder = {
+                // All the `#[serde(...)]` and `#[patchable]` should be dropped.
+                // The `#[serde(...)]` attributes we can see here are for the source structs, not for the derived structs.
+                let kept_attrs = f.attrs.iter().filter(|attr| { !attr.path().is_ident("serde") && !attr.path().is_ident("patchable") });
+                quote! { #(#kept_attrs)* }
+            };
+            let field_name = f.ident.as_ref();
             let field_type = &f.ty;
-            let is_patchable_field = has_patchable_attr(f);
 
-            if !is_patchable_field {
+            if !has_patchable_attr(f) {
                 kept_types.extend(collect_used_generics(field_type));
-                state_struct_fields.push(quote! { #f });
-            } else if let syn::Type::Path(tp) = field_type {
+                if let Some(name) = field_name {
+                    field_builder.extend( quote! { #name: #field_type });
+                } else {
+                    field_builder.extend( quote! { #field_type });
+                }
+            } else {
+                let syn::Type::Path(tp) = field_type else {
+                    panic!("Current field type must be a type path");
+                };
                 let type_path = to_ident(tp).expect("Only a generic type that can represent a measurement can have a `#[patchable]` attribute");
                 let state_type: syn::Ident = format_ident!("{}State", type_path);
-                let field = if let Some(field_name) = f.ident.as_ref() {
-                    quote! { #field_name: #state_type }
+                if let Some(name) = field_name {
+                    field_builder.extend(quote! { #name: #state_type });
                 } else {
-                    quote! { #state_type }
+                    field_builder.extend(quote! { #state_type });
                 };
-                state_struct_fields.push(field);
                 patchable_type_params.insert(type_path, state_type);
-            } else {
-                panic!("Only accept a type path");
-            }
+            };
+            let field = field_builder;
+            state_struct_fields.push(field);
         });
 
         DerivationInfo {

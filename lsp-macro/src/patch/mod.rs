@@ -123,7 +123,7 @@ fn has_serde_skip_attr(field: &Field) -> bool {
                 .iter()
                 .any(|expr| {
                     if let Expr::Path(ep) = expr {
-                        ep.path.is_ident("skip")
+                        ep.path.is_ident("skip") || ep.path.is_ident("skip_serializing")
                     } else {
                         false
                     }
