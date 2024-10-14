@@ -24,7 +24,12 @@ impl DerivationInfo {
             let mut field_builder = {
                 // All the `#[serde(...)]` and `#[patchable]` should be dropped.
                 // The `#[serde(...)]` attributes we can see here are for the source structs, not for the derived structs.
-                let kept_attrs = f.attrs.iter().filter(|attr| { !attr.path().is_ident("serde") && !attr.path().is_ident("patchable") });
+                let kept_attrs = f
+                    .attrs
+                    .iter()
+                    .filter(|attr|
+                        !attr.path().is_ident("serde") && !attr.path().is_ident("patchable")
+                    );
                 quote! { #(#kept_attrs)* }
             };
             let field_name = f.ident.as_ref();
@@ -41,7 +46,9 @@ impl DerivationInfo {
                 let syn::Type::Path(tp) = field_type else {
                     panic!("Current field type must be a type path");
                 };
-                let type_path = to_ident(tp).expect("Only a generic type that can represent a measurement can have a `#[patchable]` attribute");
+                let type_path = to_ident(tp).expect(
+                    "Only a generic type that can represent a measurement can have a `#[patchable]` attribute"
+                );
                 let state_type: syn::Ident = format_ident!("{}State", type_path);
                 if let Some(name) = field_name {
                     field_builder.extend(quote! { #name: #state_type });

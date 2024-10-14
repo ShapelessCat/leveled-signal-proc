@@ -8,6 +8,7 @@ use lsp_runtime::{Duration, Timestamp};
 #[derive(Clone, Default, Debug, Serialize, Patchable)]
 pub struct DurationOfCurrentLevel<T> {
     current_level_start: Timestamp,
+    #[serde(skip_serializing_if = "Option::is_none")]
     current_level: Option<T>,
 }
 

@@ -92,18 +92,14 @@ impl MacroContext {
 
     fn build_enum(&self, name: &str, variants_info: &[EnumVariantInfo]) -> TokenStream2 {
         let name = syn::Ident::new(&name.to_upper_camel_case(), self.span());
-        let attributes = variants_info.iter().map(
-            |EnumVariantInfo {
-                 input_value, ..
-             }| {
+        let attributes = variants_info
+            .iter()
+            .map(|EnumVariantInfo { input_value, .. }| {
                 quote! { #[serde(rename = #input_value)] }
-            },
-        );
-        let variants = variants_info.iter().map(
-            |EnumVariantInfo {
-                 variant_name, ..
-             }| { syn::Ident::new(variant_name, self.span()) },
-        );
+            });
+        let variants = variants_info
+            .iter()
+            .map(|EnumVariantInfo { variant_name, .. }| syn::Ident::new(variant_name, self.span()));
         let match_branches = variants_info.iter().map(
             |EnumVariantInfo {
                  variant_name,
