@@ -101,12 +101,12 @@ pub struct LsdlSource {
 
 impl<'a, T: AsRef<Path> + ?Sized> From<&'a T> for LsdlSource {
     fn from(value: &'a T) -> Self {
-        let source_file_name = value.as_ref().to_owned();
-        let mut ir_file_name = source_file_name.clone();
-        ir_file_name.set_extension("json");
+        let source_file = value.as_ref().to_owned();
+        let mut ir_file = source_file.clone();
+        ir_file.set_extension("json");
         Self {
-            src_path: source_file_name,
-            out_path: ir_file_name,
+            src_path: source_file,
+            out_path: ir_file,
             lsdl_runtime_dir: env!("CARGO_MANIFEST_DIR").into(),
         }
     }
