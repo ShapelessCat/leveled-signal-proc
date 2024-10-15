@@ -22,7 +22,12 @@
         "inner": {
           "$ref": "#/$defs/inner"
         }
-      }
+      },
+      "required": [
+        "event_name",
+        "event_category",
+        "inner"
+      ]
     },
 
     "event_name": {
@@ -55,6 +60,63 @@
       "type": "number"
     },
 
-    "currency": { "enum": [ "USD", "GBP" ] }
-  }
+    "currency": { "enum": [ "USD", "GBP" ] },
+
+    "i128_num": {
+      "type": "integer",
+      "minimum": -170141183460469231731687303715884105728,
+      "maximum": 170141183460469231731687303715884105727
+    },
+
+    "u128_num": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 340282366920938463463374607431768211455
+    },
+
+    "i64_num": {
+      "type": "integer",
+      "minimum": -9223372036854775808,
+      "maximum": 9223372036854775807
+    },
+
+    "u64_num": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 18446744073709551615
+    },
+
+    "i32_num": {
+      "type": "integer",
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+
+    "u32_num": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4294967295
+    },
+
+    "f32_num": {
+      "type": "number",
+      "minimum": -3.4028235e+38,
+      "maximum": 3.4028235e+38
+    },
+
+    "f64_num": {
+      "type": "number"
+    },
+
+    "date_time_0": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "fundamental",
+    "encoded_fps",
+    "inferred_rendered_fps",
+    "currency"
+  ]
 }
