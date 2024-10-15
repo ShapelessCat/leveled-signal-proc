@@ -11,19 +11,16 @@ class SignalDataTypeBase(LeveledSignalProcessingModelComponentBase, ABC):
     def __init__(self, rust_type: RustCode):
         super().__init__(rust_type)
         self._reset_expr: Optional[RustCode] = None
-        self._parent: Optional[LeveledSignalProcessingModelComponentBase] = None
+        self._schema_entry: Optional[LeveledSignalProcessingModelComponentBase] = None
 
     @property
     def reset_expr(self):
         return self._reset_expr
 
     def get_description(self):
-        try:
-            return super().get_description()
-        except Exception as e:
-            if self._parent is not None:
-                return self._parent.get_description()
-            raise e
+        if self._schema_entry is not None:
+            return self._schema_entry.get_description()
+        raise RuntimeError("This type `SignalDataTypeBase` should always have a corresponding schema entry")
 
 
 class TypeWithLiteralValue(SignalDataTypeBase, ABC):
@@ -139,7 +136,7 @@ class Vector(TypeWithLiteralValue):
 class _InputMember(SignalBase, ABC):
     def __init__(self, tpe: SignalDataTypeBase, name=""):
         super().__init__(tpe.get_rust_type_name())
-        tpe._parent = self
+        tpe._schema_entry = self
         self._signal_data_type = tpe
         self._name = name
         self._reset_expr: Optional[RustCode] = None
