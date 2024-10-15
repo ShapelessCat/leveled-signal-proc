@@ -4,10 +4,10 @@ from enum import StrEnum
 from typing import Optional, Type, final, override
 
 from ..rust_code import INPUT_SIGNAL_BAG, RUST_DEFAULT_VALUE, RustCode
-from .core import LeveledSignalProcessingModelComponentBase, SignalBase
+from .core import LeveledSignalProcessingModelComponentBase, LeveledSignalProcessingModelComponentCore, SignalBase
 
 
-class SignalDataTypeBase(LeveledSignalProcessingModelComponentBase, ABC):
+class SignalDataTypeBase(LeveledSignalProcessingModelComponentCore, ABC):
     def __init__(self, rust_type: RustCode):
         super().__init__(rust_type)
         self._reset_expr: Optional[RustCode] = None
@@ -16,11 +16,6 @@ class SignalDataTypeBase(LeveledSignalProcessingModelComponentBase, ABC):
     @property
     def reset_expr(self):
         return self._reset_expr
-
-    def get_description(self):
-        if self._schema_entry is not None:
-            return self._schema_entry.get_description()
-        raise RuntimeError("This type `SignalDataTypeBase` should always have a corresponding schema entry")
 
 
 class TypeWithLiteralValue(SignalDataTypeBase, ABC):
@@ -252,7 +247,7 @@ class InputSchemaBase(SignalBase):
                 "type": member.get_rust_type_name(),
                 "clock_companion": member.clock().name,
                 "input_key": member.get_input_key(),
-                "debug_info": member.debug_info.to_dict(),
+                "debug_info": member.debug_info,
             }
             if isinstance(enum := member.signal_data_type, CStyleEnum):
                 ret["members"][name][

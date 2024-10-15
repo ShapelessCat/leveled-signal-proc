@@ -7,15 +7,32 @@ from ..debug_info import DebugInfo
 from ..rust_code import COMPILER_INFERABLE_TYPE, RustCode
 
 
-class LeveledSignalProcessingModelComponentBase(ABC):
+class LeveledSignalProcessingModelComponentCore(ABC):
+    """A leveled signal processing model component core class."""
+
+    def __init__(self, rust_type: RustCode):
+        self._rust_type = rust_type
+        self._debug_info = DebugInfo().to_dict()
+
+    @final
+    def get_rust_type_name(self) -> RustCode:
+        """Get the rust declaration for the type of this signal."""
+        return self._rust_type
+    
+    @final
+    @property
+    def debug_info(self) -> dict[str, Any]:
+        return self._debug_info
+
+
+class LeveledSignalProcessingModelComponentBase(LeveledSignalProcessingModelComponentCore, ABC):
     """A leveled signal processing model component base class.
 
     See LSP documentation for details about leveled signal definition.
     """
 
     def __init__(self, rust_type: RustCode):
-        self._rust_type = rust_type
-        self.debug_info = DebugInfo()
+        super().__init__(rust_type)
 
     def add_metric(
         self,
@@ -33,14 +50,10 @@ class LeveledSignalProcessingModelComponentBase(ABC):
         """
         raise NotImplementedError()
 
+    @final
     def annotate_type(self, type_name: RustCode) -> Self:
         self._rust_type = type_name
         return self
-
-    @final
-    def get_rust_type_name(self) -> RustCode:
-        """Get the rust declaration for the type of this signal."""
-        return self._rust_type
 
     def get_description(self) -> dict[str, Any]:
         """Get the description of current component."""
@@ -136,6 +149,7 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
             control=self, data=Const(True), forget_duration=normalize_duration(duration)
         )
 
+    @final
     def moving_average(self, window_size=1, init_value=0) -> "SignalBase":
         from ..processors import SlidingWindow
 

@@ -33,19 +33,6 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
         self._id = _assign_fresh_component_id()
         _components.append(self)
 
-    def __getattribute__(self, __name: str):
-        try:
-            return super().__getattribute__(__name)
-        except AttributeError as e:
-            type_model = create_type_model_from_rust_type_name(
-                self.get_rust_type_name()
-            )
-            if type_model is None:
-                raise e
-            else:
-                type_model._parent = self
-                return getattr(type_model, __name)
-
     def get_description(self):
         return {
             "type": "Component",
@@ -68,7 +55,7 @@ class LspComponentBase(LeveledSignalProcessingModelComponentBase, ABC):
             "upstreams": upstreams,
             "package": self._package,
             "namespace": self._namespace,
-            "debug_info": self.debug_info.to_dict(),
+            "debug_info": self.debug_info,
         }
 
 
