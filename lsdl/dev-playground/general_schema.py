@@ -1,6 +1,7 @@
 
 import json
-from typing import Any, Optional, final
+from time import sleep
+from typing import Any, Optional, Self, final
 
 from lsdl import RustCode
 
@@ -29,20 +30,39 @@ class GeneralInputSchemaBase(SignalBase):
         # to the codegen result struct of this class, and the generated struct name should
         # be the value of `self.type_name`.
         super().__init__("u64")
-        self._top_level_member_names = []
         if "_timestamp_key" not in self.__dir__():
             self._timestamp_key = "timestamp"
+        self._top_level_member_names = []
         for item_name in self.__dir__():
-            item = self.__getattribute__(item_name)
-            # There won't be members as `ClockCompanion`s in the source code of
-            # an `InputSchemaBase` instance, therefore we don't try to handle it here.
-            if isinstance(item, SignalDataTypeBase):
-                item = MappedInputMember(input_key=item_name, tpe=item)
-            if isinstance(item, MappedInputMember):
-                item.name = item_name
-                self.__setattr__(item_name, item)
-                self._top_level_member_names.append(item_name)
+            if item_name not in ["_signal_data_type", "_signal_data_type"]:
+                original_item = self.__getattribute__(item_name)
+                if isinstance(original_item, SignalDataTypeBase | MappedInputMember):
+                    GeneralInputSchemaBase._normalize(self, item_name, original_item)
+                    self._top_level_member_names.append(item_name)
         _defined_nested_schema = self
+    
+    @staticmethod
+    def _normalize(parent: Self | MappedInputMember, input_key: str, node: SignalDataTypeBase | MappedInputMember) -> None:
+        match node:
+            case SignalDataTypeBase():
+                item = MappedInputMember(input_key, tpe=node)
+                item.name = input_key
+                parent.__setattr__(input_key, item)
+                existing_attributes = node.__dir__()
+                for child_item_name in existing_attributes:
+                    if child_item_name not in ["_signal_data_type", "signal_data_type", "_parent"]:
+                        original_child_item = node.__getattribute__(child_item_name)
+                        if isinstance(original_child_item, SignalDataTypeBase | MappedInputMember):
+                            delattr(node, child_item_name)
+                            GeneralInputSchemaBase._normalize(parent=item, input_key=child_item_name, node=original_child_item)
+            case MappedInputMember():
+                node.name = input_key
+                existing_attributes = node.__dir__()
+                for child_item_name in existing_attributes:
+                    if child_item_name not in ["_signal_data_type", "signal_data_type"]:
+                        original_child_item = node.__getattribute__(child_item_name)
+                        if isinstance(original_child_item, SignalDataTypeBase | MappedInputMember):
+                            GeneralInputSchemaBase._normalize(parent=node, input_key=child_item_name, node=original_child_item)
     
     def to_patch_schema(self) -> dict:
         return self.to_dict()
@@ -122,7 +142,6 @@ class GeneralInputSchemaBase(SignalBase):
             for inner_name in member.__dict__:
                 inner_member = member.__getattribute__(inner_name)
                 if isinstance(inner_member, MappedInputMember):
-                    inner_member.name = inner_name  # TODO: move this to the __init__, instead of here!
                     inner_property[inner_name] = { "$ref": f"#/$defs/{inner_name}" }
                     required.append(inner_name)
                     clock_name = inner_member.clock().name
@@ -177,7 +196,7 @@ class GeneralInputSchemaBase(SignalBase):
                 inner_member = member.__getattribute__(inner_name)
                 if isinstance(inner_member, MappedInputMember):
                     inner_property[inner_name] = { "$ref": f"#/$defs/{inner_name}" }
-                    inner_member.name = inner_name
+                    # inner_member.name = inner_name
                     GeneralInputSchemaBase._process_mapped_input_member(inner_member, inner_name, ret)
 
 
@@ -291,38 +310,71 @@ class Currency(LspEnumBase):
 class NestableInputSignal(GeneralInputSchemaBase):
     _timestamp_key = "timestamp"
 
-    fundamental = named("fundamental", Object("Fundamental"))
+    fundamental = Object("Fundamental")
 
-    fundamental.event_name = named("event_name")
-    fundamental.event_category = named("event_category")
+    fundamental.event_name = String()
+    fundamental.event_category = String()
 
-    fundamental.inner = named("inner", Object("Inner"))
-    fundamental.inner.test = named("test", Float())
+    fundamental.inner = Object("Inner")
+    fundamental.inner.test = Float()
 
-    encoded_fps = named("encoded_fps", Float())
-    inferred_rendered_fps = named("inferred_rendered_fps", Float())
+    encoded_fps = Float()
+    inferred_rendered_fps = Float()
 
-    currency = named("currency", CStyleEnum(Currency))
+    currency = CStyleEnum(Currency)
 
-    i8_int = named("i8_int", Integer(signed=True, width=8))
-    u8_int = named("u8_int", Integer(signed=False, width=8))
+    i8_int = Integer(signed=True, width=8)
+    u8_int = Integer(signed=False, width=8)
 
-    i16_int = named("i16_int", Integer(signed=True, width=16))
-    u16_int = named("u16_int", Integer(signed=False, width=16))
+    i16_int = Integer(signed=True, width=16)
+    u16_int = Integer(signed=False, width=16)
 
-    i32_int = named("i32_int", Integer())
-    u32_int = named("u32_int", Integer(signed=False, width=32))
+    i32_int = Integer()
+    u32_int = Integer(signed=False, width=32)
 
-    i64_int = named("i64_int", Integer(signed=True, width=64))
-    u64_int = named("u64_int", Integer(signed=False, width=64))
+    i64_int = Integer(signed=True, width=64)
+    u64_int = Integer(signed=False, width=64)
 
-    i128_int = named("i64_int", Integer(signed=True, width=128))
-    u128_int = named("u64_int", Integer(signed=False, width=128))
+    i128_int = Integer(signed=True, width=128)
+    u128_int = Integer(signed=False, width=128)
 
-    f32_num = named("f32_num", Float(width=32))
-    f64_num = named("f64_num", Float())
+    f32_num = Float(width=32)
+    f64_num = Float()
 
-    data_time_0 = named("date_time_0", DateTime())
+    data_time_0 = DateTime()
+
+#     fundamental = named("fundamental", Object("Fundamental"))
+
+#     fundamental.event_name = named("event_name")
+#     fundamental.event_category = named("event_category")
+
+#     fundamental.inner = named("inner", Object("Inner"))
+#     fundamental.inner.test = named("test", Float())
+
+#     encoded_fps = named("encoded_fps", Float())
+#     inferred_rendered_fps = named("inferred_rendered_fps", Float())
+
+#     currency = named("currency", CStyleEnum(Currency))
+
+#     i8_int = named("i8_int", Integer(signed=True, width=8))
+#     u8_int = named("u8_int", Integer(signed=False, width=8))
+
+#     i16_int = named("i16_int", Integer(signed=True, width=16))
+#     u16_int = named("u16_int", Integer(signed=False, width=16))
+
+#     i32_int = named("i32_int", Integer())
+#     u32_int = named("u32_int", Integer(signed=False, width=32))
+
+#     i64_int = named("i64_int", Integer(signed=True, width=64))
+#     u64_int = named("u64_int", Integer(signed=False, width=64))
+
+#     i128_int = named("i64_int", Integer(signed=True, width=128))
+#     u128_int = named("u64_int", Integer(signed=False, width=128))
+
+#     f32_num = named("f32_num", Float(width=32))
+#     f64_num = named("f64_num", Float())
+
+#     data_time_0 = named("date_time_0", DateTime())
 
 
 if __name__ == "__main__":
