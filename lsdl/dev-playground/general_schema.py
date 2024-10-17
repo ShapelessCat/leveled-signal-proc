@@ -150,9 +150,9 @@ class GeneralInputSchemaBase(SignalBase):
         for name in self._top_level_member_names:
             member: MappedInputMember = getattr(self, name)
             patch_name = f"{name}_patch"
-            properties[patch_name] = { "$ref": f"#/$defs/{patch_name}" }
+            properties[name] = { "$ref": f"#/$defs/{patch_name}" }
             if isinstance(member.signal_data_type, Object):
-                ret["required"].append(patch_name)
+                ret["required"].append(name)
             GeneralInputSchemaBase._process_for_patch_schema(member, patch_name, ret)
         return ret
 
@@ -183,11 +183,11 @@ class GeneralInputSchemaBase(SignalBase):
 
             for inner_name in member.__dict__:
                 inner_member = member.__getattribute__(inner_name)
-                inner_patch_name = f"{inner_name}_patch"
                 if isinstance(inner_member, MappedInputMember):
-                    inner_property[inner_patch_name] = { "$ref": f"#/$defs/{inner_patch_name}" }
+                    inner_patch_name = f"{inner_name}_patch"
+                    inner_property[inner_name] = { "$ref": f"#/$defs/{inner_patch_name}" }
                     if isinstance(inner_member.signal_data_type, Object):
-                        required.append(inner_patch_name)
+                        required.append(inner_name)
                     GeneralInputSchemaBase._process_for_patch_schema(inner_member, inner_patch_name, ret)
 
     def get_description(self):
