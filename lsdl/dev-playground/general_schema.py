@@ -47,11 +47,10 @@ class GeneralInputSchemaBase(SignalBase):
     
     def to_schema(self) -> dict:
         ret: dict = {
-            "$schema": "https://json-schema.org/draft-07/schema",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$comment": "InputSignalBag schema",
             "title": self.type_name,
             "type": "object",
-            "patch_timestamp_key": self._timestamp_key,
             GeneralInputSchemaBase.PROPERTIES_KEY: {
                 "_clock": {
                     "$ref": "#/$def/_clock"
@@ -63,7 +62,6 @@ class GeneralInputSchemaBase(SignalBase):
                     "type": "integer",
                     "minimum": 0,
                     "maximum": 18446744073709551615,
-                    "input_key": "_clock",
                     "debug_info": self.debug_info,
                 },
             },
@@ -73,11 +71,11 @@ class GeneralInputSchemaBase(SignalBase):
 
         for name in self._top_level_member_names:
             member: MappedInputMember = getattr(self, name)
-            properties[member.name] = { "$ref": f"#/$def/{member.name}" }
+            properties[member.name] = { "$ref": f"#/$defs/{member.name}" }
             ret["required"].append(member.name)
             if not isinstance(member.signal_data_type, Object):
                 clock_name = member.clock().name
-                properties[clock_name] =  { "$ref": f"#/$def/{clock_name}" }
+                properties[clock_name] =  { "$ref": f"#/$defs/{clock_name}" }
                 ret["required"].append(clock_name)
             GeneralInputSchemaBase._process_for_schema(member, name, ret)
         return ret
@@ -87,7 +85,6 @@ class GeneralInputSchemaBase(SignalBase):
         defs = ret[GeneralInputSchemaBase.DEFS]
 
         defs[name] = member.signal_data_type.schema_ir | {
-            "input_key": member.get_input_key(),
             "debug_info": member.debug_info,
         }
         if isinstance(enum := member.signal_data_type, CStyleEnum):
@@ -106,12 +103,11 @@ class GeneralInputSchemaBase(SignalBase):
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 18446744073709551615,
-                "input_key": member.get_input_key(),
                 "debug_info": member.debug_info,
             }
         else:
             defs[name]["required"] = []
-            required = defs[name]["required"]
+            required: list[str] = defs[name]["required"]
 
             defs[name][GeneralInputSchemaBase.PROPERTIES_KEY] = {}
             inner_property = defs[name][GeneralInputSchemaBase.PROPERTIES_KEY]
@@ -132,21 +128,32 @@ class GeneralInputSchemaBase(SignalBase):
 
     def to_dict(self) -> dict:
         ret: dict = {
-            "$schema": "https://json-schema.org/draft-07/schema",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$comment": "InputSignalBagPatch schema",
             "title": f"{self.type_name}Patch",
             "type": "object",
-            "patch_timestamp_key": self._timestamp_key,
-            GeneralInputSchemaBase.PROPERTIES_KEY: {},
-            "$defs": {}
+            # "patch_timestamp_key": self._timestamp_key,
+            GeneralInputSchemaBase.PROPERTIES_KEY: {
+                "timestamp": { "$ref": f"#/$defs/timestamp" }
+            },
+            "$defs": {
+                "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            },
+            "required": ["timestamp"],  # TODO: timestamp
         }
 
         properties = ret[GeneralInputSchemaBase.PROPERTIES_KEY]
 
         for name in self._top_level_member_names:
             member: MappedInputMember = getattr(self, name)
-            properties[member.name] = { "$ref": f"#/$def/{member.name}" }
-            GeneralInputSchemaBase._process_for_patch_schema(member, name, ret)
+            patch_name = f"{name}_patch"
+            properties[patch_name] = { "$ref": f"#/$defs/{patch_name}" }
+            if isinstance(member.signal_data_type, Object):
+                ret["required"].append(patch_name)
+            GeneralInputSchemaBase._process_for_patch_schema(member, patch_name, ret)
         return ret
 
     @staticmethod
@@ -154,7 +161,6 @@ class GeneralInputSchemaBase(SignalBase):
         defs = ret[GeneralInputSchemaBase.DEFS]
 
         defs[name] = member.signal_data_type.schema_ir | {
-            "clock_companion": member.clock().name,
             "input_key": member.get_input_key(),
             "debug_info": member.debug_info,
         }
@@ -167,16 +173,22 @@ class GeneralInputSchemaBase(SignalBase):
                 "name": "Reset",
                 "default_expr": member.reset_expr,
             }
-        
+
         if isinstance(member.signal_data_type, Object):
+            defs[name]["required"] = []
+            required: list[str] = defs[name]["required"]
+
             defs[name][GeneralInputSchemaBase.PROPERTIES_KEY] = {}
             inner_property = defs[name][GeneralInputSchemaBase.PROPERTIES_KEY]
+
             for inner_name in member.__dict__:
                 inner_member = member.__getattribute__(inner_name)
+                inner_patch_name = f"{inner_name}_patch"
                 if isinstance(inner_member, MappedInputMember):
-                    inner_property[inner_name] = { "$ref": f"#/$defs/{inner_name}" }
-                    # inner_member.name = inner_name
-                    GeneralInputSchemaBase._process_for_patch_schema(inner_member, inner_name, ret)
+                    inner_property[inner_patch_name] = { "$ref": f"#/$defs/{inner_patch_name}" }
+                    if isinstance(inner_member.signal_data_type, Object):
+                        required.append(inner_patch_name)
+                    GeneralInputSchemaBase._process_for_patch_schema(inner_member, inner_patch_name, ret)
 
     def get_description(self):
         return {"type": "InputSignal", "id": "_clock"}
@@ -290,9 +302,39 @@ class NestableInputSignal(GeneralInputSchemaBase):
 if __name__ == "__main__":
     nestable_input_signal = NestableInputSignal()
 
+    # signal_schema = nestable_input_signal.to_schema()
+    # signal_patch_schema = nestable_input_signal.to_patch_schema()
+
+    # # defs = signal_patch_schema["$defs"] | signal_schema["$defs"]
+    # defs = signal_schema["$defs"]
+    # signal_schema.pop("$defs")
+    # signal_patch_schema.pop("$defs")
+
+    # # input_signal_bag = signal_schema["properties"]
+    # # signal_schema["input_signal_bag"] = "#def/input_signal_bag"
+
+    # # input_signal_patch_bag = signal_schema["properties"]
+    # # signal_patch_schema["input_signal_patch_bag"] = "#def/input_signal_patch_bag"
+
+    # defs = {
+    #     "input_signal_bag": signal_schema,
+    #     "input_signal_bag_patch": signal_patch_schema,
+    # } | defs
+    
+
+    # result = {
+    #     "$schema": "https://json-schema.org/draft/2020-12/schema",
+    #     "$comment": "InputSignalBagPatch and InputSignalBag",
+    #     "$properties": {
+    #         "input_signal_bag": "#/$defs/input_signal_bag",
+    #         "input_signal_bag_patch": "#/$defs/input_signal_bag_patch"
+    #     },
+    #     "$defs": defs
+    # }
+
     result = {
-        "schema": nestable_input_signal.to_schema(),
-        "patch_schema": nestable_input_signal.to_patch_schema()
+        "input_signal_bag": nestable_input_signal.to_schema(),
+        "input_signal_bag_patch": nestable_input_signal.to_patch_schema()
     }
 
     # schema = nestable_input_signal.to_schema()
