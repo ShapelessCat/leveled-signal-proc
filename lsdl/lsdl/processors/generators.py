@@ -8,7 +8,7 @@ from ..lsp_model.schema import (
     Integer,
     LspEnumBase,
     String,
-    TypeWithLiteralValue,
+    WithLiteralValue,
 )
 from ..rust_code import RustCode, RustPrimitiveType
 
@@ -21,7 +21,7 @@ class Const(SignalBase):
         self,
         value,
         need_owned: bool = True,
-        val_type: Optional[TypeWithLiteralValue] = None,
+        val_type: Optional[WithLiteralValue] = None,
     ):
         if isinstance(value, LspEnumBase):
             super().__init__(value.__class__.__name__)
