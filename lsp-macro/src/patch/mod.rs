@@ -52,13 +52,8 @@ pub fn create_state_and_patchable_impl(input: &DeriveInput) -> TokenStream2 {
         );
 
         quote! {
-            const _: () = {
-                use serde as _serde;
-                use lsp_runtime as _lsp_runtime;
-
-                #state_struct_def
-                #patchable_impl
-            };
+            #state_struct_def
+            #patchable_impl
         }
     } else {
         panic!("This `Patchable` derive macro can only be applied on structs");
@@ -79,7 +74,7 @@ fn build_state_struct(
         quote! { <#(#state_struct_type_params),*> { #(#state_struct_fields),* } }
     };
     quote! {
-        #[derive(_serde::Deserialize)]
+        #[derive(serde::Deserialize)]
         pub struct #state_name #state_struct_body
     }
 }
@@ -105,7 +100,7 @@ fn build_patch_impl(
     );
     let patch_method_def = impl_patch_method(stateful_fields);
     quote! {
-        impl #impl_generics _lsp_runtime::signal_api::Patchable
+        impl #impl_generics lsp_runtime::signal_api::Patchable
             for #input_struct_name #type_generics
         #where_clause
         {
@@ -187,9 +182,9 @@ fn build_where_clause(
 ) -> TokenStream2 {
     let bounds = state_struct_type_params.iter().map(|&tpe| {
         if let Some(t) = patchable_type_params.get_by_right(tpe) {
-            quote! { #t: _serde::Serialize + Patchable }
+            quote! { #t: serde::Serialize + Patchable }
         } else {
-            quote! { #tpe: _serde::Serialize + _serde::de::DeserializeOwned }
+            quote! { #tpe: serde::Serialize + serde::de::DeserializeOwned }
         }
     });
     let normalized_input_where_clause = input_where_clause
