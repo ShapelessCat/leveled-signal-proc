@@ -74,7 +74,7 @@ fn build_state_struct(
         quote! { <#(#state_struct_type_params),*> { #(#state_struct_fields),* } }
     };
     quote! {
-        #[derive(serde::Deserialize)]
+        #[derive(::serde::Deserialize)]
         pub struct #state_name #state_struct_body
     }
 }
@@ -100,7 +100,7 @@ fn build_patch_impl(
     );
     let patch_method_def = impl_patch_method(stateful_fields);
     quote! {
-        impl #impl_generics lsp_runtime::signal_api::Patchable
+        impl #impl_generics ::lsp_runtime::signal_api::Patchable
             for #input_struct_name #type_generics
         #where_clause
         {
@@ -182,9 +182,9 @@ fn build_where_clause(
 ) -> TokenStream2 {
     let bounds = state_struct_type_params.iter().map(|&tpe| {
         if let Some(t) = patchable_type_params.get_by_right(tpe) {
-            quote! { #t: serde::Serialize + Patchable }
+            quote! { #t: ::serde::Serialize + ::lsp_runtime::signal_api::Patchable }
         } else {
-            quote! { #tpe: serde::Serialize + serde::de::DeserializeOwned }
+            quote! { #tpe: ::serde::Serialize + ::serde::de::DeserializeOwned }
         }
     });
     let normalized_input_where_clause = input_where_clause
