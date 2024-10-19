@@ -53,15 +53,18 @@ class GeneralInputSchemaBase(SignalBase):
             "type": "object",
             GeneralInputSchemaBase.PROPERTIES_KEY: {
                 "_clock": {
-                    "$ref": "#/$def/_clock"
+                    "$ref": "#/$def/u64"
                 },
             },
             "required": ["_clock"],
             "$defs": {
-                "_clock": {
+                "u64": {  ## For input signal clock
                     "type": "integer",
-                    "minimum": 0,
-                    "maximum": 18446744073709551615,
+                    "x-rust-type": {
+                        "crate": "std",
+                        "version": "*",
+                        "path": f"std::primitive::u64"
+                    },
                     "debug_info": self.debug_info,
                 },
             },
@@ -71,12 +74,18 @@ class GeneralInputSchemaBase(SignalBase):
 
         for name in self._top_level_member_names:
             member: MappedInputMember = getattr(self, name)
-            properties[member.name] = { "$ref": f"#/$defs/{member.name}" }
+            match member.signal_data_type:
+                case Object() | CStyleEnum() | DateTime():
+                    properties[member.name] = { "$ref": f"#/$defs/{member.name}" }
+                case _:
+                    properties[member.name] = { "$ref": f"#/$defs/{member.signal_data_type.get_rust_type_name()}" }
             ret["required"].append(member.name)
+
             if not isinstance(member.signal_data_type, Object):
-                clock_name = member.clock().name
-                properties[clock_name] =  { "$ref": f"#/$defs/{clock_name}" }
-                ret["required"].append(clock_name)
+                clock = member.clock()
+                def_name = clock.signal_data_type.get_rust_type_name()
+                properties[clock.name] =  { "$ref": f"#/$defs/{def_name}" }
+                ret["required"].append(clock.name)
             GeneralInputSchemaBase._process_for_schema(member, name, ret)
         return ret
 
@@ -84,25 +93,34 @@ class GeneralInputSchemaBase(SignalBase):
     def _process_for_schema(member: MappedInputMember, name: str, ret: dict[str, Any]):
         defs = ret[GeneralInputSchemaBase.DEFS]
 
-        defs[name] = member.signal_data_type.schema_ir | {
-            "debug_info": member.debug_info,
-        }
-        if isinstance(enum := member.signal_data_type, CStyleEnum):
-            defs[name][
-                "enum_variants"
-            ] = enum.str_enum_type.variants_info()
-        if member.reset_expr is not None:
-            defs[name]["signal_behavior"] = {
-                "name": "Reset",
-                "default_expr": member.reset_expr,
-            }
-        
+        match member.signal_data_type:
+            case Object() | CStyleEnum() | DateTime():
+                defs[name] = member.signal_data_type.schema_ir | {
+                    "debug_info": member.debug_info,
+                }
+                if isinstance(enum := member.signal_data_type, CStyleEnum):
+                    defs[name][
+                        "enum_variants"
+                    ] = enum.str_enum_type.variants_info()
+                    defs[name][
+                        "enum"
+                    ] = [pair["input_value"] for pair in enum.str_enum_type.variants_info()]
+            case _:
+                defs[member.signal_data_type.get_rust_type_name()] = member.signal_data_type.schema_ir | {
+                    "debug_info": member.debug_info,
+                }
+
+        # TODO: RANK0
+        # if member.reset_expr is not None:
+        #     defs[name]["signal_behavior"] = {
+        #         "name": "Reset",
+        #         "default_expr": member.reset_expr,
+        #     }
+
         if not isinstance(member.signal_data_type, Object):
-            clock_name = member.clock().name
-            defs[clock_name] = {
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 18446744073709551615,
+            clock = member.clock()
+            def_name = clock.signal_data_type.get_rust_type_name()
+            defs[def_name] = clock.signal_data_type.schema_ir | {
                 "debug_info": member.debug_info,
             }
         else:
@@ -115,12 +133,27 @@ class GeneralInputSchemaBase(SignalBase):
             for inner_name in member.__dict__:
                 inner_member = member.__getattribute__(inner_name)
                 if isinstance(inner_member, MappedInputMember):
-                    inner_property[inner_name] = { "$ref": f"#/$defs/{inner_name}" }
+                    match inner_member.signal_data_type:
+                        case Object() | DateTime() | CStyleEnum():
+                            inner_property[inner_name] = { "$ref": f"#/$defs/{inner_name}" }
+                        case _:
+                            inner_property[inner_name] = { "$ref": f"#/$defs/{inner_member.signal_data_type.get_rust_type_name()}" }
                     required.append(inner_name)
-                    clock_name = inner_member.clock().name
+
+                    # inner_property[inner_name] = { "$ref": f"#/$defs/{inner_name}" }
+                    # required.append(inner_name)
+
+                    clock = inner_member.clock()
+                    clock_def_name = inner_member.clock().signal_data_type.get_rust_type_name()
                     if not isinstance(inner_member.signal_data_type, Object):
-                        inner_property[clock_name] = { "$ref": f"#/$defs/{clock_name}" }
-                        required.append(clock_name)
+                        inner_property[clock.name] = { "$ref": f"#/$defs/{clock_def_name}" }
+                        required.append(clock.name)
+
+                    # clock_name = inner_member.clock().name
+                    # if not isinstance(inner_member.signal_data_type, Object):
+                    #     inner_property[clock_name] = { "$ref": f"#/$defs/{clock_name}" }
+                    #     required.append(clock_name)
+
                     GeneralInputSchemaBase._process_for_schema(inner_member, inner_name, ret)
 
     def to_patch_schema(self) -> dict:
@@ -149,7 +182,7 @@ class GeneralInputSchemaBase(SignalBase):
 
         for name in self._top_level_member_names:
             member: MappedInputMember = getattr(self, name)
-            patch_name = f"{name}_patch"
+            patch_name = f"{name}_patch" if isinstance(member.signal_data_type, Object | DateTime) else member.get_rust_type_name()
             properties[name] = { "$ref": f"#/$defs/{patch_name}" }
             if isinstance(member.signal_data_type, Object):
                 ret["required"].append(name)
@@ -160,19 +193,24 @@ class GeneralInputSchemaBase(SignalBase):
     def _process_for_patch_schema(member: MappedInputMember, name: str, ret: dict[str, Any]):
         defs = ret[GeneralInputSchemaBase.DEFS]
 
-        defs[name] = member.signal_data_type.schema_ir | {
-            "input_key": member.get_input_key(),
-            "debug_info": member.debug_info,
-        }
-        if isinstance(enum := member.signal_data_type, CStyleEnum):
-            defs[name][
-                "enum_variants"
-            ] = enum.str_enum_type.variants_info()
-        if member.reset_expr is not None:
-            defs[name]["signal_behavior"] = {
-                "name": "Reset",
-                "default_expr": member.reset_expr,
-            }
+        match member.signal_data_type:
+            case Object() | DateTime() | CStyleEnum():
+                defs[name] = member.signal_data_type.schema_ir | {
+                    "input_key": member.get_input_key(),
+                    "debug_info": member.debug_info,
+                }
+                if isinstance(enum := member.signal_data_type, CStyleEnum):
+                    defs[name][
+                        "enum_variants"
+                    ] = enum.str_enum_type.variants_info()
+                    defs[name][
+                        "enum"
+                    ] = [pair["input_value"] for pair in enum.str_enum_type.variants_info()]
+            case _:
+                defs[member.get_rust_type_name()] = member.signal_data_type.schema_ir | {
+                    "input_key": member.get_input_key(),
+                    "debug_info": member.debug_info,
+                }
 
         if isinstance(member.signal_data_type, Object):
             defs[name]["required"] = []
@@ -184,7 +222,7 @@ class GeneralInputSchemaBase(SignalBase):
             for inner_name in member.__dict__:
                 inner_member = member.__getattribute__(inner_name)
                 if isinstance(inner_member, MappedInputMember):
-                    inner_patch_name = f"{inner_name}_patch"
+                    inner_patch_name = f"{inner_name}_patch" if isinstance(inner_member.signal_data_type, Object | DateTime) else inner_member.get_rust_type_name()
                     inner_property[inner_name] = { "$ref": f"#/$defs/{inner_patch_name}" }
                     if isinstance(inner_member.signal_data_type, Object):
                         required.append(inner_name)
@@ -332,13 +370,15 @@ if __name__ == "__main__":
     #     "$defs": defs
     # }
 
-    result = {
-        "input_signal_bag": nestable_input_signal.to_schema(),
-        "input_signal_bag_patch": nestable_input_signal.to_patch_schema()
-    }
+    # result = {
+    #     "input_signal_bag": nestable_input_signal.to_schema(),
+    #     "input_signal_bag_patch": nestable_input_signal.to_patch_schema()
+    # }
 
-    # schema = nestable_input_signal.to_schema()
-    print(json.dumps(result, indent=4), end='\n\n')
+    # print(json.dumps(result, indent=4), end='\n\n')
 
     # patch_schema = nestable_input_signal.to_patch_schema()
     # print(json.dumps(patch_schema, indent=4), end='\n\n')
+
+    schema = nestable_input_signal.to_schema()
+    print(json.dumps(schema, indent=4), end='\n\n')
