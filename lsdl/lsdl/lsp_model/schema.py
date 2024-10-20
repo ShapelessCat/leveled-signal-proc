@@ -1,7 +1,7 @@
 import json
+import re
 from abc import ABC, abstractmethod
 from enum import StrEnum
-import re
 from typing import Optional, Type, final, override
 
 from ..rust_code import INPUT_SIGNAL_BAG, RUST_DEFAULT_VALUE, RustCode
@@ -16,11 +16,17 @@ class SignalDataTypeBase(SignalBase, ABC):
     def __init__(self, rust_type: RustCode):
         super().__init__(rust_type)
         self._reset_expr: Optional[RustCode] = None
-        self._schema_entry: Optional[LeveledSignalProcessingModelComponentBase] = None
+        self._schema_entry: Optional[MappedInputMember] = None
 
     @property
     def reset_expr(self) -> Optional[RustCode]:
         return self._reset_expr
+
+    def clock(self) -> "_ClockCompanion":
+        if self._schema_entry is not None:
+            return self._schema_entry.clock()
+        else:
+            raise ValueError("This isn't belong to an input schema entry and no `clock` method")
 
 
 class TypeWithLiteralValue(SignalDataTypeBase, ABC):
@@ -188,29 +194,6 @@ class MappedInputMember(_InputMember):
     def clock(self) -> _ClockCompanion:
         # This `self.name` will be given when initializing the `InputSchemaBase` through reflection.
         return _ClockCompanion(f"{self.name}_clock")
-
-    # TODO: move this outside of this class or convert them to static methods!!!
-    def parse(
-        self, type_name, default_value: RustCode = RUST_DEFAULT_VALUE
-    ) -> SignalBase:
-        return self.map(
-            bind_var="s",
-            lambda_src=f"s.parse::<{type_name}>().unwrap_or({default_value})",
-        ).annotate_type(type_name)
-
-    def starts_with(self, other) -> SignalBase:
-        from ..processors import Const, make_tuple
-
-        if not isinstance(other, LeveledSignalProcessingModelComponentBase):
-            other = Const(other)
-        return (
-            make_tuple(self, other)
-            .map(bind_var="(s, p)", lambda_src="s.starts_with(p)")
-            .annotate_type("bool")
-        )
-
-    def timestamp(self):
-        return self.map(bind_var="t", lambda_src="t.timestamp()").annotate_type("i64")
 
 
 _defined_schema: Optional["InputSchemaBase"] = None
@@ -384,19 +367,31 @@ def create_type_model_from_rust_type_name(
     elif rust_type == "bool":
         return Bool()
     elif rust_type.startswith("::chrono::DateTime<"):
-        match = re.search(r"::chrono::DateTime<::chrono::(\w+)>", rust_type)
-        if match:
-            return DateTime(timezone=match.group(1))
+        match_result = re.search(r"::chrono::DateTime<::chrono::(\w+)>", rust_type)
+        if match_result:
+            return DateTime(timezone=match_result.group(1))
         else:
             raise TypeError("Not an identifiable DateTime representation")
     elif rust_type.startswith("Vec<"):
-        match = re.search(r"Vec<(\w+)>", rust_type)
-        if match:
-            return Vector(element_type=match.group(1))
-        else:
-            raise TypeError("Not an identifiable Vector-like type representation")
-    elif rust_type.isidentifier():  # TODO: Not a perfect solution, what we really need is `is_rust_identifier`.
-        enum_class = globals().get(rust_type)
-        return CStyleEnum(enum_class)
+        match_result = re.search(r"Vec<(\w+)>", rust_type)
+        if match_result:
+            if (
+                et := create_type_model_from_rust_type_name(match_result.group(1))
+            ) is not None:
+                return Vector(et)
+        raise TypeError(
+            f"{rust_type} is not an identifiable Vector-like type representation"
+        )
+    elif (
+        rust_type.isidentifier()
+    ):  # TODO: Not a perfect solution, what we really need is `is_rust_identifier`.
+        enum_class: type = globals().get(rust_type)
+        if issubclass(enum_class, LspEnumBase):
+            return CStyleEnum(enum_class)
+        raise TypeError(
+            f"{rust_type} is not an identifiable `LspEnumBase` subclass type representation"
+        )
     else:
-        raise TypeError(f"{rust_type} is not an identifiable type representation in the LSP type model")
+        raise TypeError(
+            f"{rust_type} is not an identifiable type representation in the LSP type model"
+        )

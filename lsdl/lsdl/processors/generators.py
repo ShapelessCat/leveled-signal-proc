@@ -38,7 +38,9 @@ class Const(SignalBase):
                 elif tpe == bool:
                     val_type = Bool()
                 elif tpe == list:
-                    raise NotImplementedError("Not implemented yet")  # Till now no strong requirement
+                    raise NotImplementedError(
+                        "Not implemented yet"
+                    )  # Till now no strong requirement
             if val_type is None:
                 raise Exception("Can't render this value to a Rust constant.")
             super().__init__(val_type.get_rust_type_name())

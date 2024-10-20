@@ -4,7 +4,7 @@ from abc import ABC
 from typing import Any, Optional, Self, final, no_type_check
 
 from ..debug_info import DebugInfo
-from ..rust_code import COMPILER_INFERABLE_TYPE, RustCode
+from ..rust_code import COMPILER_INFERABLE_TYPE, RUST_DEFAULT_VALUE, RustCode
 
 
 class LeveledSignalProcessingModelComponentCore(ABC):
@@ -18,14 +18,16 @@ class LeveledSignalProcessingModelComponentCore(ABC):
     def get_rust_type_name(self) -> RustCode:
         """Get the rust declaration for the type of this signal."""
         return self._rust_type
-    
+
     @final
     @property
     def debug_info(self) -> dict[str, Any]:
         return self._debug_info
 
 
-class LeveledSignalProcessingModelComponentBase(LeveledSignalProcessingModelComponentCore, ABC):
+class LeveledSignalProcessingModelComponentBase(
+    LeveledSignalProcessingModelComponentCore, ABC
+):
     """A leveled signal processing model component base class.
 
     See LSP documentation for details about leveled signal definition.
@@ -102,6 +104,33 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         from ..processors import SignalMapper
 
         return SignalMapper(bind_var, lambda_src, self)
+
+    # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv #
+    # `map` with specific frequently used lambda function #
+    # --------------------------------------------------- #
+    def parse(
+        self, type_name, default_value: RustCode = RUST_DEFAULT_VALUE
+    ) -> "SignalBase":
+        return self.map(
+            bind_var="s",
+            lambda_src=f"s.parse::<{type_name}>().unwrap_or({default_value})",
+        ).annotate_type(type_name)
+
+    def starts_with(self, other) -> "SignalBase":
+        from ..processors import Const, make_tuple
+
+        if not isinstance(other, LeveledSignalProcessingModelComponentBase):
+            other = Const(other)
+        return (
+            make_tuple(self, other)
+            .map(bind_var="(s, p)", lambda_src="s.starts_with(p)")
+            .annotate_type("bool")
+        )
+
+    def timestamp(self):
+        return self.map(bind_var="t", lambda_src="t.timestamp()").annotate_type("i64")
+
+    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ #
 
     @final
     def count_changes(self) -> "SignalBase":
