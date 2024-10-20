@@ -1,4 +1,5 @@
 import const
+from lsdl.lsp_model.core import SignalBase
 from lsdl.processors import (
     Const,
     FoldableOperation,
@@ -29,7 +30,7 @@ app_startup_clock = (
 total_startup_count = app_startup_clock.count_changes()
 
 
-def fold_app_startup_time(scope, method: FoldableOperation, init=None):
+def fold_app_startup_time(scope, method: FoldableOperation, init=None) -> SignalBase:
     global app_startup_time, app_startup_clock
     return time_domain_fold(method)(
         data=app_startup_time,
@@ -41,7 +42,7 @@ def fold_app_startup_time(scope, method: FoldableOperation, init=None):
 
 def create_app_startup_metrics_for(scope_signal, scope_name: ScopeName):
     global total_startup_count
-    scope = scope_name.name.lower()
+    scope = scope_name.value
     total_startup_count.peek().scope(scope_signal).add_metric(
         f"life_{scope}_startup_count"
     )

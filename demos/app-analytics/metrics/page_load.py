@@ -1,4 +1,5 @@
 import const
+from lsdl.lsp_model.core import SignalBase
 from lsdl.processors import (
     Cond,
     Const,
@@ -45,7 +46,7 @@ _load_time_clock = (
 _total_load_count = _load_time_clock.count_changes()
 
 
-def fold_load_time(scope, method: FoldableOperation, init=None):
+def fold_load_time(scope, method: FoldableOperation, init=None) -> SignalBase:
     """Summary a load time related metric in time domain.
 
     Use the `method` to summarize.
@@ -60,7 +61,7 @@ def fold_load_time(scope, method: FoldableOperation, init=None):
 
 def register_load_time_metrics(scope_signal, scope_name: ScopeName):
     """Build and register metrics for load time"""
-    scope = scope_name.name.lower()
+    scope = scope_name.value
     _total_load_count.peek().scope(scope_signal).add_metric(f"life_{scope}_load_count")
     fold_load_time(scope_signal, FoldableOperation.MAX, init=0).add_metric(
         f"life_{scope}_max_load_duration"

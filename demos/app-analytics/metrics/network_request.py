@@ -1,11 +1,14 @@
-from enum import Enum
+from enum import StrEnum, auto
 
 import const
 from lsdl.processors import FoldableOperation, SignalFilterBuilder, time_domain_fold
 from schema import input_signal
 from scope import ScopeName, navigation_id, session_id
 
-ResponseStatus = Enum("ResponseStatus", ["Success", "Failure"])
+
+class ResponseStatus(StrEnum):
+    Success = auto()
+    Failure = auto()
 
 network_request_duration = input_signal.network_request_duration.parse("i32")
 
@@ -28,7 +31,7 @@ def create_network_request_metrics_for(
         ).build_clock_filter()
     )
     count_with_given_status = network_request_with_given_status_clock.count_changes()
-    scope_and_status = f"{scope_name.name.lower()}_{status.name.lower()}"
+    scope_and_status = f"{scope_name.value}_{status.value}"
     count_with_given_status.peek().scope(scope_signal).add_metric(
         f"life_{scope_and_status}_network_request_count"
     )

@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, StrEnum, auto
 
 import const
 from lsdl.processors import SignalFilterBuilder, make_tuple
@@ -28,4 +28,7 @@ navigation_id = (
     .count_changes()
     .add_metric("navigation_id")
 )
-ScopeName = Enum("ScopeName", ["Session", "Navigation"])
+
+class ScopeName(StrEnum):
+    Session = auto()
+    Navigation = auto()
