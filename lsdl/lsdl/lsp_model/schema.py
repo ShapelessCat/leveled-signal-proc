@@ -1,20 +1,25 @@
 import json
 from abc import ABC, abstractmethod
 from enum import StrEnum
+import re
 from typing import Optional, Type, final, override
 
 from ..rust_code import INPUT_SIGNAL_BAG, RUST_DEFAULT_VALUE, RustCode
-from .core import LeveledSignalProcessingModelComponentBase, LeveledSignalProcessingModelComponentCore, SignalBase
+from .core import LeveledSignalProcessingModelComponentBase, SignalBase
 
 
-class SignalDataTypeBase(LeveledSignalProcessingModelComponentCore, ABC):
+# Theoretically, the super class should be
+# `LeveledSignalProcessingModelComponentCore`, but for the usability (help IDE
+# detect the required APIs of `SignalBase`), `SignalDataTypeBase` should have
+# the public APIs `SignalBase`, like `MappedInputMember`.
+class SignalDataTypeBase(SignalBase, ABC):
     def __init__(self, rust_type: RustCode):
         super().__init__(rust_type)
         self._reset_expr: Optional[RustCode] = None
         self._schema_entry: Optional[LeveledSignalProcessingModelComponentBase] = None
 
     @property
-    def reset_expr(self):
+    def reset_expr(self) -> Optional[RustCode]:
         return self._reset_expr
 
 
@@ -376,7 +381,22 @@ def create_type_model_from_rust_type_name(
     elif rust_type[0] == "f":
         width = int(rust_type[1:])
         return Float(width)
-    elif rust_type[0] == "bool":
+    elif rust_type == "bool":
         return Bool()
+    elif rust_type.startswith("::chrono::DateTime<"):
+        match = re.search(r"::chrono::DateTime<::chrono::(\w+)>", rust_type)
+        if match:
+            return DateTime(timezone=match.group(1))
+        else:
+            raise TypeError("Not an identifiable DateTime representation")
+    elif rust_type.startswith("Vec<"):
+        match = re.search(r"Vec<(\w+)>", rust_type)
+        if match:
+            return Vector(element_type=match.group(1))
+        else:
+            raise TypeError("Not an identifiable Vector-like type representation")
+    elif rust_type.isidentifier():  # TODO: Not a perfect solution, what we really need is `is_rust_identifier`.
+        enum_class = globals().get(rust_type)
+        return CStyleEnum(enum_class)
     else:
-        return None
+        raise TypeError(f"{rust_type} is not an identifiable type representation in the LSP type model")

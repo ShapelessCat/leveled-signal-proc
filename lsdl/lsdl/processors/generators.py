@@ -1,4 +1,3 @@
-from enum import StrEnum
 from typing import Optional, final
 
 from ..lsp_model.component_base import BuiltinProcessorComponentBase
@@ -38,6 +37,8 @@ class Const(SignalBase):
                     val_type = Float()
                 elif tpe == bool:
                     val_type = Bool()
+                elif tpe == list:
+                    raise NotImplementedError("Not implemented yet")  # Till now no strong requirement
             if val_type is None:
                 raise Exception("Can't render this value to a Rust constant.")
             super().__init__(val_type.get_rust_type_name())
