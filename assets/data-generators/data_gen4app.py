@@ -8,7 +8,7 @@ import re
 import sys
 from abc import ABC, abstractmethod
 from datetime import timedelta
-from enum import Enum
+from enum import StrEnum, auto
 from pathlib import Path
 from typing import Type
 
@@ -17,12 +17,9 @@ from gen_utils import random_bool, timestamp_gen
 logging.basicConfig(level=logging.INFO)
 
 
-class Platform(Enum):
-    MOB = 1
-    WEB = 2
-
-    def __str__(self):
-        return f"{self.name.lower()}"
+class Platform(StrEnum):
+    MOB = auto()
+    WEB = auto()
 
 
 # TODO: Not in use. Can be used to make the generated data more like real data.
