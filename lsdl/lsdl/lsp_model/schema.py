@@ -1,5 +1,4 @@
 import json
-import re
 from abc import ABC, abstractmethod
 from enum import StrEnum
 from typing import Any, Optional, Type, final, override
@@ -18,7 +17,6 @@ class SignalDataTypeBase(SignalBase, ABC):
     def __init__(self, rust_type: RustCode):
         super().__init__(rust_type)
         self._reset_expr: Optional[RustCode] = None
-        self._schema_entry: Optional[MappedInputMember] = None
         self._schema_ir: dict[str, Any]
     
     @final
@@ -33,10 +31,12 @@ class SignalDataTypeBase(SignalBase, ABC):
         return self._reset_expr
 
     def clock(self) -> "_ClockCompanion":
-        if self._schema_entry is not None:
-            return self._schema_entry.clock()
-        else:
-            raise ValueError("This isn't belong to an input schema entry and no `clock` method")
+        # Add this method here for helping IDE.
+        # The receivers of actually `clock` calls should always be an instance
+        # of `MappedInputMember`
+        raise NotImplemented(
+            "By design, you shouldn't reach here, unless you made mistake during `InputSchemaBase` initialization"
+        )
 
 
 class WithLiteralValue(ABC):
@@ -190,30 +190,32 @@ class Vector(SignalDataTypeBase, WithLiteralValue):
             raise Exception("Not a vector literal!")
 
 
+class _Opaque:
+    def __init__(self, t: SignalDataTypeBase):
+        self._t = t
+
+    def inner(self):
+        return self._t
+
+
 class _InputMember(SignalBase, ABC):
     def __init__(self, tpe: SignalDataTypeBase, name=""):
         super().__init__(tpe.get_rust_type_name())
-        tpe._schema_entry = self
-        self._signal_data_type = tpe
+        self._signal_data_type = _Opaque(tpe)
         self._name = name
-        self._reset_expr: Optional[RustCode] = None
 
     @property
     def signal_data_type(self) -> SignalDataTypeBase:
-        return self._signal_data_type
+        return self._signal_data_type.inner()
 
     @property
     def name(self) -> str:
         return self._name
 
-    @name.setter
-    def name(self, name: str):
-        self._name = name
-
     def get_description(self):
         return {
             "type": "InputSignal",
-            "id": self.name,
+            "id": self._name,
         }
 
 
@@ -231,74 +233,107 @@ class MappedInputMember(_InputMember):
         tpe: SignalDataTypeBase,
         volatile_default_value: Optional[RustCode] = None,
     ):
+        # CAUTION: A `MappedInputMember` instance is fully initialized during
+        #          the initialization of a `InputSchemaBase` instance, the
+        #          instance that contains `MappedInputMember`s.
         super().__init__(tpe)
         self._input_key = input_key
-        self._reset_expr = volatile_default_value or self.signal_data_type.reset_expr
+        if (
+            volatile_default_value is not None
+            and tpe.reset_expr is not None
+            and volatile_default_value != tpe.reset_expr
+        ):
+            raise ValueError("Conflict default values set through two different ways!")
+        self._reset_expr = volatile_default_value or tpe.reset_expr
 
     @property
     def reset_expr(self):
         return self._reset_expr
 
-    def get_input_key(self) -> str:
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @name.setter
+    def name(self, name: str):
+        self._name = name
+
+    @property
+    def input_key(self) -> str:
         return self._input_key
 
     def clock(self) -> _ClockCompanion:
-        # This `self.name` will be given when initializing the `InputSchemaBase` through reflection.
-        return _ClockCompanion(f"{self.name}_clock")
+        # This `self.name` will be given when initializing the `InputSchemaBase`
+        # through reflection.
+        return _ClockCompanion(f"{self._name}_clock")
 
 
 _defined_schema: Optional["InputSchemaBase"] = None
 
 
-class InputSchemaBase(SignalBase):
+class InputSchemaBase(_InputMember):
     def __init__(self, type_name: RustCode = INPUT_SIGNAL_BAG):
         global _defined_schema
-        self.type_name = type_name
-        # If treating `InputSchemaBase` itself as a signal/clock, its type should be `u64`.
-        # Actually, lsp-codegen will always automatically insert a `_clock: u64` field
-        # to the codegen result struct of this class, and the generated struct name should
-        # be the value of `self.type_name`.
-        super().__init__("u64")
-        self._member_names = []
-        if "_timestamp_key" not in self.__dir__():
+        # If treating `InputSchemaBase` itself as a signal/clock, its type
+        # should be `u64`.  Actually, lsp-codegen will always automatically
+        # insert a `_clock: u64` field to the codegen result struct of this
+        # class, and the generated struct name should be the value of
+        # `self.type_name`.
+        super().__init__(Integer(signed=False, width=64), type_name)
+        if "_timestamp_key" not in self.__class__.__dict__:
             self._timestamp_key = "timestamp"
-        for item_name in self.__dir__():
-            item = self.__getattribute__(item_name)
+        self._member_names = []
+        for item_name, item_type in self.__class__.__dict__.items():
             # There won't be members as `ClockCompanion`s in the source code of
-            # an `InputSchemaBase` instance, therefore we don't try to handle it here.
-            if isinstance(item, SignalDataTypeBase):
-                item = MappedInputMember(input_key=item_name, tpe=item)
-            if isinstance(item, MappedInputMember):
-                item.name = item_name
-                self.__setattr__(item_name, item)
-                self._member_names.append(item_name)
+            # an `InputSchemaBase` instance, therefore we don't try to handle it
+            # here.
+            if isinstance(item_type, SignalDataTypeBase | MappedInputMember):
+                item = self.__getattribute__(item_name)
+                if isinstance(item, SignalDataTypeBase):
+                    item = MappedInputMember(input_key=item_name, tpe=item)
+                if isinstance(item, MappedInputMember):
+                    # IMPORTANT!!! We need this line to finish the full
+                    # initialization of a `MappedInputMember` instance.
+                    item.name = item_name
+                    self.__setattr__(item_name, item)
+                    self._member_names.append(item_name)
         _defined_schema = self
 
     def to_dict(self) -> dict:
         ret: dict = {
-            "type_name": self.type_name,
+            "type_name": self.name,
             "patch_timestamp_key": self._timestamp_key,
             "members": {},
         }
         for name in self._member_names:
             member: MappedInputMember = getattr(self, name)
-            ret["members"][name] = {
-                "type": member.get_rust_type_name(),
-                "clock_companion": member.clock().name,
-                "input_key": member.get_input_key(),
-                "debug_info": member.debug_info,
-            }
-            if isinstance(enum := member.signal_data_type, CStyleEnum):
-                ret["members"][name][
-                    "enum_variants"
-                ] = enum.str_enum_type.variants_info()
-                # ret["members"][name]["enum_variants"] = enum.variants
-            if member.reset_expr is not None:
-                ret["members"][name]["signal_behavior"] = {
-                    "name": "Reset",
-                    "default_expr": member.reset_expr,
-                }
+            ret["members"][name] = self.member_ir(member)
         return ret
+    
+    @staticmethod
+    def member_ir(member: MappedInputMember) -> dict[str, Any]:
+        # CAUTION: A `MappedInputMember` instance is fully initialized during
+        #          the initialization of a `InputSchemaBase` instance, the
+        #          `item.name = item_name` line. This is for the LSDL schema
+        #          definition flexibility. Therefore, we'd better not move the
+        #          logic of this function to `MappedInputMember` class
+        #          definition. If we did this, we can't stop users from calling
+        #          this logic before a `MappedInputMember` instance fully
+        #          initialization.
+        result= {
+            "type": member.get_rust_type_name(),
+            "clock_companion": member.clock().name,
+            "input_key": member.input_key,
+            "debug_info": member.debug_info,
+        }
+        if isinstance(enum := member.signal_data_type, CStyleEnum):
+            result["enum_variants"] = enum.str_enum_type.variants_info()
+        if member.reset_expr is not None:
+            result["signal_behavior"] = {
+                "name": "Reset",
+                "default_expr": member.reset_expr,
+            }
+        return result
 
     def get_description(self):
         return {"type": "InputSignal", "id": "_clock"}
@@ -401,48 +436,3 @@ def volatile(
 
 def get_schema():
     return _defined_schema
-
-
-def create_type_model_from_rust_type_name(
-    rust_type: RustCode,
-) -> Optional[SignalDataTypeBase]:
-    if rust_type == "String":
-        return String()
-    elif rust_type[0] in ["i", "u"]:
-        width = int(rust_type[1:])
-        signed = rust_type[0] == "i"
-        return Integer(signed, width)
-    elif rust_type[0] == "f":
-        width = int(rust_type[1:])
-        return Float(width)
-    elif rust_type == "bool":
-        return Bool()
-    elif rust_type.startswith("::chrono::DateTime<"):
-        match_result = re.search(r"::chrono::DateTime<::chrono::(\w+)>", rust_type)
-        if match_result:
-            return DateTime(timezone=match_result.group(1))
-        else:
-            raise TypeError("Not an identifiable DateTime representation")
-    elif rust_type.startswith("Vec<"):
-        match_result = re.search(r"Vec<(\w+)>", rust_type)
-        if match_result:
-            if (
-                et := create_type_model_from_rust_type_name(match_result.group(1))
-            ) is not None:
-                return Vector(et)
-        raise TypeError(
-            f"{rust_type} is not an identifiable Vector-like type representation"
-        )
-    elif (
-        rust_type.isidentifier()
-    ):  # TODO: Not a perfect solution, what we really need is `is_rust_identifier`.
-        enum_class: type = globals().get(rust_type)
-        if issubclass(enum_class, LspEnumBase):
-            return CStyleEnum(enum_class)
-        raise TypeError(
-            f"{rust_type} is not an identifiable `LspEnumBase` subclass type representation"
-        )
-    else:
-        raise TypeError(
-            f"{rust_type} is not an identifiable type representation in the LSP type model"
-        )
