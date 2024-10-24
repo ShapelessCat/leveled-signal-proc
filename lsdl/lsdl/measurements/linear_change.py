@@ -1,5 +1,7 @@
 from typing import final
 
+from lsdl.rust_code import RustPrimitiveType
+
 from ..lsp_model.component_base import DirectBuiltinMeasurementComponentBase
 from ..lsp_model.core import SignalBase
 
@@ -13,4 +15,4 @@ class LinearChange(DirectBuiltinMeasurementComponentBase):
             node_decl=f"{rust_component_name}::default()",
             upstreams=[input_signal],
         )
-        self.annotate_type("f64")
+        self.annotate_type(RustPrimitiveType.F64.value)

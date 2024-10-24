@@ -5,8 +5,10 @@ from enum import StrEnum
 from typing import Optional, Type, final, override
 
 from ..rust_code import INPUT_SIGNAL_BAG, RUST_DEFAULT_VALUE, RustCode
-from .core import LeveledSignalProcessingModelComponentBase, SignalBase
+from .core import SignalBase
 
+
+# `SignalDataTypeBase` should only be used in current source file!
 
 # Theoretically, the super class should be
 # `LeveledSignalProcessingModelComponentCore`, but for the usability (help IDE

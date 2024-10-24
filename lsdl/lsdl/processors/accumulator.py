@@ -2,7 +2,7 @@ from typing import final
 
 from ..lsp_model.component_base import BuiltinProcessorComponentBase
 from ..lsp_model.core import SignalBase
-from ..rust_code import RUST_DEFAULT_VALUE, RustCode
+from ..rust_code import RUST_DEFAULT_VALUE, RustCode, RustPrimitiveType
 
 
 @final
@@ -13,7 +13,7 @@ class Accumulator(BuiltinProcessorComponentBase):
         data: SignalBase,
         init_val: RustCode = RUST_DEFAULT_VALUE,
         filter_lambda: RustCode = "|_| true",
-        type_name: RustCode = "i32",
+        type_name: RustCode = RustPrimitiveType.I32.value,
     ):
         rust_processor_name = self.__class__.__name__
         dt = data.get_rust_type_name()

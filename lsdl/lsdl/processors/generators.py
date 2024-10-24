@@ -10,7 +10,7 @@ from ..lsp_model.schema import (
     String,
     TypeWithLiteralValue,
 )
-from ..rust_code import RustCode
+from ..rust_code import RustCode, RustPrimitiveType
 
 
 @final
@@ -73,7 +73,7 @@ class SquareWave(BuiltinProcessorComponentBase):
             node_decl=f"{_rust_component_name}::square_wave({period}, {phase})",
             upstreams=[],
         )
-        self.annotate_type("bool")
+        self.annotate_type(RustPrimitiveType.BOOL.value)
 
 
 #    let b = SignalGenerator::raising_level(0, 2, 60_000_000_000, 0);
@@ -88,7 +88,7 @@ class MonotonicSteps(BuiltinProcessorComponentBase):
             node_decl=f"{_rust_component_name}::raising_level({start}, {step}, {period}, {phase})",
             upstreams=[],
         )
-        self.annotate_type("f64")
+        self.annotate_type(RustPrimitiveType.F64.value)
 
 
 #    let c = SignalGenerator::<_, f64>::new(|ts| ((ts as f64).sin(), ts + 10));

@@ -2,7 +2,7 @@ from typing import Tuple, final
 
 from ..lsp_model.component_base import DirectBuiltinMeasurementComponentBase
 from ..lsp_model.core import SignalBase
-from ..rust_code import RustCode
+from ..rust_code import RustCode, RustPrimitiveType
 
 
 @final
@@ -26,7 +26,7 @@ class PeekTimestamp(DirectBuiltinMeasurementComponentBase):
             node_decl=f"{rust_component_name}",
             upstreams=[input_signal],
         )
-        self.annotate_type("u64")
+        self.annotate_type(RustPrimitiveType.U64.value)
 
     BUILTIN_DATETIME_FORMATTER: Tuple[RustCode, RustCode] = (
         "nano_seconds",

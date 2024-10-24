@@ -4,7 +4,7 @@ from abc import ABC
 from typing import Any, Optional, Self, final, no_type_check
 
 from ..debug_info import DebugInfo
-from ..rust_code import COMPILER_INFERABLE_TYPE, RUST_DEFAULT_VALUE, RustCode
+from ..rust_code import COMPILER_INFERABLE_TYPE, RUST_DEFAULT_VALUE, RustCode, RustPrimitiveType
 
 
 class LeveledSignalProcessingModelComponentCore(ABC):
@@ -124,11 +124,11 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
         return (
             make_tuple(self, other)
             .map(bind_var="(s, p)", lambda_src="s.starts_with(p)")
-            .annotate_type("bool")
+            .annotate_type(RustPrimitiveType.BOOL.value)
         )
 
     def timestamp(self):
-        return self.map(bind_var="t", lambda_src="t.timestamp()").annotate_type("i64")
+        return self.map(bind_var="t", lambda_src="t.timestamp()").annotate_type(RustPrimitiveType.I64.value)
 
     # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ #
 
@@ -193,7 +193,7 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
                 q.iter().fold(0, |a, x| a + x) as f64 / q.len() as f64
             """,
         )
-        return sw.annotate_type("f64")
+        return sw.annotate_type(RustPrimitiveType.F64.value)
 
     @final
     def prior_different_value(
@@ -389,7 +389,7 @@ class SignalBase(LeveledSignalProcessingModelComponentBase, ABC):
             # Assume the input `nano_seconds` is a UTC timestamp
             (lambda_param, lambda_body) = PeekTimestamp.BUILTIN_DATETIME_FORMATTER
             mapped_peak_ts = peek_ts.map(lambda_param, lambda_body)
-            mapped_peak_ts.annotate_type("String")
+            mapped_peak_ts.annotate_type(RustPrimitiveType.STRING.value)
             return mapped_peak_ts
         else:
             return peek_ts

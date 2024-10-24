@@ -1,5 +1,7 @@
 from typing import final
 
+from lsdl.rust_code import RustPrimitiveType
+
 from ..lsp_model.component_base import BuiltinProcessorComponentBase
 from ..lsp_model.core import SignalBase
 
@@ -23,4 +25,4 @@ class LivenessChecker(BuiltinProcessorComponentBase):
             """,
             upstreams=[liveness_clock],
         )
-        self.annotate_type("bool")
+        self.annotate_type(RustPrimitiveType.BOOL.value)

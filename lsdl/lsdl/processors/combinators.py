@@ -1,4 +1,4 @@
-from enum import StrEnum
+from enum import StrEnum, auto
 from typing import Callable, Optional
 
 from ..lsp_model.core import SignalBase
@@ -15,11 +15,11 @@ def make_tuple(*args: SignalBase) -> SignalBase:
 
 
 class FoldableOperation(StrEnum):
-    SUM = "sum"
-    MIN = "min"
-    MAX = "max"
-    AND = "and"
-    OR = "or"
+    SUM = auto()
+    MIN = auto()
+    MAX = auto()
+    AND = auto()
+    OR  = auto()
 
 
 def time_domain_fold(
