@@ -3,8 +3,8 @@ import json
 from typing import Any, Optional, final
 
 from lsdl import RustCode
-from lsdl.lsp_model.core import SignalBase
 from lsdl.lsp_model.schema import (
+    _InputMember,
     Bool,
     CStyleEnum,
     DateTime,
@@ -23,7 +23,7 @@ from lsdl.rust_code import INPUT_SIGNAL_BAG
 _defined_nested_schema: Optional["GeneralInputSchemaBase"] = None
 
 
-class GeneralInputSchemaBase(SignalBase):
+class GeneralInputSchemaBase(_InputMember):
     PROPERTIES_KEY = "properties"
     DEFS = "$defs"
 
@@ -34,29 +34,32 @@ class GeneralInputSchemaBase(SignalBase):
         # Actually, lsp-codegen will always automatically insert a `_clock: u64` field
         # to the codegen result struct of this class, and the generated struct name should
         # be the value of `self.type_name`.
-        super().__init__("u64")
-        if "_timestamp_key" not in self.__dir__():
+        super().__init__(Integer(signed=False, width=64), type_name)
+        if "_timestamp_key" not in vars(self.__class__):
             self._timestamp_key = "timestamp"
         self._top_level_member_names = []
-        for item_name in self.__dir__():
-            original_item = self.__getattribute__(item_name)
-            if isinstance(original_item, SignalDataTypeBase | MappedInputMember):
-                _normalize(self, item_name, original_item)
+        for item_name, item in vars(self.__class__).items():
+            # There won't be members as `ClockCompanion`s in the source code of
+            # an `InputSchemaBase` instance, therefore we don't try to handle it
+            # here.
+            if isinstance(item, SignalDataTypeBase | MappedInputMember):
+                _normalize(self, item_name, item)
                 self._top_level_member_names.append(item_name)
         _defined_nested_schema = self
     
     def to_schema(self) -> dict:
+        whole_signal_clock_name = "_clock"
         ret: dict = {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
             "$comment": "InputSignalBag schema",
             "title": self.type_name,
             "type": "object",
             GeneralInputSchemaBase.PROPERTIES_KEY: {
-                "_clock": {
-                    "$ref": "#/$def/u64"
+                whole_signal_clock_name: {
+                    "$ref": f"#/$def/{self.signal_data_type.get_rust_type_name()}"
                 },
             },
-            "required": ["_clock"],
+            "required": [whole_signal_clock_name],
             "$defs": {
                 "u64": {  ## For input signal clock
                     "type": "integer",
@@ -75,7 +78,7 @@ class GeneralInputSchemaBase(SignalBase):
         for name in self._top_level_member_names:
             member: MappedInputMember = getattr(self, name)
             match member.signal_data_type:
-                case Object() | CStyleEnum() | DateTime():
+                case Object() | DateTime():
                     properties[member.name] = { "$ref": f"#/$defs/{member.name}" }
                 case _:
                     properties[member.name] = { "$ref": f"#/$defs/{member.signal_data_type.get_rust_type_name()}" }
@@ -134,7 +137,7 @@ class GeneralInputSchemaBase(SignalBase):
                 inner_member = member.__getattribute__(inner_name)
                 if isinstance(inner_member, MappedInputMember):
                     match inner_member.signal_data_type:
-                        case Object() | DateTime() | CStyleEnum():
+                        case Object() | DateTime():
                             inner_property[inner_name] = { "$ref": f"#/$defs/{inner_name}" }
                         case _:
                             inner_property[inner_name] = { "$ref": f"#/$defs/{inner_member.signal_data_type.get_rust_type_name()}" }
@@ -196,7 +199,7 @@ class GeneralInputSchemaBase(SignalBase):
         match member.signal_data_type:
             case Object() | DateTime() | CStyleEnum():
                 defs[name] = member.signal_data_type.schema_ir | {
-                    "input_key": member.get_input_key(),
+                    "input_key": member.input_key,
                     "debug_info": member.debug_info,
                 }
                 if isinstance(enum := member.signal_data_type, CStyleEnum):
@@ -208,7 +211,7 @@ class GeneralInputSchemaBase(SignalBase):
                     ] = [pair["input_value"] for pair in enum.str_enum_type.variants_info()]
             case _:
                 defs[member.get_rust_type_name()] = member.signal_data_type.schema_ir | {
-                    "input_key": member.get_input_key(),
+                    "input_key": member.input_key,
                     "debug_info": member.debug_info,
                 }
 
@@ -238,20 +241,16 @@ def _normalize(parent: GeneralInputSchemaBase | MappedInputMember, input_key: st
             item = MappedInputMember(input_key, tpe=node)
             item.name = input_key
             parent.__setattr__(input_key, item)
-            existing_attributes = node.__dir__()
-            for child_item_name in existing_attributes:
-                if child_item_name not in ["_signal_data_type", "signal_data_type", "_schema_entry"]:
-                    original_child_item = node.__getattribute__(child_item_name)
-                    if isinstance(original_child_item, SignalDataTypeBase | MappedInputMember):
-                        _normalize(parent=item, input_key=child_item_name, node=original_child_item)
+            existing_attributes = node.__class__.__dict__
+            for child_item_name, child_item in existing_attributes.items():
+                if isinstance(child_item, SignalDataTypeBase | MappedInputMember):
+                    _normalize(parent=item, input_key=child_item_name, node=child_item)
         case MappedInputMember():
             node.name = input_key
-            existing_attributes = node.__dir__()
-            for child_item_name in existing_attributes:
-                if child_item_name not in ["_signal_data_type", "signal_data_type"]:
-                    original_child_item = node.__getattribute__(child_item_name)
-                    if isinstance(original_child_item, SignalDataTypeBase | MappedInputMember):
-                        _normalize(parent=node, input_key=child_item_name, node=original_child_item)
+            existing_attributes = node.__class__.__dict__
+            for child_item_name, child_item in existing_attributes.items():
+                if isinstance(child_item, SignalDataTypeBase | MappedInputMember):
+                    _normalize(parent=node, input_key=child_item_name, node=child_item)
 
 
 ## TEST
@@ -340,10 +339,16 @@ class NestableInputSignal(GeneralInputSchemaBase):
 if __name__ == "__main__":
     nestable_input_signal = NestableInputSignal()
 
-    # signal_schema = nestable_input_signal.to_schema()
-    # signal_patch_schema = nestable_input_signal.to_patch_schema()
+    signal_schema = nestable_input_signal.to_schema()
+    signal_patch_schema = nestable_input_signal.to_patch_schema()
 
-    # # defs = signal_patch_schema["$defs"] | signal_schema["$defs"]
+    defs = signal_patch_schema["$defs"] | signal_schema["$defs"]
+    # print(signal_patch_schema["$defs"].keys())
+    # print("\n\n\n")
+    # print(signal_schema["$defs"].keys())
+    # print("\n\n\n")
+    # print(defs.keys())
+
     # defs = signal_schema["$defs"]
     # signal_schema.pop("$defs")
     # signal_patch_schema.pop("$defs")
@@ -354,31 +359,26 @@ if __name__ == "__main__":
     # # input_signal_patch_bag = signal_schema["properties"]
     # # signal_patch_schema["input_signal_patch_bag"] = "#def/input_signal_patch_bag"
 
-    # defs = {
-    #     "input_signal_bag": signal_schema,
-    #     "input_signal_bag_patch": signal_patch_schema,
-    # } | defs
+    defs = {
+        "input_signal_bag": signal_schema,
+        "input_signal_bag_patch": signal_patch_schema,
+    } | defs
     
 
-    # result = {
-    #     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    #     "$comment": "InputSignalBagPatch and InputSignalBag",
-    #     "$properties": {
-    #         "input_signal_bag": "#/$defs/input_signal_bag",
-    #         "input_signal_bag_patch": "#/$defs/input_signal_bag_patch"
-    #     },
-    #     "$defs": defs
-    # }
+    result = {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$comment": "InputSignalBagPatch and InputSignalBag",
+        "$properties": {
+            "input_signal_bag": "#/$defs/input_signal_bag",
+            "input_signal_bag_patch": "#/$defs/input_signal_bag_patch"
+        },
+        "$defs": defs
+    }
 
-    # result = {
-    #     "input_signal_bag": nestable_input_signal.to_schema(),
-    #     "input_signal_bag_patch": nestable_input_signal.to_patch_schema()
-    # }
-
-    # print(json.dumps(result, indent=4), end='\n\n')
+    print(json.dumps(result, indent=4), end='\n\n')
 
     # patch_schema = nestable_input_signal.to_patch_schema()
     # print(json.dumps(patch_schema, indent=4), end='\n\n')
 
-    schema = nestable_input_signal.to_schema()
-    print(json.dumps(schema, indent=4), end='\n\n')
+    # schema = nestable_input_signal.to_schema()
+    # print(json.dumps(schema, indent=4), end='\n\n')
